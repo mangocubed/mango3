@@ -1,0 +1,24 @@
+[workspace]
+resolver = "2"
+members = ["mango3-core", "mango3-home", "mango3-leptos-utils", "mango3-monitor"]
+
+[workspace.package]
+edition = "2021"
+version = "0.0.0-SNAPSHOT"
+
+[workspace.dependencies]
+apalis = { version = "0.5.5", features = ["redis"] }
+fluent-templates = "0.11.0"
+leptos = "0.7.0-rc0"
+leptos-fluent = { git = "https://github.com/mondeja/leptos-fluent.git", branch = "leptos-v0.7" }
+leptos_meta = "0.7.0-rc0"
+tokio = { version = "1.41.0", features = ["macros", "rt-multi-thread"] }
+mango3-core = { path = "mango3-core" }
+mango3-leptos-utils = { path = "mango3-leptos-utils" }
+
+[profile.wasm-release]
+inherits = "release"
+opt-level = 'z'
+lto = true
+codegen-units = 1
+panic = "abort"

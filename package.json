@@ -1,0 +1,8 @@
+{
+    "name": "mango3",
+    "private": true,
+    "dependencies": {
+        "daisyui": "^4.12.14",
+        "tailwindcss": "^3.4.14"
+    }
+}

@@ -1,0 +1,31 @@
+[package]
+name = "mango3-leptos-utils"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+axum = { version = "0.7.7", optional = true }
+fluent-templates = { workspace = true }
+leptos = { workspace = true }
+leptos_axum = { version = "0.7.0-rc0", optional = true }
+leptos-fluent = { workspace = true }
+leptos_meta = { workspace = true }
+leptos-use = "0.14.0-rc0"
+serde = { version = "1.0.214", features = ["derive"] }
+tokio = { workspace = true, optional = true }
+mango3-core = { workspace = true, optional = true }
+
+[features]
+hydrate = ["leptos/hydrate", "leptos-fluent/hydrate"]
+ssr = [
+    "dep:axum",
+    "dep:leptos_axum",
+    "dep:tokio",
+    "dep:mango3-core",
+    "leptos/ssr",
+    "leptos-fluent/axum",
+    "leptos-fluent/ssr",
+    "leptos_meta/ssr",
+    "leptos-use/axum",
+    "leptos-use/ssr",
+]

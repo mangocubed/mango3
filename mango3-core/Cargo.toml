@@ -1,0 +1,17 @@
+[package]
+name = "mango3-core"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+apalis = { workspace = true }
+dotenvy = "0.15.7"
+figment = { version = "0.10.19", features = ["env"] }
+fluent-templates = { workspace = true }
+fluent-bundle = "0.15.3"
+lazy_static = "1.5.0"
+regex = "1.11.1"
+serde = { version = "1.0.214", features = ["derive"] }
+sqlx = { version = "0.8.2", features = ["chrono", "runtime-tokio", "postgres", "tls-rustls", "uuid"] }
+strum = { version = "0.26.3", features = ["derive"] }
+unic-langid = { version = "0.9.5", features = ["serde"] }

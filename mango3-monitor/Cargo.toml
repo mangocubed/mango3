@@ -1,0 +1,16 @@
+[package]
+name = "mango3-monitor"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+anyhow = "1.0.91"
+apalis = { workspace = true }
+env_logger = "0.11.5"
+lettre = { version = "0.11.10", features = [
+    "smtp-transport",
+    "tokio1-native-tls",
+] }
+log = "0.4.22"
+tokio = { workspace = true, features = ["signal"] }
+mango3-core = { workspace = true }

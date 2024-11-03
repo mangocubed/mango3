@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.loading-overlay {
+    align-items: center;
+    background-color: #000;
+    display: flex;
+    justify-content: center;
+    inset: 0;
+    position: fixed;
+    transition:
+        visibility 0s 0.3s,
+        background-color 0.3s;
+    z-index: 1000;
+}
+
+.loading-overlay .pulse {
+    animation: pulse 1.5s infinite;
+    border-radius: 100%;
+    bottom: 14px;
+    height: 100px;
+    left: 14px;
+    margin: auto;
+    width: 100px;
+}
+
+.loading-overlay figure {
+    display: block;
+    height: 128px;
+    position: relative;
+    width: 128px;
+}
+
+.loading-overlay img {
+    display: block;
+    height: auto;
+    width: 100%;
+}
+
+.loading-overlay img,
+.loading-overlay .pulse {
+    position: absolute;
+    transition:
+        visibility 0s 0.3s,
+        opacity 0.3s;
+}
+
+.loading-overlay.is-done {
+    background-color: #0000;
+    visibility: hidden;
+}
+
+.loading-overlay.is-done img,
+.loading-overlay.is-done .pulse {
+    opacity: 0;
+    visibility: hidden;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0px #333;
+    }
+    100% {
+        box-shadow: 0 0 0 64px #3333;
+    }
+}
