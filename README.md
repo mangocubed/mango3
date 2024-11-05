@@ -11,6 +11,8 @@
 | Name                     | Type    | Default                                            |
 | ------------------------ | ------- | -------------------------------------------------- |
 | BASIC_COPYRIGHT          | String  | © 2024, Mango³ Team                                |
+| BASIC_DOMAIN             | String  | mango3.localhost                                   |
+| BASIC_SECURE             | Boolean | false                                              |
 | BASIC_TITLE              | String  | Mango³ Dev                                         |
 | DATABASE_MAX_CONNECTIONS | Integer | 5                                                  |
 | DATABASE_URL             | String  | postgres://mango3:mango3@127.0.0.1:5432/mango3_dev |

@@ -2,7 +2,14 @@ use serde::{Deserialize, Serialize};
 
 #[derive(strum::Display, Eq, Hash, PartialEq)]
 #[strum(serialize_all = "kebab-case")]
-pub enum Input {}
+pub enum Input {
+    Birthdate,
+    CountryAlpha2,
+    Email,
+    FullName,
+    Password,
+    Username,
+}
 
 #[derive(strum::Display)]
 #[strum(serialize_all = "kebab-case")]
@@ -16,4 +23,6 @@ pub enum InputError {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-pub enum MailerJobCommand {}
+pub enum MailerJobCommand {
+    Welcome,
+}

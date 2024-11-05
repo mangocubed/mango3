@@ -3,9 +3,12 @@ use serde::{Deserialize, Serialize};
 #[cfg(feature = "ssr")]
 use mango3_core::config::BasicConfig;
 
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, Default, Deserialize, Serialize)]
 pub struct BasicConfigResp {
     pub copyright: String,
+    pub domain: String,
+    pub home_url: String,
+    pub register_url: String,
     pub title: String,
 }
 
@@ -14,6 +17,9 @@ impl From<BasicConfig> for BasicConfigResp {
     fn from(basic_config: BasicConfig) -> Self {
         Self {
             copyright: basic_config.copyright.clone(),
+            domain: basic_config.domain.to_string(),
+            home_url: basic_config.home_url().to_string(),
+            register_url: basic_config.register_url().to_string(),
             title: basic_config.title,
         }
     }

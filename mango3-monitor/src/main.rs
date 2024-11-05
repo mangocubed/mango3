@@ -10,6 +10,7 @@ use mango3_core::CoreContext;
 
 use tokio::signal::unix::SignalKind;
 
+mod constants;
 mod workers;
 
 use crate::workers::*;

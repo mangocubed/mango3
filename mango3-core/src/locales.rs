@@ -1,8 +1,10 @@
 use std::collections::HashMap;
+use std::str::FromStr;
 
 use fluent_bundle::FluentValue;
 use fluent_templates::{LanguageIdentifier, Loader};
 use serde::{Deserialize, Serialize};
+use unic_langid::LanguageIdentifierError;
 
 fluent_templates::static_loader! {
     static LOCALES = {
@@ -30,9 +32,17 @@ impl I18n {
     }
 }
 
+impl FromStr for I18n {
+    type Err = LanguageIdentifierError;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        value.parse().map(Self)
+    }
+}
+
 impl From<&str> for I18n {
     fn from(value: &str) -> Self {
-        Self(value.parse().expect("Could not parse Lang ID"))
+        value.parse().expect("Could not parse Lang ID")
     }
 }
 

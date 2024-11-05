@@ -1,21 +1,22 @@
 already-in-use = Ya está en uso
 cant-be-blank = No puede estar en blanco
-invalid-format = Formato Inválido
-invalid-length = Invalid length (must be {$min ->
-    [one] at least one character{$max ->
-        [one] {" and "}
-        [other] {" and "}
+failed-to-create-user = Error al crear usuario
+invalid-format = Formato inválido
+invalid-length = Longitud inválida (debe tener {$min ->
+    [one] al menos un carácter{$max ->
+        [one] {" y "}
+        [other] {" y "}
         *[zero] {""}
     }
-    [other] at least {$min} characters{$max ->
-        [one] {" and "}
-        [other] {" and "}
+    [other] al menos {$min} caracteres{$max ->
+        [one] {" y "}
+        [other] {" y "}
         *[zero] {""}
     }
     *[zero] {""}
 }{$max ->
-    [one] no longer than one character
-    [other] no longer than {$max} characters
+    [one] no más de un caracter
+    [other] no más de {$max} caracteres
     *[zero] {""}
 })
-is-invalid = Is invalid
+is-invalid = Es inválido

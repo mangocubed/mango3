@@ -3,6 +3,7 @@ use figment::providers::{Env, Serialized};
 use figment::Figment;
 use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
+use url::Url;
 
 lazy_static! {
     pub static ref BASIC_CONFIG: BasicConfig = BasicConfig::load();
@@ -28,6 +29,8 @@ where
 #[derive(Clone, Deserialize, Serialize)]
 pub struct BasicConfig {
     pub copyright: String,
+    pub domain: String,
+    pub secure: bool,
     pub title: String,
 }
 
@@ -35,6 +38,8 @@ impl Default for BasicConfig {
     fn default() -> Self {
         Self {
             copyright: "© 2024, Mango³ Team".to_owned(),
+            domain: "mango3.localhost".to_owned(),
+            secure: false,
             title: "Mango³ Dev".to_owned(),
         }
     }
@@ -43,6 +48,26 @@ impl Default for BasicConfig {
 impl BasicConfig {
     fn load() -> Self {
         extract_from_env("BASIC_")
+    }
+
+    fn scheme(&self) -> &str {
+        if self.secure {
+            "https"
+        } else {
+            "http"
+        }
+    }
+
+    pub fn home_url(&self) -> Url {
+        Url::parse(&format!("{}://{}", self.scheme(), self.domain)).unwrap()
+    }
+
+    pub fn register_url(&self) -> Url {
+        let mut register_url = self.home_url();
+        let _ = register_url.set_host(Some(&format!("accounts.{}", self.home_url().host_str().unwrap())));
+        register_url.set_path("register");
+
+        register_url
     }
 }
 

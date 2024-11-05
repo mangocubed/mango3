@@ -2,9 +2,11 @@ use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
 
 pub mod config;
+pub mod constants;
 pub mod enums;
 pub mod jobs;
 pub mod locales;
+pub mod models;
 pub mod validator;
 
 use config::DATABASE_CONFIG;

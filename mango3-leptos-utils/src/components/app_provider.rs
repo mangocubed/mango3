@@ -2,10 +2,13 @@ use fluent_templates::static_loader;
 use leptos::prelude::*;
 use leptos_fluent::leptos_fluent;
 
-use crate::context::{provide_basic_config_resource, provide_page_title};
+use crate::{
+    constants::COOKIE_NAME_LANGUAGE,
+    context::{provide_basic_config, provide_page_title, use_basic_config},
+};
 
 static_loader! {
-    static TRANSLATIONS = {
+    static LOCALES = {
         locales: "../locales",
         fallback_language: "en",
     };
@@ -13,7 +16,7 @@ static_loader! {
 
 #[component]
 pub fn AppProvider(children: Children) -> impl IntoView {
-    provide_basic_config_resource();
+    provide_basic_config();
     provide_page_title();
 
     let is_done = RwSignal::new(false);
@@ -36,16 +39,20 @@ pub fn AppProvider(children: Children) -> impl IntoView {
 
 #[component]
 fn LeptosFluent(children: Children) -> impl IntoView {
+    #[allow(unused_variables)]
+    let basic_config = use_basic_config();
+
     leptos_fluent! {
         children: children(),
         locales: "../locales",
-        translations: [TRANSLATIONS],
+        translations: [LOCALES],
 
         // #[cfg(debug_assertions)]
         // check_translations: "../**/*.rs",
 
         initial_language_from_cookie: true,
-        cookie_name: "_mango3_language",
+        cookie_name: COOKIE_NAME_LANGUAGE,
+        cookie_attrs: &format!("Path=/; SameSite=Strict; Domain={}", basic_config.domain),
         set_language_to_cookie: true,
 
         sync_html_tag_lang: true,

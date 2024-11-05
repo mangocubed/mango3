@@ -4,7 +4,8 @@ use leptos_meta::{provide_meta_context, Meta, Stylesheet};
 use leptos_router::components::{Route, Router, Routes};
 use leptos_router::StaticSegment;
 
-use mango3_leptos_utils::components::{AppProvider, AppTitle, BasicConfigResource, BottomBar, Brand, TopBar};
+use mango3_leptos_utils::components::{AppProvider, AppTitle, BottomBar, Brand, TopBar};
+use mango3_leptos_utils::context::use_basic_config;
 use mango3_leptos_utils::pages::NotFoundPage;
 
 use crate::pages::IndexPage;
@@ -27,27 +28,37 @@ pub fn App() -> impl IntoView {
 
             <AppTitle />
 
-            <BasicConfigResource let:basic_config>
-                <Meta name="copyright" content=basic_config.copyright />
-            </BasicConfigResource>
+            {move || {
+                let basic_config = use_basic_config();
 
-            <Router>
-                <TopBar>
-                    <Brand href="/" />
+                view! {
+                    <Meta name="copyright" content=basic_config.copyright.clone() />
 
-                    <a class="btn btn-ghost" href="/">
-                        {move || tr!("home")}
-                    </a>
-                </TopBar>
+                    <Router>
+                        <TopBar right_items=move || {
+                            view! {
+                                <a class="btn" href=basic_config.register_url.clone()>
+                                    {move || tr!("register")}
+                                </a>
+                            }
+                        }>
+                            <Brand href="/" />
 
-                <main class="grow m-6">
-                    <Routes fallback=NotFoundPage>
-                        <Route path=StaticSegment("") view=IndexPage />
-                    </Routes>
-                </main>
+                            <a class="btn btn-ghost" href="/">
+                                {move || tr!("home")}
+                            </a>
+                        </TopBar>
 
-                <BottomBar />
-            </Router>
+                        <main class="grow m-6">
+                            <Routes fallback=NotFoundPage>
+                                <Route path=StaticSegment("") view=IndexPage />
+                            </Routes>
+                        </main>
+
+                        <BottomBar />
+                    </Router>
+                }
+            }}
         </AppProvider>
     }
 }

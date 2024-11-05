@@ -1,6 +1,8 @@
 #[cfg(feature = "ssr")]
 use axum::Router;
 #[cfg(feature = "ssr")]
+use leptos::logging::log;
+#[cfg(feature = "ssr")]
 use leptos::prelude::*;
 #[cfg(feature = "ssr")]
 use leptos_axum::{file_and_error_handler, generate_route_list, LeptosRoutes};
@@ -15,11 +17,14 @@ use mango3_core::config::load_config;
 use mango3_core::CoreContext;
 
 pub mod components;
+pub mod constants;
 pub mod context;
 pub mod icons;
 pub mod models;
 pub mod pages;
-pub mod server_functions;
+
+#[cfg(feature = "ssr")]
+pub mod ssr;
 
 #[cfg(feature = "ssr")]
 pub fn shell<F, IV>(options: LeptosOptions, app_fn: F) -> impl IntoView

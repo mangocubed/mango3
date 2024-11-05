@@ -1,5 +1,6 @@
 already-in-use = Already in use
 cant-be-blank = Can't be blank
+failed-to-create-user = Failed to create user
 invalid-format = Invalid format
 invalid-length = Invalid length (must be {$min ->
     [one] at least one character{$max ->

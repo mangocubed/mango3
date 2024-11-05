@@ -2,13 +2,12 @@ use leptos::prelude::*;
 use leptos_fluent::expect_i18n;
 use leptos_use::{ColorMode, UseColorModeReturn};
 
-use crate::context::use_color_mode;
+use crate::context::{use_basic_config, use_color_mode};
 use crate::icons::{ChevronUpMini, ComputerOutlined, MoonOutlined, SunOutlined};
-
-use super::BasicConfigResource;
 
 #[component]
 pub fn BottomBar() -> impl IntoView {
+    let basic_config = use_basic_config();
     let UseColorModeReturn { mode, set_mode, .. } = use_color_mode();
     let i18n = expect_i18n();
 
@@ -18,10 +17,8 @@ pub fn BottomBar() -> impl IntoView {
     view! {
         <footer class="footer bg-base-200 text-base-content p-10">
             <aside>
-                <BasicConfigResource let:basic_config>
-                    <img class="h-[48px]" alt=basic_config.title src="/logo.svg" />
-                    <p>{basic_config.copyright}</p>
-                </BasicConfigResource>
+                <img class="h-[48px]" alt=basic_config.title.clone() src="/logo.svg" />
+                <p>{basic_config.copyright.clone()}</p>
             </aside>
 
             <nav class="justify-items-end">

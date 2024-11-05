@@ -1,5 +1,9 @@
 use leptos::prelude::*;
 
+mod eye;
+
+pub use eye::{EyeOutlined, EyeSlashOutlined};
+
 #[component]
 pub fn ChevronUpMini() -> impl IntoView {
     view! {

@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::config::JOBS_CONFIG;
 use crate::enums::MailerJobCommand;
+use crate::models::User;
 
 #[derive(Clone, Debug)]
 pub struct Jobs {
@@ -24,10 +25,13 @@ impl Jobs {
         }
     }
 
-    pub async fn mailer(&self, command: MailerJobCommand) {
+    pub async fn mailer(&self, user: &User, command: MailerJobCommand) {
         self.storage_mailer
             .clone()
-            .push(MailerJob { command })
+            .push(MailerJob {
+                user: user.clone(),
+                command,
+            })
             .await
             .expect("Coult not store job");
     }
@@ -35,6 +39,7 @@ impl Jobs {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct MailerJob {
+    pub user: User,
     pub command: MailerJobCommand,
 }
 

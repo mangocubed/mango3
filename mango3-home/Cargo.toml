@@ -7,13 +7,13 @@ edition.workspace = true
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-console_error_panic_hook = "0.1.7"
+console_error_panic_hook = { workspace = true }
 leptos = { workspace = true }
 leptos-fluent = { workspace = true }
 leptos_meta = { workspace = true }
-leptos_router = "0.7.0-rc0"
+leptos_router = { workspace = true }
 tokio = { workspace = true, optional = true }
-wasm-bindgen = "0.2.93"
+wasm-bindgen = { workspace = true }
 mango3-leptos-utils = { workspace = true }
 
 [features]

@@ -1,12 +1,32 @@
+use std::collections::HashMap;
+
 use lettre::message::header::ContentType;
 use lettre::{transport::smtp::authentication::Credentials, Message};
 use lettre::{AsyncSmtpTransport, AsyncTransport, Tokio1Executor};
 
-use mango3_core::config::MAILER_CONFIG;
+use mango3_core::config::{BASIC_CONFIG, MAILER_CONFIG};
+use mango3_core::enums::MailerJobCommand;
 use mango3_core::jobs::MailerJob;
+use mango3_core::locales::I18n;
+use mango3_core::models::User;
+
+use crate::constants::{KEY_TEXT_ARG_TITLE, KEY_TEXT_HELLO, KEY_TEXT_WELCOME_TO_TITLE};
 
 pub async fn mailer_worker(job: MailerJob) {
-    match job.command {}
+    let i18n = job.user.i18n();
+
+    match job.command {
+        MailerJobCommand::Welcome => send_welcome_email(&i18n, &job.user).await,
+    }
+}
+
+async fn send_welcome_email(i18n: &I18n, user: &User) {
+    let mut text_args = HashMap::new();
+    text_args.insert(KEY_TEXT_ARG_TITLE.to_owned(), BASIC_CONFIG.title.clone().into());
+    let title = i18n.text_with_args(KEY_TEXT_WELCOME_TO_TITLE, &text_args);
+    let message = format!("{} @{},\n\n{}", i18n.text(KEY_TEXT_HELLO), user.username, title);
+
+    let _ = send_email(&user.email, &title, &message).await;
 }
 
 async fn send_email(to: &str, subject: &str, body: &str) {
