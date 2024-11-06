@@ -7,7 +7,7 @@ use leptos_router::StaticSegment;
 use mango3_leptos_utils::components::{AppProvider, AppTitle, BottomBar, Brand, GoToMango3, TopBar};
 use mango3_leptos_utils::pages::NotFoundPage;
 
-use crate::pages::{LoginPage, RegisterPage};
+use crate::pages::IndexPage;
 
 #[component]
 pub fn App() -> impl IntoView {
@@ -20,17 +20,16 @@ pub fn App() -> impl IntoView {
         <Meta name="robots" content="noindex, nofollow" />
 
         <AppProvider>
-            <AppTitle suffix=move || tr!("accounts") />
+            <AppTitle suffix=move || tr!("my-account") />
 
             <Router>
-                <TopBar right_items=move || view! { <GoToMango3 /> } show_user_menu=false>
-                    <Brand href="/login" suffix=move || tr!("accounts") />
+                <TopBar right_items=move || view! { <GoToMango3 /> }>
+                    <Brand href="/" suffix=move || tr!("my-account") />
                 </TopBar>
 
                 <main class="grow m-6">
                     <Routes fallback=NotFoundPage>
-                        <Route path=StaticSegment("login") view=LoginPage />
-                        <Route path=StaticSegment("register") view=RegisterPage />
+                        <Route path=StaticSegment("") view=IndexPage />
                     </Routes>
                 </main>
 

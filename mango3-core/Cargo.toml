@@ -18,4 +18,4 @@ sqlx = { version = "0.8.2", features = ["chrono", "runtime-tokio", "postgres", "
 strum = { version = "0.26.3", features = ["derive"] }
 unic-langid = { version = "0.9.5", features = ["serde"] }
 url = { version = "2.5.3", features = ["serde"] }
-uuid = { version = "1.11.0", features = ["serde", "v4"] }
+uuid = { workspace = true }

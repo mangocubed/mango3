@@ -1,6 +1,13 @@
 [workspace]
 resolver = "2"
-members = ["mango3-accounts", "mango3-core", "mango3-home", "mango3-leptos-utils", "mango3-monitor"]
+members = [
+    "mango3-accounts",
+    "mango3-core",
+    "mango3-home",
+    "mango3-leptos-utils",
+    "mango3-my-account",
+    "mango3-monitor",
+]
 
 [workspace.package]
 edition = "2021"
@@ -11,11 +18,13 @@ apalis = { version = "0.5.5", features = ["redis"] }
 console_error_panic_hook = "0.1.7"
 fluent-templates = "0.11.0"
 leptos = "0.7.0-rc1"
+leptos_axum = "0.7.0-rc1"
 leptos-fluent = { git = "https://github.com/mondeja/leptos-fluent.git", branch = "leptos-v0.7" }
 leptos_meta = "0.7.0-rc1"
 leptos_router = "0.7.0-rc1"
 rust_iso3166 = "0.1.13"
 tokio = { version = "1.41.0", features = ["macros", "rt-multi-thread"] }
+uuid = { version = "1.11.0", features = ["serde", "v4"] }
 wasm-bindgen = "0.2.95"
 mango3-core = { path = "mango3-core" }
 mango3-leptos-utils = { path = "mango3-leptos-utils" }

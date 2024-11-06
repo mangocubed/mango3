@@ -10,6 +10,7 @@ lazy_static! {
     pub(crate) static ref DATABASE_CONFIG: DatabaseConfig = DatabaseConfig::load();
     pub(crate) static ref JOBS_CONFIG: JobsConfig = JobsConfig::load();
     pub static ref MAILER_CONFIG: MailerConfig = MailerConfig::load();
+    pub static ref SESSIONS_CONFIG: SessionsConfig = SessionsConfig::load();
 }
 
 pub fn load_config() {
@@ -58,16 +59,24 @@ impl BasicConfig {
         }
     }
 
+    fn accounts_url(&self) -> Url {
+        Url::parse(&format!("{}://accounts.{}", self.scheme(), self.domain)).unwrap()
+    }
+
     pub fn home_url(&self) -> Url {
         Url::parse(&format!("{}://{}", self.scheme(), self.domain)).unwrap()
     }
 
-    pub fn register_url(&self) -> Url {
-        let mut register_url = self.home_url();
-        let _ = register_url.set_host(Some(&format!("accounts.{}", self.home_url().host_str().unwrap())));
-        register_url.set_path("register");
+    pub fn login_url(&self) -> Url {
+        self.accounts_url().join("login").unwrap()
+    }
 
-        register_url
+    pub fn my_account_url(&self) -> Url {
+        Url::parse(&format!("{}://my-account.{}", self.scheme(), self.domain)).unwrap()
+    }
+
+    pub fn register_url(&self) -> Url {
+        self.accounts_url().join("register").unwrap()
     }
 }
 
@@ -137,5 +146,26 @@ impl Default for MailerConfig {
 impl MailerConfig {
     fn load() -> Self {
         extract_from_env("MAILER_")
+    }
+}
+
+#[derive(Deserialize, Serialize)]
+pub struct SessionsConfig {
+    pub key: String,
+    pub redis_url: String,
+}
+
+impl Default for SessionsConfig {
+    fn default() -> Self {
+        Self {
+            key: "abcdefghijklmnopqrestuvvwxyz0123456789ABCDEFGHIJKLMNOPQRESTUVVWX".to_owned(),
+            redis_url: "redis://127.0.0.1:6379/1".to_owned(),
+        }
+    }
+}
+
+impl SessionsConfig {
+    fn load() -> Self {
+        extract_from_env("SESSIONS_")
     }
 }

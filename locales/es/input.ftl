@@ -5,3 +5,4 @@ full-name = Nombre completo
 password = Contraseña
 submit = Enviar
 username = Nombre de usuario
+username-or-email = Nombre de usuario o correo

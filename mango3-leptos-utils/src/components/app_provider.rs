@@ -2,10 +2,8 @@ use fluent_templates::static_loader;
 use leptos::prelude::*;
 use leptos_fluent::leptos_fluent;
 
-use crate::{
-    constants::COOKIE_NAME_LANGUAGE,
-    context::{provide_basic_config, provide_page_title, use_basic_config},
-};
+use crate::constants::COOKIE_NAME_LANGUAGE;
+use crate::context::{provide_basic_config, provide_current_user_resource, provide_page_title, use_basic_config};
 
 static_loader! {
     static LOCALES = {
@@ -17,6 +15,7 @@ static_loader! {
 #[component]
 pub fn AppProvider(children: Children) -> impl IntoView {
     provide_basic_config();
+    provide_current_user_resource();
     provide_page_title();
 
     let is_done = RwSignal::new(false);

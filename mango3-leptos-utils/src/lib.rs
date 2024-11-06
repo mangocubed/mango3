@@ -1,20 +1,5 @@
 #[cfg(feature = "ssr")]
-use axum::Router;
-#[cfg(feature = "ssr")]
-use leptos::logging::log;
-#[cfg(feature = "ssr")]
 use leptos::prelude::*;
-#[cfg(feature = "ssr")]
-use leptos_axum::{file_and_error_handler, generate_route_list, LeptosRoutes};
-#[cfg(feature = "ssr")]
-use leptos_meta::MetaTags;
-#[cfg(feature = "ssr")]
-use tokio::net::TcpListener;
-
-#[cfg(feature = "ssr")]
-use mango3_core::config::load_config;
-#[cfg(feature = "ssr")]
-use mango3_core::CoreContext;
 
 pub mod components;
 pub mod constants;
@@ -22,6 +7,7 @@ pub mod context;
 pub mod icons;
 pub mod models;
 pub mod pages;
+pub mod server_functions;
 
 #[cfg(feature = "ssr")]
 pub mod ssr;
@@ -32,6 +18,8 @@ where
     F: Fn() -> IV + Clone + Copy + Send + 'static,
     IV: IntoView + 'static,
 {
+    use leptos_meta::MetaTags;
+
     view! {
         <!DOCTYPE html>
         <html lang="en">
@@ -57,11 +45,48 @@ pub async fn leptos_http_server<F, IV1, IV2>(
     IV1: IntoView + 'static,
     IV2: IntoView + 'static,
 {
+    use axum::Router;
+    use cookie::{Key, SameSite};
+    use fred::prelude::{ClientLike, RedisConfig, RedisPool};
+    use leptos::logging::log;
+    use leptos_axum::{file_and_error_handler, generate_route_list, LeptosRoutes};
+    use time::Duration;
+    use tokio::net::TcpListener;
+    use tower_sessions::{Expiry, SessionManagerLayer};
+    use tower_sessions_redis_store::RedisStore;
+
+    use mango3_core::config::{load_config, BASIC_CONFIG, SESSIONS_CONFIG};
+    use mango3_core::CoreContext;
+
     load_config();
 
     let core_context = CoreContext::setup().await;
     let addr = leptos_options.site_addr;
     let routes = generate_route_list(app_fn);
+    let redis_pool = RedisPool::new(
+        RedisConfig::from_url(&SESSIONS_CONFIG.redis_url).expect("Could not get Redis URL for session."),
+        None,
+        None,
+        None,
+        10,
+    )
+    .expect("Could not get Redis pool for session.");
+
+    let redis_conn = redis_pool.connect();
+    redis_pool
+        .wait_for_connect()
+        .await
+        .expect("Could not get Redis connection for session.");
+
+    let session_store = RedisStore::new(redis_pool);
+    let session_layer = SessionManagerLayer::new(session_store)
+        .with_domain(BASIC_CONFIG.domain.clone())
+        .with_expiry(Expiry::OnInactivity(Duration::days(30)))
+        .with_http_only(true)
+        .with_name("_mango3_session")
+        .with_private(Key::from(SESSIONS_CONFIG.key.as_bytes()))
+        .with_same_site(SameSite::Strict)
+        .with_secure(BASIC_CONFIG.secure);
 
     let app = Router::new()
         .leptos_routes_with_context(
@@ -77,6 +102,7 @@ pub async fn leptos_http_server<F, IV1, IV2>(
             },
         )
         .fallback(file_and_error_handler(shell_fn))
+        .layer(session_layer)
         .with_state(leptos_options);
 
     log!("listening on http://{}", &addr);
@@ -84,4 +110,6 @@ pub async fn leptos_http_server<F, IV1, IV2>(
     let listener = TcpListener::bind(&addr).await.unwrap();
 
     axum::serve(listener, app.into_make_service()).await.unwrap();
+
+    redis_conn.await.unwrap().unwrap();
 }

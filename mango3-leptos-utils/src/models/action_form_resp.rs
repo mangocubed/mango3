@@ -21,7 +21,7 @@ impl ActionFormResp {
     }
 
     #[cfg(feature = "ssr")]
-    pub async fn new<T>(i18n: &I18n, result: Result<T, ValidationErrors>) -> Result<Self, ServerFnError> {
+    pub fn new<T>(i18n: &I18n, result: Result<T, ValidationErrors>) -> Result<Self, ServerFnError> {
         Ok(match result {
             Ok(_) => Self {
                 success: Some(true),
@@ -40,12 +40,12 @@ impl ActionFormResp {
     }
 
     #[cfg(feature = "ssr")]
-    pub async fn new_with_error(i18n: &I18n) -> Result<Self, ServerFnError> {
-        Self::new::<()>(i18n, Err(ValidationErrors::new())).await
+    pub fn new_with_error(i18n: &I18n) -> Result<Self, ServerFnError> {
+        Self::new::<()>(i18n, Err(ValidationErrors::new()))
     }
 
     #[cfg(feature = "ssr")]
-    pub async fn new_with_redirect<T>(
+    pub fn new_with_redirect<T>(
         i18n: &I18n,
         result: Result<T, ValidationErrors>,
         path: &str,
@@ -54,7 +54,7 @@ impl ActionFormResp {
             leptos_axum::redirect(path);
         }
 
-        Self::new(i18n, result).await
+        Self::new(i18n, result)
     }
 }
 

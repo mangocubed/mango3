@@ -9,6 +9,7 @@ pub enum Input {
     FullName,
     Password,
     Username,
+    UsernameOrEmail,
 }
 
 #[derive(strum::Display)]

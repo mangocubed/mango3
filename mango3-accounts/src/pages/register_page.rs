@@ -4,7 +4,7 @@ use leptos_fluent::tr;
 use mango3_leptos_utils::components::*;
 use mango3_leptos_utils::context::use_basic_config;
 use mango3_leptos_utils::models::ActionFormResp;
-use mango3_leptos_utils::pages::Page;
+use mango3_leptos_utils::pages::GuestPage;
 
 #[server]
 pub async fn attempt_to_register(
@@ -16,9 +16,14 @@ pub async fn attempt_to_register(
     country_alpha2: String,
 ) -> Result<ActionFormResp, ServerFnError> {
     use mango3_core::models::User;
-    use mango3_leptos_utils::ssr::{expect_core_context, extract_i18n};
+    use mango3_leptos_utils::ssr::{expect_core_context, extract_i18n, require_no_authentication, start_user_session};
 
     let i18n = extract_i18n().await?;
+
+    if !require_no_authentication().await? {
+        return ActionFormResp::new_with_error(&i18n);
+    }
+
     let core_context = expect_core_context();
 
     let result = User::insert(
@@ -33,7 +38,11 @@ pub async fn attempt_to_register(
     )
     .await;
 
-    ActionFormResp::new(&i18n, result).await
+    if let Ok(ref user) = result {
+        start_user_session(&core_context, &user).await?;
+    }
+
+    ActionFormResp::new(&i18n, result)
 }
 
 #[component]
@@ -59,9 +68,11 @@ pub fn RegisterPage() -> impl IntoView {
         error_country_alpha2.set(response.error("country-alpha2"));
     });
 
+    let title = move || tr!("register");
+
     view! {
-        <Page title=move || tr!("register")>
-            <h2 class="text-xl font-bold bottom-4">{move || tr!("register")}</h2>
+        <GuestPage title=title>
+            <h2 class="text-xl font-bold mb-4">{title}</h2>
 
             <ActionForm
                 action=server_action
@@ -104,6 +115,12 @@ pub fn RegisterPage() -> impl IntoView {
 
                 <SubmitButton is_loading=server_action.pending() />
             </ActionForm>
-        </Page>
+
+            <div class="max-w-[640px] ml-auto mr-auto mt-4">
+                <a class="btn btn-block btn-outline" href="/login">
+                    {move || tr!("back-to-login")}
+                </a>
+            </div>
+        </GuestPage>
     }
 }

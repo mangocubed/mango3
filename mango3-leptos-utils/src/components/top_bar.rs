@@ -1,12 +1,94 @@
+use leptos::either::Either;
 use leptos::prelude::*;
+use leptos_fluent::tr;
+
+use crate::components::CurrentUserResource;
+use crate::context::use_basic_config;
+use crate::icons::ChevronDownMini;
 
 #[component]
-pub fn TopBar(children: Children, #[prop(optional, into)] right_items: ViewFnOnce) -> impl IntoView {
+pub fn TopBar(
+    children: Children,
+    #[prop(default = true)] show_user_menu: bool,
+    #[prop(optional, into)] right_items: ViewFnOnce,
+) -> impl IntoView {
     view! {
         <div class="navbar bg-base-300 shadow-md min-h-[52px] h-[52px]">
             <div class="flex-1">{children()}</div>
 
             <div class="flex-none">{right_items.run()}</div>
+
+            <Show when=move || {
+                show_user_menu
+            }>
+                {move || {
+                    let basic_config = use_basic_config();
+                    view! {
+                        <div class="flex-none">
+                            <CurrentUserResource children=move |user| {
+                                if let Some(user) = user {
+                                    Either::Left(
+                                        view! {
+                                            <div class="dropdown dropdown-end">
+                                                <button class="btn" tabindex="0">
+                                                    <div class="avatar placeholder">
+                                                        <div class="bg-neutral text-neutral-content w-8 rounded-full">
+                                                            <span class="text-xs">{user.initials}</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div>
+                                                        <div class="mb-1">{user.display_name}</div>
+                                                        <div class="font-bold">"@"{user.username}</div>
+                                                    </div>
+
+                                                    <ChevronDownMini />
+                                                </button>
+
+                                                <ul
+                                                    tabindex="0"
+                                                    class="dropdown-content menu bg-base-100 rounded-box z-[1] p-2 shadow"
+                                                >
+                                                    <li>
+                                                        <a href=basic_config
+                                                            .my_account_url
+                                                            .clone()>{move || tr!("my-account")}</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        },
+                                    )
+                                } else {
+                                    Either::Right(
+                                        view! {
+                                            <div class="dropdown dropdown-end dropdown-hover">
+                                                <a
+                                                    class="btn"
+                                                    href=basic_config.login_url.clone()
+                                                    tabindex="0"
+                                                >
+                                                    {move || tr!("login")}
+                                                </a>
+
+                                                <ul
+                                                    tabindex="0"
+                                                    class="dropdown-content menu bg-base-100 rounded-box z-[1] p-2 shadow"
+                                                >
+                                                    <li>
+                                                        <a href=basic_config
+                                                            .register_url
+                                                            .clone()>{move || tr!("register")}</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        },
+                                    )
+                                }
+                            } />
+                        </div>
+                    }
+                }}
+            </Show>
         </div>
     }
 }

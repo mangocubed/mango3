@@ -1,6 +1,14 @@
 a-cloud-platform-to-create-websites-in-the-easiest-way-possible = Una plataforma en la nube para crear sitios web de la manera más fácil posible.
+accept = Aceptar
 accounts = Cuentas
+are-you-sure-you-want-to-logout = ¿Seguro deseas cerrar sesión?
+back-to-login = Volver a inicio de sesión
+cancel = Cancelar
 go-to-title = Ir a {$title}
 home = Inicio
+i-dont-have-an-account = No tengo una cuenta
+login = Iniciar sesión
+logout = Cerrar sesión
+my-account = Mi cuenta
 register = Registrate
 welcome-to-title = ¡Bienvenido a {$title}!

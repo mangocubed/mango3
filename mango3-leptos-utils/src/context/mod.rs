@@ -1,7 +1,7 @@
 use leptos::prelude::*;
-use leptos_use::{use_color_mode_with_options, UseColorModeOptions, UseColorModeReturn};
 
-use crate::models::BasicConfigResp;
+use crate::models::{BasicConfigResp, UserResp};
+use crate::server_functions::get_current_user;
 
 mod use_color_mode;
 
@@ -28,6 +28,10 @@ pub fn provide_basic_config() {
     }))
 }
 
+pub fn provide_current_user_resource() {
+    provide_context(Resource::new_blocking(|| (), |_| get_current_user()))
+}
+
 pub fn provide_page_title() {
     provide_context(PageTitle {
         value: RwSignal::new(None),
@@ -50,15 +54,8 @@ pub fn use_basic_config() -> SharedValue<BasicConfigResp> {
     })
 }
 
-pub fn use_color_mode_back() -> UseColorModeReturn {
-    use_color_mode_with_options(
-        UseColorModeOptions::default()
-            .attribute("data-theme")
-            .emit_auto(true)
-            .cookie_enabled(true)
-            .cookie_name("_mango3_color_mode")
-            .transition_enabled(true),
-    )
+pub fn use_current_user_resource() -> Resource<Result<Option<UserResp>, ServerFnError>> {
+    use_context::<Resource<Result<Option<UserResp>, ServerFnError>>>().unwrap()
 }
 
 pub fn use_page_title() -> PageTitle {

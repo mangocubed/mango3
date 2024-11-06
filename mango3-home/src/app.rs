@@ -35,13 +35,7 @@ pub fn App() -> impl IntoView {
                     <Meta name="copyright" content=basic_config.copyright.clone() />
 
                     <Router>
-                        <TopBar right_items=move || {
-                            view! {
-                                <a class="btn" href=basic_config.register_url.clone()>
-                                    {move || tr!("register")}
-                                </a>
-                            }
-                        }>
+                        <TopBar>
                             <Brand href="/" />
 
                             <a class="btn btn-ghost" href="/">

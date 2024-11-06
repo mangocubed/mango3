@@ -6,6 +6,7 @@ module.exports = {
             "./mango3-accounts/src/**/*.rs",
             "./mango3-home/src/**/*.rs",
             "./mango3-leptos-utils/src/**/*.rs",
+            "./mango3-my-account/src/**/*.rs",
         ],
         transform: {
             rs: (content) => content.replace(/(?:^|\s)class:/g, " "),
