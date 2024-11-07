@@ -11,4 +11,5 @@ login = Iniciar sesión
 logout = Cerrar sesión
 my-account = Mi cuenta
 register = Registrate
+remove = Remover
 welcome-to-title = ¡Bienvenido a {$title}!

@@ -23,6 +23,7 @@
 | MAILER_SMTP_PASSWORD     | String  |                                                                  |
 | MAILER_SMTP_SECURITY     | String  | none                                                             |
 | MAILER_SMTP_USERNAME     | String  |                                                                  |
+| MISC_STORAGE_PATH        | String  | ./storage                                                        |
 | SESSIONS_KEY             | String  | abcdefghijklmnopqrestuvvwxyz0123456789ABCDEFGHIJKLMNOPQRESTUVVWX |
 | SESSIONS_REDIS_URL       | String  | redis://127.0.0.1:6379/1                                         |
 
@@ -53,6 +54,12 @@ Run monitor:
 
 ```sh
 cargo run --bin mango3-monitor
+```
+
+Run uploads:
+
+```sh
+cargo run --bin mango3-uploads
 ```
 
 Run web applications:

@@ -4,9 +4,11 @@ use argon2::{Argon2, PasswordHash, PasswordHasher, PasswordVerifier};
 use rust_iso3166::CountryCode;
 use sqlx::types::chrono::NaiveDate;
 
+mod blob;
 mod user;
 mod user_session;
 
+pub use blob::Blob;
 pub use user::User;
 pub use user_session::UserSession;
 

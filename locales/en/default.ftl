@@ -11,4 +11,5 @@ login = Login
 logout = Logout
 my-account = My account
 register = Register
+remove = Remove
 welcome-to-title = Welcome to {$title}!

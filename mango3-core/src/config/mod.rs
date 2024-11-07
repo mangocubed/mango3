@@ -3,13 +3,19 @@ use figment::providers::{Env, Serialized};
 use figment::Figment;
 use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
-use url::Url;
+
+mod basic_config;
+mod mailer_config;
+
+pub use basic_config::BasicConfig;
+pub use mailer_config::MailerConfig;
 
 lazy_static! {
     pub static ref BASIC_CONFIG: BasicConfig = BasicConfig::load();
     pub(crate) static ref DATABASE_CONFIG: DatabaseConfig = DatabaseConfig::load();
     pub(crate) static ref JOBS_CONFIG: JobsConfig = JobsConfig::load();
     pub static ref MAILER_CONFIG: MailerConfig = MailerConfig::load();
+    pub static ref MISC_CONFIG: MiscConfig = MiscConfig::load();
     pub static ref SESSIONS_CONFIG: SessionsConfig = SessionsConfig::load();
 }
 
@@ -25,59 +31,6 @@ where
         .merge(Env::prefixed(prefix))
         .extract()
         .unwrap()
-}
-
-#[derive(Clone, Deserialize, Serialize)]
-pub struct BasicConfig {
-    pub copyright: String,
-    pub domain: String,
-    pub secure: bool,
-    pub title: String,
-}
-
-impl Default for BasicConfig {
-    fn default() -> Self {
-        Self {
-            copyright: "© 2024, Mango³ Team".to_owned(),
-            domain: "mango3.localhost".to_owned(),
-            secure: false,
-            title: "Mango³ Dev".to_owned(),
-        }
-    }
-}
-
-impl BasicConfig {
-    fn load() -> Self {
-        extract_from_env("BASIC_")
-    }
-
-    fn scheme(&self) -> &str {
-        if self.secure {
-            "https"
-        } else {
-            "http"
-        }
-    }
-
-    fn accounts_url(&self) -> Url {
-        Url::parse(&format!("{}://accounts.{}", self.scheme(), self.domain)).unwrap()
-    }
-
-    pub fn home_url(&self) -> Url {
-        Url::parse(&format!("{}://{}", self.scheme(), self.domain)).unwrap()
-    }
-
-    pub fn login_url(&self) -> Url {
-        self.accounts_url().join("login").unwrap()
-    }
-
-    pub fn my_account_url(&self) -> Url {
-        Url::parse(&format!("{}://my-account.{}", self.scheme(), self.domain)).unwrap()
-    }
-
-    pub fn register_url(&self) -> Url {
-        self.accounts_url().join("register").unwrap()
-    }
 }
 
 #[derive(Deserialize, Serialize)]
@@ -121,31 +74,24 @@ impl JobsConfig {
 }
 
 #[derive(Deserialize, Serialize)]
-pub struct MailerConfig {
-    pub enable: bool,
-    pub sender_address: String,
-    pub smtp_address: String,
-    pub smtp_password: String,
-    pub smtp_security: String,
-    pub smtp_username: String,
+pub struct MiscConfig {
+    pub(crate) storage_path: String,
 }
 
-impl Default for MailerConfig {
+impl Default for MiscConfig {
     fn default() -> Self {
         Self {
-            enable: false,
-            sender_address: "Mango³ Dev <no-reply@localhost>".to_owned(),
-            smtp_address: "localhost".to_owned(),
-            smtp_password: "".to_owned(),
-            smtp_security: "none".to_owned(),
-            smtp_username: "".to_owned(),
+            storage_path: "./storage".to_owned(),
         }
     }
 }
 
-impl MailerConfig {
+impl MiscConfig {
     fn load() -> Self {
-        extract_from_env("MAILER_")
+        Figment::from(Serialized::defaults(Self::default()))
+            .merge(Env::prefixed("MISC_"))
+            .extract()
+            .unwrap()
     }
 }
 
