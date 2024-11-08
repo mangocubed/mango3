@@ -12,6 +12,8 @@ pub mod server_functions;
 #[cfg(feature = "ssr")]
 pub mod ssr;
 
+leptos_i18n::load_locales!();
+
 #[cfg(feature = "ssr")]
 pub fn shell<F, IV>(options: LeptosOptions, app_fn: F) -> impl IntoView
 where

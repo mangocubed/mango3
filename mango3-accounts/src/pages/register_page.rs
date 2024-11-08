@@ -1,8 +1,9 @@
 use leptos::prelude::*;
-use leptos_fluent::tr;
 
+use leptos_i18n::t_string;
 use mango3_leptos_utils::components::*;
 use mango3_leptos_utils::context::use_basic_config;
+use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::models::ActionFormResp;
 use mango3_leptos_utils::pages::GuestPage;
 
@@ -48,6 +49,7 @@ pub async fn attempt_to_register(
 #[component]
 pub fn RegisterPage() -> impl IntoView {
     let basic_config = use_basic_config();
+    let i18n = use_i18n();
     let server_action = ServerAction::<AttemptToRegister>::new();
     let action_value = server_action.value();
     let error_username = RwSignal::new(None);
@@ -68,7 +70,7 @@ pub fn RegisterPage() -> impl IntoView {
         error_country_alpha2.set(response.error("country-alpha2"));
     });
 
-    let title = move || tr!("register");
+    let title = move || t_string!(i18n, shared.register);
 
     view! {
         <GuestPage title=title>
@@ -82,33 +84,45 @@ pub fn RegisterPage() -> impl IntoView {
             >
                 <ActionFormAlert
                     action_value=action_value
-                    error_message=move || tr!("failed-to-create-user")
+                    error_message=move || t_string!(i18n, accounts.failed_to_create_user)
                     redirect_to=basic_config.home_url.clone()
-                    success_message=move || tr!("user-created-successfully")
+                    success_message=move || t_string!(i18n, accounts.user_created_successfully)
                 />
 
-                <TextField label=move || tr!("username") name="username" error=error_username />
+                <TextField
+                    label=move || t_string!(i18n, accounts.username)
+                    name="username"
+                    error=error_username
+                />
 
                 <TextField
-                    label=move || tr!("email")
+                    label=move || t_string!(i18n, accounts.email)
                     name="email"
                     input_type="email"
                     error=error_email
                 />
 
-                <PasswordField label=move || tr!("password") name="password" error=error_password />
+                <PasswordField
+                    label=move || t_string!(i18n, accounts.password)
+                    name="password"
+                    error=error_password
+                />
 
-                <TextField label=move || tr!("full-name") name="full_name" error=error_full_name />
+                <TextField
+                    label=move || t_string!(i18n, accounts.full_name)
+                    name="full_name"
+                    error=error_full_name
+                />
 
                 <TextField
                     input_type="date"
-                    label=move || tr!("birthdate")
+                    label=move || t_string!(i18n, accounts.birthdate)
                     name="birthdate"
                     error=error_birthdate
                 />
 
                 <CountryField
-                    label=move || tr!("country")
+                    label=move || t_string!(i18n, accounts.country)
                     name="country_alpha2"
                     error=error_country_alpha2
                 />
@@ -118,7 +132,7 @@ pub fn RegisterPage() -> impl IntoView {
 
             <div class="max-w-[640px] ml-auto mr-auto mt-4">
                 <a class="btn btn-block btn-outline" href="/login">
-                    {move || tr!("back-to-login")}
+                    {t!(i18n, accounts.back_to_login)}
                 </a>
             </div>
         </GuestPage>

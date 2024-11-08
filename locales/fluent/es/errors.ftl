@@ -1,7 +1,5 @@
 already-in-use = Ya está en uso
 cant-be-blank = No puede estar en blanco
-failed-to-authenticate-user = Error al autenticar usuario
-failed-to-create-user = Error al crear usuario
 invalid-format = Formato inválido
 invalid-length = Longitud inválida (debe tener {$min ->
     [one] al menos un carácter{$max ->

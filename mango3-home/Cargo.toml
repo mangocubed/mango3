@@ -9,7 +9,7 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 console_error_panic_hook = { workspace = true }
 leptos = { workspace = true }
-leptos-fluent = { workspace = true }
+leptos_i18n = { workspace = true }
 leptos_meta = { workspace = true }
 leptos_router = { workspace = true }
 tokio = { workspace = true, optional = true }
@@ -17,12 +17,11 @@ wasm-bindgen = { workspace = true }
 mango3-leptos-utils = { workspace = true }
 
 [features]
-hydrate = ["leptos/hydrate", "leptos-fluent/hydrate", "mango3-leptos-utils/hydrate"]
+hydrate = ["leptos/hydrate", "leptos_i18n/hydrate", "mango3-leptos-utils/hydrate"]
 ssr = [
     "dep:tokio",
     "leptos/ssr",
-    "leptos-fluent/axum",
-    "leptos-fluent/ssr",
+    "leptos_i18n/axum",
     "leptos_meta/ssr",
     "leptos_router/ssr",
     "mango3-leptos-utils/ssr",

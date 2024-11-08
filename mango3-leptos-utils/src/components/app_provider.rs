@@ -1,16 +1,9 @@
-use fluent_templates::static_loader;
+use codee::string::FromToStringCodec;
 use leptos::prelude::*;
-use leptos_fluent::leptos_fluent;
 
 use crate::constants::COOKIE_NAME_LANGUAGE;
-use crate::context::{provide_basic_config, provide_current_user_resource, provide_page_title, use_basic_config};
-
-static_loader! {
-    static LOCALES = {
-        locales: "../locales",
-        fallback_language: "en",
-    };
-}
+use crate::context::*;
+use crate::i18n::I18nContextProvider;
 
 #[component]
 pub fn AppProvider(children: Children) -> impl IntoView {
@@ -19,6 +12,7 @@ pub fn AppProvider(children: Children) -> impl IntoView {
     provide_page_title();
 
     let is_done = RwSignal::new(false);
+    let language_cookie_options = use_language_cookie_options::<FromToStringCodec>();
 
     Effect::new(move || is_done.set(true));
 
@@ -30,31 +24,12 @@ pub fn AppProvider(children: Children) -> impl IntoView {
             </figure>
         </div>
 
-        <LeptosFluent>
+        <I18nContextProvider
+            cookie_name=COOKIE_NAME_LANGUAGE
+            cookie_options=language_cookie_options
+        >
+
             <div class="flex flex-col min-h-screen">{children()}</div>
-        </LeptosFluent>
-    }
-}
-
-#[component]
-fn LeptosFluent(children: Children) -> impl IntoView {
-    #[allow(unused_variables)]
-    let basic_config = use_basic_config();
-
-    leptos_fluent! {
-        children: children(),
-        locales: "../locales",
-        translations: [LOCALES],
-
-        // #[cfg(debug_assertions)]
-        // check_translations: "../**/*.rs",
-
-        initial_language_from_cookie: true,
-        cookie_name: COOKIE_NAME_LANGUAGE,
-        cookie_attrs: &format!("Path=/; SameSite=Strict; Domain={}", basic_config.domain),
-        set_language_to_cookie: true,
-
-        sync_html_tag_lang: true,
-        sync_html_tag_dir: true,
+        </I18nContextProvider>
     }
 }

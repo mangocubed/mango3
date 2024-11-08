@@ -1,8 +1,9 @@
 use leptos::prelude::*;
-use leptos_fluent::tr;
 
+use leptos_i18n::t_string;
 use mango3_leptos_utils::components::*;
 use mango3_leptos_utils::context::use_basic_config;
+use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::models::ActionFormResp;
 use mango3_leptos_utils::pages::GuestPage;
 
@@ -31,6 +32,7 @@ pub async fn attempt_to_login(username_or_email: String, password: String) -> Re
 #[component]
 pub fn LoginPage() -> impl IntoView {
     let basic_config = use_basic_config();
+    let i18n = use_i18n();
     let server_action = ServerAction::<AttemptToLogin>::new();
     let action_value = server_action.value();
     let error_username_or_email = RwSignal::new(None);
@@ -43,7 +45,7 @@ pub fn LoginPage() -> impl IntoView {
         error_password.set(response.error("password"));
     });
 
-    let title = move || tr!("login");
+    let title = move || t_string!(i18n, shared.login);
 
     view! {
         <GuestPage title=title>
@@ -57,25 +59,31 @@ pub fn LoginPage() -> impl IntoView {
             >
                 <ActionFormAlert
                     action_value=action_value
-                    error_message=move || tr!("failed-to-authenticate-user")
+                    error_message=move || t_string!(i18n, accounts.failed_to_authenticate_user)
                     redirect_to=basic_config.home_url.clone()
-                    success_message=move || tr!("user-authenticated-successfully")
+                    success_message=move || {
+                        t_string!(i18n, accounts.user_authenticated_successfully)
+                    }
                 />
 
                 <TextField
-                    label=move || tr!("username-or-email")
+                    label=move || t_string!(i18n, accounts.username_or_email)
                     name="username_or_email"
                     error=error_username_or_email
                 />
 
-                <PasswordField label=move || tr!("password") name="password" error=error_password />
+                <PasswordField
+                    label=move || t_string!(i18n, accounts.password)
+                    name="password"
+                    error=error_password
+                />
 
                 <SubmitButton is_loading=server_action.pending() />
             </ActionForm>
 
             <div class="max-w-[640px]  ml-auto mr-auto mt-4">
                 <a class="btn btn-block btn-outline" href="/register">
-                    {move || tr!("i-dont-have-an-account")}
+                    {t!(i18n, accounts.i_dont_have_an_account)}
                 </a>
             </div>
         </GuestPage>

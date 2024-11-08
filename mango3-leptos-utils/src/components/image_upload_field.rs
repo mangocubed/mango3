@@ -1,11 +1,11 @@
 use leptos::prelude::*;
 use leptos::text_prop::TextProp;
 use leptos::{either::EitherOf3, ev::Event};
-use leptos_fluent::tr;
 use server_fn::codec::{MultipartData, MultipartFormData};
 use wasm_bindgen::JsCast;
 use web_sys::{FormData, HtmlInputElement};
 
+use crate::i18n::{t, use_i18n};
 use crate::models::BlobResp;
 
 #[server(input = MultipartFormData)]
@@ -47,6 +47,7 @@ pub fn ImageUploadField(
     #[prop(default = 48)] width: i16,
     name: &'static str,
 ) -> impl IntoView {
+    let i18n = use_i18n();
     let upload_action = Action::new_local(|data: &FormData| attempt_to_upload_file(data.clone().into()));
     let upload_action_value = upload_action.value();
     let value = RwSignal::new(None);
@@ -103,7 +104,7 @@ pub fn ImageUploadField(
                             <input type="hidden" name=name value=blob.id />
                             <div class="flex">
                                 <img class="rounded" width=width height=height src=variant_url />
-                                <button class="btn">{move || tr!("remove")}</button>
+                                <button class="btn">{t!(i18n, shared.remove)}</button>
                             </div>
                         },
                     )

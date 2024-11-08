@@ -1,18 +1,26 @@
 use leptos::prelude::*;
-use leptos_fluent::expect_i18n;
 use leptos_use::{ColorMode, UseColorModeReturn};
 
 use crate::context::{use_basic_config, use_color_mode};
+use crate::i18n::{use_i18n, Locale};
 use crate::icons::{ChevronUpMini, ComputerOutlined, MoonOutlined, SunOutlined};
+
+const LANGUAGES: [(&str, Locale); 2] = [("English", Locale::en), ("Español", Locale::es)];
 
 #[component]
 pub fn BottomBar() -> impl IntoView {
     let basic_config = use_basic_config();
     let UseColorModeReturn { mode, set_mode, .. } = use_color_mode();
-    let i18n = expect_i18n();
+    let i18n = use_i18n();
 
-    let current_lang_name = move || i18n.language.get().name;
-    let available_langs = move || i18n.languages.iter().filter(|lang| !lang.is_active());
+    let current_lang_name = move || {
+        LANGUAGES
+            .iter()
+            .find(|(_, locale)| *locale == i18n.get_locale())
+            .unwrap()
+            .0
+    };
+    let available_langs = move || LANGUAGES.iter().filter(move |(_, locale)| *locale != i18n.get_locale());
 
     view! {
         <footer class="footer bg-base-200 text-base-content p-10">
@@ -31,9 +39,9 @@ pub fn BottomBar() -> impl IntoView {
                         tabindex="0"
                         class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
                     >
-                        <For each=available_langs key=|lang| lang.id let:lang>
+                        <For each=available_langs key=|lang| lang.0 let:lang>
                             <li>
-                                <a on:click=move |_| i18n.language.set(lang)>{lang.name}</a>
+                                <a on:click=move |_| i18n.set_locale(lang.1)>{lang.0}</a>
                             </li>
                         </For>
                     </ul>

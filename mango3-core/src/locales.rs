@@ -8,7 +8,7 @@ use unic_langid::LanguageIdentifierError;
 
 fluent_templates::static_loader! {
     static LOCALES = {
-        locales: "../locales",
+        locales: "../locales/fluent",
         fallback_language: "en"
     };
 }

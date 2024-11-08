@@ -1,9 +1,9 @@
 use leptos::prelude::*;
 use leptos::text_prop::TextProp;
-use leptos_fluent::tr;
 use leptos_meta::Title;
 
 use crate::context::{use_basic_config, use_page_title};
+use crate::i18n::{t, use_i18n};
 
 mod action_form_alert;
 mod alert_dialog;
@@ -68,13 +68,11 @@ pub fn Brand(href: &'static str, #[prop(optional, into)] suffix: Option<TextProp
 #[component]
 pub fn GoToMango3() -> impl IntoView {
     let basic_config = use_basic_config();
+    let i18n = use_i18n();
 
     view! {
         <a class="btn btn-ghost" href=basic_config.home_url.clone()>
-            {
-                let basic_config = basic_config.clone();
-                move || tr!("go-to-title", { "title" => basic_config.title.clone() })
-            }
+            {t!(i18n, shared.go_to_title, title = basic_config.title.clone())}
         </a>
     }
 }

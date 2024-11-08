@@ -1,9 +1,9 @@
 use leptos::either::Either;
 use leptos::prelude::*;
-use leptos_fluent::tr;
 
 use crate::components::CurrentUserResource;
 use crate::context::use_basic_config;
+use crate::i18n::{t, use_i18n};
 use crate::icons::ChevronDownMini;
 
 #[component]
@@ -12,6 +12,8 @@ pub fn TopBar(
     #[prop(default = true)] show_user_menu: bool,
     #[prop(optional, into)] right_items: ViewFnOnce,
 ) -> impl IntoView {
+    let i18n = use_i18n();
+
     view! {
         <div class="navbar bg-base-300 shadow-md min-h-[52px] h-[52px]">
             <div class="flex-1">{children()}</div>
@@ -52,7 +54,7 @@ pub fn TopBar(
                                                     <li>
                                                         <a href=basic_config
                                                             .my_account_url
-                                                            .clone()>{move || tr!("my-account")}</a>
+                                                            .clone()>{t!(i18n, shared.my_account)}</a>
                                                     </li>
                                                 </ul>
                                             </div>
@@ -67,7 +69,7 @@ pub fn TopBar(
                                                     href=basic_config.login_url.clone()
                                                     tabindex="0"
                                                 >
-                                                    {move || tr!("login")}
+                                                    {t!(i18n, shared.login)}
                                                 </a>
 
                                                 <ul
@@ -77,7 +79,7 @@ pub fn TopBar(
                                                     <li>
                                                         <a href=basic_config
                                                             .register_url
-                                                            .clone()>{move || tr!("register")}</a>
+                                                            .clone()>{t!(i18n, shared.register)}</a>
                                                     </li>
                                                 </ul>
                                             </div>
