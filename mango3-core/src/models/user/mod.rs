@@ -86,11 +86,8 @@ impl User {
 
 impl Validator {
     fn validate_full_name(&mut self, value: &str) -> bool {
-        if self.validate_presence(Input::FullName, value) {
-            return self.validate_length(Input::FullName, value, Some(2), Some(256));
-        }
-
-        false
+        self.validate_presence(Input::FullName, value)
+            && self.validate_length(Input::FullName, value, Some(2), Some(256))
     }
 
     fn validate_birthdate(&mut self, value: Option<NaiveDate>) -> bool {
@@ -102,5 +99,9 @@ impl Validator {
 
     fn validate_country(&mut self, value: Option<&CountryCode>) -> bool {
         self.validate_presence(Input::CountryAlpha2, value)
+    }
+
+    fn validate_password(&mut self, input: Input, value: &str) -> bool {
+        self.validate_presence(input.clone(), value) && self.validate_length(input, value, Some(6), Some(128))
     }
 }

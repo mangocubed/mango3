@@ -24,7 +24,7 @@ pub fn App() -> impl IntoView {
         <AppProvider>
             {move || {
                 let i18n = use_i18n();
-                let suffix = move || t_string!(i18n, studio.studio);
+                let suffix = move || t_string!(i18n, shared.studio);
                 view! {
                     <AppTitle suffix=suffix />
 

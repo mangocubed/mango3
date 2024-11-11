@@ -58,6 +58,11 @@ pub fn TopBar(
                                                     </li>
                                                     <li>
                                                         <a href=basic_config
+                                                            .studio_url
+                                                            .clone()>{t!(i18n, shared.studio)}</a>
+                                                    </li>
+                                                    <li>
+                                                        <a href=basic_config
                                                             .my_account_url
                                                             .clone()>{t!(i18n, shared.my_account)}</a>
                                                     </li>

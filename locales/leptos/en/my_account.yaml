@@ -1,2 +1,7 @@
 are_you_sure_you_want_to_logout: Are you sure you want to logout?
+change_password: Change password
+current_password: Current password
+failed_to_update_password: Failed to update password
 logout: Logout
+new_password: New password
+password_updated_successfully: Password updated successfully

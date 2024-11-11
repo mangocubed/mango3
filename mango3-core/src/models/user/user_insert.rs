@@ -62,9 +62,7 @@ impl User {
             validator.custom_validation(Input::Email, InputError::AlreadyInUse, &|| !email_exists);
         }
 
-        if validator.validate_presence(Input::Password, password) {
-            validator.validate_length(Input::Password, password, Some(6), Some(128));
-        }
+        validator.validate_password(Input::Password, password);
 
         validator.validate_full_name(full_name);
 

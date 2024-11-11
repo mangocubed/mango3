@@ -12,6 +12,7 @@ pub struct BasicConfigResp {
     pub my_account_url: String,
     pub new_website_url: String,
     pub register_url: String,
+    pub studio_url: String,
     pub title: String,
 }
 
@@ -26,6 +27,7 @@ impl From<BasicConfig> for BasicConfigResp {
             my_account_url: basic_config.my_account_url().to_string(),
             new_website_url: basic_config.new_website_url().to_string(),
             register_url: basic_config.register_url().to_string(),
+            studio_url: basic_config.studio_url().to_string(),
             title: basic_config.title,
         }
     }

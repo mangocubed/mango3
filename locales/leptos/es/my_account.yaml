@@ -1,2 +1,7 @@
 are_you_sure_you_want_to_logout: ¿Seguro deseas cerrar sesión?
+change_password: Cambiar contraseña
+current_password: Contraseña actual
+failed_to_update_password: Error al actualizar contraseña
 logout: Cerrar sesión
+new_password: Contraseña nueva
+password_updated_successfully: Contraseña actualizada exitosamente

@@ -1,14 +1,16 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(strum::Display, Eq, Hash, PartialEq)]
+#[derive(strum::Display, Clone, Eq, Hash, PartialEq)]
 #[strum(serialize_all = "kebab-case")]
 pub enum Input {
     Birthdate,
     CountryAlpha2,
+    CurrentPassword,
     Description,
     Email,
     FullName,
     Name,
+    NewPassword,
     Password,
     Subdomain,
     Username,

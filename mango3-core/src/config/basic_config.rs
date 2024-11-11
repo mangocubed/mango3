@@ -64,7 +64,7 @@ impl BasicConfig {
         self.accounts_url().join("register").unwrap()
     }
 
-    fn studio_url(&self) -> Url {
+    pub fn studio_url(&self) -> Url {
         Url::parse(&format!("{}://studio.{}", self.scheme(), self.domain)).unwrap()
     }
 
