@@ -5,9 +5,12 @@ use serde::{Deserialize, Serialize};
 pub enum Input {
     Birthdate,
     CountryAlpha2,
+    Description,
     Email,
     FullName,
+    Name,
     Password,
+    Subdomain,
     Username,
     UsernameOrEmail,
 }

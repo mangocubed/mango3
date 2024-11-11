@@ -1,3 +1,4 @@
+use leptos::either::Either;
 use leptos::prelude::*;
 
 use crate::context::use_current_user_resource;
@@ -15,10 +16,12 @@ where
     view! {
         <Transition>
             {move || Suspend::new(async move {
-                current_user_resource
-                    .get()
-                    .and_then(|result| result.ok())
-                    .map(|user| children_store.with_value(|store| store(user)))
+                match current_user_resource.get() {
+                    Some(Ok(user_opt)) => {
+                        Either::Left(children_store.with_value(|store| store(user_opt)))
+                    }
+                    _ => Either::Right(()),
+                }
             })}
         </Transition>
     }

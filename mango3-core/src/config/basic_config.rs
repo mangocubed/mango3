@@ -56,11 +56,23 @@ impl BasicConfig {
         Url::parse(&format!("{}://my-account.{}", self.scheme(), self.domain)).unwrap()
     }
 
+    pub fn new_website_url(&self) -> Url {
+        self.studio_url().join("new-website").unwrap()
+    }
+
     pub fn register_url(&self) -> Url {
         self.accounts_url().join("register").unwrap()
     }
 
+    fn studio_url(&self) -> Url {
+        Url::parse(&format!("{}://studio.{}", self.scheme(), self.domain)).unwrap()
+    }
+
     fn uploads_url(&self) -> Url {
         Url::parse(&format!("{}://uploads.{}", self.scheme(), self.domain)).unwrap()
+    }
+
+    pub fn website_url(&self, subdomain: &str) -> Url {
+        Url::parse(&format!("{}://{}.{}", self.scheme(), subdomain, self.domain)).unwrap()
     }
 }

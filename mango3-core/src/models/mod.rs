@@ -3,14 +3,17 @@ use argon2::password_hash::SaltString;
 use argon2::{Argon2, PasswordHash, PasswordHasher, PasswordVerifier};
 use rust_iso3166::CountryCode;
 use sqlx::types::chrono::NaiveDate;
+use sqlx::types::Uuid;
 
 mod blob;
 mod user;
 mod user_session;
+mod website;
 
 pub use blob::Blob;
 pub use user::User;
 pub use user_session::UserSession;
+pub use website::Website;
 
 fn encrypt_password(password: &str) -> String {
     let salt = SaltString::generate(&mut OsRng);
@@ -37,4 +40,30 @@ pub fn verify_password(password: &str, encrypted_password: &str) -> bool {
     let password_hash = password_hash.unwrap();
 
     argon2.verify_password(password.as_bytes(), &password_hash).is_ok()
+}
+
+#[derive(Clone)]
+pub struct Page<T> {
+    pub nodes: Vec<T>,
+    pub has_next_page: bool,
+}
+
+impl<T> Default for Page<T> {
+    fn default() -> Self {
+        Self {
+            nodes: vec![],
+            has_next_page: false,
+        }
+    }
+}
+
+pub struct PageParams {
+    pub after: Option<Uuid>,
+    pub first: i8,
+}
+
+impl Default for PageParams {
+    fn default() -> Self {
+        Self { after: None, first: 10 }
+    }
 }

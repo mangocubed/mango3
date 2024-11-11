@@ -1,3 +1,4 @@
+use leptos::ev::Event;
 use leptos::prelude::*;
 use leptos::text_prop::TextProp;
 use leptos_meta::Title;
@@ -17,6 +18,7 @@ mod image_upload_field;
 mod password_field;
 mod submit_button;
 mod text_field;
+mod textarea_field;
 mod top_bar;
 
 pub use action_form_alert::ActionFormAlert;
@@ -31,7 +33,19 @@ pub use image_upload_field::ImageUploadField;
 pub use password_field::PasswordField;
 pub use submit_button::SubmitButton;
 pub use text_field::TextField;
+pub use textarea_field::TextareaField;
 pub use top_bar::TopBar;
+
+pub struct EventFn(Box<dyn Fn(Event) + 'static>);
+
+impl<T> From<T> for EventFn
+where
+    T: Fn(Event) + 'static,
+{
+    fn from(value: T) -> Self {
+        Self(Box::new(value))
+    }
+}
 
 #[component]
 pub fn AppTitle(#[prop(optional, into)] suffix: Option<TextProp>) -> impl IntoView {

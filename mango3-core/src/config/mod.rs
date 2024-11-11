@@ -1,3 +1,5 @@
+use std::fs;
+
 use dotenvy::dotenv;
 use figment::providers::{Env, Serialized};
 use figment::Figment;
@@ -21,6 +23,7 @@ lazy_static! {
 
 pub fn load_config() {
     let _ = dotenv();
+    let _ = fs::create_dir_all(&MISC_CONFIG.storage_path);
 }
 
 fn extract_from_env<'a, T>(prefix: &str) -> T

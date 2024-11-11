@@ -7,6 +7,7 @@ members = [
     "mango3-leptos-utils",
     "mango3-my-account",
     "mango3-monitor",
+    "mango3-studio",
     "mango3-uploads",
 ]
 
@@ -21,9 +22,10 @@ console_error_panic_hook = "0.1.7"
 fluent-templates = "0.11.0"
 leptos = "0.7.0-rc1"
 leptos_axum = "0.7.0-rc1"
-leptos_i18n = { version = "0.5.0-gamma2", default-features = false, features = ["cookie", "yaml_files"] }
+leptos_i18n = { version = "0.5.0-rc1", default-features = false, features = ["cookie", "yaml_files"] }
 leptos_meta = "0.7.0-rc1"
 leptos_router = "0.7.0-rc1"
+leptos-use = { version = "0.14.0-rc1", default-features = false }
 rust_iso3166 = "0.1.13"
 serde = { version = "1.0.214", features = ["derive"] }
 server_fn = "0.7.0-rc1"

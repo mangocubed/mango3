@@ -2,7 +2,7 @@ use lazy_static::lazy_static;
 use regex::Regex;
 
 lazy_static! {
-    pub(crate) static ref BLACKLISTED_USERNAMES: Vec<String> = vec![
+    pub(crate) static ref BLACKLISTED_SUBDOMAINS: Vec<String> = vec![
         "_dmarc".to_owned(),
         "account".to_owned(),
         "accounts".to_owned(),
@@ -74,6 +74,8 @@ lazy_static! {
         "wiki".to_owned(),
         "www".to_owned(),
     ];
+    pub(crate) static ref BLACKLISTED_USERNAMES: Vec<String> = BLACKLISTED_SUBDOMAINS.to_vec();
     pub(crate) static ref REGEX_EMAIL: Regex = Regex::new(r"\A[^@\s]+@[^@\s]+\z").unwrap();
+    pub(crate) static ref REGEX_SUBDOMAIN: regex::Regex = regex::Regex::new(r"\A[a-z0-9]+(?:-[a-z0-9]+)*\z").unwrap();
     pub(crate) static ref REGEX_USERNAME: Regex = Regex::new(r"\A[-_.]?([a-zA-Z0-9]+[-_.]?)+\z").unwrap();
 }

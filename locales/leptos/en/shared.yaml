@@ -4,6 +4,7 @@ go_to_title: Go to {{title}}
 home: Home
 login: Login
 my_account: My account
+new_website: New website
 register: Register
 remove: Remove
 submit: Submit
