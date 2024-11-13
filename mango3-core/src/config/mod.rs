@@ -24,7 +24,7 @@ lazy_static! {
 
 pub fn load_config() {
     let _ = dotenv();
-    let _ = fs::create_dir_all(&MISC_CONFIG.storage_tmp_path());
+    let _ = fs::create_dir_all(MISC_CONFIG.storage_tmp_path());
 }
 
 fn extract_from_env<'a, T>(prefix: &str) -> T

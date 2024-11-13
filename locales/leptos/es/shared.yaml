@@ -1,5 +1,8 @@
 accept: Aceptar
+birthdate: Fecha de nacimiento
 cancel: Cancelar
+country: País
+full_name: Nombre completo
 go_to_title: Ir a {{title}}
 home: Inicio
 login: Iniciar sesión

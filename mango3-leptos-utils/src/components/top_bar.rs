@@ -33,11 +33,32 @@ pub fn TopBar(
                                         view! {
                                             <div class="dropdown dropdown-end">
                                                 <button class="btn" tabindex="0">
-                                                    <div class="avatar placeholder">
-                                                        <div class="bg-neutral text-neutral-content w-8 rounded-full">
-                                                            <span class="text-xs">{user.initials}</span>
-                                                        </div>
-                                                    </div>
+                                                    {move || {
+                                                        if let Some(avatar_image_blob) = &user.avatar_image_blob {
+                                                            Either::Left(
+                                                                view! {
+                                                                    <div class="avatar">
+                                                                        <div class="bg-neutral text-neutral-content w-8 rounded-full">
+                                                                            <img
+                                                                                alt=user.initials.clone()
+                                                                                src=avatar_image_blob.variant_url(32, 32, true)
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+                                                                },
+                                                            )
+                                                        } else {
+                                                            Either::Right(
+                                                                view! {
+                                                                    <div class="avatar placeholder">
+                                                                        <div class="bg-neutral text-neutral-content w-8 rounded-full">
+                                                                            <span class="text-xs">{user.initials.clone()}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                },
+                                                            )
+                                                        }
+                                                    }}
 
                                                     <div>
                                                         <div class="mb-1">{user.display_name}</div>

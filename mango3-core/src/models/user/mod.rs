@@ -9,8 +9,11 @@ use crate::locales::I18n;
 use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
 use crate::CoreContext;
 
+use super::Blob;
+
 mod user_insert;
 mod user_password;
+mod user_profile;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct User {
@@ -25,6 +28,7 @@ pub struct User {
     pub language_code: String,
     pub country_alpha2: String,
     pub bio: String,
+    pub avatar_image_blob_id: Option<Uuid>,
     pub created_at: DateTime<Utc>,
     pub updated_at: Option<DateTime<Utc>>,
 }
@@ -53,6 +57,18 @@ impl User {
         } else {
             Err(ValidationErrors::default())
         }
+    }
+
+    pub async fn avatar_image_blob(&self, core_context: &CoreContext) -> Option<sqlx::Result<Blob>> {
+        if let Some(id) = self.avatar_image_blob_id {
+            Some(Blob::get_by_id(core_context, id, Some(self)).await)
+        } else {
+            None
+        }
+    }
+
+    pub fn country(&self) -> CountryCode {
+        rust_iso3166::from_alpha2(&self.country_alpha2).unwrap()
     }
 
     pub async fn get_by_id(core_context: &CoreContext, id: Uuid) -> sqlx::Result<Self> {

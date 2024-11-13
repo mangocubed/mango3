@@ -12,3 +12,4 @@
 - Feature to create websites.
 - Feature to change password.
 - Features to update and show websites.
+- Feature to update profile.

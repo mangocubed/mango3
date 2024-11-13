@@ -1,5 +1,8 @@
 accept: Accept
+birthdate: Birthdate
 cancel: cancel
+country: Country
+full_name: Full name
 go_to_title: Go to {{title}}
 home: Home
 login: Login

@@ -1,4 +1,5 @@
 use leptos::prelude::*;
+use leptos_i18n::t_string;
 use leptos_router::components::Outlet;
 use leptos_router::hooks::{use_location, use_navigate};
 
@@ -24,17 +25,24 @@ pub fn IndexParentPage() -> impl IntoView {
         }
     });
 
+    let menu_items = move || {
+        [
+            ("/edit-profile", t_string!(i18n, my_account.edit_profile)),
+            ("/change-password", t_string!(i18n, my_account.change_password)),
+        ]
+    };
+
     view! {
         <div class="flex grow">
             <ul class="menu bg-base-200 rounded-box w-56">
-                <li>
-                    <a
-                        class:active=move || location.pathname.get() == "/change-password"
-                        href="/change-password"
-                    >
-                        {t!(i18n, my_account.change_password)}
-                    </a>
-                </li>
+                <For each=menu_items key=|(href, _)| href.to_owned() let:data>
+                    <li>
+                        <a class:active=move || location.pathname.get() == data.0 href=data.0>
+                            {data.1}
+                        </a>
+                    </li>
+                </For>
+
                 <li>
                     <a on:click=move |_| {
                         show_logout_confirmation.set(true)

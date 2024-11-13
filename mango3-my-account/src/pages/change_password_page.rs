@@ -27,13 +27,13 @@ pub fn ChangePasswordPage() -> impl IntoView {
 
     view! {
         <AuthenticatedPage title=title>
-            <h2 class="text-xl font-bold mb-4">{title}</h2>
+            <h2 class="h2">{title}</h2>
 
             <ActionForm
                 action=server_action
                 attr:autocomplete="off"
                 attr:novalidate="true"
-                attr:class="max-w-[640px] m-auto"
+                attr:class="form"
             >
                 <ActionFormAlert
                     action_value=action_value

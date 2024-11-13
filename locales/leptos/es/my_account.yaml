@@ -1,7 +1,13 @@
 are_you_sure_you_want_to_logout: ¿Seguro deseas cerrar sesión?
+avatar_image: Imagen de avatar
+bio: Bio
 change_password: Cambiar contraseña
 current_password: Contraseña actual
+display_name: Nombre para mostrar
+edit_profile: Editar perfil
 failed_to_update_password: Error al actualizar contraseña
+failed_to_update_profile: Error al actualizar perfil
 logout: Cerrar sesión
 new_password: Contraseña nueva
 password_updated_successfully: Contraseña actualizada exitosamente
+profile_updated_successfully: Perfil actualizado exitosamente

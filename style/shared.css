@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+    .form {
+        @apply max-w-[640px] m-auto;
+    }
+
+    .h2 {
+        @apply text-xl font-bold mb-4;
+    }
+}
+
 .loading-overlay {
     align-items: center;
     background-color: #000;

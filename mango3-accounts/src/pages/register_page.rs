@@ -74,13 +74,13 @@ pub fn RegisterPage() -> impl IntoView {
 
     view! {
         <GuestPage title=title>
-            <h2 class="text-xl font-bold mb-4">{title}</h2>
+            <h2 class="h2">{title}</h2>
 
             <ActionForm
                 action=server_action
                 attr:autocomplete="off"
                 attr:novalidate="true"
-                attr:class="max-w-[640px] m-auto"
+                attr:class="form"
             >
                 <ActionFormAlert
                     action_value=action_value
@@ -109,20 +109,20 @@ pub fn RegisterPage() -> impl IntoView {
                 />
 
                 <TextField
-                    label=move || t_string!(i18n, accounts.full_name)
+                    label=move || t_string!(i18n, shared.full_name)
                     name="full_name"
                     error=error_full_name
                 />
 
                 <TextField
                     input_type="date"
-                    label=move || t_string!(i18n, accounts.birthdate)
+                    label=move || t_string!(i18n, shared.birthdate)
                     name="birthdate"
                     error=error_birthdate
                 />
 
                 <CountryField
-                    label=move || t_string!(i18n, accounts.country)
+                    label=move || t_string!(i18n, shared.country)
                     name="country_alpha2"
                     error=error_country_alpha2
                 />

@@ -1,7 +1,12 @@
 use leptos::prelude::*;
 
-use mango3_leptos_utils::models::ActionFormResp;
+#[cfg(feature = "ssr")]
+use uuid::Uuid;
 
+use mango3_leptos_utils::models::{ActionFormResp, UserProfileResp};
+
+#[cfg(feature = "ssr")]
+use mango3_core::models::Blob;
 #[cfg(feature = "ssr")]
 use mango3_leptos_utils::ssr::*;
 
@@ -37,4 +42,59 @@ pub async fn attempt_to_update_password(
         .await;
 
     ActionFormResp::new(&i18n, result)
+}
+
+#[server]
+pub async fn attempt_to_update_profile(
+    display_name: String,
+    full_name: String,
+    birthdate: String,
+    country_alpha2: String,
+    bio: String,
+    avatar_image_blob_id: Option<String>,
+) -> Result<ActionFormResp, ServerFnError> {
+    let i18n = extract_i18n().await?;
+
+    if !require_authentication().await? {
+        return ActionFormResp::new_with_error(&i18n);
+    };
+
+    let core_context = expect_core_context();
+    let user = extract_user().await?;
+
+    let avatar_image_blob = if let Some(id) = avatar_image_blob_id.as_ref().and_then(|id| Uuid::try_parse(id).ok()) {
+        Blob::get_by_id(&core_context, id, user.as_ref()).await.ok()
+    } else {
+        None
+    };
+
+    let result = user
+        .unwrap()
+        .update_profile(
+            &core_context,
+            &display_name,
+            &full_name,
+            &birthdate,
+            &country_alpha2,
+            &bio,
+            avatar_image_blob.as_ref(),
+        )
+        .await;
+
+    ActionFormResp::new(&i18n, result)
+}
+
+#[server]
+pub async fn get_user_profile() -> Result<Option<UserProfileResp>, ServerFnError> {
+    if !require_authentication().await? {
+        return Ok(None);
+    };
+
+    if let Some(user) = extract_user().await? {
+        let core_context = expect_core_context();
+
+        Ok(Some(UserProfileResp::from_user(&core_context, user).await))
+    } else {
+        Ok(None)
+    }
 }

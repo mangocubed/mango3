@@ -19,6 +19,7 @@ pub fn CountryField(
     #[prop(into, optional)] id: Option<&'static str>,
     #[prop(into)] label: TextProp,
     name: &'static str,
+    #[prop(optional, into)] value: Signal<String>,
 ) -> impl IntoView {
     let options_resource = Resource::new_blocking(|| (), |_| get_country_options());
 
@@ -54,7 +55,14 @@ pub fn CountryField(
                                         each=move || options.clone()
                                         key=|(_, alpha2)| alpha2.clone()
                                         children=move |(name, alpha2)| {
-                                            view! { <option value=alpha2>{name}</option> }
+                                            view! {
+                                                <option
+                                                    value=alpha2.clone()
+                                                    selected=move || value.get() == alpha2
+                                                >
+                                                    {name}
+                                                </option>
+                                            }
                                         }
                                     />
                                 }

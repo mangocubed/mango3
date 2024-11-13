@@ -2,6 +2,9 @@ use leptos::prelude::*;
 
 use crate::models::UserResp;
 
+#[cfg(feature = "ssr")]
+use crate::ssr::{expect_core_context, extract_user};
+
 #[server]
 pub async fn is_authenticated() -> Result<bool, ServerFnError> {
     crate::ssr::is_authenticated().await
@@ -9,9 +12,11 @@ pub async fn is_authenticated() -> Result<bool, ServerFnError> {
 
 #[server]
 pub async fn get_current_user() -> Result<Option<UserResp>, ServerFnError> {
-    let Some(user) = crate::ssr::extract_user().await? else {
+    let Some(user) = extract_user().await? else {
         return Ok(None);
     };
 
-    Ok(Some(UserResp::from_user(user).await))
+    let core_context = expect_core_context();
+
+    Ok(Some(UserResp::from_user(&core_context, user).await))
 }

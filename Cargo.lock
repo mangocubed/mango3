@@ -3119,6 +3119,7 @@ dependencies = [
  "mango3-core",
  "mango3-leptos-utils",
  "tokio",
+ "uuid",
  "wasm-bindgen",
 ]
 
