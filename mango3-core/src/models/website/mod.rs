@@ -4,13 +4,15 @@ use sqlx::{query, query_as};
 use url::Url;
 
 use crate::config::BASIC_CONFIG;
-use crate::validator::ValidationErrors;
+use crate::enums::{Input, InputError};
+use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
 use crate::CoreContext;
 
 use super::{Blob, User};
 
 mod website_insert;
 mod website_paginate;
+mod website_update;
 
 pub struct Website {
     pub id: Uuid,
@@ -86,5 +88,30 @@ impl Website {
 
     pub fn url(&self) -> Url {
         BASIC_CONFIG.website_url(&self.subdomain)
+    }
+}
+
+impl Validator {
+    async fn validate_name(&mut self, core_context: &CoreContext, id: Option<Uuid>, value: &str) -> bool {
+        if self.validate_presence(Input::Name, value)
+            && self.validate_length(Input::Name, value, Some(3), Some(255))
+            && self.custom_validation(Input::Name, InputError::IsInvalid, &|| Uuid::try_parse(value).is_err())
+        {
+            let name_exists = query!(
+                "SELECT id FROM websites WHERE ($1::uuid IS NULL OR id != $1) AND LOWER(name) = $2 LIMIT 1",
+                id,                   // $1
+                value.to_lowercase()  // $2
+            )
+            .fetch_one(&core_context.db_pool)
+            .await
+            .is_ok();
+            self.custom_validation(Input::Name, InputError::AlreadyInUse, &|| !name_exists)
+        } else {
+            false
+        }
+    }
+
+    fn validate_description(&mut self, value: &str) -> bool {
+        self.validate_length(Input::Description, value, None, Some(1024))
     }
 }

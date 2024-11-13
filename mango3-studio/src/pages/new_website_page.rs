@@ -2,7 +2,6 @@ use leptos::prelude::*;
 use leptos_i18n::t_string;
 
 use mango3_leptos_utils::components::{ActionFormAlert, SubmitButton, TextField, TextareaField};
-use mango3_leptos_utils::context::use_basic_config;
 use mango3_leptos_utils::i18n::use_i18n;
 use mango3_leptos_utils::models::ActionFormResp;
 use mango3_leptos_utils::pages::AuthenticatedPage;
@@ -11,7 +10,6 @@ use crate::server_functions::AttemptToCreateWebsite;
 
 #[component]
 pub fn NewWebsitePage() -> impl IntoView {
-    let basic_config = use_basic_config();
     let i18n = use_i18n();
     let server_action = ServerAction::<AttemptToCreateWebsite>::new();
     let action_value = server_action.value();
@@ -47,7 +45,7 @@ pub fn NewWebsitePage() -> impl IntoView {
                 <ActionFormAlert
                     action_value=action_value
                     error_message=move || t_string!(i18n, studio.failed_to_create_website)
-                    redirect_to=basic_config.home_url.clone()
+                    redirect_to="/"
                     success_message=move || t_string!(i18n, studio.website_created_successfully)
                 />
 

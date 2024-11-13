@@ -17,6 +17,7 @@ mod current_user_resource;
 mod image_upload_field;
 mod password_field;
 mod submit_button;
+mod switch_field;
 mod text_field;
 mod textarea_field;
 mod top_bar;
@@ -32,6 +33,7 @@ pub use current_user_resource::CurrentUserResource;
 pub use image_upload_field::ImageUploadField;
 pub use password_field::PasswordField;
 pub use submit_button::SubmitButton;
+pub use switch_field::SwitchField;
 pub use text_field::TextField;
 pub use textarea_field::TextareaField;
 pub use top_bar::TopBar;
@@ -68,7 +70,7 @@ pub fn AppTitle(#[prop(optional, into)] suffix: Option<TextProp>) -> impl IntoVi
 }
 
 #[component]
-pub fn Brand(href: &'static str, #[prop(optional, into)] suffix: Option<TextProp>) -> impl IntoView {
+pub fn Brand(#[prop(into)] href: String, #[prop(optional, into)] suffix: Option<TextProp>) -> impl IntoView {
     let basic_config = use_basic_config();
 
     view! {

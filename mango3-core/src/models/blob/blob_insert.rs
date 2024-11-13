@@ -6,7 +6,9 @@ use md5::{Digest, Md5};
 use mime::{APPLICATION_OCTET_STREAM, IMAGE_BMP, IMAGE_GIF, IMAGE_JPEG, IMAGE_PNG};
 use multer::Field;
 use sqlx::query_as;
+use sqlx::types::Uuid;
 
+use crate::config::MISC_CONFIG;
 use crate::models::User;
 use crate::validator::ValidationErrors;
 use crate::CoreContext;
@@ -28,16 +30,19 @@ impl Blob {
         user: &User,
         field: &mut Field<'_>,
     ) -> Result<Blob, ValidationErrors> {
-        let Some(chunk) = field.chunk().await.map_err(|_| ValidationErrors::default())? else {
-            return Err(ValidationErrors::default());
-        };
+        let tmp_file_path = MISC_CONFIG.storage_tmp_path().join(Uuid::new_v4().to_string());
+        let mut tmp_file = fs::File::create(&tmp_file_path).map_err(|_| ValidationErrors::default())?;
+        let mut byte_size = 0i64;
+        let mut md5_hasher = Md5::new();
 
-        let md5_hasher = Md5::digest(&chunk);
-        let md5_checksum = format!("{:x}", md5_hasher);
+        while let Some(chunk) = field.chunk().await.map_err(|_| ValidationErrors::default())? {
+            tmp_file.write(&chunk).map_err(|_| ValidationErrors::default())?;
+            byte_size += chunk.len() as i64;
+            md5_hasher.update(chunk);
+        }
 
+        let md5_checksum = format!("{:x}", md5_hasher.finalize());
         let content_type = field.content_type().unwrap_or(&APPLICATION_OCTET_STREAM).to_string();
-
-        let byte_size = chunk.len() as i64;
 
         let result = query_as!(
             Self,
@@ -76,8 +81,7 @@ impl Blob {
         match result {
             Ok(blob) => {
                 let _ = fs::create_dir_all(blob.directory());
-                let mut file = fs::File::create(blob.default_path()).unwrap();
-                file.write_all(&chunk).unwrap();
+                let _ = fs::rename(tmp_file_path, blob.default_path());
 
                 Ok(blob)
             }

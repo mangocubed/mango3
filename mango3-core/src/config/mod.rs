@@ -1,4 +1,5 @@
 use std::fs;
+use std::path::{Path, PathBuf};
 
 use dotenvy::dotenv;
 use figment::providers::{Env, Serialized};
@@ -23,7 +24,7 @@ lazy_static! {
 
 pub fn load_config() {
     let _ = dotenv();
-    let _ = fs::create_dir_all(&MISC_CONFIG.storage_path);
+    let _ = fs::create_dir_all(&MISC_CONFIG.storage_tmp_path());
 }
 
 fn extract_from_env<'a, T>(prefix: &str) -> T
@@ -95,6 +96,10 @@ impl MiscConfig {
             .merge(Env::prefixed("MISC_"))
             .extract()
             .unwrap()
+    }
+
+    pub fn storage_tmp_path(&self) -> PathBuf {
+        Path::new(&self.storage_path).join("tmp")
     }
 }
 

@@ -32,7 +32,7 @@ pub fn App() -> impl IntoView {
                             <Brand href="/" suffix=suffix />
                         </TopBar>
 
-                        <main class="flex grow m-6">
+                        <main class="flex flex-col grow m-6">
                             <Routes fallback=NotFoundPage>
                                 <ParentRoute path=StaticSegment("") view=IndexParentPage>
                                     <Route path=StaticSegment("") view=IndexPage />

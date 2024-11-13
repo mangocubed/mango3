@@ -8,7 +8,7 @@ use uuid::Uuid;
 use mango3_leptos_utils::models::{ActionFormResp, WebsiteResp};
 
 #[cfg(feature = "ssr")]
-use mango3_core::models::{PageParams, Website};
+use mango3_core::models::{Blob, PageParams, Website};
 #[cfg(feature = "ssr")]
 use mango3_leptos_utils::ssr::{expect_core_context, extract_i18n, extract_user, require_authentication};
 
@@ -28,6 +28,51 @@ pub async fn attempt_to_create_website(
     let user = extract_user().await?.unwrap();
 
     let result = Website::insert(&core_context, &user, &name, &subdomain, &description).await;
+
+    ActionFormResp::new(&i18n, result)
+}
+
+#[server]
+pub async fn attempt_to_update_website(
+    id: String,
+    name: String,
+    description: String,
+    icon_image_blob_id: Option<String>,
+    cover_image_blob_id: Option<String>,
+    publish: Option<bool>,
+) -> Result<ActionFormResp, ServerFnError> {
+    let i18n = extract_i18n().await?;
+
+    if !require_authentication().await? {
+        return ActionFormResp::new_with_error(&i18n);
+    }
+
+    let core_context = expect_core_context();
+    let user = extract_user().await?;
+
+    let icon_image_blob = if let Some(id) = icon_image_blob_id.as_ref().and_then(|id| Uuid::try_parse(id).ok()) {
+        Blob::get_by_id(&core_context, id, user.as_ref()).await.ok()
+    } else {
+        None
+    };
+
+    let cover_image_blob = if let Some(id) = cover_image_blob_id.as_ref().and_then(|id| Uuid::try_parse(id).ok()) {
+        Blob::get_by_id(&core_context, id, user.as_ref()).await.ok()
+    } else {
+        None
+    };
+
+    let website = Website::get_by_id(&core_context, Uuid::try_parse(&id)?, user.as_ref()).await?;
+    let result = website
+        .update(
+            &core_context,
+            &name,
+            &description,
+            publish.is_some(),
+            icon_image_blob.as_ref(),
+            cover_image_blob.as_ref(),
+        )
+        .await;
 
     ActionFormResp::new(&i18n, result)
 }

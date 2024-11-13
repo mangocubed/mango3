@@ -1,0 +1,101 @@
+[package]
+name = "mango3-websites"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+console_error_panic_hook = { workspace = true }
+leptos = { workspace = true }
+leptos_i18n = { workspace = true, features = ["interpolate_display"] }
+leptos_meta = { workspace = true }
+leptos_router = { workspace = true }
+tokio = { workspace = true, optional = true }
+wasm-bindgen = { workspace = true }
+mango3-core = { workspace = true, optional = true }
+mango3-leptos-utils = { workspace = true }
+
+[features]
+hydrate = ["leptos/hydrate", "leptos_i18n/hydrate", "mango3-leptos-utils/hydrate"]
+ssr = [
+    "dep:tokio",
+    "dep:mango3-core",
+    "leptos/ssr",
+    "leptos_i18n/axum",
+    "leptos_meta/ssr",
+    "leptos_router/ssr",
+    "mango3-leptos-utils/ssr",
+]
+
+[package.metadata.leptos]
+# The name used by wasm-bindgen/cargo-leptos for the JS/WASM bundle. Defaults to the crate name
+output-name = "application"
+
+# The site root folder is where cargo-leptos generate all output. WARNING: all content of this folder will be erased on a rebuild. Use it in your server setup.
+site-root = "target/websites"
+
+# The site-root relative folder where all compiled output (JS, WASM and CSS) is written
+# Defaults to pkg
+site-pkg-dir = "pkg"
+
+# The tailwind input file.
+#
+# Optional, Activates the tailwind build
+tailwind-input-file = "../style/shared.css"
+
+# The tailwind config file.
+#
+# Optional, defaults to "tailwind.config.js" which if is not present
+# is generated for you
+tailwind-config-file = "../tailwind.config.js"
+
+# Assets source dir. All files found here will be copied and synchronized to site-root.
+# The assets-dir cannot have a sub directory with the same name/path as site-pkg-dir.
+#
+# Optional. Env: LEPTOS_ASSETS_DIR.
+assets-dir = "../assets"
+
+# The IP and port (ex: 127.0.0.1:3000) where the server serves the content. Use it in your server setup.
+site-addr = "127.0.0.1:3040"
+
+# The port to use for automatic reload monitoring
+reload-port = 3041
+
+# [Optional] Command to use when running end2end tests. It will run in the end2end dir.
+#   [Windows] for non-WSL use "npx.cmd playwright test"
+#   This binary name can be checked in Powershell with Get-Command npx
+end2end-cmd = "npx playwright test"
+end2end-dir = "end2end"
+
+#  The browserlist query used for optimizing the CSS.
+browserquery = "defaults"
+
+# The environment Leptos will run in, usually either "DEV" or "PROD"
+env = "DEV"
+
+# The features to use when compiling the bin target
+#
+# Optional. Can be over-ridden with the command line parameter --bin-features
+bin-features = ["ssr"]
+
+# If the --no-default-features flag should be used when compiling the bin target
+#
+# Optional. Defaults to false.
+bin-default-features = false
+
+# The features to use when compiling the lib target
+#
+# Optional. Can be over-ridden with the command line parameter --lib-features
+lib-features = ["hydrate"]
+
+# If the --no-default-features flag should be used when compiling the lib target
+#
+# Optional. Defaults to false.
+lib-default-features = false
+
+# The profile to use for the lib target when compiling for release
+#
+# Optional. Defaults to "release".
+lib-profile-release = "wasm-release"

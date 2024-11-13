@@ -1,5 +1,5 @@
 use leptos::either::EitherOf3;
-use leptos::ev::Event;
+use leptos::ev::{Event, MouseEvent};
 use leptos::prelude::*;
 use leptos::text_prop::TextProp;
 use server_fn::codec::{MultipartData, MultipartFormData};
@@ -45,13 +45,14 @@ pub fn ImageUploadField(
     #[prop(default = 48)] height: i16,
     #[prop(into, optional)] id: Option<&'static str>,
     #[prop(into)] label: TextProp,
+    #[prop(into, optional)] value: RwSignal<Option<BlobResp>>,
     #[prop(default = 48)] width: i16,
+
     name: &'static str,
 ) -> impl IntoView {
     let i18n = use_i18n();
     let upload_action = Action::new_local(|data: &FormData| attempt_to_upload_file(data.clone().into()));
     let upload_action_value = upload_action.value();
-    let value = RwSignal::new(None);
 
     Effect::new(move || {
         if let Some(Ok(blob_resp)) = upload_action_value.get() {
@@ -90,6 +91,12 @@ pub fn ImageUploadField(
         upload_action.dispatch_local(form_data);
     };
 
+    let remove = move |event: MouseEvent| {
+        event.prevent_default();
+
+        value.set(None)
+    };
+
     view! {
         <div class="form-control w-full">
             <label class="label" for=field_id>
@@ -103,9 +110,11 @@ pub fn ImageUploadField(
                     EitherOf3::B(
                         view! {
                             <input type="hidden" name=name value=blob.id />
-                            <div class="flex">
+                            <div class="flex gap-3">
                                 <img class="rounded" width=width height=height src=variant_url />
-                                <button class="btn">{t!(i18n, shared.remove)}</button>
+                                <button class="btn" on:click=remove>
+                                    {t!(i18n, shared.remove)}
+                                </button>
                             </div>
                         },
                     )

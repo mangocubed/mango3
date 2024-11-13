@@ -50,8 +50,9 @@ pub fn IndexPage() -> impl IntoView {
 
     view! {
         <AuthenticatedPage title=move || t_string!(i18n, shared.home)>
-            <section class="max-w-[640px] m-auto">
-                <h2 class="text-xl font-bold mb-4">{t!(i18n, studio.my_websites)}</h2>
+            <h2 class="text-xl font-bold mb-4">{t!(i18n, studio.my_websites)}</h2>
+
+            <section class="max-w-[640px] w-full ml-auto mr-auto">
                 <For each=move || websites.get() key=|website| website.id.clone() let:website>
                     <div class="card card-compact bg-base-100 shadow-xl">
                         <div class="card-body">
@@ -104,7 +105,7 @@ pub fn IndexPage() -> impl IntoView {
 
                                 <a
                                     class="btn btn-ghost font-bold"
-                                    href=format!("/websites/{}", website.id)
+                                    href=format!("/websites/{}/edit", website.id)
                                 >
                                     {t!(i18n, studio.view_more)}
                                 </a>

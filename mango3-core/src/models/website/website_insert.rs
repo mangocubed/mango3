@@ -23,19 +23,7 @@ impl Website {
         let subdomain = subdomain.trim().to_lowercase();
         let description = description.trim();
 
-        if validator.validate_presence(Input::Name, name)
-            && validator.validate_length(Input::Name, name, Some(3), Some(255))
-            && validator.custom_validation(Input::Name, InputError::IsInvalid, &|| Uuid::try_parse(name).is_err())
-        {
-            let name_exists = query!(
-                "SELECT id FROM websites WHERE LOWER(name) = $1 LIMIT 1",
-                name.to_lowercase() // $1
-            )
-            .fetch_one(&core_context.db_pool)
-            .await
-            .is_ok();
-            validator.custom_validation(Input::Name, InputError::AlreadyInUse, &|| !name_exists);
-        }
+        validator.validate_name(core_context, None, name).await;
 
         if validator.validate_presence(Input::Subdomain, &subdomain)
             && validator.validate_format(Input::Subdomain, &subdomain, &REGEX_SUBDOMAIN)
@@ -57,7 +45,7 @@ impl Website {
             validator.custom_validation(Input::Subdomain, InputError::AlreadyInUse, &|| !subdomain_exists);
         }
 
-        validator.validate_length(Input::Description, description, None, Some(1024));
+        validator.validate_description(description);
 
         if !validator.is_valid {
             return Err(validator.errors);

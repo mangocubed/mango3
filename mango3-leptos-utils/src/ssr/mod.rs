@@ -1,3 +1,4 @@
+use axum::extract::Host;
 use codee::string::FromToStringCodec;
 use http::header::{HeaderMap, ACCEPT_LANGUAGE};
 use leptos::prelude::*;
@@ -14,6 +15,12 @@ pub use user_sessions::*;
 
 pub fn expect_core_context() -> CoreContext {
     expect_context::<CoreContext>()
+}
+
+pub async fn extract_host() -> Result<String, ServerFnError> {
+    let Host(host) = leptos_axum::extract::<Host>().await?;
+
+    Ok(host)
 }
 
 pub async fn extract_i18n() -> Result<I18n, ServerFnError> {

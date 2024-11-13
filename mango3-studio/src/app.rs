@@ -1,7 +1,7 @@
 use leptos::prelude::*;
 use leptos_i18n::t_string;
 use leptos_meta::{provide_meta_context, Meta, Stylesheet};
-use leptos_router::components::{Route, Router, Routes};
+use leptos_router::components::{ParentRoute, Route, Router, Routes};
 use leptos_router::{ParamSegment, StaticSegment};
 
 use mango3_leptos_utils::components::{AppProvider, AppTitle, BottomBar, Brand, GoToMango3, TopBar};
@@ -33,17 +33,19 @@ pub fn App() -> impl IntoView {
                             <Brand href="/" suffix=suffix />
                         </TopBar>
 
-                        <main class="grow m-6">
+                        <main class="flex flex-col grow m-6">
                             <Routes fallback=NotFoundPage>
                                 <Route path=StaticSegment("") view=IndexPage />
                                 <Route path=StaticSegment("new-website") view=NewWebsitePage />
-                                <Route
+                                <ParentRoute
                                     path=(
                                         StaticSegment("websites"),
                                         ParamSegment(KEY_PARAM_WEBSITE_ID),
                                     )
-                                    view=websites::ShowPage
-                                />
+                                    view=websites::ShowParentPage
+                                >
+                                    <Route path=StaticSegment("edit") view=websites::EditPage />
+                                </ParentRoute>
                             </Routes>
                         </main>
 
