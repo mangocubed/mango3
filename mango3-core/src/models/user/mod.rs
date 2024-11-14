@@ -11,6 +11,7 @@ use crate::CoreContext;
 
 use super::Blob;
 
+mod user_email;
 mod user_insert;
 mod user_password;
 mod user_profile;
@@ -20,8 +21,11 @@ pub struct User {
     pub id: Uuid,
     pub username: String,
     pub email: String,
+    email_confirmation_code_id: Option<Uuid>,
+    pub email_confirmed_at: Option<DateTime<Utc>>,
     #[serde(skip_deserializing, skip_serializing)]
     encrypted_password: String,
+    password_reset_confirmation_code_id: Option<Uuid>,
     pub display_name: String,
     pub full_name: String,
     pub birthdate: NaiveDate,
@@ -80,7 +84,8 @@ impl User {
     pub async fn get_by_username_or_email(core_context: &CoreContext, username_or_email: &str) -> sqlx::Result<Self> {
         query_as!(
             Self,
-            "SELECT * FROM users WHERE LOWER(username) = $1 OR LOWER(email) = $1 LIMIT 1",
+            "SELECT * FROM users WHERE LOWER(username) = $1 OR (email_confirmed_at IS NOT NULL AND LOWER(email) = $1)
+            LIMIT 1",
             username_or_email.to_lowercase()
         )
         .fetch_one(&core_context.db_pool)

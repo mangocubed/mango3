@@ -1,13 +1,24 @@
 are_you_sure_you_want_to_logout: Are you sure you want to logout?
 avatar_image: Avatar image
 bio: Bio
+change_email: Change email
 change_password: Change password
+code: Code
+confirm_email: Confirm email
+confirmed: Confirmed
+current_email: Current email
 current_password: Current password
 display_name: Display name
+edit_email: Edit email
 edit_profile: Edit profile
+email_confirmed_successfully: Email confirmed successfully
+email_updated_successfully: Email updated successfully
+failed_to_confirm_email: Failed to confirm email
+failed_to_update_email: Failed to update email
 failed_to_update_password: Failed to update password
 failed_to_update_profile: Failed to update profile
 logout: Logout
 new_password: New password
+send_confirmation_code: Send confirmation code
 password_updated_successfully: Password updated successfully
 profile_updated_successfully: Password updated successfully

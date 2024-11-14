@@ -9,7 +9,7 @@ use mango3_leptos_utils::context::use_basic_config;
 use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::pages::NotFoundPage;
 
-use crate::pages::IndexPage;
+use crate::pages::{IndexPage, WebsitesPage};
 
 #[component]
 pub fn App() -> impl IntoView {
@@ -45,11 +45,16 @@ pub fn App() -> impl IntoView {
                             <a class="btn btn-ghost" href="/">
                                 {t!(i18n, shared.home)}
                             </a>
+                            
+                            <a class="btn btn-ghost" href="/websites">
+                                {t!(i18n, home.websites)}
+                            </a>
                         </TopBar>
 
                         <main class="grow m-6">
                             <Routes fallback=NotFoundPage>
                                 <Route path=StaticSegment("") view=IndexPage />
+                                <Route path=StaticSegment("websites") view=WebsitesPage />
                             </Routes>
                         </main>
 

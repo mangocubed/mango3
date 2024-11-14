@@ -8,7 +8,7 @@ use mango3_leptos_utils::components::{AppProvider, AppTitle, BottomBar, Brand, G
 use mango3_leptos_utils::i18n::use_i18n;
 use mango3_leptos_utils::pages::NotFoundPage;
 
-use crate::pages::{ChangePasswordPage, EditProfilePage, IndexPage, IndexParentPage};
+use crate::pages::{ChangePasswordPage, EditEmailPage, EditProfilePage, IndexPage, IndexParentPage};
 
 #[component]
 pub fn App() -> impl IntoView {
@@ -40,6 +40,7 @@ pub fn App() -> impl IntoView {
                                         path=StaticSegment("edit-profile")
                                         view=EditProfilePage
                                     />
+                                    <Route path=StaticSegment("edit-email") view=EditEmailPage />
                                     <Route
                                         path=StaticSegment("change-password")
                                         view=ChangePasswordPage

@@ -2633,9 +2633,9 @@ dependencies = [
 
 [[package]]
 name = "leptos-use"
-version = "0.14.0-rc2"
+version = "0.14.0-rc3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "54bd831ccb767e5ea0a50e0a14b0ac157a80685dd94927e0b86921327e49cbab"
+checksum = "fc40bd3ae7bf4dd84b5a67f7fc0e91d0335341e07430900001242dd81ac7aec2"
 dependencies = [
  "cfg-if",
  "codee",
@@ -3040,6 +3040,7 @@ dependencies = [
  "md-5",
  "mime",
  "multer",
+ "rand",
  "regex",
  "rust_iso3166",
  "serde",
@@ -3055,12 +3056,15 @@ name = "mango3-home"
 version = "0.0.0-SNAPSHOT"
 dependencies = [
  "console_error_panic_hook",
+ "futures",
  "leptos",
  "leptos_i18n",
  "leptos_meta",
  "leptos_router",
+ "mango3-core",
  "mango3-leptos-utils",
  "tokio",
+ "uuid",
  "wasm-bindgen",
 ]
 

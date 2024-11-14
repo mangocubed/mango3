@@ -56,7 +56,7 @@ pub fn IndexPage() -> impl IntoView {
                     })}
                 </Suspense>
 
-                <a class="btn btn-ghost" href="/websites">
+                <a class="btn btn-block ml-auto mr-auto mt-4" href="/websites">
                     {t!(i18n, shared.view_more)}
                 </a>
             </section>

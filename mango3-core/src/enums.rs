@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 pub enum Input {
     Bio,
     Birthdate,
+    Code,
     CountryAlpha2,
     CurrentPassword,
     Description,
@@ -32,5 +33,6 @@ pub enum InputError {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub enum MailerJobCommand {
+    ConfirmationCode { action: String, code: String },
     Welcome,
 }

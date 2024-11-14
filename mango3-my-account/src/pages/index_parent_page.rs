@@ -28,6 +28,7 @@ pub fn IndexParentPage() -> impl IntoView {
     let menu_items = move || {
         [
             ("/edit-profile", t_string!(i18n, my_account.edit_profile)),
+            ("/edit-email", t_string!(i18n, my_account.edit_email)),
             ("/change-password", t_string!(i18n, my_account.change_password)),
         ]
     };

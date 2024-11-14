@@ -55,7 +55,7 @@ pub fn LoginPage() -> impl IntoView {
                 action=server_action
                 attr:autocomplete="off"
                 attr:novalidate="true"
-                attr:class="max-w-[640px] m-auto"
+                attr:class="form"
             >
                 <ActionFormAlert
                     action_value=action_value
@@ -73,7 +73,7 @@ pub fn LoginPage() -> impl IntoView {
                 />
 
                 <PasswordField
-                    label=move || t_string!(i18n, accounts.password)
+                    label=move || t_string!(i18n, shared.password)
                     name="password"
                     error=error_password
                 />

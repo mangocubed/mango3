@@ -2,6 +2,7 @@ accept: Aceptar
 birthdate: Fecha de nacimiento
 cancel: Cancelar
 country: País
+email: Correo electrónico
 full_name: Nombre completo
 go_to_title: Ir a {{title}}
 go_to_website: Ir al website
@@ -9,6 +10,7 @@ home: Inicio
 login: Iniciar sesión
 my_account: Mi cuenta
 new_website: Nuevo website
+password: Contraseña
 register: Registrate
 remove: Remover
 studio: Estudio

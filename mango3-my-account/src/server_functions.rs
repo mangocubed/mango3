@@ -11,6 +11,22 @@ use mango3_core::models::Blob;
 use mango3_leptos_utils::ssr::*;
 
 #[server]
+pub async fn attempt_to_confirm_email(code: String) -> Result<ActionFormResp, ServerFnError> {
+    let i18n = extract_i18n().await?;
+
+    if !require_authentication().await? {
+        return ActionFormResp::new_with_error(&i18n);
+    };
+
+    let core_context = expect_core_context();
+    let user = extract_user().await?.unwrap();
+
+    let result = user.confirm_email(&core_context, &code).await;
+
+    ActionFormResp::new(&i18n, result)
+}
+
+#[server]
 pub async fn attempt_to_logout() -> Result<(), ServerFnError> {
     if !require_authentication().await? {
         return Ok(());
@@ -21,6 +37,38 @@ pub async fn attempt_to_logout() -> Result<(), ServerFnError> {
     finish_user_session(&core_context).await?;
 
     Ok(())
+}
+
+#[server]
+pub async fn attempt_to_send_email_confirmation_code() -> Result<ActionFormResp, ServerFnError> {
+    let i18n = extract_i18n().await?;
+
+    if !require_authentication().await? {
+        return ActionFormResp::new_with_error(&i18n);
+    };
+
+    let core_context = expect_core_context();
+    let user = extract_user().await?.unwrap();
+
+    let result = user.send_email_confirmation_code(&core_context).await;
+
+    ActionFormResp::new(&i18n, result)
+}
+
+#[server]
+pub async fn attempt_to_update_email(email: String, password: String) -> Result<ActionFormResp, ServerFnError> {
+    let i18n = extract_i18n().await?;
+
+    if !require_authentication().await? {
+        return ActionFormResp::new_with_error(&i18n);
+    };
+
+    let core_context = expect_core_context();
+    let user = extract_user().await?.unwrap();
+
+    let result = user.update_email(&core_context, &email, &password).await;
+
+    ActionFormResp::new(&i18n, result)
 }
 
 #[server]

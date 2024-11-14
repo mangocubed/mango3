@@ -53,6 +53,17 @@ where
     }
 }
 
+pub struct BoxedFn(Box<dyn Fn() + 'static>);
+
+impl<T> From<T> for BoxedFn
+where
+    T: Fn() + 'static,
+{
+    fn from(value: T) -> Self {
+        Self(Box::new(value))
+    }
+}
+
 #[component]
 pub fn AppTitle(#[prop(optional, into)] suffix: Option<TextProp>) -> impl IntoView {
     let basic_config = use_basic_config();

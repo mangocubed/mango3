@@ -83,3 +83,5 @@ lazy_static! {
     pub(crate) static ref REGEX_SUBDOMAIN: regex::Regex = regex::Regex::new(r"\A[a-z0-9]+(?:-[a-z0-9]+)*\z").unwrap();
     pub(crate) static ref REGEX_USERNAME: Regex = Regex::new(r"\A[-_.]?([a-zA-Z0-9]+[-_.]?)+\z").unwrap();
 }
+
+pub(crate) const KEY_TEXT_CONFIRM_YOUR_EMAIL: &str = "confirm-your-email";

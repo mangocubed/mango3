@@ -2,6 +2,7 @@ accept: Accept
 birthdate: Birthdate
 cancel: cancel
 country: Country
+email: Email
 full_name: Full name
 go_to_title: Go to {{title}}
 go_to_website: Go to website
@@ -9,6 +10,7 @@ home: Home
 login: Login
 my_account: My account
 new_website: New website
+password: Password
 register: Register
 remove: Remove
 studio: Studio

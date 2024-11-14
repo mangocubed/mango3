@@ -15,9 +15,10 @@ lazy_static = "1.5.0"
 md-5 = "0.10.6"
 mime = "0.3.17"
 multer = "3.1.0"
+rand = "0.8.5"
 regex = "1.11.1"
 rust_iso3166 = { workspace = true }
-serde = { version = "1.0.214", features = ["derive"] }
+serde = { version = "1.0.215", features = ["derive"] }
 sqlx = { version = "0.8.2", features = ["chrono", "runtime-tokio", "postgres", "tls-rustls", "uuid"] }
 strum = { version = "0.26.3", features = ["derive"] }
 unic-langid = { version = "0.9.5", features = ["serde"] }

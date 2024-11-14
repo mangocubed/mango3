@@ -1,5 +1,4 @@
 use std::fs;
-use std::path::{Path, PathBuf};
 
 use dotenvy::dotenv;
 use figment::providers::{Env, Serialized};
@@ -9,9 +8,11 @@ use serde::{Deserialize, Serialize};
 
 mod basic_config;
 mod mailer_config;
+mod misc_config;
 
 pub use basic_config::BasicConfig;
 pub use mailer_config::MailerConfig;
+pub use misc_config::MiscConfig;
 
 lazy_static! {
     pub static ref BASIC_CONFIG: BasicConfig = BasicConfig::load();
@@ -74,32 +75,6 @@ impl Default for JobsConfig {
 impl JobsConfig {
     fn load() -> Self {
         extract_from_env("JOBS_")
-    }
-}
-
-#[derive(Deserialize, Serialize)]
-pub struct MiscConfig {
-    pub(crate) storage_path: String,
-}
-
-impl Default for MiscConfig {
-    fn default() -> Self {
-        Self {
-            storage_path: "./storage".to_owned(),
-        }
-    }
-}
-
-impl MiscConfig {
-    fn load() -> Self {
-        Figment::from(Serialized::defaults(Self::default()))
-            .merge(Env::prefixed("MISC_"))
-            .extract()
-            .unwrap()
-    }
-
-    pub fn storage_tmp_path(&self) -> PathBuf {
-        Path::new(&self.storage_path).join("tmp")
     }
 }
 

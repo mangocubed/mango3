@@ -96,14 +96,14 @@ pub fn RegisterPage() -> impl IntoView {
                 />
 
                 <TextField
-                    label=move || t_string!(i18n, accounts.email)
+                    label=move || t_string!(i18n, shared.email)
                     name="email"
                     input_type="email"
                     error=error_email
                 />
 
                 <PasswordField
-                    label=move || t_string!(i18n, accounts.password)
+                    label=move || t_string!(i18n, shared.password)
                     name="password"
                     error=error_password
                 />
