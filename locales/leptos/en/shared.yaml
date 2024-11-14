@@ -4,6 +4,7 @@ cancel: cancel
 country: Country
 full_name: Full name
 go_to_title: Go to {{title}}
+go_to_website: Go to website
 home: Home
 login: Login
 my_account: My account
@@ -12,3 +13,4 @@ register: Register
 remove: Remove
 studio: Studio
 submit: Submit
+view_more: View more

@@ -2,10 +2,8 @@ edit: Editar
 failed_to_create_website: Error al crear website
 failed_to_update_website: Error al actualizar website
 description: Descripción
-go_to_website: Ir al website
 my_websites: My websites
 name: Nombre
 subdomain: Subdominio
-view_more: Ver más
 website_created_successfully: Website creado exitosamente
 website_updated_successfully: Website actualizado exitosamente

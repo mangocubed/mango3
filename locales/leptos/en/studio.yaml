@@ -2,10 +2,8 @@ edit: Edit
 failed_to_create_website: Failed to create website
 failed_to_update_website: Failed to update website
 description: Description
-go_to_website: Go to website
 my_websites: My websites
 name: Name
 subdomain: Subdomain
-view_more: View more
 website_created_successfully: Website created successfully
 website_updated_successfully: Website updated successfully

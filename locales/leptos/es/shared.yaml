@@ -4,6 +4,7 @@ cancel: Cancelar
 country: País
 full_name: Nombre completo
 go_to_title: Ir a {{title}}
+go_to_website: Ir al website
 home: Inicio
 login: Iniciar sesión
 my_account: Mi cuenta
@@ -12,3 +13,4 @@ register: Registrate
 remove: Remover
 studio: Estudio
 submit: Enviar
+view_more: Ver más

@@ -3130,7 +3130,6 @@ dependencies = [
  "console_error_panic_hook",
  "futures",
  "leptos",
- "leptos-use",
  "leptos_i18n",
  "leptos_meta",
  "leptos_router",
@@ -3158,6 +3157,7 @@ name = "mango3-websites"
 version = "0.0.0-SNAPSHOT"
 dependencies = [
  "console_error_panic_hook",
+ "futures",
  "leptos",
  "leptos_i18n",
  "leptos_meta",

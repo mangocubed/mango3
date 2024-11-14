@@ -8,12 +8,11 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 console_error_panic_hook = { workspace = true }
-futures = { version = "0.3.31", optional = true }
+futures = { workspace = true, optional = true }
 leptos = { workspace = true }
 leptos_i18n = { workspace = true }
 leptos_meta = { workspace = true }
 leptos_router = { workspace = true }
-leptos-use = { workspace =true, features = ["use_infinite_scroll"] }
 slug = "0.1.6"
 tokio = { workspace = true, optional = true }
 uuid = { workspace = true, optional = true }
@@ -32,8 +31,6 @@ ssr = [
     "leptos_i18n/axum",
     "leptos_meta/ssr",
     "leptos_router/ssr",
-    "leptos-use/axum",
-    "leptos-use/ssr",
     "mango3-leptos-utils/ssr",
 ]
 

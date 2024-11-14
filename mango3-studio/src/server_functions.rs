@@ -106,7 +106,7 @@ pub async fn get_my_websites(after: Option<String>) -> Result<Vec<WebsiteResp>, 
         after: after.as_ref().and_then(|id| Uuid::try_parse(id).ok()),
         first: 10,
     };
-    let websites = Website::paginate_by_name_asc(&core_context, &page_params, Some(&user))
+    let websites = Website::paginate_by_name_asc(&core_context, &page_params, Some(&user), None)
         .await
         .nodes;
 

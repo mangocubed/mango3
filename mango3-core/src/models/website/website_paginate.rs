@@ -10,6 +10,7 @@ impl Website {
         core_context: &CoreContext,
         page_params: &PageParams,
         user: Option<&User>,
+        is_published: Option<bool>,
     ) -> Page<Self> {
         let after = page_params.after;
         let first = page_params.first;
@@ -25,11 +26,16 @@ impl Website {
 
         let mut nodes = query_as!(
             Self,
-            "SELECT * FROM websites WHERE ($1::uuid IS NULL OR user_id = $1) AND ($2::text IS NULL OR name > $2)
-            ORDER BY name ASC LIMIT $3",
-            user_id,
-            cursor_name,
-            first as i64
+            "SELECT * FROM websites WHERE ($1::uuid IS NULL OR user_id = $1)
+                AND (
+                    $2::bool IS NULL OR ($2 IS TRUE AND published_at IS NOT NULL)
+                    OR ($2 IS FALSE AND published_at IS NULL)
+                ) AND ($3::text IS NULL OR name > $3)
+            ORDER BY name ASC LIMIT $4",
+            user_id,      // $1
+            is_published, // $2
+            cursor_name,  // $3
+            first as i64, // $4
         )
         .fetch_all(&core_context.db_pool)
         .await
@@ -50,6 +56,7 @@ impl Website {
         core_context: &CoreContext,
         page_params: &PageParams,
         user: Option<&User>,
+        is_published: Option<bool>,
     ) -> Page<Self> {
         let after = page_params.after;
         let first = page_params.first;
@@ -69,12 +76,16 @@ impl Website {
         let mut nodes = query_as!(
             Self,
             "SELECT * FROM websites WHERE ($1::uuid IS NULL OR user_id = $1)
-                AND ($3::timestamptz IS NULL OR created_at < $3 OR (created_at = $3 AND id < $2))
-            ORDER BY created_at DESC, id DESC LIMIT $4",
+                AND (
+                    $2::bool IS NULL OR ($2 IS TRUE AND published_at IS NOT NULL)
+                    OR ($2 IS FALSE AND published_at IS NULL)
+                ) AND ($4::timestamptz IS NULL OR created_at < $4 OR (created_at = $4 AND id < $3))
+            ORDER BY created_at DESC, id DESC LIMIT $5",
             user_id,           // $1
-            cursor_id,         // $2
-            cursor_created_at, // $3
-            first as i64,      // $4
+            is_published,      // $2
+            cursor_id,         // $3
+            cursor_created_at, // $4
+            first as i64,      // $5
         )
         .fetch_all(&core_context.db_pool)
         .await
