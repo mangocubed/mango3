@@ -9,7 +9,7 @@ pub fn WebsiteCard(website: WebsiteResp, #[prop(into, optional)] actions: ViewFn
     let i18n = use_i18n();
 
     view! {
-        <div class="card card-compact bg-base-100 shadow-xl">
+        <div class="card card-compact bg-base-100 shadow-xl mb-4">
             <div class="card-body">
                 <div class="flex gap-3">
                     {

@@ -3,7 +3,7 @@ use leptos::prelude::*;
 use leptos_i18n::t_string;
 use leptos_meta::{provide_meta_context, Link, Stylesheet, Title};
 use leptos_router::components::{Route, Router, Routes};
-use leptos_router::StaticSegment;
+use leptos_router::{ParamSegment, StaticSegment};
 
 use mango3_leptos_utils::components::{AppProvider, AppTitle, BottomBar, Brand, GoToMango3, TopBar};
 use mango3_leptos_utils::context::{use_basic_config, use_page_title};
@@ -12,7 +12,7 @@ use mango3_leptos_utils::pages::NotFoundPage;
 
 use crate::components::CurrentWebsiteResource;
 use crate::context::provide_current_website_resource;
-use crate::pages::IndexPage;
+use crate::pages::{IndexPage, ShowPostPage};
 
 #[component]
 pub fn App() -> impl IntoView {
@@ -42,9 +42,7 @@ pub fn App() -> impl IntoView {
                                     + &format!(
                                         "{} ({})",
                                         website_name.clone(),
-                                        t_string!(
-                                            i18n, websites.powered_by_title, title = basic_config.title.clone()
-                                        ),
+                                        t_string!(i18n, websites.powered_by_title, title = basic_config.title.clone()),
                                     )
                             };
                             Either::Left(
@@ -52,16 +50,12 @@ pub fn App() -> impl IntoView {
                                     <Title text=title_text />
 
                                     {
-                                        let website_icon_image_blob = website
-                                            .icon_image_blob
-                                            .clone();
+                                        let website_icon_image_blob = website.icon_image_blob.clone();
                                         move || {
                                             website_icon_image_blob
                                                 .clone()
                                                 .map(|blob| {
-                                                    view! {
-                                                        <Link rel="icon" href=blob.variant_url(32, 32, true) />
-                                                    }
+                                                    view! { <Link rel="icon" href=blob.variant_url(32, 32, true) /> }
                                                 })
                                         }
                                     }
@@ -73,9 +67,7 @@ pub fn App() -> impl IntoView {
                                             <img
                                                 alt=website.name.clone()
                                                 class="rounded"
-                                                src=website
-                                                    .icon_image_blob
-                                                    .map(|blob| blob.variant_url(42, 42, true))
+                                                src=website.icon_image_blob.map(|blob| blob.variant_url(42, 42, true))
                                             />
                                             {website.name}
                                         </a>
@@ -84,6 +76,7 @@ pub fn App() -> impl IntoView {
                                     <main class="grow m-6">
                                         <Routes fallback=NotFoundPage>
                                             <Route path=StaticSegment("") view=IndexPage />
+                                            <Route path=ParamSegment("slug") view=ShowPostPage />
                                         </Routes>
                                     </main>
                                 },

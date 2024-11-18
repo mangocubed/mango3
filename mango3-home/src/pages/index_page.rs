@@ -42,10 +42,10 @@ pub fn IndexPage() -> impl IntoView {
                         websites_resource
                             .get()
                             .and_then(|result| result.ok())
-                            .map(|websites| {
+                            .map(|page| {
                                 view! {
                                     <For
-                                        each=move || websites.clone()
+                                        each=move || page.nodes.clone()
                                         key=|website| website.id.clone()
                                         let:website
                                     >

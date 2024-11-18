@@ -1,14 +1,16 @@
 use leptos::prelude::*;
 
 #[cfg(feature = "ssr")]
-use futures::future;
-#[cfg(feature = "ssr")]
 use uuid::Uuid;
 
-use mango3_leptos_utils::models::{ActionFormResp, WebsiteResp};
+use mango3_leptos_utils::models::{ActionFormResp, PageResp, WebsiteResp};
 
 #[cfg(feature = "ssr")]
-use mango3_core::models::{Blob, PageParams, Website};
+use mango3_core::models::{Blob, Website};
+#[cfg(feature = "ssr")]
+use mango3_core::pagination::PageParams;
+#[cfg(feature = "ssr")]
+use mango3_leptos_utils::models::FromCore;
 #[cfg(feature = "ssr")]
 use mango3_leptos_utils::ssr::{expect_core_context, extract_i18n, extract_user, require_authentication};
 
@@ -43,34 +45,33 @@ pub async fn attempt_to_update_website(
 ) -> Result<ActionFormResp, ServerFnError> {
     let i18n = extract_i18n().await?;
 
-    if !require_authentication().await? {
+    let Some(website) = my_website(id).await? else {
         return ActionFormResp::new_with_error(&i18n);
-    }
+    };
 
     let core_context = expect_core_context();
-    let user = extract_user().await?;
+    let user = extract_user().await?.unwrap();
 
     let icon_image_blob = if let Some(id) = icon_image_blob_id.as_ref().and_then(|id| Uuid::try_parse(id).ok()) {
-        Blob::get_by_id(&core_context, id, user.as_ref()).await.ok()
+        Blob::get_by_id(&core_context, id, Some(&user)).await.ok()
     } else {
         None
     };
 
     let cover_image_blob = if let Some(id) = cover_image_blob_id.as_ref().and_then(|id| Uuid::try_parse(id).ok()) {
-        Blob::get_by_id(&core_context, id, user.as_ref()).await.ok()
+        Blob::get_by_id(&core_context, id, Some(&user)).await.ok()
     } else {
         None
     };
 
-    let website = Website::get_by_id(&core_context, Uuid::try_parse(&id)?, user.as_ref()).await?;
     let result = website
         .update(
             &core_context,
             &name,
             &description,
-            publish.is_some(),
             icon_image_blob.as_ref(),
             cover_image_blob.as_ref(),
+            publish.unwrap_or_default(),
         )
         .await;
 
@@ -79,25 +80,19 @@ pub async fn attempt_to_update_website(
 
 #[server]
 pub async fn get_my_website(id: String) -> Result<Option<WebsiteResp>, ServerFnError> {
-    if !require_authentication().await? {
-        return Ok(None);
-    }
+    if let Some(website) = my_website(id).await? {
+        let core_context = expect_core_context();
 
-    let core_context = expect_core_context();
-    let user = extract_user().await?;
-    let result = Website::get_by_id(&core_context, Uuid::try_parse(&id)?, user.as_ref()).await;
-
-    if let Ok(website) = result {
-        Ok(Some(WebsiteResp::from_website(&core_context, &website).await))
+        Ok(Some(WebsiteResp::from_core(&core_context, &website).await))
     } else {
         Ok(None)
     }
 }
 
 #[server]
-pub async fn get_my_websites(after: Option<String>) -> Result<Vec<WebsiteResp>, ServerFnError> {
+pub async fn get_my_websites(after: Option<String>) -> Result<PageResp<WebsiteResp>, ServerFnError> {
     if !require_authentication().await? {
-        return Ok(vec![]);
+        return Ok(PageResp::default());
     }
 
     let core_context = expect_core_context();
@@ -106,14 +101,21 @@ pub async fn get_my_websites(after: Option<String>) -> Result<Vec<WebsiteResp>, 
         after: after.as_ref().and_then(|id| Uuid::try_parse(id).ok()),
         first: 10,
     };
-    let websites = Website::paginate_by_name_asc(&core_context, &page_params, Some(&user), None)
-        .await
-        .nodes;
+    let page = Website::paginate_by_name_asc(&core_context, &page_params, Some(&user), None).await;
 
-    Ok(future::join_all(
-        websites
-            .iter()
-            .map(|website| WebsiteResp::from_website(&core_context, website)),
-    )
-    .await)
+    Ok(PageResp::from_core(&core_context, &page).await)
+}
+
+#[cfg(feature = "ssr")]
+pub async fn my_website(id: String) -> Result<Option<Website>, ServerFnError> {
+    if !require_authentication().await? {
+        return Ok(None);
+    }
+
+    let core_context = expect_core_context();
+    let user = extract_user().await?.unwrap();
+
+    Ok(Website::get_by_id(&core_context, Uuid::try_parse(&id)?, Some(&user))
+        .await
+        .ok())
 }

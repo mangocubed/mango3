@@ -7,6 +7,7 @@ pub mod enums;
 pub mod jobs;
 pub mod locales;
 pub mod models;
+pub mod pagination;
 pub mod validator;
 
 use config::DATABASE_CONFIG;

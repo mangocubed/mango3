@@ -6,6 +6,7 @@ pub fn TextareaField(
     #[prop(into, optional)] error: MaybeProp<String>,
     #[prop(into, optional)] id: Option<&'static str>,
     #[prop(into)] label: TextProp,
+    #[prop(default = 4, into)] rows: i8,
     #[prop(optional, into)] value: Signal<String>,
     name: &'static str,
 ) -> impl IntoView {
@@ -29,6 +30,7 @@ pub fn TextareaField(
                 class:textarea-error=has_error
                 id=field_id
                 name=name
+                rows=rows
                 prop:value=value
             />
             <div class="label">

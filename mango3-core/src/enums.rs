@@ -6,6 +6,7 @@ pub enum Input {
     Bio,
     Birthdate,
     Code,
+    Content,
     CountryAlpha2,
     CurrentPassword,
     Description,
@@ -15,7 +16,9 @@ pub enum Input {
     Name,
     NewPassword,
     Password,
+    Slug,
     Subdomain,
+    Title,
     Username,
     UsernameOrEmail,
 }

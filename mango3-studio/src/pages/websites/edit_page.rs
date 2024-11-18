@@ -39,9 +39,8 @@ pub fn EditPage() -> impl IntoView {
                             action=server_action
                             attr:autocomplete="off"
                             attr:novalidate="true"
-                            attr:class="max-w-[640px] m-auto"
+                            attr:class="form"
                         >
-
                             <ActionFormAlert
                                 action_value=action_value
                                 error_message=move || {
@@ -52,32 +51,38 @@ pub fn EditPage() -> impl IntoView {
                                     t_string!(i18n, studio.website_updated_successfully)
                                 }
                             />
+
                             <input type="hidden" name="id" value=website.id />
 
-                            <TextField label="Name" name="name" error=error_name value=value_name />
+                            <TextField
+                                label=move || t_string!(i18n, studio.name)
+                                name="name"
+                                error=error_name
+                                value=value_name
+                            />
 
                             <TextareaField
-                                label="Description"
+                                label=move || t_string!(i18n, studio.description)
                                 name="description"
                                 error=error_description
                                 value=value_description
                             />
 
                             <ImageUploadField
-                                label="Icon image"
+                                label=move || t_string!(i18n, studio.icon_image)
                                 name="icon_image_blob_id"
                                 value=value_icon_image_blob
                             />
 
                             <ImageUploadField
-                                label="Cover image"
+                                label=move || t_string!(i18n, studio.cover_image)
                                 name="cover_image_blob_id"
                                 width=288
                                 value=value_cover_image_blob
                             />
 
                             <SwitchField
-                                label="Publish"
+                                label=move || t_string!(i18n, studio.publish)
                                 name="publish"
                                 error=error_publish
                                 is_checked=value_publish

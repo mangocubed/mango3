@@ -1,9 +1,19 @@
+content: Contenido
+cover_image: Imagen de portada
 edit: Editar
+failed_to_create_post: Error al crear post
 failed_to_create_website: Error al crear website
 failed_to_update_website: Error al actualizar website
 description: Descripción
+icon_image: Imagen de icono
 my_websites: My websites
 name: Nombre
+new_post: Nuevo post
+post_created_successfully: Post creado exitosamente
+posts: Posts
+publish: Publicar
+slug: Slug
 subdomain: Subdominio
+title: Título
 website_created_successfully: Website creado exitosamente
 website_updated_successfully: Website actualizado exitosamente

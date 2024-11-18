@@ -14,6 +14,7 @@ mod website_insert;
 mod website_paginate;
 mod website_update;
 
+#[derive(Clone)]
 pub struct Website {
     pub id: Uuid,
     pub user_id: Uuid,
@@ -59,7 +60,7 @@ impl Website {
     pub async fn get_by_subdomain(core_context: &CoreContext, subdomain: &str) -> sqlx::Result<Self> {
         query_as!(
             Self,
-            "SELECT * FROM websites WHERE subdomain = $1 LIMIT 1",
+            "SELECT * FROM websites WHERE subdomain = $1 AND published_at IS NOT NULL LIMIT 1",
             subdomain // $1
         )
         .fetch_one(&core_context.db_pool)

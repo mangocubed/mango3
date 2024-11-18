@@ -2,7 +2,7 @@ use lazy_static::lazy_static;
 use regex::Regex;
 
 lazy_static! {
-    pub(crate) static ref BLACKLISTED_SUBDOMAINS: Vec<String> = vec![
+    pub(crate) static ref BLACKLISTED_SLUGS: Vec<String> = vec![
         "_dmarc".to_owned(),
         "account".to_owned(),
         "accounts".to_owned(),
@@ -41,6 +41,7 @@ lazy_static! {
         "monitor".to_owned(),
         "mta".to_owned(),
         "my-account".to_owned(),
+        "new-website".to_owned(),
         "ns".to_owned(),
         "pkg".to_owned(),
         "pop3".to_owned(),
@@ -78,9 +79,11 @@ lazy_static! {
         "wiki".to_owned(),
         "www".to_owned(),
     ];
-    pub(crate) static ref BLACKLISTED_USERNAMES: Vec<String> = BLACKLISTED_SUBDOMAINS.to_vec();
+    pub(crate) static ref BLACKLISTED_SUBDOMAINS: Vec<String> = BLACKLISTED_SLUGS.to_vec();
+    pub(crate) static ref BLACKLISTED_USERNAMES: Vec<String> = BLACKLISTED_SLUGS.to_vec();
     pub(crate) static ref REGEX_EMAIL: Regex = Regex::new(r"\A[^@\s]+@[^@\s]+\z").unwrap();
-    pub(crate) static ref REGEX_SUBDOMAIN: regex::Regex = regex::Regex::new(r"\A[a-z0-9]+(?:-[a-z0-9]+)*\z").unwrap();
+    pub(crate) static ref REGEX_SLUG: regex::Regex = regex::Regex::new(r"\A[a-z0-9]+(?:-[a-z0-9]+)*\z").unwrap();
+    pub(crate) static ref REGEX_SUBDOMAIN: regex::Regex = REGEX_SLUG.clone();
     pub(crate) static ref REGEX_USERNAME: Regex = Regex::new(r"\A[-_.]?([a-zA-Z0-9]+[-_.]?)+\z").unwrap();
 }
 

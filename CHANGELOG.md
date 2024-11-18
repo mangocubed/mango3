@@ -15,3 +15,4 @@
 - Feature to update profile.
 - Features to show websites list.
 - Feature to confirm email.
+- Features to create and show posts.

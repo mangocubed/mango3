@@ -12,9 +12,9 @@ impl Website {
         core_context: &CoreContext,
         name: &str,
         description: &str,
-        publish: bool,
         icon_image_blob: Option<&Blob>,
         cover_image_blob: Option<&Blob>,
+        publish: bool,
     ) -> Result<Self, ValidationErrors> {
         let mut validator = Validator::default();
 

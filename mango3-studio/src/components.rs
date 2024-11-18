@@ -1,6 +1,7 @@
 use leptos::either::Either;
 use leptos::prelude::*;
 
+use mango3_leptos_utils::components::LoadingSpinner;
 use mango3_leptos_utils::models::WebsiteResp;
 
 use crate::context::use_my_website_resource;
@@ -15,18 +16,10 @@ where
     let children_store = StoredValue::new(children);
 
     view! {
-        <Suspense fallback=move || {
-            view! {
-                <div class="flex">
-                    <span class="loading loading-spinner loading-lg m-auto"></span>
-                </div>
-            }
-        }>
+        <Suspense fallback=LoadingSpinner>
             {move || Suspend::new(async move {
                 match my_website_resource.get() {
-                    Some(Ok(website_opt)) => {
-                        Either::Left(children_store.with_value(|store| store(website_opt)))
-                    }
+                    Some(Ok(website_opt)) => Either::Left(children_store.with_value(|store| store(website_opt))),
                     _ => Either::Right(()),
                 }
             })}

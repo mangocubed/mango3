@@ -44,6 +44,12 @@ pub fn App() -> impl IntoView {
                                     )
                                     view=websites::ShowParentPage
                                 >
+                                    <Route path=StaticSegment("") view=websites::ShowPage />
+                                    <Route path=StaticSegment("posts") view=websites::PostsPage />
+                                    <Route
+                                        path=(StaticSegment("posts"), StaticSegment("new"))
+                                        view=websites::NewPostPage
+                                    />
                                     <Route path=StaticSegment("edit") view=websites::EditPage />
                                 </ParentRoute>
                             </Routes>

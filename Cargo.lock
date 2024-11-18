@@ -431,9 +431,9 @@ dependencies = [
 
 [[package]]
 name = "axum"
-version = "0.7.7"
+version = "0.7.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "504e3947307ac8326a5437504c517c4b56716c9d98fac0028c2acc7ca47d70ae"
+checksum = "edca88bc138befd0323b20752846e6587272d3b03b0343c8ea28a6f819e6e71f"
 dependencies = [
  "async-trait",
  "axum-core",
@@ -1617,6 +1617,15 @@ checksum = "85649ca51fd72272d7821adaf274ad91c288277713d9c18820d8499a7ff69e9a"
 dependencies = [
  "typenum",
  "version_check",
+]
+
+[[package]]
+name = "getopts"
+version = "0.2.21"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "14dbbfd5c71d70241ecf9e6f13737f7b5ce823821063188d7e46c41d371eebd5"
+dependencies = [
+ "unicode-width",
 ]
 
 [[package]]
@@ -3056,7 +3065,6 @@ name = "mango3-home"
 version = "0.0.0-SNAPSHOT"
 dependencies = [
  "console_error_panic_hook",
- "futures",
  "leptos",
  "leptos_i18n",
  "leptos_meta",
@@ -3073,11 +3081,13 @@ name = "mango3-leptos-utils"
 version = "0.0.0-SNAPSHOT"
 dependencies = [
  "accept-language",
+ "async-trait",
  "axum",
  "codee",
  "cookie",
  "default-struct-builder",
  "fred",
+ "futures",
  "http",
  "leptos",
  "leptos-use",
@@ -3086,6 +3096,7 @@ dependencies = [
  "leptos_meta",
  "leptos_router",
  "mango3-core",
+ "pulldown-cmark",
  "rust_iso3166",
  "serde",
  "server_fn",
@@ -3132,7 +3143,6 @@ name = "mango3-studio"
 version = "0.0.0-SNAPSHOT"
 dependencies = [
  "console_error_panic_hook",
- "futures",
  "leptos",
  "leptos_i18n",
  "leptos_meta",
@@ -3161,7 +3171,6 @@ name = "mango3-websites"
 version = "0.0.0-SNAPSHOT"
 dependencies = [
  "console_error_panic_hook",
- "futures",
  "leptos",
  "leptos_i18n",
  "leptos_meta",
@@ -3169,6 +3178,7 @@ dependencies = [
  "mango3-core",
  "mango3-leptos-utils",
  "tokio",
+ "uuid",
  "wasm-bindgen",
 ]
 
@@ -3921,6 +3931,25 @@ checksum = "aa37f80ca58604976033fae9515a8a2989fc13797d953f7c04fb8fa36a11f205"
 dependencies = [
  "cc",
 ]
+
+[[package]]
+name = "pulldown-cmark"
+version = "0.12.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f86ba2052aebccc42cbbb3ed234b8b13ce76f75c3551a303cb2bcffcff12bb14"
+dependencies = [
+ "bitflags 2.6.0",
+ "getopts",
+ "memchr",
+ "pulldown-cmark-escape",
+ "unicase",
+]
+
+[[package]]
+name = "pulldown-cmark-escape"
+version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "007d8adb5ddab6f8e3f491ac63566a7d5002cc7ed73901f72057943fa71ae1ae"
 
 [[package]]
 name = "qoi"
