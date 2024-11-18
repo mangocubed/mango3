@@ -16,3 +16,4 @@
 - Features to show websites list.
 - Feature to confirm email.
 - Features to create and show posts.
+- Feature to reset password.

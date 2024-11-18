@@ -8,7 +8,7 @@ use mango3_leptos_utils::components::{AppProvider, AppTitle, BottomBar, Brand, G
 use mango3_leptos_utils::i18n::use_i18n;
 use mango3_leptos_utils::pages::NotFoundPage;
 
-use crate::pages::{LoginPage, RegisterPage};
+use crate::pages::{LoginPage, RegisterPage, ResetPasswordPage};
 
 #[component]
 pub fn App() -> impl IntoView {
@@ -36,6 +36,7 @@ pub fn App() -> impl IntoView {
                             <Routes fallback=NotFoundPage>
                                 <Route path=StaticSegment("login") view=LoginPage />
                                 <Route path=StaticSegment("register") view=RegisterPage />
+                                <Route path=StaticSegment("reset-password") view=ResetPasswordPage />
                             </Routes>
                         </main>
 

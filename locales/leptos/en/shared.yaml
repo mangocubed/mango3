@@ -1,16 +1,21 @@
 accept: Accept
 birthdate: Birthdate
 cancel: cancel
+change_password: Change password
+code: Code
 country: Country
 email: Email
+failed_to_update_password: Failed to update password
 full_name: Full name
 go_to_title: Go to {{title}}
 go_to_website: Go to website
 home: Home
 login: Login
 my_account: My account
+new_password: New password
 new_website: New website
 password: Password
+password_updated_successfully: Password updated successfully
 register: Register
 remove: Remove
 studio: Studio

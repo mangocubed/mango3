@@ -11,7 +11,7 @@ use super::BoxedFn;
 #[component]
 pub fn ActionFormAlert(
     action_value: RwSignal<Option<Result<ActionFormResp, ServerFnError<NoCustomError>>>>,
-    #[prop(into)] error_message: TextProp,
+    #[prop(into, optional)] error_message: Option<TextProp>,
     #[prop(into, optional)] on_success: Option<BoxedFn>,
     #[prop(into, optional)] redirect_to: Option<String>,
     #[prop(into)] success_message: TextProp,
@@ -33,7 +33,6 @@ pub fn ActionFormAlert(
         }
     });
 
-    let error_msg = move || error_message.clone().get();
     let success_msg = move || success_message.clone().get();
 
     move || match ActionFormResp::from(action_value).success {
@@ -55,13 +54,22 @@ pub fn ActionFormAlert(
                 </div>
             </dialog>
         }),
-        Some(false) => EitherOf3::B(view! {
-            <div class="pt-2 pb-2">
-                <div role="alert" class="alert alert-error">
-                    {error_msg.clone()}
-                </div>
-            </div>
-        }),
+        Some(false) => EitherOf3::B(
+            error_message
+                .as_ref()
+                .map(|error_msg| view! { <ActionFormError message=error_msg.clone() /> }),
+        ),
         _ => EitherOf3::C(()),
+    }
+}
+
+#[component]
+pub fn ActionFormError(#[prop(into)] message: TextProp) -> impl IntoView {
+    view! {
+        <div class="pt-2 pb-2">
+            <div role="alert" class="alert alert-error">
+                {move || message.get()}
+            </div>
+        </div>
     }
 }

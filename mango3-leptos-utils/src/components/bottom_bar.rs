@@ -35,10 +35,7 @@ pub fn BottomBar() -> impl IntoView {
                         {current_lang_name}
                         <ChevronUpMini />
                     </button>
-                    <ul
-                        tabindex="0"
-                        class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
-                    >
+                    <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
                         <For each=available_langs key=|lang| lang.0 let:lang>
                             <li>
                                 <a on:click=move |_| i18n.set_locale(lang.1)>{lang.0}</a>

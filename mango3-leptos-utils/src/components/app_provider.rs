@@ -24,10 +24,7 @@ pub fn AppProvider(children: Children) -> impl IntoView {
             </figure>
         </div>
 
-        <I18nContextProvider
-            cookie_name=COOKIE_NAME_LANGUAGE
-            cookie_options=language_cookie_options
-        >
+        <I18nContextProvider cookie_name=COOKIE_NAME_LANGUAGE cookie_options=language_cookie_options>
             <div class="flex flex-col min-h-screen">{children()}</div>
         </I18nContextProvider>
     }

@@ -26,7 +26,7 @@ mod textarea_field;
 mod top_bar;
 mod website_card;
 
-pub use action_form_alert::ActionFormAlert;
+pub use action_form_alert::{ActionFormAlert, ActionFormError};
 pub use alert_dialog::AlertDialog;
 pub use app_provider::AppProvider;
 pub use authentication::{RequireAuthentication, RequireNoAuthentication};

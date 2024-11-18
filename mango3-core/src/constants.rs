@@ -88,3 +88,4 @@ lazy_static! {
 }
 
 pub(crate) const KEY_TEXT_CONFIRM_YOUR_EMAIL: &str = "confirm-your-email";
+pub(crate) const KEY_TEXT_RESET_YOUR_PASSWORD: &str = "reset-your-password";

@@ -51,19 +51,12 @@ pub fn LoginPage() -> impl IntoView {
         <GuestPage title=title>
             <h2 class="text-xl font-bold mb-4">{title}</h2>
 
-            <ActionForm
-                action=server_action
-                attr:autocomplete="off"
-                attr:novalidate="true"
-                attr:class="form"
-            >
+            <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
                 <ActionFormAlert
                     action_value=action_value
                     error_message=move || t_string!(i18n, accounts.failed_to_authenticate_user)
                     redirect_to=basic_config.home_url.clone()
-                    success_message=move || {
-                        t_string!(i18n, accounts.user_authenticated_successfully)
-                    }
+                    success_message=move || { t_string!(i18n, accounts.user_authenticated_successfully) }
                 />
 
                 <TextField
@@ -72,18 +65,18 @@ pub fn LoginPage() -> impl IntoView {
                     error=error_username_or_email
                 />
 
-                <PasswordField
-                    label=move || t_string!(i18n, shared.password)
-                    name="password"
-                    error=error_password
-                />
+                <PasswordField label=move || t_string!(i18n, shared.password) name="password" error=error_password />
 
                 <SubmitButton is_loading=server_action.pending() />
             </ActionForm>
 
-            <div class="max-w-[640px]  ml-auto mr-auto mt-4">
+            <div class="max-w-[640px] ml-auto mr-auto mt-4 flex flex-col gap-4">
                 <a class="btn btn-block btn-outline" href="/register">
                     {t!(i18n, accounts.i_dont_have_an_account)}
+                </a>
+
+                <a class="btn btn-block btn-outline" href="/reset-password">
+                    {t!(i18n, accounts.i_forgot_my_password)}
                 </a>
             </div>
         </GuestPage>

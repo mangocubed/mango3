@@ -2,8 +2,6 @@ are_you_sure_you_want_to_logout: ¿Seguro deseas cerrar sesión?
 avatar_image: Imagen de avatar
 bio: Bio
 change_email: Cambiar correo electrónico
-change_password: Cambiar contraseña
-code: Código
 confirm_email: Confirmar correo electrónico
 confirmed: Confirmado
 current_email: Correo electrónico actual
@@ -15,10 +13,7 @@ email_confirmed_successfully: Correo electrónico confirmado exitosamente
 email_updated_successfully: Correo electrónico actualizado exitosamente
 failed_to_confirm_email: Error al confimar correo electrónico
 failed_to_update_email: Error al actualizar correo electrónico
-failed_to_update_password: Error al actualizar contraseña
 failed_to_update_profile: Error al actualizar perfil
 logout: Cerrar sesión
-new_password: Contraseña nueva
 send_confirmation_code: Enviar código de confirmación
-password_updated_successfully: Contraseña actualizada exitosamente
 profile_updated_successfully: Perfil actualizado exitosamente

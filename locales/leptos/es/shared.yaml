@@ -1,16 +1,21 @@
 accept: Aceptar
 birthdate: Fecha de nacimiento
 cancel: Cancelar
+change_password: Cambiar contraseña
+code: Código
 country: País
 email: Correo electrónico
+failed_to_update_password: Error al actualizar contraseña
 full_name: Nombre completo
 go_to_title: Ir a {{title}}
 go_to_website: Ir al website
 home: Inicio
 login: Iniciar sesión
 my_account: Mi cuenta
+new_password: Contraseña nueva
 new_website: Nuevo website
 password: Contraseña
+password_updated_successfully: Contraseña actualizada exitosamente
 register: Registrate
 remove: Remover
 studio: Estudio

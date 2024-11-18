@@ -23,25 +23,18 @@ pub fn ChangePasswordPage() -> impl IntoView {
         error_new_password.set(response.error("new-password"));
     });
 
-    let title = move || t_string!(i18n, my_account.change_password);
+    let title = move || t_string!(i18n, shared.change_password);
 
     view! {
         <AuthenticatedPage title=title>
             <h2 class="h2">{title}</h2>
 
-            <ActionForm
-                action=server_action
-                attr:autocomplete="off"
-                attr:novalidate="true"
-                attr:class="form"
-            >
+            <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
                 <ActionFormAlert
                     action_value=action_value
-                    error_message=move || t_string!(i18n, my_account.failed_to_update_password)
+                    error_message=move || t_string!(i18n, shared.failed_to_update_password)
                     redirect_to="/"
-                    success_message=move || {
-                        t_string!(i18n, my_account.password_updated_successfully)
-                    }
+                    success_message=move || { t_string!(i18n, shared.password_updated_successfully) }
                 />
 
                 <PasswordField
@@ -51,7 +44,7 @@ pub fn ChangePasswordPage() -> impl IntoView {
                 />
 
                 <PasswordField
-                    label=move || t_string!(i18n, my_account.new_password)
+                    label=move || t_string!(i18n, shared.new_password)
                     name="new_password"
                     error=error_new_password
                 />

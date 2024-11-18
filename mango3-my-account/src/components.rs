@@ -3,7 +3,7 @@ use leptos::ev::MouseEvent;
 use leptos::prelude::*;
 use leptos_i18n::t_string;
 
-use mango3_leptos_utils::components::{ActionFormAlert, SubmitButton, TextField};
+use mango3_leptos_utils::components::{ActionFormAlert, ActionFormError, SubmitButton, TextField};
 use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::icons::CheckMini;
 use mango3_leptos_utils::models::ActionFormResp;
@@ -46,16 +46,13 @@ pub fn EmailConfirmationBadge(#[prop(into)] is_confirmed: RwSignal<bool>) -> imp
     };
 
     if is_confirmed.get() {
-        Either::Left(view! {
-            <div class="badge  badge-outline badge-lg">
-                {t!(i18n, my_account.confirmed)} <CheckMini />
-            </div>
-        })
+        Either::Left(
+            view! { <div class="badge  badge-outline badge-lg">{t!(i18n, my_account.confirmed)} <CheckMini /></div> },
+        )
     } else {
         Either::Right(view! {
             <ActionFormAlert
                 action_value=action_value_confirm
-                error_message=move || { t_string!(i18n, my_account.failed_to_confirm_email) }
                 redirect_to="/"
                 success_message=move || { t_string!(i18n, my_account.email_confirmed_successfully) }
             />
@@ -77,11 +74,21 @@ pub fn EmailConfirmationBadge(#[prop(into)] is_confirmed: RwSignal<bool>) -> imp
                         attr:novalidate="true"
                         attr:class="form"
                     >
-                        <TextField
-                            label=move || t_string!(i18n, my_account.code)
-                            name="code"
-                            error=error_code
-                        />
+                        {move || {
+                            if let Some(false) = ActionFormResp::from(action_value_confirm).success {
+                                Either::Left(
+                                    view! {
+                                        <ActionFormError message=move || {
+                                            t_string!(i18n, my_account.failed_to_confirm_email)
+                                        } />
+                                    },
+                                )
+                            } else {
+                                Either::Right(())
+                            }
+                        }}
+
+                        <TextField label=move || t_string!(i18n, shared.code) name="code" error=error_code />
 
                         <SubmitButton is_loading=server_action_confirm.pending() />
                     </ActionForm>

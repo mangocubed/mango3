@@ -2,7 +2,11 @@ accounts: Cuentas
 back_to_login: Volver a inicio de sesión
 failed_to_authenticate_user: Error al autenticar usuario
 failed_to_create_user: Error al crear usuario
+failed_to_send_password_reset_code: Error al enviar código de reinicio de contraseña
 i_dont_have_an_account: No tengo una cuenta
+i_forgot_my_password: Olvidé mi contraseña
+password_reset_code_sent_successfully: Código de reinicio de contraseña enviardo exitosamente
+reset_password: Reiniciar contraseña
 user_authenticated_successfully: Usuario autenticado exitosamente
 user_created_successfully: Usuario creado exitosamente
 username: Nombre de usuario
