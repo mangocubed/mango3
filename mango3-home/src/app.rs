@@ -30,9 +30,7 @@ pub fn App() -> impl IntoView {
                     <Meta
                         name="description"
                         content=move || {
-                            t_string!(
-                                i18n, home.a_cloud_platform_to_create_websites_in_the_easiest_way_possible
-                            )
+                            t_string!(i18n, home.a_cloud_platform_to_create_websites_in_the_easiest_way_possible)
                         }
                     />
 

@@ -3,11 +3,12 @@ use apalis::redis::RedisStorage;
 use serde::{Deserialize, Serialize};
 
 use crate::config::JOBS_CONFIG;
-use crate::enums::MailerJobCommand;
+use crate::enums::{GuestMailerJobCommand, MailerJobCommand};
 use crate::models::User;
 
 #[derive(Clone, Debug)]
 pub struct Jobs {
+    pub storage_guest_mailer: RedisStorage<GuestMailerJob>,
     pub storage_mailer: RedisStorage<MailerJob>,
 }
 
@@ -21,8 +22,20 @@ impl Jobs {
 
     pub async fn setup() -> Self {
         Self {
+            storage_guest_mailer: Self::storage().await,
             storage_mailer: Self::storage().await,
         }
+    }
+
+    pub async fn guest_mailer(&self, to: &str, command: GuestMailerJobCommand) {
+        self.storage_guest_mailer
+            .clone()
+            .push(GuestMailerJob {
+                to: to.to_owned(),
+                command,
+            })
+            .await
+            .expect("Coult not store job");
     }
 
     pub async fn mailer(&self, user: &User, command: MailerJobCommand) {
@@ -35,6 +48,16 @@ impl Jobs {
             .await
             .expect("Coult not store job");
     }
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct GuestMailerJob {
+    pub to: String,
+    pub command: GuestMailerJobCommand,
+}
+
+impl Job for GuestMailerJob {
+    const NAME: &'static str = "GuestMailerJob";
 }
 
 #[derive(Debug, Deserialize, Serialize)]

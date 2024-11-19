@@ -43,13 +43,9 @@ pub fn EditPage() -> impl IntoView {
                         >
                             <ActionFormAlert
                                 action_value=action_value
-                                error_message=move || {
-                                    t_string!(i18n, studio.failed_to_update_website)
-                                }
+                                error_message=move || { t_string!(i18n, studio.failed_to_update_website) }
                                 redirect_to="/"
-                                success_message=move || {
-                                    t_string!(i18n, studio.website_updated_successfully)
-                                }
+                                success_message=move || { t_string!(i18n, studio.website_updated_successfully) }
                             />
 
                             <input type="hidden" name="id" value=website.id />

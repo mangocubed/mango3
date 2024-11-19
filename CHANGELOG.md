@@ -17,3 +17,4 @@
 - Feature to confirm email.
 - Features to create and show posts.
 - Feature to reset password.
+- Feature to register only with invitation code.

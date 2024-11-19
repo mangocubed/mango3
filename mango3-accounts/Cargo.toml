@@ -13,6 +13,7 @@ leptos_i18n = { workspace = true }
 leptos_meta = { workspace = true }
 leptos_router = { workspace = true }
 tokio = { workspace = true, optional = true }
+uuid = { workspace = true, optional = true }
 wasm-bindgen = { workspace = true }
 mango3-core = { workspace = true, optional = true }
 mango3-leptos-utils = { workspace = true }
@@ -21,6 +22,7 @@ mango3-leptos-utils = { workspace = true }
 hydrate = ["leptos/hydrate", "leptos_i18n/hydrate", "mango3-leptos-utils/hydrate"]
 ssr = [
     "dep:tokio",
+    "dep:uuid",
     "dep:mango3-core",
     "leptos/ssr",
     "leptos_i18n/axum",

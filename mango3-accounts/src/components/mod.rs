@@ -8,6 +8,10 @@ use mango3_leptos_utils::models::ActionFormResp;
 
 use crate::server_functions::AttemptToUpdatePasswordWithCode;
 
+mod invitation_code_dialog;
+
+pub use invitation_code_dialog::InvitationCodeDialog;
+
 #[component]
 pub fn ResetPasswordDialog(
     #[prop(into)] username_or_email: Signal<String>,
@@ -33,7 +37,7 @@ pub fn ResetPasswordDialog(
     view! {
         <ActionFormAlert
             action_value=action_value
-            redirect_to="/"
+            redirect_to="/login"
             success_message=move || { t_string!(i18n, shared.password_updated_successfully) }
         />
 

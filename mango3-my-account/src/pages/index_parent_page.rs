@@ -46,9 +46,7 @@ pub fn IndexParentPage() -> impl IntoView {
                 </For>
 
                 <li>
-                    <a on:click=move |_| {
-                        show_logout_confirmation.set(true)
-                    }>{t!(i18n, my_account.logout)}</a>
+                    <a on:click=move |_| { show_logout_confirmation.set(true) }>{t!(i18n, my_account.logout)}</a>
                 </li>
             </ul>
 

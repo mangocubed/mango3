@@ -38,12 +38,7 @@ pub fn CountryField(
             <label class="label" for=field_id>
                 <span class="label-text">{move || label.get()}</span>
             </label>
-            <select
-                class="select select-bordered"
-                class:select-error=has_error
-                id=field_id
-                name=name
-            >
+            <select class="select select-bordered" class:select-error=has_error id=field_id name=name>
                 <Suspense>
                     {move || Suspend::new(async move {
                         options_resource
@@ -56,10 +51,7 @@ pub fn CountryField(
                                         key=|(_, alpha2)| alpha2.clone()
                                         children=move |(name, alpha2)| {
                                             view! {
-                                                <option
-                                                    value=alpha2.clone()
-                                                    selected=move || value.get() == alpha2
-                                                >
+                                                <option value=alpha2.clone() selected=move || value.get() == alpha2>
                                                     {name}
                                                 </option>
                                             }

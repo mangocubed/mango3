@@ -40,10 +40,7 @@ pub fn PasswordField(
             <label class="label" for=field_id>
                 <span class="label-text">{move || label.get()}</span>
             </label>
-            <div
-                class="input input-bordered flex items-center gap-2 pr-0"
-                class:input-error=has_error
-            >
+            <div class="input input-bordered flex items-center gap-2 pr-0" class:input-error=has_error>
                 <input class="grow" id=field_id name=name type=input_type />
                 <button class="btn btn-ghost" type="button" on:click=toggle_type>
                     {move || {

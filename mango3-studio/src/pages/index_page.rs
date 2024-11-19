@@ -29,10 +29,7 @@ pub fn IndexPage() -> impl IntoView {
                         website=website.clone()
                         actions=move || {
                             view! {
-                                <a
-                                    class="btn btn-ghost font-bold"
-                                    href=format!("/websites/{}", website.id)
-                                >
+                                <a class="btn btn-ghost font-bold" href=format!("/websites/{}", website.id)>
                                     {t!(i18n, shared.view_more)}
                                 </a>
                             }

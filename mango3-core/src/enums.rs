@@ -1,5 +1,10 @@
 use serde::{Deserialize, Serialize};
 
+#[derive(Debug, Deserialize, Serialize)]
+pub enum GuestMailerJobCommand {
+    InvitationCode(String),
+}
+
 #[derive(strum::Display, Clone, Eq, Hash, PartialEq)]
 #[strum(serialize_all = "kebab-case")]
 pub enum Input {

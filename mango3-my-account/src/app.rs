@@ -36,15 +36,9 @@ pub fn App() -> impl IntoView {
                             <Routes fallback=NotFoundPage>
                                 <ParentRoute path=StaticSegment("") view=IndexParentPage>
                                     <Route path=StaticSegment("") view=IndexPage />
-                                    <Route
-                                        path=StaticSegment("edit-profile")
-                                        view=EditProfilePage
-                                    />
+                                    <Route path=StaticSegment("edit-profile") view=EditProfilePage />
                                     <Route path=StaticSegment("edit-email") view=EditEmailPage />
-                                    <Route
-                                        path=StaticSegment("change-password")
-                                        view=ChangePasswordPage
-                                    />
+                                    <Route path=StaticSegment("change-password") view=ChangePasswordPage />
                                 </ParentRoute>
                             </Routes>
                         </main>

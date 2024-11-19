@@ -7,44 +7,8 @@ use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::models::ActionFormResp;
 use mango3_leptos_utils::pages::GuestPage;
 
-#[server]
-pub async fn attempt_to_register(
-    username: String,
-    email: String,
-    password: String,
-    full_name: String,
-    birthdate: String,
-    country_alpha2: String,
-) -> Result<ActionFormResp, ServerFnError> {
-    use mango3_core::models::User;
-    use mango3_leptos_utils::ssr::{expect_core_context, extract_i18n, require_no_authentication, start_user_session};
-
-    let i18n = extract_i18n().await?;
-
-    if !require_no_authentication().await? {
-        return ActionFormResp::new_with_error(&i18n);
-    }
-
-    let core_context = expect_core_context();
-
-    let result = User::insert(
-        &core_context,
-        &username,
-        &email,
-        &password,
-        &full_name,
-        &birthdate,
-        i18n.0.language.as_str(),
-        &country_alpha2,
-    )
-    .await;
-
-    if let Ok(ref user) = result {
-        start_user_session(&core_context, &user).await?;
-    }
-
-    ActionFormResp::new(&i18n, result)
-}
+use crate::components::InvitationCodeDialog;
+use crate::server_functions::AttemptToRegister;
 
 #[component]
 pub fn RegisterPage() -> impl IntoView {
@@ -58,6 +22,7 @@ pub fn RegisterPage() -> impl IntoView {
     let error_full_name = RwSignal::new(None);
     let error_birthdate = RwSignal::new(None);
     let error_country_alpha2 = RwSignal::new(None);
+    let value_invitation_code_id = RwSignal::new(None);
 
     Effect::new(move || {
         let response = ActionFormResp::from(action_value);
@@ -76,12 +41,9 @@ pub fn RegisterPage() -> impl IntoView {
         <GuestPage title=title>
             <h2 class="h2">{title}</h2>
 
-            <ActionForm
-                action=server_action
-                attr:autocomplete="off"
-                attr:novalidate="true"
-                attr:class="form"
-            >
+            <InvitationCodeDialog value=value_invitation_code_id />
+
+            <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
                 <ActionFormAlert
                     action_value=action_value
                     error_message=move || t_string!(i18n, accounts.failed_to_create_user)
@@ -89,11 +51,11 @@ pub fn RegisterPage() -> impl IntoView {
                     success_message=move || t_string!(i18n, accounts.user_created_successfully)
                 />
 
-                <TextField
-                    label=move || t_string!(i18n, accounts.username)
-                    name="username"
-                    error=error_username
-                />
+                <Show when=move || !basic_config.enable_register>
+                    <input type="hidden" name="invitation_code_id" value=value_invitation_code_id />
+                </Show>
+
+                <TextField label=move || t_string!(i18n, accounts.username) name="username" error=error_username />
 
                 <TextField
                     label=move || t_string!(i18n, shared.email)
@@ -102,17 +64,9 @@ pub fn RegisterPage() -> impl IntoView {
                     error=error_email
                 />
 
-                <PasswordField
-                    label=move || t_string!(i18n, shared.password)
-                    name="password"
-                    error=error_password
-                />
+                <PasswordField label=move || t_string!(i18n, shared.password) name="password" error=error_password />
 
-                <TextField
-                    label=move || t_string!(i18n, shared.full_name)
-                    name="full_name"
-                    error=error_full_name
-                />
+                <TextField label=move || t_string!(i18n, shared.full_name) name="full_name" error=error_full_name />
 
                 <TextField
                     input_type="date"

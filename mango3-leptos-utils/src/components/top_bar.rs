@@ -95,11 +95,7 @@ pub fn TopBar(
                                     Either::Right(
                                         view! {
                                             <div class="dropdown dropdown-end dropdown-hover">
-                                                <a
-                                                    class="btn"
-                                                    href=basic_config.login_url.clone()
-                                                    tabindex="0"
-                                                >
+                                                <a class="btn" href=basic_config.login_url.clone() tabindex="0">
                                                     {t!(i18n, shared.login)}
                                                 </a>
 

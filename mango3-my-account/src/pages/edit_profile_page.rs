@@ -47,9 +47,7 @@ pub fn EditProfilePage() -> impl IntoView {
                             let value_birthdate = RwSignal::new(user_profile.birthdate);
                             let value_country_alpha2 = RwSignal::new(user_profile.country_alpha2);
                             let value_bio = RwSignal::new(user_profile.bio);
-                            let value_avatar_image_blob = RwSignal::new(
-                                user_profile.avatar_image_blob,
-                            );
+                            let value_avatar_image_blob = RwSignal::new(user_profile.avatar_image_blob);
                             view! {
                                 <ActionForm
                                     action=server_action
@@ -59,9 +57,7 @@ pub fn EditProfilePage() -> impl IntoView {
                                 >
                                     <ActionFormAlert
                                         action_value=action_value
-                                        error_message=move || {
-                                            t_string!(i18n, my_account.failed_to_update_profile)
-                                        }
+                                        error_message=move || { t_string!(i18n, my_account.failed_to_update_profile) }
                                         redirect_to="/"
                                         success_message=move || {
                                             t_string!(i18n, my_account.profile_updated_successfully)

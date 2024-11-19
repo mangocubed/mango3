@@ -38,10 +38,7 @@ pub fn App() -> impl IntoView {
                                 <Route path=StaticSegment("") view=IndexPage />
                                 <Route path=StaticSegment("new-website") view=NewWebsitePage />
                                 <ParentRoute
-                                    path=(
-                                        StaticSegment("websites"),
-                                        ParamSegment(KEY_PARAM_WEBSITE_ID),
-                                    )
+                                    path=(StaticSegment("websites"), ParamSegment(KEY_PARAM_WEBSITE_ID))
                                     view=websites::ShowParentPage
                                 >
                                     <Route path=StaticSegment("") view=websites::ShowPage />

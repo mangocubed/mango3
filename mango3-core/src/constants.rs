@@ -46,6 +46,8 @@ lazy_static! {
         "pkg".to_owned(),
         "pop3".to_owned(),
         "pop3s".to_owned(),
+        "post".to_owned(),
+        "posts".to_owned(),
         "profile".to_owned(),
         "profiles".to_owned(),
         "register".to_owned(),

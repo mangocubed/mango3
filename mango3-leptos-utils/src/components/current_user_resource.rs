@@ -17,9 +17,7 @@ where
         <Transition>
             {move || Suspend::new(async move {
                 match current_user_resource.get() {
-                    Some(Ok(user_opt)) => {
-                        Either::Left(children_store.with_value(|store| store(user_opt)))
-                    }
+                    Some(Ok(user_opt)) => Either::Left(children_store.with_value(|store| store(user_opt))),
                     _ => Either::Right(()),
                 }
             })}

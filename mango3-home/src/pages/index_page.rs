@@ -44,11 +44,7 @@ pub fn IndexPage() -> impl IntoView {
                             .and_then(|result| result.ok())
                             .map(|page| {
                                 view! {
-                                    <For
-                                        each=move || page.nodes.clone()
-                                        key=|website| website.id.clone()
-                                        let:website
-                                    >
+                                    <For each=move || page.nodes.clone() key=|website| website.id.clone() let:website>
                                         <WebsiteCard website=website />
                                     </For>
                                 }

@@ -45,13 +45,9 @@ pub fn NewPostPage() -> impl IntoView {
                         >
                             <ActionFormAlert
                                 action_value=action_value
-                                error_message=move || {
-                                    t_string!(i18n, studio.failed_to_create_post)
-                                }
+                                error_message=move || { t_string!(i18n, studio.failed_to_create_post) }
                                 redirect_to=format!("/websites/{}", website.id)
-                                success_message=move || {
-                                    t_string!(i18n, studio.post_created_successfully)
-                                }
+                                success_message=move || { t_string!(i18n, studio.post_created_successfully) }
                             />
 
                             <input type="hidden" name="website_id" value=website.id />

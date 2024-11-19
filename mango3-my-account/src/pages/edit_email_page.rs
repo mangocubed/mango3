@@ -52,26 +52,15 @@ pub fn EditEmailPage() -> impl IntoView {
             <section class="max-w-[640px] w-full ml-auto mr-auto mt-4">
                 <h3 class="text-lg font-bold mb-4">{t!(i18n, my_account.change_email)}</h3>
 
-                <ActionForm
-                    action=server_action
-                    attr:autocomplete="off"
-                    attr:novalidate="true"
-                    attr:class="form"
-                >
+                <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
                     <ActionFormAlert
                         action_value=action_value
                         error_message=move || t_string!(i18n, my_account.failed_to_update_email)
                         on_success=move || current_user_resource.refetch()
-                        success_message=move || {
-                            t_string!(i18n, my_account.email_updated_successfully)
-                        }
+                        success_message=move || { t_string!(i18n, my_account.email_updated_successfully) }
                     />
 
-                    <TextField
-                        label=move || t_string!(i18n, shared.email)
-                        name="email"
-                        error=error_email
-                    />
+                    <TextField label=move || t_string!(i18n, shared.email) name="email" error=error_email />
 
                     <PasswordField
                         label=move || t_string!(i18n, shared.password)

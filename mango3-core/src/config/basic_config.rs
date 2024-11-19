@@ -8,6 +8,7 @@ use super::extract_from_env;
 pub struct BasicConfig {
     pub copyright: String,
     pub domain: String,
+    pub enable_register: bool,
     pub secure: bool,
     pub title: String,
 }
@@ -17,6 +18,7 @@ impl Default for BasicConfig {
         Self {
             copyright: "© 2024, Mango³ Team".to_owned(),
             domain: "mango3.localhost".to_owned(),
+            enable_register: true,
             secure: false,
             title: "Mango³ Dev".to_owned(),
         }

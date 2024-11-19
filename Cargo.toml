@@ -2,6 +2,7 @@
 resolver = "2"
 members = [
     "mango3-accounts",
+    "mango3-cli",
     "mango3-core",
     "mango3-home",
     "mango3-leptos-utils",

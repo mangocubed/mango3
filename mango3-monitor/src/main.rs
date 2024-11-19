@@ -13,7 +13,7 @@ use tokio::signal::unix::SignalKind;
 mod constants;
 mod workers;
 
-use crate::workers::*;
+use crate::workers::{guest_mailer_worker, mailer_worker};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -29,6 +29,13 @@ async fn main() -> anyhow::Result<()> {
     let core_context = CoreContext::setup().await;
 
     Monitor::<TokioExecutor>::new()
+        .register_with_count(
+            2,
+            WorkerBuilder::new("guest-mailer")
+                .layer(TraceLayer::new())
+                .with_storage(core_context.jobs.storage_guest_mailer.clone())
+                .build_fn(guest_mailer_worker),
+        )
         .register_with_count(
             2,
             WorkerBuilder::new("mailer")
