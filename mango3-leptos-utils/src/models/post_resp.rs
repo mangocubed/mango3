@@ -56,7 +56,7 @@ impl FromCore<Post> for PostResp {
                 .await
                 .and_then(|result| result.ok())
                 .map(|blob| blob.into()),
-            is_published: post.is_published(),
+            is_published: post.is_published(core_context).await,
             url: post.url(&core_context).await.to_string(),
         }
     }

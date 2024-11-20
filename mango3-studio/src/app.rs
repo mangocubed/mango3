@@ -8,7 +8,7 @@ use mango3_leptos_utils::components::{AppProvider, AppTitle, BottomBar, Brand, G
 use mango3_leptos_utils::i18n::use_i18n;
 use mango3_leptos_utils::pages::NotFoundPage;
 
-use crate::constants::KEY_PARAM_WEBSITE_ID;
+use crate::constants::{KEY_PARAM_POST_ID, KEY_PARAM_WEBSITE_ID};
 use crate::pages::{websites, IndexPage, NewWebsitePage};
 
 #[component]
@@ -46,6 +46,14 @@ pub fn App() -> impl IntoView {
                                     <Route
                                         path=(StaticSegment("posts"), StaticSegment("new"))
                                         view=websites::NewPostPage
+                                    />
+                                    <Route
+                                        path=(
+                                            StaticSegment("posts"),
+                                            ParamSegment(KEY_PARAM_POST_ID),
+                                            StaticSegment("edit"),
+                                        )
+                                        view=websites::EditPostPage
                                     />
                                     <Route path=StaticSegment("edit") view=websites::EditPage />
                                 </ParentRoute>

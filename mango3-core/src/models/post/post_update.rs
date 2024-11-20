@@ -4,27 +4,35 @@ use crate::models::Blob;
 use crate::validator::{ValidationErrors, Validator};
 use crate::CoreContext;
 
-use super::Website;
+use super::Post;
 
-impl Website {
+impl Post {
     pub async fn update(
         &self,
         core_context: &CoreContext,
-        name: &str,
-        description: &str,
-        icon_image_blob: Option<&Blob>,
+        title: &str,
+        slug: &str,
+        content: &str,
         cover_image_blob: Option<&Blob>,
         publish: bool,
     ) -> Result<Self, ValidationErrors> {
         let mut validator = Validator::default();
 
-        let name = name.trim();
-        let description = description.trim();
-        let icon_image_blob_id = icon_image_blob.map(|blob| blob.id);
+        let title = title.trim();
+        let slug = slug.trim().to_lowercase();
+        let content = content.trim();
         let cover_image_blob_id = cover_image_blob.map(|blob| blob.id);
 
-        validator.validate_name(core_context, Some(self), name).await;
-        validator.validate_description(description);
+        validator.validate_title(title);
+        validator
+            .validate_slug(
+                core_context,
+                Some(self),
+                &self.website(core_context).await.unwrap(),
+                &slug,
+            )
+            .await;
+        validator.validate_content(content);
 
         if !validator.is_valid {
             return Err(validator.errors);
@@ -32,10 +40,10 @@ impl Website {
 
         query_as!(
             Self,
-            "UPDATE websites SET
-                name = $2,
-                description = $3,
-                icon_image_blob_id = $4,
+            "UPDATE posts SET
+                title = $2,
+                slug = $3,
+                content = $4,
                 cover_image_blob_id = $5,
                 published_at = CASE
                     WHEN $6 IS TRUE AND published_at IS NOT NULL THEN published_at
@@ -44,9 +52,9 @@ impl Website {
                 END
             WHERE id = $1 RETURNING *",
             self.id,             // $1
-            name,                // $2
-            description,         // $3
-            icon_image_blob_id,  // $4
+            title,               // $2
+            slug,                // $3
+            content,             // $4
             cover_image_blob_id, // $5
             publish,             // $6
         )

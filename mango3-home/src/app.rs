@@ -45,7 +45,7 @@ pub fn App() -> impl IntoView {
                             </a>
 
                             <a class="btn btn-ghost" href="/posts">
-                                {t!(i18n, home.posts)}
+                                {t!(i18n, shared.posts)}
                             </a>
 
                             <a class="btn btn-ghost" href="/websites">

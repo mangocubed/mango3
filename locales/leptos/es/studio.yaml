@@ -1,8 +1,11 @@
+are_you_sure_you_want_to_delete_this_post: ¿Seguro que deseas eliminar este post?
 content: Contenido
 cover_image: Imagen de portada
+delete: Eliminar
 edit: Editar
 failed_to_create_post: Error al crear post
 failed_to_create_website: Error al crear website
+failed_to_update_post: Error al actualizar post
 failed_to_update_website: Error al actualizar website
 description: Descripción
 icon_image: Imagen de icono
@@ -10,7 +13,7 @@ my_websites: My websites
 name: Nombre
 new_post: Nuevo post
 post_created_successfully: Post creado exitosamente
-posts: Posts
+post_updated_successfully: Post actualizado exitosamente
 publish: Publicar
 slug: Slug
 subdomain: Subdominio

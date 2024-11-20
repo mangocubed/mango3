@@ -6,8 +6,12 @@ use mango3_leptos_utils::models::WebsiteResp;
 
 use crate::context::use_my_website_resource;
 
+mod post_form_fields;
+
+pub use post_form_fields::PostFormFields;
+
 #[component]
-pub fn MyWebsiteResource<VF, IV>(children: VF) -> impl IntoView
+pub fn MyWebsiteOpt<VF, IV>(children: VF) -> impl IntoView
 where
     IV: IntoView + 'static,
     VF: Fn(Option<WebsiteResp>) -> IV + Send + Sync + 'static,
@@ -25,4 +29,13 @@ where
             })}
         </Suspense>
     }
+}
+
+#[component]
+pub fn MyWebsite<VF, IV>(children: VF) -> impl IntoView
+where
+    IV: IntoView + 'static,
+    VF: Fn(WebsiteResp) -> IV + Send + Sync + 'static,
+{
+    view! { <MyWebsiteOpt children=move |website_opt| { website_opt.map(&children) } /> }
 }

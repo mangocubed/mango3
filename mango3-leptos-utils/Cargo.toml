@@ -18,7 +18,7 @@ leptos_axum = { workspace = true, optional = true }
 leptos_i18n = { workspace = true }
 leptos_meta = { workspace = true }
 leptos_router = { workspace = true }
-leptos-use = { workspace = true, features = ["use_color_mode", "use_infinite_scroll"] }
+leptos-use = { workspace = true, features = ["use_color_mode", "use_infinite_scroll", "use_textarea_autosize"] }
 pulldown-cmark = { version = "0.12.2", optional = true }
 rust_iso3166 = { workspace = true, optional = true }
 serde = { workspace = true }

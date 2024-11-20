@@ -1,10 +1,7 @@
-use sqlx::{query, query_as};
-use uuid::Uuid;
+use sqlx::query_as;
 
-use crate::constants::{BLACKLISTED_SLUGS, REGEX_SLUG};
-use crate::enums::{Input, InputError};
 use crate::models::{Blob, User, Website};
-use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
+use crate::validator::{ValidationErrors, Validator};
 use crate::CoreContext;
 
 use super::Post;
@@ -27,32 +24,9 @@ impl Post {
         let content = content.trim();
         let cover_image_blob_id = cover_image_blob.map(|blob| blob.id);
 
-        if validator.validate_presence(Input::Title, title)
-            && validator.validate_length(Input::Title, title, Some(1), Some(255))
-        {
-            validator.custom_validation(Input::Title, InputError::IsInvalid, &|| Uuid::try_parse(title).is_err());
-        }
-
-        if validator.validate_presence(Input::Slug, &slug)
-            && validator.validate_format(Input::Slug, &slug, &REGEX_SLUG)
-            && validator.validate_length(Input::Slug, &slug, Some(1), Some(255))
-            && validator.custom_validation(Input::Slug, InputError::IsInvalid, &|| Uuid::try_parse(&slug).is_err())
-            && validator.custom_validation(Input::Username, InputError::IsInvalid, &|| {
-                !BLACKLISTED_SLUGS.contains(&slug)
-            })
-        {
-            let slug_exists = query!(
-                "SELECT id FROM posts WHERE LOWER(slug) = $1 AND website_id = $2 LIMIT 1",
-                slug,       // $1
-                website.id  // $2
-            )
-            .fetch_one(&core_context.db_pool)
-            .await
-            .is_ok();
-            validator.custom_validation(Input::Slug, InputError::AlreadyInUse, &|| !slug_exists);
-        }
-
-        validator.validate_length(Input::Content, content, None, Some(2048));
+        validator.validate_title(title);
+        validator.validate_slug(core_context, None, website, &slug).await;
+        validator.validate_content(content);
 
         if !validator.is_valid {
             return Err(validator.errors);

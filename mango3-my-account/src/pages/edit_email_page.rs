@@ -33,7 +33,7 @@ pub fn EditEmailPage() -> impl IntoView {
             <h2 class="h2">{title}</h2>
 
             <section class="max-w-[640px] w-full ml-auto mr-auto">
-                <h3 class="text-lg font-bold mb-4">{t!(i18n, my_account.current_email)}</h3>
+                <h3 class="h3">{t!(i18n, my_account.current_email)}</h3>
 
                 <div class="flex items-center justify-between">
                     <CurrentUserResource children=move |user| {
@@ -50,7 +50,7 @@ pub fn EditEmailPage() -> impl IntoView {
             </section>
 
             <section class="max-w-[640px] w-full ml-auto mr-auto mt-4">
-                <h3 class="text-lg font-bold mb-4">{t!(i18n, my_account.change_email)}</h3>
+                <h3 class="h3">{t!(i18n, my_account.change_email)}</h3>
 
                 <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
                     <ActionFormAlert

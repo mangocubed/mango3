@@ -3,13 +3,16 @@ use sqlx::types::Uuid;
 use sqlx::{query, query_as};
 use url::Url;
 
-use crate::validator::ValidationErrors;
+use crate::constants::{BLACKLISTED_SLUGS, REGEX_SLUG};
+use crate::enums::{Input, InputError};
+use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
 use crate::CoreContext;
 
 use super::{Blob, User, Website};
 
 mod post_insert;
 mod post_paginate;
+mod post_update;
 
 #[derive(Clone)]
 pub struct Post {
@@ -77,8 +80,8 @@ impl Post {
         .await
     }
 
-    pub fn is_published(&self) -> bool {
-        self.published_at.is_some()
+    pub async fn is_published(&self, core_context: &CoreContext) -> bool {
+        self.website(core_context).await.unwrap().is_published() && self.published_at.is_some()
     }
 
     pub async fn url(&self, core_context: &CoreContext) -> Url {
@@ -92,5 +95,48 @@ impl Post {
 
     pub async fn website(&self, core_context: &CoreContext) -> sqlx::Result<Website> {
         Website::get_by_id(core_context, self.website_id, None).await
+    }
+}
+
+impl Validator {
+    fn validate_title(&mut self, value: &str) -> bool {
+        self.validate_presence(Input::Title, value)
+            && self.validate_length(Input::Title, value, Some(3), Some(255))
+            && self.custom_validation(Input::Title, InputError::IsInvalid, &|| Uuid::try_parse(value).is_err())
+    }
+
+    async fn validate_slug(
+        &mut self,
+        core_context: &CoreContext,
+        post: Option<&Post>,
+        website: &Website,
+        slug: &str,
+    ) -> bool {
+        if self.validate_presence(Input::Slug, slug)
+            && self.validate_format(Input::Slug, slug, &REGEX_SLUG)
+            && self.validate_length(Input::Slug, slug, Some(1), Some(255))
+            && self.custom_validation(Input::Slug, InputError::IsInvalid, &|| Uuid::try_parse(slug).is_err())
+            && self.custom_validation(Input::Username, InputError::IsInvalid, &|| {
+                !BLACKLISTED_SLUGS.contains(&slug.to_owned())
+            })
+        {
+            let id = post.map(|p| p.id);
+            let slug_exists = query!(
+                "SELECT id FROM posts WHERE ($1::uuid IS NULL OR id != $1) AND LOWER(slug) = $2 AND website_id = $3 LIMIT 1",
+                id,         // $1
+                slug,       // $2
+                website.id  // $3
+            )
+            .fetch_one(&core_context.db_pool)
+            .await
+            .is_ok();
+            self.custom_validation(Input::Slug, InputError::AlreadyInUse, &|| !slug_exists)
+        } else {
+            false
+        }
+    }
+
+    fn validate_content(&mut self, value: &str) -> bool {
+        self.validate_length(Input::Content, value, None, Some(8192))
     }
 }

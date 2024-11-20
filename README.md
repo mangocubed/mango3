@@ -84,3 +84,15 @@ cargo leptos serve --project mango3-accounts
 ```sh
 cargo leptos serve --project mango3-my-account
 ```
+
+* Studio:
+
+```sh
+cargo leptos serve --project mango3-studio
+```
+
+* Websites:
+
+```sh
+cargo leptos serve --project mango3-websites
+```

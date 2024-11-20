@@ -14,7 +14,7 @@ pub fn PostsPage() -> impl IntoView {
     let after = RwSignal::new(None);
     let posts_resource = Resource::new_blocking(move || after.get(), get_posts);
 
-    let title = move || t_string!(i18n, home.posts);
+    let title = move || t_string!(i18n, shared.posts);
 
     view! {
         <Page title=title>

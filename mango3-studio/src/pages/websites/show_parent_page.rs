@@ -7,7 +7,7 @@ use leptos_router::hooks::use_location;
 use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::pages::{AuthenticatedPage, NotFoundPage};
 
-use crate::components::MyWebsiteResource;
+use crate::components::MyWebsiteOpt;
 use crate::context::provide_my_website_resource;
 
 #[component]
@@ -45,7 +45,7 @@ pub fn ShowParentPage() -> impl IntoView {
     let location = use_location();
 
     view! {
-        <MyWebsiteResource children=move |website| {
+        <MyWebsiteOpt children=move |website| {
             if let Some(website) = website {
                 let website_name = website.name.clone();
                 let home_path = format!("/websites/{}", website.id);
@@ -54,7 +54,7 @@ pub fn ShowParentPage() -> impl IntoView {
                     (home_path.clone(), t_string!(i18n, shared.home), vec![]),
                     (
                         posts_path.clone(),
-                        t_string!(i18n, studio.posts),
+                        t_string!(i18n, shared.posts),
                         vec![(format!("{posts_path}/new"), t_string!(i18n, studio.new_post))],
                     ),
                     (format!("{home_path}/edit"), t_string!(i18n, studio.edit), vec![]),
@@ -121,10 +121,7 @@ pub fn ShowParentPage() -> impl IntoView {
                     },
                 )
             } else {
-                Either::Right(
-
-                    view! { <NotFoundPage /> },
-                )
+                Either::Right(view! { <NotFoundPage /> })
             }
         } />
     }

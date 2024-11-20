@@ -36,12 +36,7 @@ pub fn NewWebsitePage() -> impl IntoView {
         <AuthenticatedPage title=title>
             <h2 class="text-xl font-bold mb-4">{title}</h2>
 
-            <ActionForm
-                action=server_action
-                attr:autocomplete="off"
-                attr:novalidate="true"
-                attr:class="max-w-[640px] m-auto"
-            >
+            <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
                 <ActionFormAlert
                     action_value=action_value
                     error_message=move || t_string!(i18n, studio.failed_to_create_website)

@@ -15,6 +15,7 @@ pub fn InfiniteScroll<T, IV, F, K, KF>(
     after: RwSignal<Option<String>>,
     children: F,
     key: KF,
+    #[prop(into, optional)] nodes: RwSignal<Vec<T>>,
     #[prop(into)] resource: Resource<Result<PageResp<T>, ServerFnError>>,
 ) -> impl IntoView
 where
@@ -26,34 +27,36 @@ where
 {
     let node_ref = NodeRef::<Div>::new();
     let bottom_is_visible = use_element_visibility(node_ref);
-    let full_page = RwSignal::new(PageResp::default());
+    let end_cursor = RwSignal::new(None);
+    let has_next_page = RwSignal::new(false);
     let is_loading = RwSignal::new(true);
 
     Effect::new(move || {
-        if let Some(Ok(mut new_page)) = resource.get() {
-            full_page.update(|fp| {
-                fp.end_cursor = new_page.end_cursor;
-                fp.has_next_page = new_page.has_next_page;
-                fp.nodes.append(&mut new_page.nodes);
+        if let Some(Ok(mut page)) = resource.get() {
+            end_cursor.set(page.end_cursor);
+            has_next_page.set(page.has_next_page);
+            nodes.update(|n| {
+                n.append(&mut page.nodes);
             });
-
             is_loading.set(false);
         }
     });
 
     Effect::new(move || {
-        if !bottom_is_visible.get() || is_loading.get() || !full_page.get().has_next_page {
+        if !bottom_is_visible.get() || is_loading.get() || !has_next_page.get() {
             return;
         }
 
         is_loading.set(true);
 
-        after.set(full_page.get().end_cursor);
+        after.set(end_cursor.get());
         resource.refetch();
     });
 
+    Effect::new(move || {});
+
     view! {
-        <For each=move || full_page.get().nodes key=key let:data>
+        <For each=move || nodes.get() key=key let:data>
             {children(data)}
         </For>
 

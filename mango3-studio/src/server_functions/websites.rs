@@ -45,7 +45,7 @@ pub async fn attempt_to_update_website(
 ) -> Result<ActionFormResp, ServerFnError> {
     let i18n = extract_i18n().await?;
 
-    let Some(website) = my_website(id).await? else {
+    let Some(website) = my_website(&id).await? else {
         return ActionFormResp::new_with_error(&i18n);
     };
 
@@ -80,7 +80,7 @@ pub async fn attempt_to_update_website(
 
 #[server]
 pub async fn get_my_website(id: String) -> Result<Option<WebsiteResp>, ServerFnError> {
-    if let Some(website) = my_website(id).await? {
+    if let Some(website) = my_website(&id).await? {
         let core_context = expect_core_context();
 
         Ok(Some(WebsiteResp::from_core(&core_context, &website).await))
@@ -107,7 +107,7 @@ pub async fn get_my_websites(after: Option<String>) -> Result<PageResp<WebsiteRe
 }
 
 #[cfg(feature = "ssr")]
-pub async fn my_website(id: String) -> Result<Option<Website>, ServerFnError> {
+pub async fn my_website(id: &str) -> Result<Option<Website>, ServerFnError> {
     if !require_authentication().await? {
         return Ok(None);
     }
@@ -115,7 +115,7 @@ pub async fn my_website(id: String) -> Result<Option<Website>, ServerFnError> {
     let core_context = expect_core_context();
     let user = extract_user().await?.unwrap();
 
-    Ok(Website::get_by_id(&core_context, Uuid::try_parse(&id)?, Some(&user))
+    Ok(Website::get_by_id(&core_context, Uuid::try_parse(id)?, Some(&user))
         .await
         .ok())
 }
