@@ -38,7 +38,7 @@ pub fn PostCard(
                     }>{post.title}</a>
                 </h3>
 
-                <div class="prose" inner_html=inner_html />
+                <div class="prose max-w-none" inner_html=inner_html />
 
                 <div class="card-actions justify-end">{actions.run()}</div>
             </div>
