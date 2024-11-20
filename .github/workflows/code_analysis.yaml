@@ -39,7 +39,13 @@ jobs:
 
     sqlfluff:
         runs-on: ubuntu-latest
-        container:
-            image: sqlfluff:3.2.5
         steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-python@v4
+            - run: pip install --upgrade pipenv~=2024.4
+            - uses: actions/cache@v4
+              with:
+                  path: ~/.local/share/virtualenvs
+                  key: ${{ runner.os }}-python-${{ steps.setup-python.outputs.python-version }}-pipenv-${{ hashFiles('Pipfile.lock') }}
+            - run: pipenv install --upgrade sqlfluff~=3.2
             - run: sqlfluff lint migrations/*.sql
