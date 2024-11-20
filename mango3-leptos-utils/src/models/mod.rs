@@ -6,7 +6,7 @@ use async_trait::async_trait;
 use futures::future;
 
 #[cfg(feature = "ssr")]
-use mango3_core::pagination::Page;
+use mango3_core::pagination::CursorPage;
 #[cfg(feature = "ssr")]
 use mango3_core::CoreContext;
 
@@ -33,13 +33,13 @@ pub trait FromCore<T> {
 }
 
 #[derive(Clone, Deserialize, Serialize)]
-pub struct PageResp<R> {
+pub struct CursorPageResp<R> {
     pub end_cursor: Option<String>,
     pub nodes: Vec<R>,
     pub has_next_page: bool,
 }
 
-impl<R> Default for PageResp<R> {
+impl<R> Default for CursorPageResp<R> {
     fn default() -> Self {
         Self {
             end_cursor: None,
@@ -51,12 +51,12 @@ impl<R> Default for PageResp<R> {
 
 #[cfg(feature = "ssr")]
 #[async_trait]
-impl<C, R> FromCore<Page<C>> for PageResp<R>
+impl<C, R> FromCore<CursorPage<C>> for CursorPageResp<R>
 where
     C: Sync,
     R: FromCore<C> + Send,
 {
-    async fn from_core(core_context: &CoreContext, page: &Page<C>) -> Self {
+    async fn from_core(core_context: &CoreContext, page: &CursorPage<C>) -> Self {
         Self {
             end_cursor: page.end_cursor.map(|c| c.to_string()),
             nodes: future::join_all(page.nodes.iter().map(|node| R::from_core(core_context, node))).await,

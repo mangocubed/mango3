@@ -5,19 +5,19 @@ use uuid::Uuid;
 use crate::CoreContext;
 
 #[derive(Clone)]
-pub struct Page<T> {
+pub struct CursorPage<T> {
     pub end_cursor: Option<Uuid>,
     pub nodes: Vec<T>,
     pub has_next_page: bool,
 }
 
-impl<T> Page<T>
+impl<T> CursorPage<T>
 where
     T: Clone,
 {
     pub async fn new<'a, CT, CF, RT, RF, QF>(
         core_context: &'a CoreContext,
-        page_params: &PageParams,
+        page_params: &CursorPageParams,
         cursor_fn: CF,
         cursor_resource_fn: RF,
         query_fn: QF,
@@ -55,7 +55,7 @@ where
     }
 }
 
-impl<T> Default for Page<T> {
+impl<T> Default for CursorPage<T> {
     fn default() -> Self {
         Self {
             end_cursor: None,
@@ -65,12 +65,12 @@ impl<T> Default for Page<T> {
     }
 }
 
-pub struct PageParams {
+pub struct CursorPageParams {
     pub after: Option<Uuid>,
     pub first: i8,
 }
 
-impl Default for PageParams {
+impl Default for CursorPageParams {
     fn default() -> Self {
         Self { after: None, first: 10 }
     }

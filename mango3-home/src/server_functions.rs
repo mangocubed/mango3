@@ -3,7 +3,7 @@ use leptos::prelude::*;
 #[cfg(feature = "ssr")]
 use uuid::Uuid;
 
-use mango3_leptos_utils::models::{PageResp, PostResp, WebsiteResp};
+use mango3_leptos_utils::models::{CursorPageResp, PostResp, WebsiteResp};
 
 #[cfg(feature = "ssr")]
 use mango3_core::models::{Post, Website};
@@ -15,7 +15,7 @@ use mango3_leptos_utils::models::FromCore;
 use mango3_leptos_utils::ssr::expect_core_context;
 
 #[server]
-pub async fn get_websites(after: Option<String>) -> Result<PageResp<WebsiteResp>, ServerFnError> {
+pub async fn get_websites(after: Option<String>) -> Result<CursorPageResp<WebsiteResp>, ServerFnError> {
     let core_context = expect_core_context();
 
     let page_params = PageParams {
@@ -24,11 +24,11 @@ pub async fn get_websites(after: Option<String>) -> Result<PageResp<WebsiteResp>
     };
     let page = Website::paginate_by_created_at_desc(&core_context, &page_params, None, Some(true)).await;
 
-    Ok(PageResp::from_core(&core_context, &page).await)
+    Ok(CursorPageResp::from_core(&core_context, &page).await)
 }
 
 #[server]
-pub async fn get_posts(after: Option<String>) -> Result<PageResp<PostResp>, ServerFnError> {
+pub async fn get_posts(after: Option<String>) -> Result<CursorPageResp<PostResp>, ServerFnError> {
     let core_context = expect_core_context();
 
     let page_params = PageParams {
@@ -37,5 +37,5 @@ pub async fn get_posts(after: Option<String>) -> Result<PageResp<PostResp>, Serv
     };
     let page = Post::paginate_by_created_at_desc(&core_context, &page_params, None, None, Some(true)).await;
 
-    Ok(PageResp::from_core(&core_context, &page).await)
+    Ok(CursorPageResp::from_core(&core_context, &page).await)
 }

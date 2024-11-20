@@ -1,7 +1,7 @@
 use sqlx::query_as;
 
 use crate::models::{User, Website};
-use crate::pagination::{Page, PageParams};
+use crate::pagination::{CursorPage, CursorPageParams};
 use crate::CoreContext;
 
 use super::Post;
@@ -9,12 +9,12 @@ use super::Post;
 impl Post {
     pub async fn paginate_by_created_at_desc<'a>(
         core_context: &'a CoreContext,
-        page_params: &PageParams,
+        page_params: &CursorPageParams,
         website: Option<&'a Website>,
         user: Option<&'a User>,
         is_published: Option<bool>,
-    ) -> Page<Self> {
-        Page::new(
+    ) -> CursorPage<Self> {
+        CursorPage::new(
             core_context,
             page_params,
             |node: Self| node.id,

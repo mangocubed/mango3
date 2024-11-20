@@ -6,7 +6,7 @@ use leptos_use::use_element_visibility;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
 
-use crate::models::PageResp;
+use crate::models::CursorPageResp;
 
 use super::LoadingSpinner;
 
@@ -16,7 +16,7 @@ pub fn InfiniteScroll<T, IV, F, K, KF>(
     children: F,
     key: KF,
     #[prop(into, optional)] nodes: RwSignal<Vec<T>>,
-    #[prop(into)] resource: Resource<Result<PageResp<T>, ServerFnError>>,
+    #[prop(into)] resource: Resource<Result<CursorPageResp<T>, ServerFnError>>,
 ) -> impl IntoView
 where
     T: Clone + DeserializeOwned + Send + Serialize + Sync + 'static,
