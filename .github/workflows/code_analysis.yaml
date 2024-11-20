@@ -1,0 +1,39 @@
+name: Code analysis
+
+on: [push, pull_request]
+
+jobs:
+    cargo-clippy:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Run cargo clippy
+              run: cargo clippy -- -D warnings
+
+    cargo-audit:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Run cargo audit
+              run: cargo audit
+
+    cargo-fmt:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Run cargo fmt
+              run: cargo fmt --all --check
+
+    leptosfmt:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Run leptosfmt
+              run: leptosfmt --check -x mango3-cli -x mango3-core -x mango3-monitor -x mango3-uploads -x target .
+
+    sqlfluff:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Run sqlfluff
+              run: sqlfluff lint migrations/*.sql
