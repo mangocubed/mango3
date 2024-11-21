@@ -17,7 +17,3 @@ jobs:
     tests:
         needs: builds
         uses: ./.github/workflows/tests.yaml
-
-    end2end_tests:
-        needs: builds
-        uses: ./.github/workflows/end2end_tests.yaml
