@@ -23,7 +23,7 @@ jobs:
             - uses: ./.github/actions/setup-database
             - uses: taiki-e/install-action@cargo-llvm-cov
             - name: Test Monitor
-              run: cargo test --bin mango3-monitor
+              run: cargo llvm-cov --lcov --output-path lcov.info --bin mango3-monitor
 
     test-uploads:
         runs-on: ubuntu-latest
@@ -42,7 +42,7 @@ jobs:
             - uses: ./.github/actions/setup-database
             - uses: taiki-e/install-action@cargo-llvm-cov
             - name: Test Uploads
-              run: cargo build --bin mango3-uploads
+              run: cargo llvm-cov --lcov --output-path lcov.info --bin mango3-uploads
 
     test-cli:
         runs-on: ubuntu-latest
@@ -61,7 +61,7 @@ jobs:
             - uses: ./.github/actions/setup-database
             - uses: taiki-e/install-action@cargo-llvm-cov
             - name: Test CLI
-              run: cargo test --bin mango3-cli
+              run: cargo llvm-cov --lcov --output-path lcov.info --bin mango3-cli
 
     test-webapps:
         runs-on: ubuntu-latest
@@ -79,12 +79,12 @@ jobs:
             - uses: ./.github/actions/setup-leptos
             - uses: taiki-e/install-action@cargo-llvm-cov
             - name: Test Home
-              run: cargo test --bin mango3-home
-            - name: Tes Accounts
-              run: cargo test --bin mango3-accounts
+              run: cargo llvm-cov --lcov --output-path lcov.info --bin mango3-home
+            - name: Test Accounts
+              run: cargo llvm-cov --lcov --output-path lcov.info --bin mango3-accounts
             - name: Test My Account
-              run: cargo test --bin mango3-my-account
+              run: cargo llvm-cov --lcov --output-path lcov.info --bin mango3-my-account
             - name: Test Studio
-              run: cargo test --bin mango3-studio
+              run: cargo llvm-cov --lcov --output-path lcov.info --bin mango3-studio
             - name: Test Websites
-              run: cargo test --bin mango3-websites
+              run: cargo llvm-cov --lcov --output-path lcov.info --bin mango3-websites
