@@ -19,7 +19,7 @@ jobs:
             # redis:
             #     image: redis:7-alpine
         steps:
-            - uses: ./.github/actions/setup-rust.yaml
+            - uses: ./.github/actions/setup-rust
             - run: cargo install sqlx
             - run: sqlx database setup
             - run: cargo clippy -- -D warnings
@@ -27,13 +27,13 @@ jobs:
     cargo-fmt:
         runs-on: ubuntu-latest
         steps:
-            - uses: ./.github/actions/setup-rust.yaml
+            - uses: ./.github/actions/setup-rust
             - run: cargo fmt --all --check
 
     leptosfmt:
         runs-on: ubuntu-latest
         steps:
-            - uses: ./.github/actions/setup-rust.yaml
+            - uses: ./.github/actions/setup-rust
             - run: cargo install leptosfmt
             - run: leptosfmt --check -x mango3-cli -x mango3-core -x mango3-monitor -x mango3-uploads -x target .
 
@@ -47,5 +47,5 @@ jobs:
               with:
                   path: ~/.local/share/virtualenvs
                   key: ${{ runner.os }}-python-${{ steps.setup-python.outputs.python-version }}-pipenv-${{ hashFiles('Pipfile.lock') }}
-            - run: pipenv install --upgrade sqlfluff~=3.2
-            - run: sqlfluff lint migrations/*.sql
+            - run: pipenv install sqlfluff~=3.2
+            - run: pipenv run sqlfluff lint migrations/*.sql
