@@ -60,7 +60,7 @@ jobs:
             - name: Build CLI
               run: cargo build --release --bin mango3-cli
 
-    build-web-apps:
+    build-webapps:
         runs-on: ubuntu-latest
         services:
             postgres:

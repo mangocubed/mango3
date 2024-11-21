@@ -1,0 +1,33 @@
+name: End2end tests
+
+on: [workflow_call]
+
+env:
+    DATABASE_URL: postgres://mango3:mango3@localhost:5432/mango3_test
+
+jobs:
+    end2end-tests:
+        runs-on: ubuntu-latest
+        services:
+            postgres:
+                image: postgres:17-alpine
+                env:
+                    POSTGRES_PASSWORD: mango3
+                    POSTGRES_USER: mango3
+                options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+                ports:
+                    - 5432:5432
+        steps:
+            - uses: actions/checkout@v4
+            - uses: ./.github/actions/setup-leptos
+              run: npx playwright install chromium firefox --with-deps
+            - name: Test Home
+              run: cargo leptos end-to-end --release --project mango3-home
+            - name: Test Accounts
+              run: cargo leptos end-to-end --release --project mango3-accounts
+            # - name: Test My Account
+            #   run: cargo leptos end-to-end --release --project mango3-my-account
+            # - name: Test Studio
+            #   run: cargo leptos end-to-end --release --project mango3-studio
+            # - name: Test Websites
+            #   run: cargo leptos end-to-end --release --project mango3-websites

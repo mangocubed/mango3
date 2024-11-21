@@ -35,7 +35,7 @@ pub fn IndexPage() -> impl IntoView {
             </section>
 
             <section class="max-w-[640px] w-full ml-auto mr-auto">
-                <h2 class="h2">{t!(i18n, home.recent_websites)}</h2>
+                <h3 class="h3">{t!(i18n, home.recent_websites)}</h3>
 
                 <Suspense>
                     {move || Suspend::new(async move {
@@ -44,7 +44,11 @@ pub fn IndexPage() -> impl IntoView {
                             .and_then(|result| result.ok())
                             .map(|page| {
                                 view! {
-                                    <For each=move || page.nodes.clone() key=|website| website.id.clone() let:website>
+                                    <For
+                                        each=move || page.nodes.clone()
+                                        key=|website| website.id.clone()
+                                        let:website
+                                    >
                                         <WebsiteCard website=website />
                                     </For>
                                 }
