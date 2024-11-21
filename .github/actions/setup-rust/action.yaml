@@ -1,4 +1,5 @@
 name: Setup Rust
+description: Setup Rust environment
 
 runs:
     using: composite

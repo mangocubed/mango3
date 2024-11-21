@@ -1,0 +1,10 @@
+name: Setup Database
+description: Setup Database
+
+runs:
+    using: composite
+    steps:
+        - shell: bash
+          run: |
+              cargo install sqlx-cli
+              sqlx database setup
