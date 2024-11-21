@@ -1,20 +1,18 @@
-name: Build
+name: Builds
 
 on:
     push:
     pull_request:
-    workflow_run:
-        workflows: [Code analysis]
-        types:
-            - completed
 
 env:
     DATABASE_URL: postgres://mango3:mango3@localhost:5432/mango3_test
 
 jobs:
+    code_analysis:
+        uses: ./.github/workflows/code_analysis.yaml
     build:
         runs-on: ubuntu-latest
-        if: ${{ github.event.workflow_run.conclusion == 'success' }}
+        needs: code_analysis
         services:
             postgres:
                 image: postgres:17-alpine

@@ -1,0 +1,39 @@
+name: Tests
+
+on:
+    push:
+    pull_request:
+
+env:
+    DATABASE_URL: postgres://mango3:mango3@localhost:5432/mango3_test
+
+jobs:
+    builds:
+        uses: ./.github/workflows/builds.yaml
+    test:
+        runs-on: ubuntu-latest
+        needs: builds
+        services:
+            postgres:
+                image: postgres:17-alpine
+                env:
+                    POSTGRES_PASSWORD: mango3
+                    POSTGRES_USER: mango3
+                options: >-
+                    --health-cmd pg_isready
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+                ports:
+                    - 5432:5432
+        steps:
+            - uses: actions/checkout@v4
+            - uses: ./.github/actions/setup-rust
+            - run: cargo install sqlx-cli --no-default-features --features completions,native-tls,postgres
+            - run: sqlx database setup
+            - name: Test Monitor
+              run: cargo test --bin mango3-monitor
+            - name: Test Uploads
+              run: cargo build --bin mango3-uploads
+            - name: Test CLI
+              run: cargo test --bin mango3-cli
