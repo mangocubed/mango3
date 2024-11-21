@@ -19,6 +19,11 @@ jobs:
                 env:
                     POSTGRES_PASSWORD: mango3
                     POSTGRES_USER: mango3
+                options: >-
+                    --health-cmd pg_isready
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
         steps:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-rust
@@ -34,3 +39,9 @@ jobs:
               run: cargo leptos build --release --project mango3-home
             - name: Build Accounts
               run: cargo leptos build --release --project mango3-accounts
+            - name: Build My Account
+              run: cargo leptos build --release --project mango3-my-account
+            - name: Build Studio
+              run: cargo leptos build --release --project mango3-studio
+            - name: Build Websites
+              run: cargo leptos build --release --project mango3-websites
