@@ -4,7 +4,6 @@ on: [workflow_call]
 
 env:
     DATABASE_URL: postgres://mango3:mango3@localhost:5432/mango3_test
-    POSTGRES_OPTIONS: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
 jobs:
     build-monitor:
@@ -15,7 +14,7 @@ jobs:
                 env:
                     POSTGRES_PASSWORD: mango3
                     POSTGRES_USER: mango3
-                options: ${{ env.POSTGRES_OPTIONS }}
+                options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
                 ports:
                     - 5432:5432
         steps:
@@ -33,7 +32,7 @@ jobs:
                 env:
                     POSTGRES_PASSWORD: mango3
                     POSTGRES_USER: mango3
-                options: ${{ env.POSTGRES_OPTIONS }}
+                options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
                 ports:
                     - 5432:5432
         steps:
@@ -51,7 +50,7 @@ jobs:
                 env:
                     POSTGRES_PASSWORD: mango3
                     POSTGRES_USER: mango3
-                options: ${{ env.POSTGRES_OPTIONS }}
+                options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
                 ports:
                     - 5432:5432
         steps:
@@ -69,7 +68,7 @@ jobs:
                 env:
                     POSTGRES_PASSWORD: mango3
                     POSTGRES_USER: mango3
-                options: ${{ env.POSTGRES_OPTIONS }}
+                options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
                 ports:
                     - 5432:5432
         steps:
