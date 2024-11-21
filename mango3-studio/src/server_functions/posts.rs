@@ -8,7 +8,7 @@ use mango3_leptos_utils::models::{ActionFormResp, CursorPageResp, PostResp};
 #[cfg(feature = "ssr")]
 use mango3_core::models::{Blob, Post};
 #[cfg(feature = "ssr")]
-use mango3_core::pagination::PageParams;
+use mango3_core::pagination::CursorPageParams;
 #[cfg(feature = "ssr")]
 use mango3_leptos_utils::models::FromCore;
 #[cfg(feature = "ssr")]
@@ -132,7 +132,7 @@ pub async fn get_my_posts(
 
     let core_context = expect_core_context();
     let user = extract_user().await?.unwrap();
-    let page_params = PageParams {
+    let page_params = CursorPageParams {
         after: after.as_ref().and_then(|id| Uuid::try_parse(id).ok()),
         first: 10,
     };
