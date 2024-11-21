@@ -1,8 +1,6 @@
 name: Builds
 
-on:
-    push:
-    pull_request:
+on: [push, pull_request, workflow_call]
 
 env:
     DATABASE_URL: postgres://mango3:mango3@localhost:5432/mango3_test
