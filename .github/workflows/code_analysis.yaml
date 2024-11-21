@@ -1,0 +1,48 @@
+name: Code analysis
+
+on: [workflow_call]
+
+env:
+    DATABASE_URL: postgres://mango3:mango3@localhost:5432/mango3_test
+
+jobs:
+    check_rust:
+        runs-on: ubuntu-latest
+        services:
+            postgres:
+                image: postgres:17-alpine
+                env:
+                    POSTGRES_PASSWORD: mango3
+                    POSTGRES_USER: mango3
+                options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+                ports:
+                    - 5432:5432
+        steps:
+            - uses: actions/checkout@v4
+            - uses: ./.github/actions/setup-rust
+            - name: Check with cargo-fmt
+              run: cargo fmt --all --check
+            - name: Check with leptosfmt
+              run: |
+                  cargo install --force leptosfmt
+                  leptosfmt --check -x mango3-cli -x mango3-core -x mango3-monitor -x mango3-uploads -x target .
+            - uses: ./.github/actions/setup-database
+            - name: Check with cargo-clippy
+              run: cargo clippy -- -D warnings
+
+    check_sql:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-python@v4
+              with:
+                  python-version: 3.13
+            - run: pip install --upgrade pipenv~=2024.4
+            - uses: actions/cache@v4
+              with:
+                  path: ~/.local/share/virtualenvs
+                  key: ${{ runner.os }}-python-${{ steps.setup-python.outputs.python-version }}-pipenv-${{ hashFiles('Pipfile.lock') }}
+            - name: Check with sqlfluff
+              run: |
+                  pipenv install sqlfluff~=3.2
+                  pipenv run sqlfluff lint migrations/*.sql

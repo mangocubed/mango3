@@ -1,0 +1,10 @@
+name: Setup Database
+description: Creates the database and run migrations
+
+runs:
+    using: composite
+    steps:
+        - shell: bash
+          run: cargo install --force sqlx-cli --no-default-features --features completions,native-tls,postgres
+        - shell: bash
+          run: sqlx database setup

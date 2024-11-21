@@ -35,7 +35,7 @@ pub fn IndexPage() -> impl IntoView {
             </section>
 
             <section class="max-w-[640px] w-full ml-auto mr-auto">
-                <h2 class="h2">{t!(i18n, home.recent_websites)}</h2>
+                <h3 class="h3">{t!(i18n, home.recent_websites)}</h3>
 
                 <Suspense>
                     {move || Suspend::new(async move {

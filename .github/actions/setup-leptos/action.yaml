@@ -1,0 +1,23 @@
+name: Setup Leptos
+description: Setup Leptos environment with Rust and the database
+
+runs:
+    using: composite
+    steps:
+        - uses: ./.github/actions/setup-rust
+        - uses: ./.github/actions/setup-database
+        - uses: actions/cache@v4
+          with:
+              path: |
+                  ~/.cache/cargo-leptos/
+              key: ${{ runner.os }}-cargo-leptos-${{ hashFiles('**/Cargo.lock') }}
+        - uses: actions/setup-node@v4
+          with:
+              node-version: 22
+              cache: npm
+        - shell: bash
+          run: cargo install --force cargo-leptos
+        - shell: bash
+          run: rustup target add wasm32-unknown-unknown
+        - shell: bash
+          run: npm ci

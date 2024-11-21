@@ -1,0 +1,15 @@
+name: Setup Rust
+description: Setup Rust environment
+
+runs:
+    using: composite
+    steps:
+        - uses: actions/cache@v4
+          with:
+              path: |
+                  ~/.cargo/bin/
+                  ~/.cargo/registry/index/
+                  ~/.cargo/registry/cache/
+                  ~/.cargo/git/db/
+                  target/
+              key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}

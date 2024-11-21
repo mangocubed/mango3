@@ -35,7 +35,7 @@
 Install dependencies:
 
 ```sh
-cargo install sqlx-cli
+cargo install sqlx-cli --no-default-features --features completions,native-tls,postgres
 npm install
 ```
 
