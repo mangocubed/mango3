@@ -1,4 +1,5 @@
 /.env
+/lcov.info
 /node_modules
 /storage
 /target

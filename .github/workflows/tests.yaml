@@ -22,22 +22,8 @@ jobs:
             - uses: ./.github/actions/setup-rust
             - uses: ./.github/actions/setup-database
             - uses: taiki-e/install-action@cargo-llvm-cov
-            - name: Test Monitor
-              run: cargo llvm-cov --lcov --output-path lcov.info --bin mango3-monitor
-            - name: Test Uploads
-              run: cargo llvm-cov --lcov --output-path lcov.info --bin mango3-uploads
-            - name: Test CLI
-              run: cargo llvm-cov --lcov --output-path lcov.info --bin mango3-cli
-            - name: Test Home
-              run: cargo llvm-cov --lcov --output-path lcov.info --bin mango3-home
-            - name: Test Accounts
-              run: cargo llvm-cov --lcov --output-path lcov.info --bin mango3-accounts
-            - name: Test My Account
-              run: cargo llvm-cov --lcov --output-path lcov.info --bin mango3-my-account
-            - name: Test Studio
-              run: cargo llvm-cov --lcov --output-path lcov.info --bin mango3-studio
-            - name: Test Websites
-              run: cargo llvm-cov --lcov --output-path lcov.info --bin mango3-websites
+            - name: Run all unit tests
+              run: cargo llvm-cov --workspace --all-features --lcov --output-path lcov.info
 
     end2end_tests:
         runs-on: ubuntu-latest
