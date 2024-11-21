@@ -20,7 +20,7 @@ jobs:
         steps:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-rust
-            - run: sqlx database setup
+            - uses: ./.github/actions/setup-database
             - run: cargo clippy -- -D warnings
 
     cargo-fmt:

@@ -1,0 +1,10 @@
+name: Setup Database
+description: Creates the database and run migrations
+
+runs:
+    using: composite
+    steps:
+        - shell: bash
+          run: cargo install sqlx-cli --no-default-features --features completions,native-tls,postgres
+        - shell: bash
+          run: sqlx database setup --database-url postgres://mango3:mango3@localhost:5432/mango3_test

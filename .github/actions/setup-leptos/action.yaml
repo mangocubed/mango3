@@ -1,0 +1,16 @@
+name: Setup Leptos
+description: Setup Leptos environment with Rust and the database
+
+runs:
+    using: composite
+    steps:
+        - uses: ./.github/actions/setup-rust
+        - uses: ./.github/actions/setup-database
+        - uses: actions/setup-node@v4
+          with:
+              node-version: 22
+              cache: npm
+        - shell: bash
+          run: cargo install cargo-leptos
+        - shell: bash
+          run: npm ci

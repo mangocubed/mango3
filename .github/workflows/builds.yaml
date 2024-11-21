@@ -20,7 +20,7 @@ jobs:
         steps:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-rust
-            - run: sqlx database setup
+            - uses: ./.github/actions/setup-database
             - name: Build Monitor
               run: cargo build --release --bin mango3-monitor
 
@@ -38,7 +38,7 @@ jobs:
         steps:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-rust
-            - run: sqlx database setup
+            - uses: ./.github/actions/setup-database
             - name: Build Uploads
               run: cargo build --release --bin mango3-uploads
 
@@ -56,7 +56,7 @@ jobs:
         steps:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-rust
-            - run: sqlx database setup
+            - uses: ./.github/actions/setup-database
             - name: Build CLI
               run: cargo build --release --bin mango3-cli
 
@@ -73,13 +73,7 @@ jobs:
                     - 5432:5432
         steps:
             - uses: actions/checkout@v4
-            - uses: ./.github/actions/setup-rust
-            - uses: actions/setup-node@v4
-              with:
-                  node-version: 22
-                  cache: npm
-            - run: sqlx database setup
-            - run: npm ci
+            - uses: ./.github/actions/setup-leptos
             - name: Build Home
               run: cargo leptos build --release --project mango3-home
             - name: Build Accounts

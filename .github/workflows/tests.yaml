@@ -20,7 +20,7 @@ jobs:
         steps:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-rust
-            - run: sqlx database setup
+            - uses: ./.github/actions/setup-database
             - name: Test Monitor
               run: cargo test --bin mango3-monitor
 
@@ -38,7 +38,7 @@ jobs:
         steps:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-rust
-            - run: sqlx database setup
+            - uses: ./.github/actions/setup-database
             - name: Test Uploads
               run: cargo build --bin mango3-uploads
 
@@ -56,6 +56,6 @@ jobs:
         steps:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-rust
-            - run: sqlx database setup
+            - uses: ./.github/actions/setup-database
             - name: Test CLI
               run: cargo test --bin mango3-cli
