@@ -13,3 +13,6 @@ runs:
                   ~/.cargo/git/db/
                   target/
               key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          run: |
+              cargo install sqlx-cli --no-default-features --features completions,native-tls,postgres
+              cargo install cargo-leptos
