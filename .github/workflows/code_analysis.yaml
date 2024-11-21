@@ -24,7 +24,7 @@ jobs:
         steps:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-rust
-            - run: cargo install sqlx-cli
+            - run: cargo install sqlx-cli --no-default-features --features completions,native-tls,postgres
             - run: sqlx database setup
             - run: cargo clippy -- -D warnings
 

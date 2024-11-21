@@ -1,6 +1,8 @@
 name: Build
 
 on:
+    push:
+    pull_request:
     workflow_run:
         workflows: [Code analysis]
         types:
@@ -10,7 +12,7 @@ env:
     DATABASE_URL: postgres://mango3:mango3@localhost:5432/mango3_test
 
 jobs:
-    build-monitor:
+    build:
         runs-on: ubuntu-latest
         if: ${{ github.event.workflow_run.conclusion == 'success' }}
         services:
@@ -29,7 +31,7 @@ jobs:
         steps:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-rust
-            - run: cargo install sqlx-cli
+            - run: cargo install sqlx-cli --no-default-features --features completions,native-tls,postgres
             - run: sqlx database setup
             - name: Build Monitor
               run: cargo build --release --bin mango3-monitor
