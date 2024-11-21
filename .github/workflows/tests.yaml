@@ -21,6 +21,7 @@ jobs:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-rust
             - uses: ./.github/actions/setup-database
+            - uses: taiki-e/install-action@cargo-llvm-cov
             - name: Test Monitor
               run: cargo test --bin mango3-monitor
 
@@ -39,6 +40,7 @@ jobs:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-rust
             - uses: ./.github/actions/setup-database
+            - uses: taiki-e/install-action@cargo-llvm-cov
             - name: Test Uploads
               run: cargo build --bin mango3-uploads
 
@@ -57,6 +59,7 @@ jobs:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-rust
             - uses: ./.github/actions/setup-database
+            - uses: taiki-e/install-action@cargo-llvm-cov
             - name: Test CLI
               run: cargo test --bin mango3-cli
 
@@ -74,6 +77,7 @@ jobs:
         steps:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-leptos
+            - uses: taiki-e/install-action@cargo-llvm-cov
             - name: Test Home
               run: cargo test --bin mango3-home
             - name: Tes Accounts
