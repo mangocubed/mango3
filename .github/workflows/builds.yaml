@@ -6,14 +6,10 @@ env:
     DATABASE_URL: postgres://mango3:mango3@localhost:5432/mango3_test
 
 jobs:
-    code_analysis:
-        uses: ./.github/workflows/code_analysis.yaml
-
     build-monitor:
         runs-on: ubuntu-latest
-        needs: code_analysis
         services:
-            postgres:
+            postgres: &postgres
                 image: postgres:17-alpine
                 env:
                     POSTGRES_PASSWORD: mango3
@@ -34,20 +30,8 @@ jobs:
 
     build-uploads:
         runs-on: ubuntu-latest
-        needs: code_analysis
         services:
-            postgres:
-                image: postgres:17-alpine
-                env:
-                    POSTGRES_PASSWORD: mango3
-                    POSTGRES_USER: mango3
-                options: >-
-                    --health-cmd pg_isready
-                    --health-interval 10s
-                    --health-timeout 5s
-                    --health-retries 5
-                ports:
-                    - 5432:5432
+            postgres: *postgres
         steps:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-rust
@@ -57,20 +41,8 @@ jobs:
 
     build-cli:
         runs-on: ubuntu-latest
-        needs: code_analysis
         services:
-            postgres:
-                image: postgres:17-alpine
-                env:
-                    POSTGRES_PASSWORD: mango3
-                    POSTGRES_USER: mango3
-                options: >-
-                    --health-cmd pg_isready
-                    --health-interval 10s
-                    --health-timeout 5s
-                    --health-retries 5
-                ports:
-                    - 5432:5432
+            postgres: *postgres
         steps:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-rust
@@ -80,24 +52,17 @@ jobs:
 
     build-web-apps:
         runs-on: ubuntu-latest
-        needs: code_analysis
         services:
-            postgres:
-                image: postgres:17-alpine
-                env:
-                    POSTGRES_PASSWORD: mango3
-                    POSTGRES_USER: mango3
-                options: >-
-                    --health-cmd pg_isready
-                    --health-interval 10s
-                    --health-timeout 5s
-                    --health-retries 5
-                ports:
-                    - 5432:5432
+            postgres: *postgres
         steps:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-rust
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+                  cache: npm
             - run: sqlx database setup
+            - run: npm ci
             - name: Build Home
               run: cargo leptos build --release --project mango3-home
             - name: Build Accounts

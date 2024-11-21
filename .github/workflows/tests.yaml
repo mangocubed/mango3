@@ -1,19 +1,15 @@
 name: Tests
 
-on: [push, pull_request]
+on: [workflow_call]
 
 env:
     DATABASE_URL: postgres://mango3:mango3@localhost:5432/mango3_test
 
 jobs:
-    builds:
-        uses: ./.github/workflows/builds.yaml
-
     test-monitor:
         runs-on: ubuntu-latest
-        needs: builds
         services:
-            postgres:
+            postgres: &postgres
                 image: postgres:17-alpine
                 env:
                     POSTGRES_PASSWORD: mango3
@@ -34,20 +30,8 @@ jobs:
 
     test-uploads:
         runs-on: ubuntu-latest
-        needs: builds
         services:
-            postgres:
-                image: postgres:17-alpine
-                env:
-                    POSTGRES_PASSWORD: mango3
-                    POSTGRES_USER: mango3
-                options: >-
-                    --health-cmd pg_isready
-                    --health-interval 10s
-                    --health-timeout 5s
-                    --health-retries 5
-                ports:
-                    - 5432:5432
+            postgres: *postgres
         steps:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-rust
@@ -57,20 +41,8 @@ jobs:
 
     test-cli:
         runs-on: ubuntu-latest
-        needs: builds
         services:
-            postgres:
-                image: postgres:17-alpine
-                env:
-                    POSTGRES_PASSWORD: mango3
-                    POSTGRES_USER: mango3
-                options: >-
-                    --health-cmd pg_isready
-                    --health-interval 10s
-                    --health-timeout 5s
-                    --health-retries 5
-                ports:
-                    - 5432:5432
+            postgres: *postgres
         steps:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-rust
