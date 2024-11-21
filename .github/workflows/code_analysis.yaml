@@ -14,11 +14,7 @@ jobs:
                 env:
                     POSTGRES_PASSWORD: mango3
                     POSTGRES_USER: mango3
-                options: >-
-                    --health-cmd pg_isready
-                    --health-interval 10s
-                    --health-timeout 5s
-                    --health-retries 5
+                options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
                 ports:
                     - 5432:5432
         steps:
