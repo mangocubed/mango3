@@ -7,7 +7,7 @@ on:
             - completed
 
 env:
-    DATABASE_URL: postgres://mango3:mango3@postgres:5432/mango3_test
+    DATABASE_URL: postgres://mango3:mango3@localhost:5432/mango3_test
 
 jobs:
     build-monitor:
@@ -24,6 +24,8 @@ jobs:
                     --health-interval 10s
                     --health-timeout 5s
                     --health-retries 5
+                ports:
+                    - 5432:5432
         steps:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-rust
