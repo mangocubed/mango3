@@ -20,7 +20,7 @@ jobs:
         steps:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-leptos
-              run: npx playwright install chromium firefox --with-deps
+            - run: npx playwright install chromium firefox --with-deps
             - name: Test Home
               run: cargo leptos end-to-end --release --project mango3-home
             - name: Test Accounts
