@@ -6,7 +6,7 @@ env:
     DATABASE_URL: postgres://mango3:mango3@localhost:5432/mango3_test
 
 jobs:
-    test-monitor:
+    tests:
         runs-on: ubuntu-latest
         services:
             postgres:
@@ -24,60 +24,10 @@ jobs:
             - uses: taiki-e/install-action@cargo-llvm-cov
             - name: Test Monitor
               run: cargo llvm-cov --lcov --output-path lcov.info --bin mango3-monitor
-
-    test-uploads:
-        runs-on: ubuntu-latest
-        services:
-            postgres:
-                image: postgres:17-alpine
-                env:
-                    POSTGRES_PASSWORD: mango3
-                    POSTGRES_USER: mango3
-                options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-                ports:
-                    - 5432:5432
-        steps:
-            - uses: actions/checkout@v4
-            - uses: ./.github/actions/setup-rust
-            - uses: ./.github/actions/setup-database
-            - uses: taiki-e/install-action@cargo-llvm-cov
             - name: Test Uploads
               run: cargo llvm-cov --lcov --output-path lcov.info --bin mango3-uploads
-
-    test-cli:
-        runs-on: ubuntu-latest
-        services:
-            postgres:
-                image: postgres:17-alpine
-                env:
-                    POSTGRES_PASSWORD: mango3
-                    POSTGRES_USER: mango3
-                options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-                ports:
-                    - 5432:5432
-        steps:
-            - uses: actions/checkout@v4
-            - uses: ./.github/actions/setup-rust
-            - uses: ./.github/actions/setup-database
-            - uses: taiki-e/install-action@cargo-llvm-cov
             - name: Test CLI
               run: cargo llvm-cov --lcov --output-path lcov.info --bin mango3-cli
-
-    test-webapps:
-        runs-on: ubuntu-latest
-        services:
-            postgres:
-                image: postgres:17-alpine
-                env:
-                    POSTGRES_PASSWORD: mango3
-                    POSTGRES_USER: mango3
-                options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-                ports:
-                    - 5432:5432
-        steps:
-            - uses: actions/checkout@v4
-            - uses: ./.github/actions/setup-leptos
-            - uses: taiki-e/install-action@cargo-llvm-cov
             - name: Test Home
               run: cargo llvm-cov --lcov --output-path lcov.info --bin mango3-home
             - name: Test Accounts

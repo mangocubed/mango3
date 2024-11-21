@@ -6,7 +6,7 @@ env:
     DATABASE_URL: postgres://mango3:mango3@localhost:5432/mango3_test
 
 jobs:
-    cargo-clippy:
+    check-rust:
         runs-on: ubuntu-latest
         services:
             postgres:
@@ -20,25 +20,17 @@ jobs:
         steps:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-rust
+            - name: Check with cargo-fmt
+              run: cargo fmt --all --check
+            - name: Check with leptosfmt
+              run: |
+                  cargo install leptosfmt
+                  leptosfmt --check -x mango3-cli -x mango3-core -x mango3-monitor -x mango3-uploads -x target .
             - uses: ./.github/actions/setup-database
-            - run: cargo clippy -- -D warnings
+            - name: Check with cargo-clippy
+              run: cargo clippy -- -D warnings
 
-    cargo-fmt:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-            - uses: ./.github/actions/setup-rust
-            - run: cargo fmt --all --check
-
-    leptosfmt:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-            - uses: ./.github/actions/setup-rust
-            - run: cargo install leptosfmt
-            - run: leptosfmt --check -x mango3-cli -x mango3-core -x mango3-monitor -x mango3-uploads -x target .
-
-    sqlfluff:
+    check-sql:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
@@ -50,5 +42,7 @@ jobs:
               with:
                   path: ~/.local/share/virtualenvs
                   key: ${{ runner.os }}-python-${{ steps.setup-python.outputs.python-version }}-pipenv-${{ hashFiles('Pipfile.lock') }}
-            - run: pipenv install sqlfluff~=3.2
-            - run: pipenv run sqlfluff lint migrations/*.sql
+            - name: Check with sqlfluff
+              run: |
+                  pipenv install sqlfluff~=3.2
+                  pipenv run sqlfluff lint migrations/*.sql
