@@ -3,7 +3,7 @@ name: Code analysis
 on: [push, pull_request]
 
 env:
-    DATABASE_URL: postgres://mango3:mango3@postgres:5432/mango3_test
+    DATABASE_URL: "postgres://mango3:mango3@postgres:5432/mango3_test"
 
 jobs:
     cargo-clippy:
