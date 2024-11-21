@@ -22,8 +22,9 @@ jobs:
         steps:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-rust
+            - run: echo $DATABASE_URL
             - run: cargo install sqlx-cli
-            - run: sqlx database setup --database-url $DATABASE_URL
+            - run: sqlx database setup
             - run: cargo clippy -- -D warnings
 
     cargo-fmt:
