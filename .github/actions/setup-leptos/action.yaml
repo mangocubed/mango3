@@ -16,7 +16,7 @@ runs:
               node-version: 22
               cache: npm
         - shell: bash
-          run: cargo install cargo-leptos
+          run: cargo install --force cargo-leptos
         - shell: bash
           run: rustup target add wasm32-unknown-unknown
         - shell: bash
