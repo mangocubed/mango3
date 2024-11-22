@@ -10,12 +10,12 @@ use crate::CoreContext;
 
 use super::{Blob, User, Website};
 
-mod post_insert;
-mod post_paginate;
-mod post_update;
+mod page_insert;
+mod page_paginate;
+mod page_update;
 
 #[derive(Clone)]
-pub struct Post {
+pub struct Page {
     pub id: Uuid,
     pub website_id: Uuid,
     pub user_id: Uuid,
@@ -28,7 +28,7 @@ pub struct Post {
     pub updated_at: Option<DateTime<Utc>>,
 }
 
-impl Post {
+impl Page {
     pub fn content_preview(&self) -> &str {
         self.content.lines().next().unwrap_or_default()
     }
@@ -42,7 +42,7 @@ impl Post {
     }
 
     pub async fn delete(&self, core_context: &CoreContext) -> Result<(), ValidationErrors> {
-        query!("DELETE FROM posts WHERE id = $1", self.id)
+        query!("DELETE FROM pages WHERE id = $1", self.id)
             .execute(&core_context.db_pool)
             .await
             .map(|_| ())
@@ -59,7 +59,7 @@ impl Post {
         let user_id = user.map(|user| user.id);
         query_as!(
             Self,
-            "SELECT * FROM posts WHERE id = $1 AND ($2::uuid IS NULL OR website_id = $2)
+            "SELECT * FROM pages WHERE id = $1 AND ($2::uuid IS NULL OR website_id = $2)
                 AND ($3::uuid IS NULL OR user_id = $3) LIMIT 1",
             id,         // $1
             website_id, // $2
@@ -72,7 +72,7 @@ impl Post {
     pub async fn get_by_slug(core_context: &CoreContext, slug: &str, website: &Website) -> sqlx::Result<Self> {
         query_as!(
             Self,
-            "SELECT * FROM posts WHERE slug = $1 AND website_id = $2 AND published_at IS NOT NULL LIMIT 1",
+            "SELECT * FROM pages WHERE slug = $1 AND website_id = $2 AND published_at IS NOT NULL LIMIT 1",
             slug,       // $1
             website.id  // $2
         )
@@ -89,7 +89,7 @@ impl Post {
             .await
             .unwrap()
             .url()
-            .join(&format!("posts/{}", self.slug))
+            .join(&self.slug)
             .unwrap()
     }
 
@@ -99,16 +99,16 @@ impl Post {
 }
 
 impl Validator {
-    fn validate_post_title(&mut self, value: &str) -> bool {
+    fn validate_page_title(&mut self, value: &str) -> bool {
         self.validate_presence(Input::Title, value)
             && self.validate_length(Input::Title, value, Some(3), Some(255))
             && self.custom_validation(Input::Title, InputError::IsInvalid, &|| Uuid::try_parse(value).is_err())
     }
 
-    async fn validate_post_slug(
+    async fn validate_page_slug(
         &mut self,
         core_context: &CoreContext,
-        post: Option<&Post>,
+        page: Option<&Page>,
         website: &Website,
         slug: &str,
     ) -> bool {
@@ -120,9 +120,9 @@ impl Validator {
                 !BLACKLISTED_SLUGS.contains(&slug.to_owned())
             })
         {
-            let id = post.map(|p| p.id);
+            let id = page.map(|p| p.id);
             let slug_exists = query!(
-                "SELECT id FROM posts WHERE ($1::uuid IS NULL OR id != $1) AND LOWER(slug) = $2 AND website_id = $3 LIMIT 1",
+                "SELECT id FROM pages WHERE ($1::uuid IS NULL OR id != $1) AND LOWER(slug) = $2 AND website_id = $3 LIMIT 1",
                 id,         // $1
                 slug,       // $2
                 website.id  // $3
@@ -136,7 +136,7 @@ impl Validator {
         }
     }
 
-    fn validate_post_content(&mut self, value: &str) -> bool {
+    fn validate_page_content(&mut self, value: &str) -> bool {
         self.validate_length(Input::Content, value, None, Some(8192))
     }
 }

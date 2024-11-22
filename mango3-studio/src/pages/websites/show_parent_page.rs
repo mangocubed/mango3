@@ -50,12 +50,18 @@ pub fn ShowParentPage() -> impl IntoView {
                 let website_name = website.name.clone();
                 let home_path = format!("/websites/{}", website.id);
                 let posts_path = format!("{home_path}/posts");
+                let pages_path = format!("{home_path}/pages");
                 let menu_items = move || [
                     (home_path.clone(), t_string!(i18n, shared.home), vec![]),
                     (
                         posts_path.clone(),
                         t_string!(i18n, shared.posts),
                         vec![(format!("{posts_path}/new"), t_string!(i18n, studio.new_post))],
+                    ),
+                    (
+                        pages_path.clone(),
+                        t_string!(i18n, studio.pages),
+                        vec![(format!("{pages_path}/new"), t_string!(i18n, studio.new_page))],
                     ),
                     (format!("{home_path}/edit"), t_string!(i18n, studio.edit), vec![]),
                 ];

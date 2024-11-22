@@ -4,9 +4,9 @@ use crate::models::{Blob, User, Website};
 use crate::validator::{ValidationErrors, Validator};
 use crate::CoreContext;
 
-use super::Post;
+use super::Page;
 
-impl Post {
+impl Page {
     pub async fn insert(
         core_context: &CoreContext,
         website: &Website,
@@ -24,9 +24,9 @@ impl Post {
         let content = content.trim();
         let cover_image_blob_id = cover_image_blob.map(|blob| blob.id);
 
-        validator.validate_post_title(title);
-        validator.validate_post_slug(core_context, None, website, &slug).await;
-        validator.validate_post_content(content);
+        validator.validate_page_title(title);
+        validator.validate_page_slug(core_context, None, website, &slug).await;
+        validator.validate_page_content(content);
 
         if !validator.is_valid {
             return Err(validator.errors);
@@ -34,7 +34,7 @@ impl Post {
 
         query_as!(
             Self,
-            "INSERT INTO posts (
+            "INSERT INTO pages (
                 website_id, user_id, title, slug, content, cover_image_blob_id, published_at
             ) VALUES ($1, $2, $3, $4, $5, $6, CASE WHEN $7 IS TRUE THEN current_timestamp ELSE NULL END) RETURNING *",
             website.id,          // $1

@@ -19,3 +19,4 @@
 - Feature to reset password.
 - Feature to register only with invitation code.
 - Feature to update and delete posts.
+- Features to manage pages.

@@ -1,28 +1,28 @@
 use leptos::either::EitherOf3;
 use leptos::prelude::*;
 
-use mango3_leptos_utils::components::{LoadingSpinner, PostCard};
+use mango3_leptos_utils::components::{LoadingSpinner, PageCard};
 use mango3_leptos_utils::pages::NotFoundPage;
 use mango3_leptos_utils::pages::Page;
 
 use crate::context::use_slug_param;
-use crate::server_functions::get_post;
+use crate::server_functions::get_page;
 
 #[component]
-pub fn ShowPostPage() -> impl IntoView {
+pub fn ShowPagePage() -> impl IntoView {
     let slug = use_slug_param();
-    let post_resource = Resource::new_blocking(move || slug.clone(), get_post);
+    let page_resource = Resource::new_blocking(move || slug.clone(), get_page);
 
     view! {
         <Suspense fallback=LoadingSpinner>
             {move || Suspend::new(async move {
-                match post_resource.get() {
-                    Some(Ok(Some(post))) => {
+                match page_resource.get() {
+                    Some(Ok(Some(page))) => {
                         EitherOf3::A(
                             view! {
-                                <Page title=post.title.clone()>
+                                <Page title=page.title.clone()>
                                     <div class="max-w-[1200px] w-full ml-auto mr-auto">
-                                        <PostCard post=post show_content=true />
+                                        <PageCard page=page show_content=true />
                                     </div>
                                 </Page>
                             },

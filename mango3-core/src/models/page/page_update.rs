@@ -4,9 +4,9 @@ use crate::models::Blob;
 use crate::validator::{ValidationErrors, Validator};
 use crate::CoreContext;
 
-use super::Post;
+use super::Page;
 
-impl Post {
+impl Page {
     pub async fn update(
         &self,
         core_context: &CoreContext,
@@ -23,16 +23,16 @@ impl Post {
         let content = content.trim();
         let cover_image_blob_id = cover_image_blob.map(|blob| blob.id);
 
-        validator.validate_post_title(title);
+        validator.validate_page_title(title);
         validator
-            .validate_post_slug(
+            .validate_page_slug(
                 core_context,
                 Some(self),
                 &self.website(core_context).await.unwrap(),
                 &slug,
             )
             .await;
-        validator.validate_post_content(content);
+        validator.validate_page_content(content);
 
         if !validator.is_valid {
             return Err(validator.errors);
@@ -40,7 +40,7 @@ impl Post {
 
         query_as!(
             Self,
-            "UPDATE posts SET
+            "UPDATE pages SET
                 title = $2,
                 slug = $3,
                 content = $4,

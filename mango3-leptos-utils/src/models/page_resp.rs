@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use async_trait::async_trait;
 
 #[cfg(feature = "ssr")]
-use mango3_core::models::Post;
+use mango3_core::models::Page;
 #[cfg(feature = "ssr")]
 use mango3_core::CoreContext;
 
@@ -14,7 +14,7 @@ use super::BlobResp;
 use super::{parse_html, FromCore};
 
 #[derive(Clone, Deserialize, Serialize)]
-pub struct PostResp {
+pub struct PageResp {
     pub id: String,
     pub title: String,
     pub slug: String,
@@ -28,22 +28,22 @@ pub struct PostResp {
 
 #[cfg(feature = "ssr")]
 #[async_trait]
-impl FromCore<Post> for PostResp {
-    async fn from_core(core_context: &CoreContext, post: &Post) -> Self {
+impl FromCore<Page> for PageResp {
+    async fn from_core(core_context: &CoreContext, page: &Page) -> Self {
         Self {
-            id: post.id.to_string(),
-            title: post.title.clone(),
-            slug: post.slug.clone(),
-            content: post.content.clone(),
-            content_html: parse_html(&post.content),
-            content_preview_html: parse_html(&post.content_preview()),
-            cover_image_blob: post
+            id: page.id.to_string(),
+            title: page.title.clone(),
+            slug: page.slug.clone(),
+            content: page.content.clone(),
+            content_html: parse_html(&page.content),
+            content_preview_html: parse_html(&page.content_preview()),
+            cover_image_blob: page
                 .cover_image_blob(&core_context)
                 .await
                 .and_then(|result| result.ok())
                 .map(|blob| blob.into()),
-            is_published: post.is_published(core_context).await,
-            url: post.url(&core_context).await.to_string(),
+            is_published: page.is_published(core_context).await,
+            url: page.url(&core_context).await.to_string(),
         }
     }
 }

@@ -3,10 +3,10 @@ use leptos::prelude::*;
 #[cfg(feature = "ssr")]
 use uuid::Uuid;
 
-use mango3_leptos_utils::models::{CursorPageResp, PostResp, WebsiteResp};
+use mango3_leptos_utils::models::{CursorPageResp, PageResp, PostResp, WebsiteResp};
 
 #[cfg(feature = "ssr")]
-use mango3_core::models::{Post, Website};
+use mango3_core::models::{Page, Post, Website};
 #[cfg(feature = "ssr")]
 use mango3_core::pagination::CursorPageParams;
 #[cfg(feature = "ssr")]
@@ -33,6 +33,22 @@ pub async fn get_current_website() -> Result<Option<WebsiteResp>, ServerFnError>
         let core_context = expect_core_context();
 
         Ok(Some(WebsiteResp::from_core(&core_context, &website).await))
+    } else {
+        Ok(None)
+    }
+}
+
+#[server]
+pub async fn get_page(slug: String) -> Result<Option<PageResp>, ServerFnError> {
+    let Some(website) = current_website().await? else {
+        return Ok(None);
+    };
+
+    let core_context = expect_core_context();
+    let result = Page::get_by_slug(&core_context, &slug, &website).await;
+
+    if let Ok(page) = result {
+        Ok(Some(PageResp::from_core(&core_context, &page).await))
     } else {
         Ok(None)
     }
