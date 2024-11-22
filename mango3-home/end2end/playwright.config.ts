@@ -1,3 +1,3 @@
-import playwrightConfig from "../../js/playwright.config";
+import playwrightConfig from "../../js/playwright";
 
 export default playwrightConfig("http://localhost:3000");

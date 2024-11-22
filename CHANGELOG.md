@@ -20,3 +20,4 @@
 - Feature to register only with invitation code.
 - Feature to update and delete posts.
 - Features to manage pages.
+- GitHub Actions workflows for continuous integration.
