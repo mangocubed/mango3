@@ -4,6 +4,10 @@ use serde::{Deserialize, Serialize};
 use async_trait::async_trait;
 #[cfg(feature = "ssr")]
 use futures::future;
+#[cfg(feature = "ssr")]
+use pulldown_cmark::html::push_html;
+#[cfg(feature = "ssr")]
+use pulldown_cmark::Parser;
 
 #[cfg(feature = "ssr")]
 use mango3_core::pagination::CursorPage;
@@ -13,6 +17,7 @@ use mango3_core::CoreContext;
 mod action_form_resp;
 mod basic_config_resp;
 mod blob_resp;
+mod page_resp;
 mod post_resp;
 mod user_profile_resp;
 mod user_resp;
@@ -21,10 +26,21 @@ mod website_resp;
 pub use action_form_resp::ActionFormResp;
 pub use basic_config_resp::BasicConfigResp;
 pub use blob_resp::BlobResp;
+pub use page_resp::PageResp;
 pub use post_resp::PostResp;
 pub use user_profile_resp::UserProfileResp;
 pub use user_resp::UserResp;
 pub use website_resp::WebsiteResp;
+
+#[cfg(feature = "ssr")]
+fn parse_html(input: &str) -> String {
+    let parser = Parser::new(input);
+    let mut html_output = String::new();
+
+    push_html(&mut html_output, parser);
+
+    html_output
+}
 
 #[cfg(feature = "ssr")]
 #[async_trait]

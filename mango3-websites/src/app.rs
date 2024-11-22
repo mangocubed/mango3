@@ -7,8 +7,9 @@ use mango3_leptos_utils::components::{AppProvider, BottomBar};
 use mango3_leptos_utils::pages::NotFoundPage;
 
 use crate::components::WebsiteTopBar;
+use crate::constants::KEY_PARAM_SLUG;
 use crate::context::provide_current_website_resource;
-use crate::pages::{IndexPage, ShowPostPage};
+use crate::pages::{IndexPage, ShowPagePage, ShowPostPage};
 
 #[component]
 pub fn App() -> impl IntoView {
@@ -27,7 +28,8 @@ pub fn App() -> impl IntoView {
                 <main class="grow m-6">
                     <Routes fallback=NotFoundPage>
                         <Route path=StaticSegment("") view=IndexPage />
-                        <Route path=(StaticSegment("posts"), ParamSegment("slug")) view=ShowPostPage />
+                        <Route path=(StaticSegment("posts"), ParamSegment(KEY_PARAM_SLUG)) view=ShowPostPage />
+                        <Route path=ParamSegment(KEY_PARAM_SLUG) view=ShowPagePage />
                     </Routes>
                 </main>
 

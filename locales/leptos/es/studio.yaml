@@ -1,17 +1,24 @@
-are_you_sure_you_want_to_delete_this_post: ¿Seguro que deseas eliminar este post?
+are_you_sure_you_want_to_delete_this_page: ¿Seguro deseas eliminar esta página?
+are_you_sure_you_want_to_delete_this_post: ¿Seguro deseas eliminar este post?
 content: Contenido
 cover_image: Imagen de portada
 delete: Eliminar
 edit: Editar
+failed_to_create_page: Error al crear página
 failed_to_create_post: Error al crear post
 failed_to_create_website: Error al crear website
+failed_to_update_page: Error al actualizar página
 failed_to_update_post: Error al actualizar post
 failed_to_update_website: Error al actualizar website
 description: Descripción
 icon_image: Imagen de icono
 my_websites: My websites
 name: Nombre
+new_page: Nueva página
 new_post: Nuevo post
+page_created_successfully: Página creada exitosamente
+page_updated_successfully: Página actualizada exitosamente
+pages: Páginas
 post_created_successfully: Post creado exitosamente
 post_updated_successfully: Post actualizado exitosamente
 publish: Publicar

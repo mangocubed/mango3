@@ -6,8 +6,10 @@ use mango3_leptos_utils::models::WebsiteResp;
 
 use crate::context::use_my_website_resource;
 
+mod page_form_fields;
 mod post_form_fields;
 
+pub use page_form_fields::PageFormFields;
 pub use post_form_fields::PostFormFields;
 
 #[component]
