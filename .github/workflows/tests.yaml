@@ -29,9 +29,6 @@ jobs:
         services:
             dnsmasq:
                 image: dockurr/dnsmasq
-                ports:
-                    - 53:53/udp
-                    - 53:53/tcp
                 volumes:
                     - ${{ github.workspace }}/config/dnsmasq.example/:/etc/dnsmasq.d/mango3.conf
 
@@ -60,7 +57,7 @@ jobs:
         steps:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-leptos
-            - run: echo "nameserver 127.0.0.1" >> /etc/resolv.conf
+            - run: echo "nameserver dnsmasq" >> /etc/resolv.conf
             - run: npx playwright install chromium firefox --with-deps
             - name: Test Home
               run: cargo leptos end-to-end --project mango3-home
