@@ -1,3 +1,3 @@
-import playwrightConfig from "../../js/playwright.config";
+import playwrightConfig from "../../js/playwright";
 
-export default playwrightConfig("http://localhost:3020");
+export default playwrightConfig("http://my-account.mango3.local");

@@ -21,13 +21,28 @@ jobs:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-rust
             - uses: ./.github/actions/setup-database
-            - uses: taiki-e/install-action@cargo-llvm-cov
             - name: Run all unit tests
-              run: cargo llvm-cov --workspace --all-features --lcov --output-path lcov.info
+              run: cargo test --workspace --all-features
 
     end2end_tests:
         runs-on: ubuntu-latest
         services:
+            dnsmasq:
+                image: dockurr/dnsmasq
+                ports:
+                    - 53:53/udp
+                    - 53:53/tcp
+                volumes:
+                    - ${{ github.workspace }}/config/dnsmasq.example/:/etc/dnsmasq.d/mango3.conf
+
+            nginx:
+                image: nginx:1-alpine
+                ports:
+                    - 80:80
+                volumes:
+                    - ${{ github.workspace }}/config/nginx.example:/etc/sites-enabled/mango3.conf
+                    - ${{ github.workspace }}/assets:/mango3/assets
+
             postgres:
                 image: postgres:17-alpine
                 env:
@@ -38,21 +53,22 @@ jobs:
                     - 5432:5432
 
             redis:
-                image: redis
+                image: redis:7-alpine
                 options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
                 ports:
                     - 6379:6379
         steps:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-leptos
+            - run: echo "nameserver 127.0.0.1" >> /etc/resolv.conf
             - run: npx playwright install chromium firefox --with-deps
             - name: Test Home
               run: cargo leptos end-to-end --project mango3-home
             - name: Test Accounts
               run: cargo leptos end-to-end --project mango3-accounts
-            # - name: Test My Account
-            #   run: cargo leptos end-to-end --project mango3-my-account
-            # - name: Test Studio
-            #   run: cargo leptos end-to-end --project mango3-studio
-            # - name: Test Websites
-            #   run: cargo leptos end-to-end --project mango3-websites
+            - name: Test My Account
+              run: cargo leptos end-to-end --project mango3-my-account
+            - name: Test Studio
+              run: cargo leptos end-to-end --project mango3-studio
+            - name: Test Websites
+              run: cargo leptos end-to-end --project mango3-websites
