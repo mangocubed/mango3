@@ -26,7 +26,7 @@ pub fn BottomBar() -> impl IntoView {
         <footer class="footer bg-base-200 text-base-content p-10">
             <aside>
                 <a href=basic_config.home_url.clone()>
-                    <img class="h-[48px]" alt=basic_config.title.clone() src="/logo.svg" />
+                    <img class="h-[48px]" alt=basic_config.title.clone() src=basic_config.asset_url("logo.svg") />
                 </a>
                 <p>{basic_config.copyright.clone()}</p>
             </aside>

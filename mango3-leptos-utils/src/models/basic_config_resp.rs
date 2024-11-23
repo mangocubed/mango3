@@ -5,6 +5,7 @@ use mango3_core::config::BasicConfig;
 
 #[derive(Clone, Default, Deserialize, Serialize)]
 pub struct BasicConfigResp {
+    assets_url: String,
     pub copyright: String,
     pub domain: String,
     pub enable_register: bool,
@@ -21,6 +22,7 @@ pub struct BasicConfigResp {
 impl From<BasicConfig> for BasicConfigResp {
     fn from(basic_config: BasicConfig) -> Self {
         Self {
+            assets_url: basic_config.assets_url().to_string(),
             copyright: basic_config.copyright.clone(),
             domain: basic_config.domain.to_string(),
             enable_register: basic_config.enable_register,
@@ -32,5 +34,11 @@ impl From<BasicConfig> for BasicConfigResp {
             studio_url: basic_config.studio_url().to_string(),
             title: basic_config.title,
         }
+    }
+}
+
+impl BasicConfigResp {
+    pub fn asset_url(&self, file_name: &str) -> String {
+        format!("{}/{}", self.assets_url, file_name)
     }
 }

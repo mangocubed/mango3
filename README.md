@@ -5,13 +5,14 @@
 - Rust
 - PostgreSQL
 - Node.js
+- Nginx (or any reverse proxy)
 
 ## Environment variables
 
 | Name                          | Type    | Default                                                          |
 | ----------------------------- | ------- | ---------------------------------------------------------------- |
 | BASIC_COPYRIGHT               | String  | © 2024, Mango³ Team                                              |
-| BASIC_DOMAIN                  | String  | mango3.localhost                                                 |
+| BASIC_DOMAIN                  | String  | mango3.local                                                     |
 | BASIC_ENABLE_REGISTER         | String  | true                                                             |
 | BASIC_SECURE                  | Boolean | false                                                            |
 | BASIC_TITLE                   | String  | Mango³ Dev                                                       |
@@ -19,8 +20,8 @@
 | DATABASE_URL                  | String  | postgres://mango3:mango3@127.0.0.1:5432/mango3_dev               |
 | JOBS_REDIS_URL                | String  | redis://127.0.0.1:6379/0                                         |
 | MAILER_ENABLE                 | Boolean | false                                                            |
-| MAILER_SENDER_ADDRESS         | String  | Mango³ Dev <no-reply@localhost>                                  |
-| MAILER_SMTP_ADDRESS           | String  | localhost                                                        |
+| MAILER_SENDER_ADDRESS         | String  | Mango³ Dev <no-reply@mango3.local>                               |
+| MAILER_SMTP_ADDRESS           | String  | mango3.local                                                     |
 | MAILER_SMTP_PASSWORD          | String  |                                                                  |
 | MAILER_SMTP_SECURITY          | String  | none                                                             |
 | MAILER_SMTP_USERNAME          | String  |                                                                  |

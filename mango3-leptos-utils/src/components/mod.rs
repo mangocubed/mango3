@@ -96,7 +96,7 @@ pub fn Brand(#[prop(into)] href: String, #[prop(optional, into)] suffix: Option<
 
     view! {
         <a class="btn btn-ghost text-xl" href=href>
-            <img class="h-[36px]" src="/logo.svg" alt=basic_config.title.clone() />
+            <img class="h-[36px]" src=basic_config.asset_url("logo.svg") alt=basic_config.title.clone() />
             {move || suffix.as_ref().map(|suffix| suffix.get())}
         </a>
     }

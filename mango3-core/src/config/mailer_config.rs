@@ -16,8 +16,8 @@ impl Default for MailerConfig {
     fn default() -> Self {
         Self {
             enable: false,
-            sender_address: "Mango³ Dev <no-reply@localhost>".to_owned(),
-            smtp_address: "localhost".to_owned(),
+            sender_address: "Mango³ Dev <no-reply@mango3.local>".to_owned(),
+            smtp_address: "mango3.local".to_owned(),
             smtp_password: "".to_owned(),
             smtp_security: "none".to_owned(),
             smtp_username: "".to_owned(),
