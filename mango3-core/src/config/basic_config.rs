@@ -17,7 +17,7 @@ impl Default for BasicConfig {
     fn default() -> Self {
         Self {
             copyright: "© 2024, Mango³ Team".to_owned(),
-            domain: "mango3.localhost".to_owned(),
+            domain: "mango3.local".to_owned(),
             enable_register: true,
             secure: false,
             title: "Mango³ Dev".to_owned(),
@@ -38,8 +38,12 @@ impl BasicConfig {
         }
     }
 
+    pub fn assets_url(&self) -> Url {
+        self.subdomain_url("assets")
+    }
+
     fn accounts_url(&self) -> Url {
-        Url::parse(&format!("{}://accounts.{}", self.scheme(), self.domain)).unwrap()
+        self.subdomain_url("accounts")
     }
 
     pub fn blob_url(&self, id: Uuid) -> Url {
@@ -55,7 +59,7 @@ impl BasicConfig {
     }
 
     pub fn my_account_url(&self) -> Url {
-        Url::parse(&format!("{}://my-account.{}", self.scheme(), self.domain)).unwrap()
+        self.subdomain_url("my-account")
     }
 
     pub fn new_website_url(&self) -> Url {
@@ -67,14 +71,18 @@ impl BasicConfig {
     }
 
     pub fn studio_url(&self) -> Url {
-        Url::parse(&format!("{}://studio.{}", self.scheme(), self.domain)).unwrap()
+        self.subdomain_url("studio")
+    }
+
+    pub fn subdomain_url(&self, subdomain: &str) -> Url {
+        Url::parse(&format!("{}://{}.{}", self.scheme(), subdomain, self.domain)).unwrap()
     }
 
     fn uploads_url(&self) -> Url {
-        Url::parse(&format!("{}://uploads.{}", self.scheme(), self.domain)).unwrap()
+        self.subdomain_url("uploads")
     }
 
     pub fn website_url(&self, subdomain: &str) -> Url {
-        Url::parse(&format!("{}://{}.{}", self.scheme(), subdomain, self.domain)).unwrap()
+        self.subdomain_url(subdomain)
     }
 }

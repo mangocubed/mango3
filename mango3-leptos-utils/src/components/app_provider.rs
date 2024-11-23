@@ -11,6 +11,7 @@ pub fn AppProvider(children: Children) -> impl IntoView {
     provide_current_user_resource();
     provide_page_title();
 
+    let basic_config = use_basic_config();
     let is_done = RwSignal::new(false);
     let language_cookie_options = use_language_cookie_options::<FromToStringCodec>();
 
@@ -20,7 +21,7 @@ pub fn AppProvider(children: Children) -> impl IntoView {
         <div class="loading-overlay" class:is-done=is_done>
             <figure>
                 <div class="pulse"></div>
-                <img src="/icon.svg" />
+                <img src=basic_config.asset_url("icon.svg") />
             </figure>
         </div>
 
