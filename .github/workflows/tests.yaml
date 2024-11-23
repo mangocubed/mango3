@@ -55,6 +55,10 @@ jobs:
                 ports:
                     - 6379:6379
         steps:
+            - run: |
+                sudo chown -R $USER:$USER ${{ github.workspace }}/config/dnsmasq.example \
+                    ${{ github.workspace }}/config/nginx.example \
+                    ${{ github.workspace }}/assets
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-leptos
             - run: echo "nameserver dnsmasq" >> /etc/resolv.conf
