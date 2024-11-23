@@ -22,5 +22,5 @@ serde = { version = "1.0.215", features = ["derive"] }
 sqlx = { version = "0.8.2", features = ["chrono", "runtime-tokio", "postgres", "tls-rustls", "uuid"] }
 strum = { version = "0.26.3", features = ["derive"] }
 unic-langid = { version = "0.9.5", features = ["serde"] }
-url = { version = "2.5.3", features = ["serde"] }
+url = { version = "2.5.4", features = ["serde"] }
 uuid = { workspace = true }
