@@ -29,12 +29,15 @@ jobs:
             - uses: ./.github/actions/setup-leptos
             - name: Configure Nginx
               run: |
-                  sudo cp ${{ github.workspace }}/config/nginx.example /etc/nginx/sites-enabled/mango3.conf
-                  sudo sed -i 's|/mango3/assets|${{ github.workspace }}/assets|' /etc/nginx/sites-enabled/mango3.conf
+                  sudo cp ${{ github.workspace }}/config/nginx.example /etc/nginx/sites-enabled/mango3.local
+                  sudo sed -i 's|/mango3/assets|${{ github.workspace }}/assets|' /etc/nginx/sites-enabled/mango3.local
+                  sudo cat /etc/nginx/sites-enabled/mango3.local
                   sudo sed -i \
-                      's/localhost/localhost mango3.local accounts.mango3.local my-account.mango3.local studio.mango3.local my.website.mango3.local/g' \
+                      's/localhost/localhost mango3.local accounts.mango3.local my-account.mango3.local studio.mango3.local my-website.mango3.local/g' \
                       /etc/hosts
+                  sudo cat /etc/hosts
                   sudo systemctl restart nginx.service
+                  sudo systemctl status nginx.service
             - name: Install Playwright
               run: npx playwright install chromium firefox --with-deps
             - name: Test Home
