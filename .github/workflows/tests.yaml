@@ -4,7 +4,6 @@ on: [workflow_call]
 
 env:
     DATABASE_URL: postgres://mango3:mango3@localhost:5432/mango3_test
-    LEPTOS_SITE_ADDR: 127.0.0.1:80
 
 jobs:
     unit_tests:
@@ -29,6 +28,14 @@ jobs:
     end2end_tests:
         runs-on: ubuntu-latest
         services:
+            nginx:
+                image: nginx:1-alpine
+                ports:
+                    - 80:80
+                volumes:
+                    - ${{ github.workspace }}/config/nginx.example:/etc/sites-enabled/mango3.conf
+                    - ${{ github.workspace }}/assets:/mango3/assets
+
             postgres:
                 image: postgres:17-alpine
                 env:
@@ -49,8 +56,9 @@ jobs:
             - uses: ./.github/actions/setup-leptos
             - run: npx playwright install chromium firefox --with-deps
             - run: |
-                sudo sed -i 's/localhost/localhost mango3.local accounts.mango3.local my-account.mango3.local studio.mango3.local my.website.mango3.local/g' /etc/hosts
-                sudo cat /etc/hosts
+                  sudo sed -i \
+                  's/localhost/localhost mango3.local accounts.mango3.local my-account.mango3.local studio.mango3.local my.website.mango3.local/g' \
+                  /etc/hosts
             - name: Test Home
               run: cargo leptos end-to-end --project mango3-home
             - name: Test Accounts
