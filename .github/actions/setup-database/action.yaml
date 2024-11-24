@@ -7,7 +7,7 @@ runs:
         - name: Configure PostgreSQL
           shell: bash
           run: |
-              systemctl restart postgresql.service
+              sudo systemctl restart postgresql.service
               sudo -u postgres psql -c "CREATE USER mango3 ENCRYPTED PASSWORD 'mango3' LOGIN CREATEDB;"
         - name: Install sqlx-cli 
           shell: bash
