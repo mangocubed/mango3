@@ -28,14 +28,6 @@ jobs:
     end2end_tests:
         runs-on: ubuntu-latest
         services:
-            nginx:
-                image: nginx:1-alpine
-                ports:
-                    - 80:80
-                volumes:
-                    - ${{ github.workspace }}/config/nginx.example:/etc/sites-enabled/mango3.conf
-                    - ${{ github.workspace }}/assets:/mango3/assets
-
             postgres:
                 image: postgres:17-alpine
                 env:
@@ -54,11 +46,17 @@ jobs:
         steps:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-leptos
-            - run: npx playwright install chromium firefox --with-deps
-            - run: |
+            - name: Install Nginx
+              run: |
+                  sudo mkdir -p /etc/nginx/sites-enabled
+                  sudo ln -sf ${{ github.workspace }}/config/nginx.example /etc/sites-enabled/mango3.conf
+                  sudo ln -sf ${{ github.workspace }}/assets:/mango3/assets
+                  sudo apt install --no-install-recommends --no-install-suggests -y nginx
                   sudo sed -i \
-                  's/localhost/localhost mango3.local accounts.mango3.local my-account.mango3.local studio.mango3.local my.website.mango3.local/g' \
-                  /etc/hosts
+                      's/localhost/localhost mango3.local accounts.mango3.local my-account.mango3.local studio.mango3.local my.website.mango3.local/g' \
+                      /etc/hosts
+            - name: Install Playwright
+              run: npx playwright install chromium firefox --with-deps
             - name: Test Home
               run: cargo leptos end-to-end --project mango3-home
             - name: Test Accounts
