@@ -7,17 +7,7 @@ env:
 
 jobs:
     unit_tests:
-        runs-on: ubuntu-latest
-        services:
-            postgres:
-                image: postgres:17-alpine
-                env:
-                    POSTGRES_PASSWORD: mango3
-                    POSTGRES_USER: mango3
-                options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-                ports:
-                    - 5432:5432
-
+        runs-on: ubuntu-24.04
         steps:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-rust
@@ -26,17 +16,8 @@ jobs:
               run: cargo test --workspace --all-features
 
     end2end_tests:
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-24.04
         services:
-            postgres:
-                image: postgres:17-alpine
-                env:
-                    POSTGRES_PASSWORD: mango3
-                    POSTGRES_USER: mango3
-                options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-                ports:
-                    - 5432:5432
-
             redis:
                 image: redis:7-alpine
                 options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
@@ -46,16 +27,14 @@ jobs:
         steps:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-leptos
-            - name: Install Nginx
+            - name: Configure Nginx
               run: |
-                  sudo mkdir -p /etc/nginx/sites-enabled
                   sudo cp ${{ github.workspace }}/config/nginx.example /etc/nginx/sites-enabled/mango3.conf
-                  sudo sed -i 's|/mango3/assets|${{ github.workspace }}|' /etc/nginx/sites-enabled/mango3.conf
-                  sudo cat /etc/nginx/sites-enabled/mango3.conf
-                  sudo apt install --no-install-recommends --no-install-suggests -y nginx
+                  sudo sed -i 's|/mango3/assets|${{ github.workspace }}/assets|' /etc/nginx/sites-enabled/mango3.conf
                   sudo sed -i \
                       's/localhost/localhost mango3.local accounts.mango3.local my-account.mango3.local studio.mango3.local my.website.mango3.local/g' \
                       /etc/hosts
+                  sudo systemctl restart nginx.service
             - name: Install Playwright
               run: npx playwright install chromium firefox --with-deps
             - name: Test Home
