@@ -17,6 +17,7 @@ jobs:
                 options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
                 ports:
                     - 5432:5432
+
         steps:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-rust
@@ -30,7 +31,7 @@ jobs:
             dnsmasq:
                 image: dockurr/dnsmasq
                 volumes:
-                    - ${{ github.workspace }}/config/dnsmasq.example/:/etc/dnsmasq.d/mango3.conf
+                    - ${{ github.workspace }}/config/dnsmasq.example:/etc/dnsmasq.d/mango3.conf
 
             nginx:
                 image: nginx:1-alpine
@@ -54,6 +55,7 @@ jobs:
                 options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
                 ports:
                     - 6379:6379
+
         steps:
             - run: |
                 sudo chown -R $USER:$USER ${{ github.workspace }}/config/dnsmasq.example \
