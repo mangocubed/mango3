@@ -1,10 +1,17 @@
-name: Setup Database
-description: Creates the database and run migrations
+name: Setup database
+description: Creates a PostgreSQL database and run migrations
 
 runs:
     using: composite
     steps:
-        - shell: bash
+        - name: Configure PostgreSQL
+          shell: bash
+          run: |
+              sudo systemctl restart postgresql.service
+              sudo -u postgres psql -c "CREATE USER mango3 ENCRYPTED PASSWORD 'mango3' LOGIN CREATEDB;"
+        - name: Install sqlx-cli 
+          shell: bash
           run: cargo install --force sqlx-cli --no-default-features --features completions,native-tls,postgres
-        - shell: bash
+        - name: Run migrations
+          shell: bash
           run: sqlx database setup

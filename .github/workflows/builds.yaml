@@ -7,16 +7,7 @@ env:
 
 jobs:
     rust_builds:
-        runs-on: ubuntu-latest
-        services:
-            postgres:
-                image: postgres:17-alpine
-                env:
-                    POSTGRES_PASSWORD: mango3
-                    POSTGRES_USER: mango3
-                options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-                ports:
-                    - 5432:5432
+        runs-on: ubuntu-24.04
         steps:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-rust
@@ -29,16 +20,7 @@ jobs:
               run: cargo build --release --bin mango3-cli
 
     leptos_builds:
-        runs-on: ubuntu-latest
-        services:
-            postgres:
-                image: postgres:17-alpine
-                env:
-                    POSTGRES_PASSWORD: mango3
-                    POSTGRES_USER: mango3
-                options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-                ports:
-                    - 5432:5432
+        runs-on: ubuntu-24.04
         steps:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-leptos
