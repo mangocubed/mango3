@@ -49,8 +49,9 @@ jobs:
             - name: Install Nginx
               run: |
                   sudo mkdir -p /etc/nginx/sites-enabled
-                  sudo ln -sf ${{ github.workspace }}/config/nginx.example /etc/sites-enabled/mango3.conf
-                  sudo ln -sf ${{ github.workspace }}/assets:/mango3/assets
+                  sudo cp ${{ github.workspace }}/config/nginx.example /etc/nginx/sites-enabled/mango3.conf
+                  sudo sed -i 's|/mango3/assets|${{ github.workspace }}|' /etc/nginx/sites-enabled/mango3.conf
+                  sudo cat /etc/nginx/sites-enabled/mango3.conf
                   sudo apt install --no-install-recommends --no-install-suggests -y nginx
                   sudo sed -i \
                       's/localhost/localhost mango3.local accounts.mango3.local my-account.mango3.local studio.mango3.local my.website.mango3.local/g' \
