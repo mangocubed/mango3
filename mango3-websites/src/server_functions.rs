@@ -3,10 +3,10 @@ use leptos::prelude::*;
 #[cfg(feature = "ssr")]
 use uuid::Uuid;
 
-use mango3_leptos_utils::models::{CursorPageResp, PageResp, PostResp, WebsiteResp};
+use mango3_leptos_utils::models::{CursorPageResp, NavigationItemResp, PageResp, PostResp, WebsiteResp};
 
 #[cfg(feature = "ssr")]
-use mango3_core::models::{Page, Post, Website};
+use mango3_core::models::{NavigationItem, Page, Post, Website};
 #[cfg(feature = "ssr")]
 use mango3_core::pagination::CursorPageParams;
 #[cfg(feature = "ssr")]
@@ -25,6 +25,18 @@ pub async fn current_website() -> Result<Option<Website>, ServerFnError> {
     let core_context = expect_core_context();
 
     Ok(Website::get_by_subdomain(&core_context, subdomain).await.ok())
+}
+
+#[server]
+pub async fn get_all_navigation_items() -> Result<Vec<NavigationItemResp>, ServerFnError> {
+    let Some(website) = current_website().await? else {
+        return Ok(vec![]);
+    };
+
+    let core_context = expect_core_context();
+    let items = NavigationItem::all_by_website(&core_context, &website).await;
+
+    Ok(items.iter().map(|item| item.into()).collect())
 }
 
 #[server]

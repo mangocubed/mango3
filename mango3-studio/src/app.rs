@@ -68,6 +68,7 @@ pub fn App() -> impl IntoView {
                                         )
                                         view=websites::EditPagePage
                                     />
+                                    <Route path=StaticSegment("navigation") view=websites::NavigationPage />
                                     <Route path=StaticSegment("edit") view=websites::EditPage />
                                 </ParentRoute>
                             </Routes>

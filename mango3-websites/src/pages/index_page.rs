@@ -7,7 +7,7 @@ use mango3_leptos_utils::i18n::use_i18n;
 use mango3_leptos_utils::models::PostResp;
 use mango3_leptos_utils::pages::{NotFoundPage, Page};
 
-use crate::components::CurrentWebsiteResource;
+use crate::components::CurrentWebsite;
 use crate::server_functions::get_posts;
 
 #[component]
@@ -17,7 +17,7 @@ pub fn IndexPage() -> impl IntoView {
     let posts_resource = Resource::new_blocking(move || after.get(), get_posts);
 
     view! {
-        <CurrentWebsiteResource children=move |website| {
+        <CurrentWebsite children=move |website| {
             match website {
                 Some(website) => {
                     Either::Left(
