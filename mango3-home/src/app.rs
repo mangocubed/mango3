@@ -4,7 +4,7 @@ use leptos_meta::{provide_meta_context, Meta, Stylesheet};
 use leptos_router::components::{Route, Router, Routes};
 use leptos_router::StaticSegment;
 
-use mango3_leptos_utils::components::{AppProvider, AppTitle, BottomBar, Brand, TopBar};
+use mango3_leptos_utils::components::{AppProvider, AppTitle, BottomBar, Brand, FaviconLink, TopBar};
 use mango3_leptos_utils::context::use_basic_config;
 use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::pages::NotFoundPage;
@@ -25,6 +25,8 @@ pub fn App() -> impl IntoView {
                 let i18n = use_i18n();
 
                 view! {
+                    <FaviconLink />
+
                     <AppTitle />
 
                     <Meta

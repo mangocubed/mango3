@@ -4,7 +4,7 @@ use leptos_meta::{provide_meta_context, Meta, Stylesheet};
 use leptos_router::components::{Route, Router, Routes};
 use leptos_router::StaticSegment;
 
-use mango3_leptos_utils::components::{AppProvider, AppTitle, BottomBar, Brand, GoToMango3, TopBar};
+use mango3_leptos_utils::components::{AppProvider, AppTitle, BottomBar, Brand, FaviconLink, GoToMango3, TopBar};
 use mango3_leptos_utils::i18n::use_i18n;
 use mango3_leptos_utils::pages::NotFoundPage;
 
@@ -25,6 +25,8 @@ pub fn App() -> impl IntoView {
                 let i18n = use_i18n();
                 let suffix = move || t_string!(i18n, accounts.accounts);
                 view! {
+                    <FaviconLink />
+
                     <AppTitle suffix=suffix />
 
                     <Router>

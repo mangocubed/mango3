@@ -103,6 +103,19 @@ pub fn Brand(#[prop(into)] href: String, #[prop(optional, into)] suffix: Option<
 }
 
 #[component]
+pub fn FaviconLink(#[prop(into, optional)] href: Option<String>) -> impl IntoView {
+    let basic_config = use_basic_config();
+
+    let href = if let Some(href) = href {
+        href
+    } else {
+        basic_config.asset_url("favicon.ico")
+    };
+
+    view! { <link rel="favicon" href=href /> }
+}
+
+#[component]
 pub fn GoToMango3() -> impl IntoView {
     let basic_config = use_basic_config();
     let i18n = use_i18n();
