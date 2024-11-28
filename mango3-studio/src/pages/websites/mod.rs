@@ -1,6 +1,7 @@
 mod edit_page;
 mod edit_page_page;
 mod edit_post_page;
+mod navigation_page;
 mod new_page_page;
 mod new_post_page;
 mod pages_page;
@@ -11,6 +12,7 @@ mod show_parent_page;
 pub use edit_page::EditPage;
 pub use edit_page_page::EditPagePage;
 pub use edit_post_page::EditPostPage;
+pub use navigation_page::NavigationPage;
 pub use new_page_page::NewPagePage;
 pub use new_post_page::NewPostPage;
 pub use pages_page::PagesPage;

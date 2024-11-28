@@ -21,3 +21,4 @@
 - Feature to update and delete posts.
 - Features to manage pages.
 - GitHub Actions workflows for continuous integration.
+- Features to manage websites navigation.

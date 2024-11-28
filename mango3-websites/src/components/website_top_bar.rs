@@ -3,39 +3,21 @@ use leptos::prelude::*;
 use leptos_i18n::t_string;
 
 use leptos_meta::{Link, Title};
-use mango3_leptos_utils::components::{AppTitle, Brand, GoToMango3, LoadingSpinner, TopBar};
+use mango3_leptos_utils::components::{AppTitle, Brand, GoToMango3, TopBar};
 use mango3_leptos_utils::context::{use_basic_config, use_page_title};
 use mango3_leptos_utils::i18n::use_i18n;
-use mango3_leptos_utils::models::WebsiteResp;
 
-use crate::context::use_current_website_resource;
+use crate::server_functions::get_all_navigation_items;
 
-#[component]
-pub fn CurrentWebsiteResource<VF, IV>(children: VF) -> impl IntoView
-where
-    IV: IntoView + 'static,
-    VF: Fn(Option<WebsiteResp>) -> IV + Send + Sync + 'static,
-{
-    let current_website_resource = use_current_website_resource();
-    let children_store = StoredValue::new(children);
-
-    view! {
-        <Suspense fallback=LoadingSpinner>
-            {move || Suspend::new(async move {
-                match current_website_resource.get() {
-                    Some(Ok(website_opt)) => Either::Left(children_store.with_value(|store| store(website_opt))),
-                    _ => Either::Right(()),
-                }
-            })}
-        </Suspense>
-    }
-}
+use super::CurrentWebsite;
 
 #[component]
 pub fn WebsiteTopBar() -> impl IntoView {
-    let var_name = view! {
+    let navigation_items_resource = Resource::new_blocking(|| (), |_| get_all_navigation_items());
+
+    view! {
         <TopBar right_items=move || view! { <GoToMango3 /> }>
-            <CurrentWebsiteResource children=move |website| {
+            <CurrentWebsite children=move |website| {
                 let i18n = use_i18n();
                 let basic_config = use_basic_config();
                 let page_title = use_page_title();
@@ -77,6 +59,30 @@ pub fn WebsiteTopBar() -> impl IntoView {
                                     />
                                     {website.name}
                                 </a>
+
+                                <Suspense>
+                                    {move || Suspend::new(async move {
+                                        navigation_items_resource
+                                            .get()
+                                            .and_then(|result| result.ok())
+                                            .map(|items| {
+                                                view! {
+                                                    <ul class="menu menu-horizontal">
+                                                        <For
+                                                            each=move || items.clone()
+                                                            key=|item| item.id.clone()
+                                                            let:item
+                                                        >
+                                                            <li>
+                                                                <a href=item.url>{item.title}</a>
+                                                            </li>
+                                                        </For>
+
+                                                    </ul>
+                                                }
+                                            })
+                                    })}
+                                </Suspense>
                             },
                         )
                     }
@@ -93,6 +99,5 @@ pub fn WebsiteTopBar() -> impl IntoView {
                 }
             } />
         </TopBar>
-    };
-    var_name
+    }
 }

@@ -664,8 +664,10 @@ checksum = "a21f936df1771bf62b77f047b726c4625ff2e8aa607c01ec06e5a05bd8463401"
 dependencies = [
  "android-tzdata",
  "iana-time-zone",
+ "js-sys",
  "num-traits",
  "serde",
+ "wasm-bindgen",
  "windows-targets 0.52.6",
 ]
 
@@ -1300,6 +1302,18 @@ dependencies = [
  "rayon-core",
  "smallvec",
  "zune-inflate",
+]
+
+[[package]]
+name = "fake"
+version = "3.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "661cb0601b5f4050d1e65452c5b0ea555c0b3e88fb5ed7855906adc6c42523ef"
+dependencies = [
+ "chrono",
+ "deunicode",
+ "rand",
+ "url",
 ]
 
 [[package]]
@@ -3078,7 +3092,9 @@ version = "0.0.0-SNAPSHOT"
 dependencies = [
  "apalis",
  "argon2",
+ "chrono",
  "dotenvy",
+ "fake",
  "figment",
  "fluent-bundle",
  "fluent-templates",
@@ -3093,6 +3109,7 @@ dependencies = [
  "serde",
  "sqlx",
  "strum",
+ "tokio",
  "unic-langid",
  "url",
  "uuid",
@@ -3187,6 +3204,7 @@ dependencies = [
  "leptos_router",
  "mango3-core",
  "mango3-leptos-utils",
+ "serde",
  "slug",
  "tokio",
  "uuid",

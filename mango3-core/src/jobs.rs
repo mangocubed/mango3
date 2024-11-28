@@ -35,7 +35,7 @@ impl Jobs {
                 command,
             })
             .await
-            .expect("Coult not store job");
+            .expect("Could not store job");
     }
 
     pub async fn mailer(&self, user: &User, command: MailerJobCommand) {
@@ -46,7 +46,7 @@ impl Jobs {
                 command,
             })
             .await
-            .expect("Coult not store job");
+            .expect("Could not store job");
     }
 }
 

@@ -1,6 +1,9 @@
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
 
+#[cfg(test)]
+mod test_utils;
+
 pub mod config;
 pub mod constants;
 pub mod enums;

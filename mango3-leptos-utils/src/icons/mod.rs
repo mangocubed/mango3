@@ -2,9 +2,13 @@ use leptos::prelude::*;
 
 mod chevron;
 mod eye;
+mod plus;
+mod trash;
 
 pub use chevron::{ChevronDownMini, ChevronUpMini};
 pub use eye::{EyeOutlined, EyeSlashOutlined};
+pub use plus::PlusOutlined;
+pub use trash::TrashOutlined;
 
 #[component]
 pub fn CheckMini() -> impl IntoView {

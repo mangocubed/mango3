@@ -26,6 +26,7 @@ pub enum Input {
     Title,
     Username,
     UsernameOrEmail,
+    Url,
 }
 
 #[derive(strum::Display)]

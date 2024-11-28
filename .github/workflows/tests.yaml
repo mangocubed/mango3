@@ -4,10 +4,19 @@ on: [workflow_call]
 
 env:
     DATABASE_URL: postgres://mango3:mango3@localhost:5432/mango3_test
+    JOBS_REDIS_URL: redis://127.0.0.1:6379/10
+    SESSIONS_REDIS_URL: redis://127.0.0.1:6379/11
 
 jobs:
     unit_tests:
         runs-on: ubuntu-24.04
+        services:
+            redis:
+                image: redis:7-alpine
+                options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+                ports:
+                    - 6379:6379
+
         steps:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-rust

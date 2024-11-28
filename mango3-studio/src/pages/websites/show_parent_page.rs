@@ -63,6 +63,7 @@ pub fn ShowParentPage() -> impl IntoView {
                         t_string!(i18n, studio.pages),
                         vec![(format!("{pages_path}/new"), t_string!(i18n, studio.new_page))],
                     ),
+                    (format!("{home_path}/navigation"), t_string!(i18n, studio.navigation), vec![]),
                     (format!("{home_path}/edit"), t_string!(i18n, studio.edit), vec![]),
                 ];
                 Either::Left(
