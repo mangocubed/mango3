@@ -46,9 +46,11 @@ pub(crate) struct DatabaseConfig {
 
 impl Default for DatabaseConfig {
     fn default() -> Self {
+        let db_suffix = if cfg!(test) { "test" } else { "dev" };
+
         Self {
             max_connections: 5,
-            url: "postgres://mango3:mango3@127.0.0.1:5432/mango3_dev".to_owned(),
+            url: format!("postgres://mango3:mango3@127.0.0.1:5432/mango3_{db_suffix}"),
         }
     }
 }
@@ -66,8 +68,10 @@ pub(crate) struct JobsConfig {
 
 impl Default for JobsConfig {
     fn default() -> Self {
+        let db_number = if cfg!(test) { "10" } else { "0" };
+
         Self {
-            redis_url: "redis://127.0.0.1:6379/0".to_owned(),
+            redis_url: format!("redis://127.0.0.1:6379/{db_number}"),
         }
     }
 }
@@ -86,9 +90,11 @@ pub struct SessionsConfig {
 
 impl Default for SessionsConfig {
     fn default() -> Self {
+        let db_number = if cfg!(test) { "11" } else { "1" };
+
         Self {
             key: "abcdefghijklmnopqrestuvvwxyz0123456789ABCDEFGHIJKLMNOPQRESTUVVWX".to_owned(),
-            redis_url: "redis://127.0.0.1:6379/1".to_owned(),
+            redis_url: format!("redis://127.0.0.1:6379/{db_number}"),
         }
     }
 }

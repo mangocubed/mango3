@@ -1,5 +1,3 @@
-use std::env::set_var;
-
 use chrono::{DateTime, Utc};
 use fake::faker::address::en::CountryCode;
 use fake::faker::chrono::en::DateTimeBefore;
@@ -113,9 +111,5 @@ pub async fn insert_test_website(core_context: &CoreContext) -> Website {
 }
 
 pub async fn setup_core_context() -> CoreContext {
-    set_var("DATABASE_URL", "postgres://mango3:mango3@127.0.0.1:5432/mango3_test");
-    set_var("JOBS_REDIS_URL", "redis://127.0.0.1:6379/6");
-    set_var("SESSIONS_REDIS_URL", "redis://127.0.0.1:6379/7");
-
     CoreContext::setup().await
 }
