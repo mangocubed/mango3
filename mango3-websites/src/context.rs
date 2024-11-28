@@ -14,8 +14,8 @@ pub fn use_current_website_resource() -> Resource<Result<Option<WebsiteResp>, Se
     use_context::<Resource<Result<Option<WebsiteResp>, ServerFnError>>>().unwrap()
 }
 
-pub fn use_slug_param() -> String {
+pub fn use_slug_param() -> Memo<String> {
     let params_map = use_params_map();
 
-    params_map.with(|params| params.get(KEY_PARAM_SLUG).unwrap_or_default())
+    Memo::new(move |_| params_map.with(|params| params.get(KEY_PARAM_SLUG).unwrap_or_default()))
 }

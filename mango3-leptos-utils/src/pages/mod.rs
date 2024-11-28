@@ -27,7 +27,11 @@ pub fn GuestPage(children: Children, #[prop(into)] title: TextProp) -> impl Into
 }
 
 #[component]
-pub fn Page(children: Children, #[prop(into)] title: TextProp) -> impl IntoView {
+pub fn Page(
+    children: Children,
+    #[prop(into)] title: TextProp,
+    #[prop(into, optional)] class: Option<String>,
+) -> impl IntoView {
     let current_user_resource = use_current_user_resource();
     let page_title = use_page_title();
 
@@ -36,5 +40,5 @@ pub fn Page(children: Children, #[prop(into)] title: TextProp) -> impl IntoView 
         page_title.value.set(Some(title.get().to_string()));
     });
 
-    children()
+    view! { <div class=class>{children()}</div> }
 }

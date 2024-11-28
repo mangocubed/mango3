@@ -6,7 +6,7 @@ use leptos_router::{ParamSegment, StaticSegment};
 use mango3_leptos_utils::components::{AppProvider, BottomBar, FaviconLink};
 use mango3_leptos_utils::pages::NotFoundPage;
 
-use crate::components::{CurrentWebsite, WebsiteTopBar};
+use crate::components::{CurrentWebsiteOpt, WebsiteTopBar};
 use crate::constants::KEY_PARAM_SLUG;
 use crate::context::provide_current_website_resource;
 use crate::pages::{IndexPage, ShowPagePage, ShowPostPage};
@@ -22,7 +22,7 @@ pub fn App() -> impl IntoView {
         <Stylesheet id="leptos" href="/pkg/application.css" />
 
         <AppProvider>
-            <CurrentWebsite children=move |website| {
+            <CurrentWebsiteOpt children=move |website| {
                 if let Some(icon_image_blob) = website.and_then(|w| w.icon_image_blob) {
                     view! { <FaviconLink href=icon_image_blob.variant_url(32, 32, true) /> }
                 } else {

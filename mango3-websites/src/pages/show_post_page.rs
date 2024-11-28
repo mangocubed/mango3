@@ -11,7 +11,7 @@ use crate::server_functions::get_post;
 #[component]
 pub fn ShowPostPage() -> impl IntoView {
     let slug = use_slug_param();
-    let post_resource = Resource::new_blocking(move || slug.clone(), get_post);
+    let post_resource = Resource::new_blocking(move || slug.get(), get_post);
 
     view! {
         <Suspense fallback=LoadingSpinner>
@@ -20,16 +20,14 @@ pub fn ShowPostPage() -> impl IntoView {
                     Some(Ok(Some(post))) => {
                         EitherOf3::A(
                             view! {
-                                <Page title=post.title.clone()>
-                                    <div class="max-w-[1200px] w-full ml-auto mr-auto">
-                                        <PostCard post=post show_content=true />
-                                    </div>
+                                <Page class="max-w-[1200px] w-full ml-auto mr-auto" title=post.title.clone()>
+                                    <PostCard post=post show_content=true />
                                 </Page>
                             },
                         )
                     }
                     Some(Ok(None)) => EitherOf3::B(NotFoundPage),
-                    _ => EitherOf3::C(()),
+                    _ => EitherOf3::C(view! { <div /> }),
                 }
             })}
         </Suspense>
