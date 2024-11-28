@@ -11,7 +11,7 @@ mod website_top_bar;
 pub use website_top_bar::WebsiteTopBar;
 
 #[component]
-pub fn CurrentWebsite<VF, IV>(children: VF) -> impl IntoView
+pub fn CurrentWebsiteOpt<VF, IV>(children: VF) -> impl IntoView
 where
     IV: IntoView + 'static,
     VF: Fn(Option<WebsiteResp>) -> IV + Send + Sync + 'static,

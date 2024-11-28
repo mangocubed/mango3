@@ -11,7 +11,7 @@ use crate::server_functions::get_page;
 #[component]
 pub fn ShowPagePage() -> impl IntoView {
     let slug = use_slug_param();
-    let page_resource = Resource::new_blocking(move || slug.clone(), get_page);
+    let page_resource = Resource::new_blocking(move || slug.get(), get_page);
 
     view! {
         <Suspense fallback=LoadingSpinner>
@@ -20,16 +20,14 @@ pub fn ShowPagePage() -> impl IntoView {
                     Some(Ok(Some(page))) => {
                         EitherOf3::A(
                             view! {
-                                <Page title=page.title.clone()>
-                                    <div class="max-w-[1200px] w-full ml-auto mr-auto">
-                                        <PageCard page=page show_content=true />
-                                    </div>
+                                <Page class="max-w-[1200px] w-full ml-auto mr-auto" title=page.title.clone()>
+                                    <PageCard page=page show_content=true />
                                 </Page>
                             },
                         )
                     }
                     Some(Ok(None)) => EitherOf3::B(NotFoundPage),
-                    _ => EitherOf3::C(()),
+                    _ => EitherOf3::C(view! { <div /> }),
                 }
             })}
         </Suspense>

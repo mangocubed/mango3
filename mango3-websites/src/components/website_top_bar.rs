@@ -9,7 +9,7 @@ use mango3_leptos_utils::i18n::use_i18n;
 
 use crate::server_functions::get_all_navigation_items;
 
-use super::CurrentWebsite;
+use super::CurrentWebsiteOpt;
 
 #[component]
 pub fn WebsiteTopBar() -> impl IntoView {
@@ -17,7 +17,7 @@ pub fn WebsiteTopBar() -> impl IntoView {
 
     view! {
         <TopBar right_items=move || view! { <GoToMango3 /> }>
-            <CurrentWebsite children=move |website| {
+            <CurrentWebsiteOpt children=move |website| {
                 let i18n = use_i18n();
                 let basic_config = use_basic_config();
                 let page_title = use_page_title();
