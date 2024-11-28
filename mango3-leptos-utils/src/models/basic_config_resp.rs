@@ -39,6 +39,6 @@ impl From<BasicConfig> for BasicConfigResp {
 
 impl BasicConfigResp {
     pub fn asset_url(&self, file_name: &str) -> String {
-        format!("{}/{}", self.assets_url, file_name)
+        format!("{}{}", self.assets_url, file_name)
     }
 }

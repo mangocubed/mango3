@@ -2,7 +2,7 @@ use leptos::either::Either;
 use leptos::prelude::*;
 use leptos_i18n::t_string;
 
-use leptos_meta::{Link, Title};
+use leptos_meta::Title;
 use mango3_leptos_utils::components::{AppTitle, Brand, GoToMango3, TopBar};
 use mango3_leptos_utils::context::{use_basic_config, use_page_title};
 use mango3_leptos_utils::i18n::use_i18n;
@@ -39,17 +39,6 @@ pub fn WebsiteTopBar() -> impl IntoView {
                         Either::Left(
                             view! {
                                 <Title text=title_text />
-
-                                {
-                                    let website_icon_image_blob = website.icon_image_blob.clone();
-                                    move || {
-                                        website_icon_image_blob
-                                            .clone()
-                                            .map(|blob| {
-                                                view! { <Link rel="icon" href=blob.variant_url(32, 32, true) /> }
-                                            })
-                                    }
-                                }
 
                                 <a class="btn btn-ghost text-xl" href="/">
                                     <img
