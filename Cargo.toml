@@ -22,14 +22,14 @@ apalis = { version = "0.5.5", features = ["redis"] }
 axum = "0.7.9"
 console_error_panic_hook = "0.1.7"
 leptos = "0.7.0-rc3"
-leptos_axum = "0.7.0-rc2"
+leptos_axum = "0.7.0-rc3"
 leptos_i18n = { version = "0.5.0-rc1", default-features = false, features = ["cookie", "yaml_files"] }
-leptos_meta = "0.7.0-rc2"
-leptos_router = "0.7.0-rc2"
+leptos_meta = "0.7.0-rc3"
+leptos_router = "0.7.0-rc3"
 leptos-use = { version = "0.14.0-rc5", default-features = false }
 rust_iso3166 = "0.1.13"
 serde = { version = "1.0.215", features = ["derive"] }
-server_fn = "0.7.0-rc2"
+server_fn = "0.7.0-rc3"
 tokio = { version = "1.41.1", features = ["macros", "rt-multi-thread"] }
 uuid = { version = "1.11.0", features = ["serde", "v4"] }
 wasm-bindgen = "0.2.95"
