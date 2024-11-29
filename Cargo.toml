@@ -21,7 +21,7 @@ version = "0.0.0-SNAPSHOT"
 apalis = { version = "0.5.5", features = ["redis"] }
 axum = "0.7.9"
 console_error_panic_hook = "0.1.7"
-leptos = "0.7.0-rc2"
+leptos = "0.7.0-rc3"
 leptos_axum = "0.7.0-rc2"
 leptos_i18n = { version = "0.5.0-rc1", default-features = false, features = ["cookie", "yaml_files"] }
 leptos_meta = "0.7.0-rc2"
