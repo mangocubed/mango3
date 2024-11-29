@@ -4652,9 +4652,9 @@ dependencies = [
 
 [[package]]
 name = "server_fn"
-version = "0.7.0-rc2"
+version = "0.7.0-rc3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bed94ec81d1b9ef2b28325bcf715461d861e90f41d249b70b561c6eefcb96afe"
+checksum = "43348a715b2507e2010dd8ce7abe3becd73433198bf55611659871090393778c"
 dependencies = [
  "axum",
  "bytes",
@@ -4689,9 +4689,9 @@ dependencies = [
 
 [[package]]
 name = "server_fn_macro"
-version = "0.7.0-rc2"
+version = "0.7.0-rc3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4b7e77dd4f15d19a65019d24700963e40294b5a30c42c32bce2e532fbfe00b49"
+checksum = "8113cf418a8c9e847e5708967d1b08ab2ace94fb879d0570ec8b70119233c048"
 dependencies = [
  "const_format",
  "convert_case",
@@ -4703,9 +4703,9 @@ dependencies = [
 
 [[package]]
 name = "server_fn_macro_default"
-version = "0.7.0-rc2"
+version = "0.7.0-rc3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "295a3c3d01be1cf17d0c8b25a48b963a747f6ccdba0f62f657e8df37df4afaac"
+checksum = "f8d0174ed361646a93438b64ce92dfb6bd2c7af515a9dbd1e9bd1695ffbab60e"
 dependencies = [
  "server_fn_macro",
  "syn",
@@ -5293,9 +5293,9 @@ dependencies = [
 
 [[package]]
 name = "throw_error"
-version = "0.2.0-rc2"
+version = "0.2.0-rc3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0240909e3ad4ed2dab72b2861fc9a7930110c1d3a9a0a32c6dee0a747591d10a"
+checksum = "dc5e862da52666e62334906d86c3e38aef4caa4b2f3b4bb13a413954c45d669e"
 dependencies = [
  "pin-project-lite",
 ]
