@@ -60,7 +60,7 @@ where
             {children(data)}
         </For>
 
-        <div node_ref=node_ref class="flex mt-4">
+        <div node_ref=node_ref>
             <Show when=move || is_loading.get()>
                 <LoadingSpinner />
             </Show>

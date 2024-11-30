@@ -13,8 +13,10 @@ use crate::server_functions::{get_all_my_navigation_items, AttemptToSaveNavigati
 pub fn NavigationPage() -> impl IntoView {
     let i18n = use_i18n();
     let website_id = use_website_id_param();
-    let website_id_clone = website_id.clone();
-    let items_resource = Resource::new_blocking(move || website_id_clone.clone(), get_all_my_navigation_items);
+    let items_resource = Resource::new_blocking(
+        move || website_id.get().unwrap_or_default(),
+        get_all_my_navigation_items,
+    );
     let server_action = ServerAction::<AttemptToSaveNavigation>::new();
     let action_value = server_action.value();
     let items = RwSignal::new(vec![]);
@@ -42,13 +44,13 @@ pub fn NavigationPage() -> impl IntoView {
     };
 
     view! {
-        <h3 class="h3">{t!(i18n, studio.navigation)}</h3>
+        <h2 class="h2">{t!(i18n, studio.navigation)}</h2>
 
         <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
             <ActionFormAlert
                 action_value=action_value
                 error_message=move || { t_string!(i18n, studio.failed_to_save_navigation) }
-                redirect_to=format!("/websites/{}", &website_id)
+                redirect_to=format!("/websites/{}", website_id.get().unwrap_or_default())
                 success_message=move || { t_string!(i18n, studio.navigation_saved_successfully) }
             />
 

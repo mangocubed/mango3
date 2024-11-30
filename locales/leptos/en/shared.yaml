@@ -8,7 +8,6 @@ email: Email
 failed_to_update_password: Failed to update password
 full_name: Full name
 go_to_title: Go to {{title}}
-go_to_website: Go to website
 home: Home
 login: Login
 my_account: My account
