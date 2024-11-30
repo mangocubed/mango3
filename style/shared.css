@@ -3,6 +3,14 @@
 @tailwind utilities;
 
 @layer components {
+    .card-text-preview {
+        @apply max-h-[3.5rem] relative overflow-y-hidden;
+    }
+
+    .card-text-preview-overlay {
+        @apply absolute bottom-0 left-0 right-0 top-7 bg-gradient-to-b from-transparent to-base-100 pointer-events-none;
+    }
+
     .form {
         @apply max-w-[640px] ml-auto mr-auto mt-4 mb-4 w-full;
     }

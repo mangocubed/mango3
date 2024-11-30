@@ -3,6 +3,7 @@ use sqlx::types::Uuid;
 use sqlx::{query, query_as};
 use url::Url;
 
+use crate::config::MISC_CONFIG;
 use crate::constants::{BLACKLISTED_SLUGS, REGEX_SLUG};
 use crate::enums::{Input, InputError};
 use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
@@ -30,7 +31,11 @@ pub struct Post {
 
 impl Post {
     pub fn content_preview(&self) -> &str {
-        self.content.lines().next().unwrap_or_default()
+        self.content
+            .lines()
+            .next()
+            .map(|line| line.get(..256).unwrap_or(line).trim())
+            .unwrap_or_default()
     }
 
     pub async fn cover_image_blob(&self, core_context: &CoreContext) -> Option<sqlx::Result<Blob>> {
@@ -137,6 +142,6 @@ impl Validator {
     }
 
     fn validate_post_content(&mut self, value: &str) -> bool {
-        self.validate_length(Input::Content, value, None, Some(8192))
+        self.validate_length(Input::Content, value, None, Some(MISC_CONFIG.max_post_content_length))
     }
 }

@@ -27,6 +27,8 @@
 | MAILER_SMTP_USERNAME          | String  |                                                                  |
 | MISC_CONFIRMATION_CODE_LENGTH | Integer | 6                                                                |
 | MISC_INVITATION_CODE_LENGTH   | Integer | 6                                                                |
+| MISC_MAX_PAGE_CONTENT_LENGTH  | Integer | 16384                                                            |
+| MISC_MAX_POST_CONTENT_LENGTH  | Integer | 16384                                                            |
 | MISC_STORAGE_PATH             | String  | ./storage                                                        |
 | SESSIONS_KEY                  | String  | abcdefghijklmnopqrestuvvwxyz0123456789ABCDEFGHIJKLMNOPQRESTUVVWX |
 | SESSIONS_REDIS_URL            | String  | redis://127.0.0.1:6379/1                                         |

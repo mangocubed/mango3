@@ -36,7 +36,7 @@ fn find_country(query: &str) -> Option<&CountryCode> {
     rust_iso3166::ALL.iter().find(|c| c.alpha2 == query || c.name == query)
 }
 
-fn generate_random_string(length: i8) -> String {
+fn generate_random_string(length: u8) -> String {
     thread_rng()
         .sample_iter(&Alphanumeric)
         .take(length as usize)

@@ -6,8 +6,10 @@ use super::extract_from_env;
 
 #[derive(Deserialize, Serialize)]
 pub struct MiscConfig {
-    pub(crate) confirmation_code_length: i8,
-    pub(crate) invitation_code_length: i8,
+    pub(crate) confirmation_code_length: u8,
+    pub(crate) invitation_code_length: u8,
+    pub(crate) max_page_content_length: u32,
+    pub(crate) max_post_content_length: u32,
     pub(crate) storage_path: String,
 }
 
@@ -16,6 +18,8 @@ impl Default for MiscConfig {
         Self {
             confirmation_code_length: 6,
             invitation_code_length: 6,
+            max_page_content_length: 16384,
+            max_post_content_length: 16384,
             storage_path: "./storage".to_owned(),
         }
     }

@@ -38,7 +38,10 @@ pub fn PageCard(
                     }>{page.title}</a>
                 </h3>
 
-                <div class="prose max-w-none" inner_html=inner_html />
+                <div class="card-text-preview">
+                    <div class="prose max-w-none" inner_html=inner_html />
+                    <div class="card-text-preview-overlay" />
+                </div>
 
                 <div class="card-actions justify-end">{actions.run()}</div>
             </div>

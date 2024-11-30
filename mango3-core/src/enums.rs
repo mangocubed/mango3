@@ -36,7 +36,7 @@ pub enum InputError {
     CantBeBlank,
     CantBePresent,
     InvalidFormat,
-    InvalidLength(Option<usize>, Option<usize>),
+    InvalidLength(Option<u32>, Option<u32>),
     IsInvalid,
 }
 

@@ -11,13 +11,15 @@ use mango3_core::CoreContext;
 use super::BlobResp;
 
 #[cfg(feature = "ssr")]
-use super::FromCore;
+use super::{parse_html, FromCore};
 
 #[derive(Clone, Deserialize, Serialize)]
 pub struct WebsiteResp {
     pub id: String,
     pub name: String,
     pub description: String,
+    pub description_html: String,
+    pub description_preview_html: String,
     pub initials: String,
     pub icon_image_blob: Option<BlobResp>,
     pub cover_image_blob: Option<BlobResp>,
@@ -33,6 +35,8 @@ impl FromCore<Website> for WebsiteResp {
             id: website.id.to_string(),
             name: website.name.clone(),
             description: website.description.clone(),
+            description_html: parse_html(&website.description),
+            description_preview_html: parse_html(&website.description_preview()),
             initials: website.initials(),
             icon_image_blob: website
                 .icon_image_blob(&core_context)
