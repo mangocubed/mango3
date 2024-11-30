@@ -45,6 +45,14 @@ impl Website {
             .map_err(|_| ValidationErrors::default())
     }
 
+    pub fn description_preview(&self) -> &str {
+        self.description
+            .lines()
+            .next()
+            .map(|line| line.get(..256).unwrap_or(line).trim())
+            .unwrap_or_default()
+    }
+
     pub async fn get_by_id(core_context: &CoreContext, id: Uuid, user: Option<&User>) -> sqlx::Result<Self> {
         let user_id = user.map(|user| user.id);
         query_as!(

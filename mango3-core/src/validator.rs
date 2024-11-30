@@ -13,12 +13,8 @@ impl InputError {
             InputError::InvalidLength(min, max) => {
                 let mut text_args = HashMap::new();
 
-                if let Some(min) = min {
-                    text_args.insert("min".to_owned(), min.into());
-                }
-                if let Some(max) = max {
-                    text_args.insert("max".to_owned(), max.into());
-                }
+                text_args.insert("min".to_owned(), min.unwrap_or_default().into());
+                text_args.insert("max".to_owned(), max.unwrap_or_default().into());
 
                 i18n.text_with_args(&self.to_string(), &text_args)
             }
@@ -62,7 +58,7 @@ pub trait ValidatorTrait<T> {
 
     fn validate_format(&mut self, input: Input, value: T, with: &Regex) -> bool;
 
-    fn validate_length(&mut self, input: Input, value: T, min: Option<usize>, max: Option<usize>) -> bool;
+    fn validate_length(&mut self, input: Input, value: T, min: Option<u32>, max: Option<u32>) -> bool;
 
     fn validate_numericality(&mut self, input: Input, value: T, min: Option<T>, max: Option<T>) -> bool;
 
@@ -88,8 +84,11 @@ impl ValidatorTrait<&str> for Validator {
         true
     }
 
-    fn validate_length(&mut self, input: Input, value: &str, min: Option<usize>, max: Option<usize>) -> bool {
-        let value_length = value.trim().len();
+    fn validate_length(&mut self, input: Input, value: &str, min: Option<u32>, max: Option<u32>) -> bool {
+        let Ok(value_length) = TryInto::<u32>::try_into(value.trim().len()) else {
+            self.add_error(input, InputError::InvalidLength(min, Some(u32::MAX)));
+            return false;
+        };
 
         if (min.is_some() && value_length < min.unwrap()) || (max.is_some() && value_length > max.unwrap()) {
             self.add_error(input, InputError::InvalidLength(min, max));
@@ -123,7 +122,7 @@ impl ValidatorTrait<String> for Validator {
         self.validate_format(input, value.as_str(), with)
     }
 
-    fn validate_length(&mut self, input: Input, value: String, min: Option<usize>, max: Option<usize>) -> bool {
+    fn validate_length(&mut self, input: Input, value: String, min: Option<u32>, max: Option<u32>) -> bool {
         self.validate_length(input, value.as_str(), min, max)
     }
 
@@ -145,7 +144,7 @@ impl ValidatorTrait<&String> for Validator {
         self.validate_format(input, value.as_str(), with)
     }
 
-    fn validate_length(&mut self, input: Input, value: &String, min: Option<usize>, max: Option<usize>) -> bool {
+    fn validate_length(&mut self, input: Input, value: &String, min: Option<u32>, max: Option<u32>) -> bool {
         self.validate_length(input, value.as_str(), min, max)
     }
 
@@ -179,7 +178,7 @@ impl ValidatorTrait<bool> for Validator {
         false
     }
 
-    fn validate_length(&mut self, input: Input, _value: bool, _min: Option<usize>, _max: Option<usize>) -> bool {
+    fn validate_length(&mut self, input: Input, _value: bool, _min: Option<u32>, _max: Option<u32>) -> bool {
         self.add_error(input, InputError::IsInvalid);
         false
     }
@@ -214,7 +213,7 @@ impl<T> ValidatorTrait<Option<T>> for Validator {
         false
     }
 
-    fn validate_length(&mut self, input: Input, _value: Option<T>, _min: Option<usize>, _max: Option<usize>) -> bool {
+    fn validate_length(&mut self, input: Input, _value: Option<T>, _min: Option<u32>, _max: Option<u32>) -> bool {
         self.add_error(input, InputError::IsInvalid);
         false
     }

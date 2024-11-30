@@ -40,7 +40,7 @@ where
 
 #[derive(Deserialize, Serialize)]
 pub(crate) struct DatabaseConfig {
-    pub(crate) max_connections: i8,
+    pub(crate) max_connections: u8,
     pub(crate) url: String,
 }
 
