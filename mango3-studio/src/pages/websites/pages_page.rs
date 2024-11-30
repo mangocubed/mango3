@@ -2,7 +2,7 @@ use leptos::prelude::*;
 
 use mango3_leptos_utils::components::{ConfirmationDialog, InfiniteScroll, PageCard};
 use mango3_leptos_utils::i18n::{t, use_i18n};
-use mango3_leptos_utils::models::PageResp;
+use mango3_leptos_utils::models::PagePreviewResp;
 
 use crate::context::use_website_id_param;
 use crate::server_functions::{get_my_pages, AttemptToDeletePage};
@@ -25,7 +25,7 @@ pub fn PagesPage() -> impl IntoView {
         <ConfirmationDialog
             is_open=show_delete_confirmation
             on_accept=move || {
-                let id = delete_page.get().map(|p: PageResp| p.id).unwrap();
+                let id = delete_page.get().map(|p: PagePreviewResp| p.id).unwrap();
                 server_action
                     .dispatch(AttemptToDeletePage {
                         website_id: website_id.get().unwrap_or_default(),
@@ -33,7 +33,7 @@ pub fn PagesPage() -> impl IntoView {
                     });
                 pages
                     .update(|p| {
-                        p.retain(|p: &PageResp| p.id != id);
+                        p.retain(|p: &PagePreviewResp| p.id != id);
                     });
                 delete_page.set(None);
             }
@@ -46,7 +46,7 @@ pub fn PagesPage() -> impl IntoView {
         <section class="max-w-[640px] w-full ml-auto mr-auto">
             <InfiniteScroll
                 after=after
-                key=|page: &PageResp| page.id.clone()
+                key=|page: &PagePreviewResp| page.id.clone()
                 resource=my_pages_resource
                 nodes=pages
                 children=move |page| {

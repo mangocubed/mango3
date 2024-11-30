@@ -1,21 +1,9 @@
 use leptos::prelude::*;
 
-use crate::models::PageResp;
+use crate::models::PagePreviewResp;
 
 #[component]
-pub fn PageCard(
-    page: PageResp,
-    #[prop(into, default = false)] show_content: bool,
-    #[prop(into, optional)] actions: ViewFn,
-) -> impl IntoView {
-    let inner_html = move || {
-        if show_content {
-            page.content_html.clone()
-        } else {
-            page.content_preview_html.clone()
-        }
-    };
-
+pub fn PageCard(page: PagePreviewResp, #[prop(into, optional)] actions: ViewFn) -> impl IntoView {
     view! {
         <div class="card card-compact bg-base-100 shadow-xl mb-4">
             {
@@ -33,13 +21,11 @@ pub fn PageCard(
                 }
             } <div class="card-body">
                 <h3 class="card-title">
-                    <a href=move || {
-                        if !show_content && page.is_published { Some(page.url.clone()) } else { None }
-                    }>{page.title}</a>
+                    <a href=move || if page.is_published { Some(page.url.clone()) } else { None }>{page.title}</a>
                 </h3>
 
                 <div class="card-text-preview">
-                    <div class="prose max-w-none" inner_html=inner_html />
+                    <div class="prose max-w-none" inner_html=page.content_preview_html />
                     <div class="card-text-preview-overlay" />
                 </div>
 

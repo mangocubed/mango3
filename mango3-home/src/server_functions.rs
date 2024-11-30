@@ -3,7 +3,7 @@ use leptos::prelude::*;
 #[cfg(feature = "ssr")]
 use uuid::Uuid;
 
-use mango3_leptos_utils::models::{CursorPageResp, PostResp, WebsiteResp};
+use mango3_leptos_utils::models::{CursorPageResp, PostPreviewResp, WebsiteResp};
 
 #[cfg(feature = "ssr")]
 use mango3_core::models::{Post, Website};
@@ -28,7 +28,7 @@ pub async fn get_websites(after: Option<String>) -> Result<CursorPageResp<Websit
 }
 
 #[server]
-pub async fn get_posts(after: Option<String>) -> Result<CursorPageResp<PostResp>, ServerFnError> {
+pub async fn get_posts(after: Option<String>) -> Result<CursorPageResp<PostPreviewResp>, ServerFnError> {
     let core_context = expect_core_context();
 
     let page_params = CursorPageParams {

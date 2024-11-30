@@ -19,6 +19,7 @@ version = "0.0.0-SNAPSHOT"
 
 [workspace.dependencies]
 apalis = { version = "0.5.5", features = ["redis"] }
+async-trait = "0.1.83"
 axum = "0.7.9"
 console_error_panic_hook = "0.1.7"
 leptos = "0.7.0-rc3"

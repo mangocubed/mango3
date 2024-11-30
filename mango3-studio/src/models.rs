@@ -3,22 +3,21 @@ use serde::{Deserialize, Serialize};
 #[cfg(feature = "ssr")]
 use async_trait::async_trait;
 
+use mango3_leptos_utils::models::BlobResp;
+
 #[cfg(feature = "ssr")]
-use mango3_core::models::Page;
+use mango3_core::models::{Page, Post};
 #[cfg(feature = "ssr")]
 use mango3_core::CoreContext;
-
-use super::BlobResp;
-
 #[cfg(feature = "ssr")]
-use super::{parse_html, FromCore};
+use mango3_leptos_utils::models::FromCore;
 
 #[derive(Clone, Deserialize, Serialize)]
-pub struct PageResp {
+pub struct EditPageResp {
     pub id: String,
     pub title: String,
     pub slug: String,
-    pub content_html: String,
+    pub content: String,
     pub cover_image_blob: Option<BlobResp>,
     pub is_published: bool,
     pub url: String,
@@ -26,13 +25,13 @@ pub struct PageResp {
 
 #[cfg(feature = "ssr")]
 #[async_trait]
-impl FromCore<Page> for PageResp {
+impl FromCore<Page> for EditPageResp {
     async fn from_core(core_context: &CoreContext, page: &Page) -> Self {
         Self {
             id: page.id.to_string(),
             title: page.title.clone(),
             slug: page.slug.clone(),
-            content_html: parse_html(&page.content),
+            content: page.content.clone(),
             cover_image_blob: page
                 .cover_image_blob(&core_context)
                 .await
@@ -45,11 +44,11 @@ impl FromCore<Page> for PageResp {
 }
 
 #[derive(Clone, Deserialize, Serialize)]
-pub struct PagePreviewResp {
+pub struct EditPostResp {
     pub id: String,
     pub title: String,
     pub slug: String,
-    pub content_preview_html: String,
+    pub content: String,
     pub cover_image_blob: Option<BlobResp>,
     pub is_published: bool,
     pub url: String,
@@ -57,20 +56,20 @@ pub struct PagePreviewResp {
 
 #[cfg(feature = "ssr")]
 #[async_trait]
-impl FromCore<Page> for PagePreviewResp {
-    async fn from_core(core_context: &CoreContext, page: &Page) -> Self {
+impl FromCore<Post> for EditPostResp {
+    async fn from_core(core_context: &CoreContext, post: &Post) -> Self {
         Self {
-            id: page.id.to_string(),
-            title: page.title.clone(),
-            slug: page.slug.clone(),
-            content_preview_html: parse_html(&page.content_preview()),
-            cover_image_blob: page
+            id: post.id.to_string(),
+            title: post.title.clone(),
+            slug: post.slug.clone(),
+            content: post.content.clone(),
+            cover_image_blob: post
                 .cover_image_blob(&core_context)
                 .await
                 .and_then(|result| result.ok())
                 .map(|blob| blob.into()),
-            is_published: page.is_published(core_context).await,
-            url: page.url(&core_context).await.to_string(),
+            is_published: post.is_published(core_context).await,
+            url: post.url(&core_context).await.to_string(),
         }
     }
 }

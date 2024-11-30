@@ -4,12 +4,14 @@ use server_fn::error::NoCustomError;
 
 use mango3_leptos_utils::components::{ImageUploadField, SwitchField, TextField, TextareaField};
 use mango3_leptos_utils::i18n::{t_string, use_i18n};
-use mango3_leptos_utils::models::{ActionFormResp, PostResp};
+use mango3_leptos_utils::models::ActionFormResp;
+
+use crate::models::EditPostResp;
 
 #[component]
 pub fn PostFormFields(
     action_value: RwSignal<Option<Result<ActionFormResp, ServerFnError<NoCustomError>>>>,
-    #[prop(optional)] post: Option<PostResp>,
+    #[prop(optional)] post: Option<EditPostResp>,
 ) -> impl IntoView {
     let i18n = use_i18n();
     let error_title = RwSignal::new(None);
