@@ -3,7 +3,7 @@ use leptos::prelude::*;
 #[cfg(feature = "ssr")]
 use uuid::Uuid;
 
-use mango3_leptos_utils::models::{ActionFormResp, CursorPageResp, PostResp};
+use mango3_leptos_utils::models::{ActionFormResp, CursorPageResp, PostPreviewResp};
 
 #[cfg(feature = "ssr")]
 use mango3_core::models::{Blob, Post};
@@ -13,6 +13,8 @@ use mango3_core::pagination::CursorPageParams;
 use mango3_leptos_utils::models::FromCore;
 #[cfg(feature = "ssr")]
 use mango3_leptos_utils::ssr::{expect_core_context, extract_i18n, extract_user};
+
+use crate::models::EditPostResp;
 
 #[cfg(feature = "ssr")]
 use super::my_website;
@@ -111,11 +113,11 @@ pub async fn attempt_to_update_post(
 }
 
 #[server]
-pub async fn get_my_post(website_id: String, id: String) -> Result<Option<PostResp>, ServerFnError> {
+pub async fn get_my_post(website_id: String, id: String) -> Result<Option<EditPostResp>, ServerFnError> {
     if let Some(post) = my_post(&website_id, &id).await? {
         let core_context = expect_core_context();
 
-        Ok(Some(PostResp::from_core(&core_context, &post).await))
+        Ok(Some(EditPostResp::from_core(&core_context, &post).await))
     } else {
         Ok(None)
     }
@@ -125,7 +127,7 @@ pub async fn get_my_post(website_id: String, id: String) -> Result<Option<PostRe
 pub async fn get_my_posts(
     website_id: String,
     after: Option<String>,
-) -> Result<CursorPageResp<PostResp>, ServerFnError> {
+) -> Result<CursorPageResp<PostPreviewResp>, ServerFnError> {
     let Some(website) = my_website(&website_id).await? else {
         return Ok(CursorPageResp::default());
     };

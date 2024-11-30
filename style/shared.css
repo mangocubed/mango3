@@ -14,6 +14,10 @@
     .form {
         @apply max-w-[640px] ml-auto mr-auto mt-4 mb-4 w-full;
     }
+    
+    .h1 {
+        @apply text-2xl font-bold mb-6;
+    }
 
     .h2 {
         @apply text-xl font-bold mb-5;

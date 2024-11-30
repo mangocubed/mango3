@@ -3,7 +3,7 @@ use leptos::prelude::*;
 #[cfg(feature = "ssr")]
 use uuid::Uuid;
 
-use mango3_leptos_utils::models::{ActionFormResp, CursorPageResp, PageResp};
+use mango3_leptos_utils::models::{ActionFormResp, CursorPageResp, PagePreviewResp};
 
 #[cfg(feature = "ssr")]
 use mango3_core::models::{Blob, Page};
@@ -13,6 +13,8 @@ use mango3_core::pagination::CursorPageParams;
 use mango3_leptos_utils::models::FromCore;
 #[cfg(feature = "ssr")]
 use mango3_leptos_utils::ssr::{expect_core_context, extract_i18n, extract_user};
+
+use crate::models::EditPageResp;
 
 #[cfg(feature = "ssr")]
 use super::my_website;
@@ -111,11 +113,11 @@ pub async fn attempt_to_update_page(
 }
 
 #[server]
-pub async fn get_my_page(website_id: String, id: String) -> Result<Option<PageResp>, ServerFnError> {
+pub async fn get_my_page(website_id: String, id: String) -> Result<Option<EditPageResp>, ServerFnError> {
     if let Some(page) = my_page(&website_id, &id).await? {
         let core_context = expect_core_context();
 
-        Ok(Some(PageResp::from_core(&core_context, &page).await))
+        Ok(Some(EditPageResp::from_core(&core_context, &page).await))
     } else {
         Ok(None)
     }
@@ -125,7 +127,7 @@ pub async fn get_my_page(website_id: String, id: String) -> Result<Option<PageRe
 pub async fn get_my_pages(
     website_id: String,
     after: Option<String>,
-) -> Result<CursorPageResp<PageResp>, ServerFnError> {
+) -> Result<CursorPageResp<PagePreviewResp>, ServerFnError> {
     let Some(website) = my_website(&website_id).await? else {
         return Ok(CursorPageResp::default());
     };

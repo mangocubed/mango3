@@ -3,7 +3,7 @@ use leptos::prelude::*;
 #[cfg(feature = "ssr")]
 use uuid::Uuid;
 
-use mango3_leptos_utils::models::{CursorPageResp, NavigationItemResp, PageResp, PostResp, WebsiteResp};
+use mango3_leptos_utils::models::*;
 
 #[cfg(feature = "ssr")]
 use mango3_core::models::{NavigationItem, Page, Post, Website};
@@ -67,7 +67,7 @@ pub async fn get_page(slug: String) -> Result<Option<PageResp>, ServerFnError> {
 }
 
 #[server]
-pub async fn get_posts(after: Option<String>) -> Result<CursorPageResp<PostResp>, ServerFnError> {
+pub async fn get_posts(after: Option<String>) -> Result<CursorPageResp<PostPreviewResp>, ServerFnError> {
     let Some(website) = current_website().await? else {
         return Ok(CursorPageResp::default());
     };

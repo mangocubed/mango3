@@ -3,7 +3,7 @@ use leptos_i18n::t_string;
 
 use mango3_leptos_utils::components::{InfiniteScroll, PostCard};
 use mango3_leptos_utils::i18n::use_i18n;
-use mango3_leptos_utils::models::PostResp;
+use mango3_leptos_utils::models::PostPreviewResp;
 use mango3_leptos_utils::pages::Page;
 
 use crate::server_functions::get_posts;
@@ -21,7 +21,12 @@ pub fn PostsPage() -> impl IntoView {
             <h2 class="h2">{title}</h2>
 
             <section class="max-w-[640px] w-full ml-auto mr-auto">
-                <InfiniteScroll after=after key=|post: &PostResp| post.id.clone() resource=posts_resource let:post>
+                <InfiniteScroll
+                    after=after
+                    key=|post: &PostPreviewResp| post.id.clone()
+                    resource=posts_resource
+                    let:post
+                >
                     <PostCard post=post />
                 </InfiniteScroll>
             </section>

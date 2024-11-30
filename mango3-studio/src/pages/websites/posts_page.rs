@@ -2,7 +2,7 @@ use leptos::prelude::*;
 
 use mango3_leptos_utils::components::{ConfirmationDialog, InfiniteScroll, PostCard};
 use mango3_leptos_utils::i18n::{t, use_i18n};
-use mango3_leptos_utils::models::PostResp;
+use mango3_leptos_utils::models::PostPreviewResp;
 
 use crate::context::use_website_id_param;
 use crate::server_functions::{get_my_posts, AttemptToDeletePost};
@@ -25,7 +25,7 @@ pub fn PostsPage() -> impl IntoView {
         <ConfirmationDialog
             is_open=show_delete_confirmation
             on_accept=move || {
-                let id = delete_post.get().map(|p: PostResp| p.id).unwrap();
+                let id = delete_post.get().map(|p: PostPreviewResp| p.id).unwrap();
                 server_action
                     .dispatch(AttemptToDeletePost {
                         website_id: website_id.get().unwrap_or_default(),
@@ -33,7 +33,7 @@ pub fn PostsPage() -> impl IntoView {
                     });
                 posts
                     .update(|p| {
-                        p.retain(|p: &PostResp| p.id != id);
+                        p.retain(|p: &PostPreviewResp| p.id != id);
                     });
                 delete_post.set(None);
             }
@@ -46,7 +46,7 @@ pub fn PostsPage() -> impl IntoView {
         <section class="max-w-[640px] w-full ml-auto mr-auto">
             <InfiniteScroll
                 after=after
-                key=|post: &PostResp| post.id.clone()
+                key=|post: &PostPreviewResp| post.id.clone()
                 resource=my_posts_resource
                 nodes=posts
                 children=move |post| {
