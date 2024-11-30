@@ -16,13 +16,13 @@ pub fn NewPostPage() -> impl IntoView {
     let action_value = server_action.value();
 
     view! {
-        <h3 class="h3">{t!(i18n, studio.new_post)}</h3>
+        <h2 class="h2">{t!(i18n, studio.new_post)}</h2>
 
         <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
             <ActionFormAlert
                 action_value=action_value
                 error_message=move || { t_string!(i18n, studio.failed_to_create_post) }
-                redirect_to=format!("/websites/{}/posts", &website_id)
+                redirect_to=format!("/websites/{}/posts", website_id.get().unwrap_or_default())
                 success_message=move || { t_string!(i18n, studio.post_created_successfully) }
             />
 

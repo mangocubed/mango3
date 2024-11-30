@@ -1,14 +1,13 @@
 use leptos::either::Either;
 use leptos::prelude::*;
-use leptos_i18n::t_string;
 use leptos_router::components::Outlet;
 use leptos_router::hooks::use_location;
 
-use mango3_leptos_utils::i18n::{t, use_i18n};
+use mango3_leptos_utils::i18n::{t_string, use_i18n};
 use mango3_leptos_utils::pages::{AuthenticatedPage, NotFoundPage};
 
 use crate::components::MyWebsiteOpt;
-use crate::context::provide_my_website_resource;
+use crate::context::{provide_my_website_resource, use_selected_website};
 
 #[component]
 pub fn Submenu(show: Memo<bool>, items: Vec<(String, &'static str)>, pathname: Memo<String>) -> impl IntoView {
@@ -46,6 +45,8 @@ pub fn ShowParentPage() -> impl IntoView {
 
     view! {
         <MyWebsiteOpt children=move |website| {
+            let selected_website = use_selected_website();
+            selected_website.set(website.clone());
             if let Some(website) = website {
                 let website_name = website.name.clone();
                 let home_path = format!("/websites/{}", website.id);
@@ -67,19 +68,11 @@ pub fn ShowParentPage() -> impl IntoView {
                     (format!("{home_path}/edit"), t_string!(i18n, studio.edit), vec![]),
                 ];
                 Either::Left(
+
                     view! {
                         <AuthenticatedPage title=move || {
                             format!("{} > {}", t_string!(i18n, studio.my_websites), website_name)
                         }>
-                            <h2 class="h2 breadcrumbs p-0">
-                                <ul>
-                                    <li>
-                                        <a href="/">{t!(i18n, studio.my_websites)}</a>
-                                    </li>
-                                    <li>{website.name}</li>
-                                </ul>
-                            </h2>
-
                             <div class="flex grow">
                                 <ul class="menu bg-base-200 rounded-box w-56">
                                     <For

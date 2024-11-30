@@ -1,7 +1,7 @@
 use leptos::ev::Event;
 use leptos::prelude::*;
 use leptos::text_prop::TextProp;
-use leptos_meta::Title;
+use leptos_meta::{Link, Title};
 
 use crate::context::{use_basic_config, use_page_title};
 use crate::i18n::{t, use_i18n};
@@ -112,7 +112,7 @@ pub fn FaviconLink(#[prop(into, optional)] href: Option<String>) -> impl IntoVie
         basic_config.asset_url("favicon.ico")
     };
 
-    view! { <link rel="favicon" href=href /> }
+    view! { <Link rel="favicon" href=href /> }
 }
 
 #[component]

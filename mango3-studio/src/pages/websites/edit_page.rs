@@ -1,8 +1,7 @@
 use leptos::prelude::*;
-use leptos_i18n::t_string;
 
 use mango3_leptos_utils::components::*;
-use mango3_leptos_utils::i18n::use_i18n;
+use mango3_leptos_utils::i18n::{t, t_string, use_i18n};
 use mango3_leptos_utils::models::ActionFormResp;
 
 use crate::components::MyWebsite;
@@ -33,6 +32,8 @@ pub fn EditPage() -> impl IntoView {
             let value_cover_image_blob = RwSignal::new(website.cover_image_blob);
             let value_publish = RwSignal::new(website.is_published);
             view! {
+                <h2 class="h2">{t!(i18n, studio.edit)}</h2>
+
                 <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
                     <ActionFormAlert
                         action_value=action_value

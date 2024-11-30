@@ -5,6 +5,8 @@ content: Content
 cover_image: Cover image
 delete: Delete
 edit: Edit
+edit_page: Edit page
+edit_post: Edit post
 failed_to_create_page: Failed to create page
 failed_to_create_post: Failed to create post
 failed_to_create_website: Failed to create website
@@ -26,6 +28,7 @@ pages: Pages
 post_created_successfully: Post created successfully
 post_updated_successfully: Post updated successfully
 publish: Publish
+select: Select
 slug: Slug
 subdomain: Subdomain
 title: Title

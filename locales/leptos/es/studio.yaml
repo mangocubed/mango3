@@ -5,6 +5,8 @@ content: Contenido
 cover_image: Imagen de portada
 delete: Eliminar
 edit: Editar
+edit_page: Editar página
+edit_post: Editat post
 failed_to_create_page: Error al crear página
 failed_to_create_post: Error al crear post
 failed_to_create_website: Error al crear website
@@ -26,6 +28,7 @@ pages: Páginas
 post_created_successfully: Post creado exitosamente
 post_updated_successfully: Post actualizado exitosamente
 publish: Publicar
+select: Seleccionar
 slug: Slug
 subdomain: Subdominio
 title: Título

@@ -12,9 +12,8 @@ pub fn PagesPage() -> impl IntoView {
     let website_id = use_website_id_param();
     let i18n = use_i18n();
     let after = RwSignal::new(None);
-    let website_id_clone = website_id.clone();
     let my_pages_resource = Resource::new_blocking(
-        move || (website_id_clone.clone(), after.get()),
+        move || (website_id.get().unwrap_or_default(), after.get()),
         |(website_id, after)| async { get_my_pages(website_id, after).await },
     );
     let pages = RwSignal::new(vec![]);
@@ -25,27 +24,24 @@ pub fn PagesPage() -> impl IntoView {
     view! {
         <ConfirmationDialog
             is_open=show_delete_confirmation
-            on_accept={
-                let website_id = website_id.clone();
-                move || {
-                    let id = delete_page.get().map(|p: PageResp| p.id).unwrap();
-                    server_action
-                        .dispatch(AttemptToDeletePage {
-                            website_id: website_id.clone(),
-                            id: id.clone(),
-                        });
-                    pages
-                        .update(|p| {
-                            p.retain(|p: &PageResp| p.id != id);
-                        });
-                    delete_page.set(None);
-                }
+            on_accept=move || {
+                let id = delete_page.get().map(|p: PageResp| p.id).unwrap();
+                server_action
+                    .dispatch(AttemptToDeletePage {
+                        website_id: website_id.get().unwrap_or_default(),
+                        id: id.clone(),
+                    });
+                pages
+                    .update(|p| {
+                        p.retain(|p: &PageResp| p.id != id);
+                    });
+                delete_page.set(None);
             }
         >
             {t!(i18n, studio.are_you_sure_you_want_to_delete_this_page)}
         </ConfirmationDialog>
 
-        <h3 class="h3">{t!(i18n, studio.pages)}</h3>
+        <h2 class="h2">{t!(i18n, studio.pages)}</h2>
 
         <section class="max-w-[640px] w-full ml-auto mr-auto">
             <InfiniteScroll
@@ -54,8 +50,6 @@ pub fn PagesPage() -> impl IntoView {
                 resource=my_pages_resource
                 nodes=pages
                 children=move |page| {
-                    let website_id = website_id.clone();
-                    let page = page.clone();
                     view! {
                         <PageCard
                             page=page.clone()
@@ -64,7 +58,11 @@ pub fn PagesPage() -> impl IntoView {
                                 view! {
                                     <a
                                         class="btn btn-ghost font-bold"
-                                        href=format!("/websites/{}/pages/{}/edit", &website_id, &page.id)
+                                        href=format!(
+                                            "/websites/{}/pages/{}/edit",
+                                            website_id.get().unwrap_or_default(),
+                                            &page.id,
+                                        )
                                     >
                                         {t!(i18n, studio.edit)}
                                     </a>
