@@ -41,7 +41,7 @@ pub fn TextareaField(
                 node_ref=node_ref
                 prop:value=content
                 on:input=move |event| set_content.set(event_target_value(&event))
-                class="textarea textarea-bordered"
+                class="textarea textarea-bordered font-mono"
                 class:textarea-error=has_error
                 id=field_id
                 name=name

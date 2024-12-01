@@ -1,9 +1,12 @@
+use leptos::either::Either;
 use leptos::prelude::*;
-use leptos_meta::{provide_meta_context, Stylesheet};
+use leptos_meta::{provide_meta_context, Stylesheet, Title};
 use leptos_router::components::{Route, Router, Routes};
-use leptos_router::{ParamSegment, StaticSegment};
+use leptos_router::{ParamSegment, SsrMode, StaticSegment};
 
-use mango3_leptos_utils::components::{AppProvider, BottomBar, FaviconLink};
+use mango3_leptos_utils::components::{AppProvider, AppTitle, BottomBar, FaviconLink};
+use mango3_leptos_utils::context::use_basic_config;
+use mango3_leptos_utils::i18n::{t_string, use_i18n};
 use mango3_leptos_utils::pages::NotFoundPage;
 
 use crate::components::{CurrentWebsiteOpt, WebsiteTopBar};
@@ -23,10 +26,39 @@ pub fn App() -> impl IntoView {
 
         <AppProvider>
             <CurrentWebsiteOpt children=move |website| {
-                if let Some(icon_image_blob) = website.and_then(|w| w.icon_image_blob) {
-                    view! { <FaviconLink href=icon_image_blob.variant_url(32, 32, true) /> }
-                } else {
-                    view! { <FaviconLink /> }
+                match website {
+                    Some(website) => {
+                        let i18n = use_i18n();
+                        let basic_config = use_basic_config();
+                        Either::Left(
+                            view! {
+                                <Title formatter=move |page_title: String| {
+                                    (if page_title.is_empty() { String::new() } else { format!("{page_title} | ") })
+                                        + &format!(
+                                            "{} ({})",
+                                            website.name.clone(),
+                                            t_string!(
+                                                i18n, websites.powered_by_title, title = basic_config.title.clone()
+                                            ),
+                                        )
+                                } />
+
+                                {move || {
+                                    if let Some(icon_image_blob) = &website.icon_image_blob {
+                                        view! { <FaviconLink href=icon_image_blob.variant_url(32, 32, true) /> }
+                                    } else {
+                                        view! { <FaviconLink /> }
+                                    }
+                                }}
+                            },
+                        )
+                    }
+                    None => {
+                        Either::Right(
+
+                            view! { <AppTitle /> },
+                        )
+                    }
                 }
             } />
 
@@ -37,7 +69,7 @@ pub fn App() -> impl IntoView {
                     <Routes fallback=NotFoundPage>
                         <Route path=StaticSegment("") view=IndexPage />
                         <Route path=(StaticSegment("posts"), ParamSegment(KEY_PARAM_SLUG)) view=ShowPostPage />
-                        <Route path=ParamSegment(KEY_PARAM_SLUG) view=ShowPagePage />
+                        <Route path=ParamSegment(KEY_PARAM_SLUG) view=ShowPagePage ssr=SsrMode::PartiallyBlocked />
                     </Routes>
                 </main>
 
