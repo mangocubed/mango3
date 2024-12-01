@@ -105,7 +105,7 @@ pub fn FaviconLink(#[prop(into, optional)] href: Option<String>) -> impl IntoVie
         basic_config.asset_url("favicon.ico")
     };
 
-    view! { <Link rel="favicon" href=href /> }
+    view! { <Link rel="icon" href=href /> }
 }
 
 #[component]
