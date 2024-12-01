@@ -1,8 +1,9 @@
 use leptos::prelude::*;
 use leptos::text_prop::TextProp;
+use leptos_meta::Title;
 
 use crate::components::{RequireAuthentication, RequireNoAuthentication};
-use crate::context::{use_current_user_resource, use_page_title};
+use crate::context::use_current_user_resource;
 
 mod not_found_page;
 
@@ -33,12 +34,14 @@ pub fn Page(
     #[prop(into, optional)] class: Option<String>,
 ) -> impl IntoView {
     let current_user_resource = use_current_user_resource();
-    let page_title = use_page_title();
 
     Effect::new(move || {
         current_user_resource.refetch();
-        page_title.value.set(Some(title.get().to_string()));
     });
 
-    view! { <div class=class>{children()}</div> }
+    view! {
+        <Title text=title />
+
+        <div class=class>{children()}</div>
+    }
 }

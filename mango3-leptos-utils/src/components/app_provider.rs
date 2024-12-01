@@ -9,7 +9,6 @@ use crate::i18n::I18nContextProvider;
 pub fn AppProvider(children: Children) -> impl IntoView {
     provide_basic_config();
     provide_current_user_resource();
-    provide_page_title();
 
     let basic_config = use_basic_config();
     let is_done = RwSignal::new(false);
