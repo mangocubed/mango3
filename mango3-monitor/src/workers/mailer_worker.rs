@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+use apalis::prelude::Error;
+
 use mango3_core::config::BASIC_CONFIG;
 use mango3_core::enums::MailerJobCommand;
 use mango3_core::jobs::MailerJob;
@@ -10,7 +12,7 @@ use crate::constants::*;
 
 use super::send_email;
 
-pub async fn mailer_worker(job: MailerJob) {
+pub async fn mailer_worker(job: MailerJob) -> Result<(), Error> {
     let i18n = job.user.i18n();
 
     match job.command {
@@ -19,6 +21,8 @@ pub async fn mailer_worker(job: MailerJob) {
         }
         MailerJobCommand::Welcome => send_welcome_email(&i18n, &job.user).await,
     }
+
+    Ok(())
 }
 
 pub async fn send_confirmation_code_email(i18n: &I18n, user: &User, action: &str, code: &str) {

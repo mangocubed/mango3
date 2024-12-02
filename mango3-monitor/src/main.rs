@@ -1,8 +1,7 @@
 use std::time::Duration;
 
-use apalis::layers::tracing::TraceLayer;
+use apalis::layers::{ErrorHandlingLayer, WorkerBuilderExt};
 use apalis::prelude::{Event, Monitor, WorkerBuilder, WorkerFactoryFn};
-use apalis::utils::TokioExecutor;
 use log::{error, info};
 
 use mango3_core::config::load_config;
@@ -28,26 +27,27 @@ async fn main() -> anyhow::Result<()> {
 
     let core_context = CoreContext::setup().await;
 
-    Monitor::<TokioExecutor>::new()
-        .register_with_count(
-            2,
-            WorkerBuilder::new("guest-mailer")
-                .layer(TraceLayer::new())
-                .with_storage(core_context.jobs.storage_guest_mailer.clone())
-                .build_fn(guest_mailer_worker),
-        )
-        .register_with_count(
-            2,
-            WorkerBuilder::new("mailer")
-                .layer(TraceLayer::new())
-                .with_storage(core_context.jobs.storage_mailer.clone())
-                .build_fn(mailer_worker),
-        )
+    let guest_mailer_worker = WorkerBuilder::new("guest-mailer")
+        .layer(ErrorHandlingLayer::new())
+        .enable_tracing()
+        .backend(core_context.jobs.storage_guest_mailer.clone())
+        .build_fn(guest_mailer_worker);
+
+    let mailer_worker = WorkerBuilder::new("mailer")
+        .layer(ErrorHandlingLayer::new())
+        .enable_tracing()
+        .concurrency(2)
+        .backend(core_context.jobs.storage_mailer.clone())
+        .build_fn(mailer_worker);
+
+    Monitor::new()
+        .register(guest_mailer_worker)
+        .register(mailer_worker)
         .on_event(|e| {
             let worker_id = e.id();
             match e.inner() {
-                Event::Engage => {
-                    info!("Worker [{worker_id}] got a job");
+                Event::Engage(task_id) => {
+                    info!("Worker [{worker_id}] got a job with id: {task_id}");
                 }
                 Event::Error(e) => {
                     error!("Worker [{worker_id}] encountered an error: {e}");
@@ -65,6 +65,7 @@ async fn main() -> anyhow::Result<()> {
                 Event::Stop => {
                     info!("Worker [{worker_id}] stopped");
                 }
+                _ => {}
             }
         })
         .shutdown_timeout(Duration::from_millis(5000))

@@ -1,3 +1,5 @@
+use apalis::prelude::Error;
+
 use mango3_core::enums::GuestMailerJobCommand;
 use mango3_core::jobs::GuestMailerJob;
 use mango3_core::locales::I18n;
@@ -6,10 +8,12 @@ use crate::constants::{KEY_TEXT_HELLO, KEY_TEXT_INVITATION_CODE, KEY_TEXT_USE_TH
 
 use super::send_email;
 
-pub async fn guest_mailer_worker(job: GuestMailerJob) {
+pub async fn guest_mailer_worker(job: GuestMailerJob) -> Result<(), Error> {
     match job.command {
         GuestMailerJobCommand::InvitationCode(code) => send_invitation_code_email(&job.to, &code).await,
     }
+
+    Ok(())
 }
 
 pub async fn send_invitation_code_email(to: &str, code: &str) {

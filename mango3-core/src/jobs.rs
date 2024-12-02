@@ -1,5 +1,5 @@
-use apalis::prelude::{Job, Storage};
-use apalis::redis::RedisStorage;
+use apalis::prelude::Storage;
+use apalis_redis::RedisStorage;
 use serde::{Deserialize, Serialize};
 
 use crate::config::JOBS_CONFIG;
@@ -13,8 +13,8 @@ pub struct Jobs {
 }
 
 impl Jobs {
-    async fn storage<T: Job + Serialize + for<'de> Deserialize<'de>>() -> RedisStorage<T> {
-        let conn = apalis::redis::connect(JOBS_CONFIG.redis_url.clone())
+    async fn storage<T: Serialize + for<'de> Deserialize<'de>>() -> RedisStorage<T> {
+        let conn = apalis_redis::connect(JOBS_CONFIG.redis_url.clone())
             .await
             .expect("Could not connect to Redis Jobs DB");
         RedisStorage::new(conn)
@@ -56,16 +56,8 @@ pub struct GuestMailerJob {
     pub command: GuestMailerJobCommand,
 }
 
-impl Job for GuestMailerJob {
-    const NAME: &'static str = "GuestMailerJob";
-}
-
 #[derive(Debug, Deserialize, Serialize)]
 pub struct MailerJob {
     pub user: User,
     pub command: MailerJobCommand,
-}
-
-impl Job for MailerJob {
-    const NAME: &'static str = "MailerJob";
 }

@@ -6,6 +6,7 @@ edition.workspace = true
 [dependencies]
 argon2 = "0.5.3"
 apalis = { workspace = true }
+apalis-redis = { workspace = true }
 dotenvy = "0.15.7"
 figment = { version = "0.10.19", features = ["env"] }
 fluent-templates = "0.11.0"
