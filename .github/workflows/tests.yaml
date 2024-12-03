@@ -42,7 +42,7 @@ jobs:
             - name: Configure Nginx
               run: |
                   sudo cp ${{ github.workspace }}/config/nginx.example /etc/nginx/sites-enabled/mango3.local
-                  sudo sed -i 's|root\s\+/mango3|${{ github.workspace }}|g' /etc/nginx/sites-enabled/mango3.local
+                  sudo sed -i 's|root\s\+/mango3|root ${{ github.workspace }}|g' /etc/nginx/sites-enabled/mango3.local
                   sudo sed -i \
                       's/127.0.0.1\s\+localhost/127.0.0.1 localhost mango3.local accounts.mango3.local my-account.mango3.local studio.mango3.local my-website.mango3.local/' \
                       /etc/hosts
