@@ -101,3 +101,8 @@ lib-profile-release = "wasm-release"
 #
 # Optional.
 watch-additional-files = ["../locales/leptos"]
+
+# Sets the name for the file cargo-leptos uses to track the most recent hashes
+#
+# Optional: Defaults to "hash.txt". Can also be set with the LEPTOS_HASH_FILE_NAME="hash.txt" env var
+hash-file-name = "hash-home.txt"
