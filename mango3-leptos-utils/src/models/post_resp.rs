@@ -1,3 +1,4 @@
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "ssr")]
@@ -22,6 +23,8 @@ pub struct PostResp {
     pub cover_image_blob: Option<BlobResp>,
     pub is_published: bool,
     pub url: String,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: Option<DateTime<Utc>>,
 }
 
 #[cfg(feature = "ssr")]
@@ -40,6 +43,8 @@ impl FromCore<Post> for PostResp {
                 .map(|blob| blob.into()),
             is_published: post.is_published(core_context).await,
             url: post.url(&core_context).await.to_string(),
+            created_at: post.created_at,
+            updated_at: post.updated_at,
         }
     }
 }
@@ -53,6 +58,8 @@ pub struct PostPreviewResp {
     pub cover_image_blob: Option<BlobResp>,
     pub is_published: bool,
     pub url: String,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: Option<DateTime<Utc>>,
 }
 
 #[cfg(feature = "ssr")]
@@ -71,6 +78,8 @@ impl FromCore<Post> for PostPreviewResp {
                 .map(|blob| blob.into()),
             is_published: post.is_published(core_context).await,
             url: post.url(&core_context).await.to_string(),
+            created_at: post.created_at,
+            updated_at: post.updated_at,
         }
     }
 }

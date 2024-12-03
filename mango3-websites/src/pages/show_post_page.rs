@@ -1,7 +1,8 @@
 use leptos::either::EitherOf3;
 use leptos::prelude::*;
 
-use mango3_leptos_utils::components::LoadingSpinner;
+use mango3_leptos_utils::components::{LoadingSpinner, TimeAgo};
+use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::pages::NotFoundPage;
 use mango3_leptos_utils::pages::Page;
 
@@ -10,6 +11,7 @@ use crate::server_functions::get_post;
 
 #[component]
 pub fn ShowPostPage() -> impl IntoView {
+    let i18n = use_i18n();
     let slug = use_slug_param();
     let post_resource = Resource::new_blocking(move || slug.get(), get_post);
 
@@ -40,6 +42,23 @@ pub fn ShowPostPage() -> impl IntoView {
                                             }
                                         } <div class="card-body">
                                             <h1 class="card-title h1 mb-6">{post.title}</h1>
+
+                                            <div class="self-end text-right">
+                                                <TimeAgo value=post.created_at />
+
+                                                {move || {
+                                                    post.updated_at
+                                                        .map(|update_at| {
+                                                            view! {
+                                                                " ("
+                                                                {t!(i18n, shared.edited)}
+                                                                " "
+                                                                <TimeAgo value=update_at />
+                                                                ")"
+                                                            }
+                                                        })
+                                                }}
+                                            </div>
 
                                             <div class="prose max-w-none" inner_html=post.content_html />
                                         </div>

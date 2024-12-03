@@ -27,6 +27,6 @@ url = { version = "2.5.4", features = ["serde"] }
 uuid = { workspace = true }
 
 [dev-dependencies]
-chrono = "0.4.38"
+chrono = { workspace = true }
 fake = { version = "3.0.1", features = ["chrono", "url"] }
 tokio = { workspace = true }

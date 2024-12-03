@@ -22,10 +22,15 @@ apalis = "0.6.0"
 apalis-redis = "0.6.0"
 async-trait = "0.1.83"
 axum = "0.7.9"
+chrono = {version = "0.4.38", features = ["serde"] }
 console_error_panic_hook = "0.1.7"
 leptos = "0.7.0"
 leptos_axum = "0.7.0"
-leptos_i18n = { version = "0.5.0-rc1", default-features = false, features = ["cookie", "yaml_files"] }
+leptos_i18n = { version = "0.5.0-rc1", default-features = false, features = [
+    "cookie",
+    "interpolate_display",
+    "yaml_files",
+] }
 leptos_meta = "0.7.0"
 leptos_router = "0.7.0"
 leptos-use = { version = "0.14.0", default-features = false }
