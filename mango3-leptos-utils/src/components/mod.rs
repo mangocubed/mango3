@@ -26,6 +26,7 @@ mod text_field;
 mod textarea_field;
 mod time_ago;
 mod top_bar;
+mod user_tag;
 mod website_card;
 
 pub use action_form_alert::{ActionFormAlert, ActionFormError};
@@ -48,6 +49,7 @@ pub use text_field::TextField;
 pub use textarea_field::TextareaField;
 pub use time_ago::TimeAgo;
 pub use top_bar::TopBar;
+pub use user_tag::UserTag;
 pub use website_card::WebsiteCard;
 
 pub struct EventFn(Box<dyn Fn(Event) + 'static>);

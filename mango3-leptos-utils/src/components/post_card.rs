@@ -1,5 +1,6 @@
 use leptos::prelude::*;
 
+use crate::components::UserTag;
 use crate::i18n::{t, use_i18n};
 use crate::models::PostPreviewResp;
 
@@ -29,21 +30,25 @@ pub fn PostCard(post: PostPreviewResp, #[prop(into, optional)] actions: ViewFn) 
                     <a href=move || if post.is_published { Some(post.url.clone()) } else { None }>{post.title}</a>
                 </h3>
 
-                <div class="self-end text-right">
-                    <TimeAgo value=post.created_at />
+                <div class="flex justify-between my-1">
+                    <UserTag user=post.user />
 
-                    {move || {
-                        post.updated_at
-                            .map(|update_at| {
-                                view! {
-                                    " ("
-                                    {t!(i18n, shared.edited)}
-                                    " "
-                                    <TimeAgo value=update_at />
-                                    ")"
-                                }
-                            })
-                    }}
+                    <div class="text-right">
+                        <TimeAgo value=post.created_at />
+
+                        {move || {
+                            post.updated_at
+                                .map(|update_at| {
+                                    view! {
+                                        " ("
+                                        {t!(i18n, shared.edited)}
+                                        " "
+                                        <TimeAgo value=update_at />
+                                        ")"
+                                    }
+                                })
+                        }}
+                    </div>
                 </div>
 
                 <div class="card-text-preview">

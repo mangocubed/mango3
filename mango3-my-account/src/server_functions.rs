@@ -8,6 +8,8 @@ use mango3_leptos_utils::models::{ActionFormResp, UserProfileResp};
 #[cfg(feature = "ssr")]
 use mango3_core::models::Blob;
 #[cfg(feature = "ssr")]
+use mango3_leptos_utils::models::FromCore;
+#[cfg(feature = "ssr")]
 use mango3_leptos_utils::ssr::*;
 
 #[server]
@@ -141,7 +143,7 @@ pub async fn get_user_profile() -> Result<Option<UserProfileResp>, ServerFnError
     if let Some(user) = extract_user().await? {
         let core_context = expect_core_context();
 
-        Ok(Some(UserProfileResp::from_user(&core_context, user).await))
+        Ok(Some(UserProfileResp::from_core(&core_context, &user).await))
     } else {
         Ok(None)
     }

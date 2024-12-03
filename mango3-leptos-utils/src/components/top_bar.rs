@@ -1,7 +1,7 @@
 use leptos::either::Either;
 use leptos::prelude::*;
 
-use crate::components::CurrentUserResource;
+use crate::components::{CurrentUserResource, UserTag};
 use crate::context::use_basic_config;
 use crate::i18n::{t, use_i18n};
 use crate::icons::ChevronDownMini;
@@ -33,37 +33,7 @@ pub fn TopBar(
                                         view! {
                                             <div class="dropdown dropdown-end">
                                                 <button class="btn" tabindex="0">
-                                                    {move || {
-                                                        if let Some(avatar_image_blob) = &user.avatar_image_blob {
-                                                            Either::Left(
-                                                                view! {
-                                                                    <div class="avatar">
-                                                                        <div class="bg-neutral text-neutral-content w-8 rounded-full">
-                                                                            <img
-                                                                                alt=user.initials.clone()
-                                                                                src=avatar_image_blob.variant_url(32, 32, true)
-                                                                            />
-                                                                        </div>
-                                                                    </div>
-                                                                },
-                                                            )
-                                                        } else {
-                                                            Either::Right(
-                                                                view! {
-                                                                    <div class="avatar placeholder">
-                                                                        <div class="bg-neutral text-neutral-content w-8 rounded-full">
-                                                                            <span class="text-xs">{user.initials.clone()}</span>
-                                                                        </div>
-                                                                    </div>
-                                                                },
-                                                            )
-                                                        }
-                                                    }}
-
-                                                    <div>
-                                                        <div class="mb-1">{user.display_name}</div>
-                                                        <div class="font-bold">"@"{user.username}</div>
-                                                    </div>
+                                                    <UserTag user=user />
 
                                                     <ChevronDownMini />
                                                 </button>

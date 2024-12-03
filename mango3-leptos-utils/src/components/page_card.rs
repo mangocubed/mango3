@@ -29,7 +29,7 @@ pub fn PageCard(page: PagePreviewResp, #[prop(into, optional)] actions: ViewFn) 
                     <a href=move || if page.is_published { Some(page.url.clone()) } else { None }>{page.title}</a>
                 </h3>
 
-                <div class="self-end text-right">
+                <div class="self-end text-right my-1">
                     <TimeAgo value=page.created_at />
 
                     {move || {

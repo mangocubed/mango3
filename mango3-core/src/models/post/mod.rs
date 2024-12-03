@@ -98,6 +98,10 @@ impl Post {
             .unwrap()
     }
 
+    pub async fn user(&self, core_context: &CoreContext) -> sqlx::Result<User> {
+        User::get_by_id(core_context, self.user_id).await
+    }
+
     pub async fn website(&self, core_context: &CoreContext) -> sqlx::Result<Website> {
         Website::get_by_id(core_context, self.website_id, None).await
     }
