@@ -3,16 +3,36 @@ birthdate: Fecha de nacimiento
 cancel: Cancelar
 change_password: Cambiar contraseña
 code: Código
+count_days_ago: hace {{count}} días
+count_hours_ago: hace {{count}} horas
+count_minutes_ago: hace {{count}} minutos
+count_months_ago: hace {{count}} meses
+count_seconds_ago: hace {{count}} segundos
+count_weeks_ago: hace {{count}} semanas
+count_years_ago: hace {{count}} años
 country: País
+edited: editado
 email: Correo electrónico
 failed_to_update_password: Error al actualizar contraseña
 full_name: Nombre completo
 go_to_title: Ir a {{title}}
 home: Inicio
 login: Iniciar sesión
+more_than_a_day_ago: hace más de un día
+more_than_an_hour_ago: hace más de una hora
+more_than_a_month_ago: hace más de un mes
+more_than_a_week_ago: hace más de una semana
+more_than_a_year_ago: hace más de un año
 my_account: Mi cuenta
 new_password: Contraseña nueva
 new_website: Nuevo website
+one_day_ago: hace un día
+one_hour_ago: hace una hora
+one_minute_ago: hace un minuto
+one_month_ago: hace un mes
+one_second_ago: hace un segundo
+one_week_ago: hace una semana
+one_year_ago: hace un año
 password: Contraseña
 password_updated_successfully: Contraseña actualizada exitosamente
 posts: Posts

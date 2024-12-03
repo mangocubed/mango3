@@ -24,6 +24,7 @@ mod submit_button;
 mod switch_field;
 mod text_field;
 mod textarea_field;
+mod time_ago;
 mod top_bar;
 mod website_card;
 
@@ -45,6 +46,7 @@ pub use submit_button::SubmitButton;
 pub use switch_field::SwitchField;
 pub use text_field::TextField;
 pub use textarea_field::TextareaField;
+pub use time_ago::TimeAgo;
 pub use top_bar::TopBar;
 pub use website_card::WebsiteCard;
 

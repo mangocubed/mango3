@@ -3,16 +3,36 @@ birthdate: Birthdate
 cancel: cancel
 change_password: Change password
 code: Code
+count_days_ago: "{{count}} days ago"
+count_hours_ago: "{{count}} hours ago"
+count_minutes_ago: "{{count}} minutes ago"
+count_months_ago: "{{count}} months ago"
+count_seconds_ago: "{{count}} seconds ago"
+count_weeks_ago: "{{count}} weeks ago"
+count_years_ago: "{{count}} years ago"
 country: Country
+edited: edited
 email: Email
 failed_to_update_password: Failed to update password
 full_name: Full name
 go_to_title: Go to {{title}}
 home: Home
 login: Login
+more_than_a_day_ago: more than a day ago
+more_than_an_hour_ago: more than an hour ago
+more_than_a_month_ago: more than month ago
+more_than_a_week_ago: more than a week ago
+more_than_a_year_ago: more than a year ago
 my_account: My account
 new_password: New password
 new_website: New website
+one_day_ago: one day ago
+one_hour_ago: one hour ago
+one_minute_ago: one minute ago
+one_month_ago: one month ago
+one_second_ago: one second ago
+one_week_ago: one week ago
+one_year_ago: one year ago
 password: Password
 password_updated_successfully: Password updated successfully
 posts: Posts
