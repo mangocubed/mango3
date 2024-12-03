@@ -31,7 +31,7 @@ pub use navigation_item_resp::NavigationItemResp;
 pub use page_resp::{PagePreviewResp, PageResp};
 pub use post_resp::{PostPreviewResp, PostResp};
 pub use user_profile_resp::UserProfileResp;
-pub use user_resp::UserResp;
+pub use user_resp::{UserPreviewResp, UserResp};
 pub use website_resp::WebsiteResp;
 
 #[cfg(feature = "ssr")]

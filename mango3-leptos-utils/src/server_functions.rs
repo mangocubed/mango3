@@ -3,6 +3,8 @@ use leptos::prelude::*;
 use crate::models::UserResp;
 
 #[cfg(feature = "ssr")]
+use crate::models::FromCore;
+#[cfg(feature = "ssr")]
 use crate::ssr::{expect_core_context, extract_user};
 
 #[server]
@@ -18,5 +20,5 @@ pub async fn get_current_user() -> Result<Option<UserResp>, ServerFnError> {
 
     let core_context = expect_core_context();
 
-    Ok(Some(UserResp::from_user(&core_context, user).await))
+    Ok(Some(UserResp::from_core(&core_context, &user).await))
 }

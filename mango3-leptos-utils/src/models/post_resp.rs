@@ -9,7 +9,7 @@ use mango3_core::models::Post;
 #[cfg(feature = "ssr")]
 use mango3_core::CoreContext;
 
-use super::BlobResp;
+use super::{BlobResp, UserPreviewResp};
 
 #[cfg(feature = "ssr")]
 use super::{parse_html, FromCore};
@@ -17,12 +17,14 @@ use super::{parse_html, FromCore};
 #[derive(Clone, Deserialize, Serialize)]
 pub struct PostResp {
     pub id: String,
+    pub user: UserPreviewResp,
     pub title: String,
     pub slug: String,
     pub content_html: String,
     pub cover_image_blob: Option<BlobResp>,
     pub is_published: bool,
     pub url: String,
+    pub published_at: Option<DateTime<Utc>>,
     pub created_at: DateTime<Utc>,
     pub updated_at: Option<DateTime<Utc>>,
 }
@@ -33,6 +35,11 @@ impl FromCore<Post> for PostResp {
     async fn from_core(core_context: &CoreContext, post: &Post) -> Self {
         Self {
             id: post.id.to_string(),
+            user: UserPreviewResp::from_core(
+                &core_context,
+                &post.user(&core_context).await.expect("Could not get user"),
+            )
+            .await,
             title: post.title.clone(),
             slug: post.slug.clone(),
             content_html: parse_html(&post.content),
@@ -43,6 +50,7 @@ impl FromCore<Post> for PostResp {
                 .map(|blob| blob.into()),
             is_published: post.is_published(core_context).await,
             url: post.url(&core_context).await.to_string(),
+            published_at: post.published_at,
             created_at: post.created_at,
             updated_at: post.updated_at,
         }
@@ -52,6 +60,7 @@ impl FromCore<Post> for PostResp {
 #[derive(Clone, Deserialize, Serialize)]
 pub struct PostPreviewResp {
     pub id: String,
+    pub user: UserPreviewResp,
     pub title: String,
     pub slug: String,
     pub content_preview_html: String,
@@ -68,6 +77,11 @@ impl FromCore<Post> for PostPreviewResp {
     async fn from_core(core_context: &CoreContext, post: &Post) -> Self {
         Self {
             id: post.id.to_string(),
+            user: UserPreviewResp::from_core(
+                &core_context,
+                &post.user(&core_context).await.expect("Could not get user"),
+            )
+            .await,
             title: post.title.clone(),
             slug: post.slug.clone(),
             content_preview_html: parse_html(&post.content_preview()),

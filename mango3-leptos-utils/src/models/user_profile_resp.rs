@@ -1,11 +1,17 @@
 use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "ssr")]
+use async_trait::async_trait;
+
+#[cfg(feature = "ssr")]
 use mango3_core::models::User;
 #[cfg(feature = "ssr")]
 use mango3_core::CoreContext;
 
 use super::BlobResp;
+
+#[cfg(feature = "ssr")]
+use super::FromCore;
 
 #[derive(Clone, Deserialize, Serialize)]
 pub struct UserProfileResp {
@@ -22,8 +28,9 @@ pub struct UserProfileResp {
 }
 
 #[cfg(feature = "ssr")]
-impl UserProfileResp {
-    pub async fn from_user(core_context: &CoreContext, user: User) -> Self {
+#[async_trait]
+impl FromCore<User> for UserProfileResp {
+    async fn from_core(core_context: &CoreContext, user: &User) -> Self {
         Self {
             id: user.id.to_string(),
             username: user.username.clone(),

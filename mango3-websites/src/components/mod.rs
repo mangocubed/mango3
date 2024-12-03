@@ -1,5 +1,8 @@
+use chrono::{DateTime, SecondsFormat, Utc};
 use leptos::either::Either;
 use leptos::prelude::*;
+use leptos::text_prop::TextProp;
+use leptos_meta::Meta;
 
 use mango3_leptos_utils::components::LoadingSpinner;
 use mango3_leptos_utils::models::WebsiteResp;
@@ -29,4 +32,9 @@ where
             })}
         </Suspense>
     }
+}
+
+#[component]
+pub fn MetaDateTime(#[prop(into)] property: TextProp, content: DateTime<Utc>) -> impl IntoView {
+    view! { <Meta property=property content=content.to_rfc3339_opts(SecondsFormat::Secs, true) /> }
 }
