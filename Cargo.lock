@@ -2712,8 +2712,6 @@ dependencies = [
  "codee",
  "default-struct-builder",
  "icu_locid",
- "icu_plurals",
- "icu_provider",
  "js-sys",
  "leptos",
  "leptos-use",
