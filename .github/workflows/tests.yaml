@@ -43,9 +43,11 @@ jobs:
               run: |
                   sudo cp ${{ github.workspace }}/config/nginx.example /etc/nginx/sites-enabled/mango3.local
                   sudo sed -i 's|root /mango3|root ${{ github.workspace }}|g' /etc/nginx/sites-enabled/mango3.local
+                  sudo cat /etc/nginx/sites-enabled/mango3.local
                   sudo sed -i \
                       's/127.0.0.1 localhost/127.0.0.1 localhost mango3.local accounts.mango3.local my-account.mango3.local studio.mango3.local my-website.mango3.local/' \
                       /etc/hosts
+                  sudo cat /etc/hosts
                   sudo systemctl restart nginx.service
             - name: Install Playwright
               run: npx playwright install chromium firefox --with-deps
