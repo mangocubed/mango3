@@ -3,6 +3,7 @@ name: Code analysis
 on: [workflow_call]
 
 env:
+    CARGO_TERM_COLOR: always
     DATABASE_URL: postgres://mango3:mango3@localhost:5432/mango3_test
 
 jobs:
