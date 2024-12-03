@@ -1,6 +1,9 @@
 #[cfg(feature = "ssr")]
 use leptos::prelude::*;
 
+#[cfg(feature = "ssr")]
+use leptos_meta::HashedStylesheet;
+
 pub mod components;
 pub mod constants;
 pub mod context;
@@ -29,8 +32,9 @@ where
                 <meta charset="utf-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <AutoReload options=options.clone() />
-                <HydrationScripts options />
+                <HydrationScripts options=options.clone() />
                 <MetaTags />
+                <HashedStylesheet id="leptos" options=options />
             </head>
             <body class="dark:bg-neutral-950 bg-slate-50">{app_fn()}</body>
         </html>
