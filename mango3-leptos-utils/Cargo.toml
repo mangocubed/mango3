@@ -11,7 +11,7 @@ chrono = { workspace = true }
 codee = "0.2"
 cookie = { version = "0.18.1", optional = true, features = ["private"] }
 default-struct-builder = "0.5"
-fred = { version = "9.4.0", optional = true }
+fred = { version = "10.0.0", optional = true }
 futures = { version = "0.3.31", optional = true }
 http = { version = "1.1.0", optional = true }
 leptos = { workspace = true }
@@ -31,7 +31,7 @@ serde = { workspace = true }
 server_fn = { workspace = true, features = ["multipart"] }
 time = { version = "0.3.36", optional = true }
 tower-sessions =  { version = "0.13.0", optional = true,  features = ["private"] }
-tower-sessions-redis-store = { version = "0.14.0", optional = true }
+tower-sessions-redis-store = { version = "0.15.0", optional = true }
 tokio = { workspace = true, optional = true }
 uuid = { workspace = true, optional = true }
 wasm-bindgen = { workspace = true }

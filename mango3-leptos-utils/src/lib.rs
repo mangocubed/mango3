@@ -49,7 +49,7 @@ pub async fn leptos_http_server<F, IV1, IV2>(
 {
     use axum::Router;
     use cookie::{Key, SameSite};
-    use fred::prelude::{ClientLike, RedisConfig, RedisPool};
+    use fred::prelude::{ClientLike, Config, Pool};
     use leptos::logging::log;
     use leptos_axum::{file_and_error_handler, generate_route_list, LeptosRoutes};
     use time::Duration;
@@ -65,8 +65,8 @@ pub async fn leptos_http_server<F, IV1, IV2>(
     let core_context = CoreContext::setup().await;
     let addr = leptos_options.site_addr;
     let routes = generate_route_list(app_fn);
-    let redis_pool = RedisPool::new(
-        RedisConfig::from_url(&SESSIONS_CONFIG.redis_url).expect("Could not get Redis URL for session."),
+    let redis_pool = Pool::new(
+        Config::from_url(&SESSIONS_CONFIG.redis_url).expect("Could not get Redis URL for session."),
         None,
         None,
         None,
