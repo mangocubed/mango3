@@ -1,6 +1,6 @@
 use leptos::prelude::*;
 use leptos_i18n::t_string;
-use leptos_meta::{provide_meta_context, Meta, Stylesheet};
+use leptos_meta::{provide_meta_context, Meta};
 use leptos_router::components::{Route, Router, Routes};
 use leptos_router::StaticSegment;
 
@@ -16,8 +16,6 @@ pub fn App() -> impl IntoView {
     provide_meta_context();
 
     view! {
-        <Stylesheet id="leptos" href="/pkg/application.css" />
-
         <Meta name="robots" content="noindex, nofollow" />
 
         <AppProvider>

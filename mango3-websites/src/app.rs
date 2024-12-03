@@ -1,6 +1,6 @@
 use leptos::either::Either;
 use leptos::prelude::*;
-use leptos_meta::{provide_meta_context, Stylesheet, Title};
+use leptos_meta::{provide_meta_context, Title};
 use leptos_router::components::{Route, Router, Routes};
 use leptos_router::{ParamSegment, SsrMode, StaticSegment};
 
@@ -22,8 +22,6 @@ pub fn App() -> impl IntoView {
     provide_current_website_resource();
 
     view! {
-        <Stylesheet id="leptos" href="/pkg/application.css" />
-
         <AppProvider>
             <CurrentWebsiteOpt children=move |website| {
                 match website {
