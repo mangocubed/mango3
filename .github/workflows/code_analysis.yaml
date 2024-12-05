@@ -29,12 +29,11 @@ jobs:
             - uses: actions/setup-python@v5
               with:
                   python-version: 3.13
-            - run: pip install --upgrade pipenv~=2024.4
             - uses: actions/cache@v4
               with:
-                  path: ~/.local/share/virtualenvs
-                  key: ${{ runner.os }}-python-${{ steps.setup-python.outputs.python-version }}-pipenv-${{ hashFiles('Pipfile.lock') }}
+                  path: ~/.local/share/pipx
+                  key: ${{ runner.os }}-python-${{ steps.setup-python.outputs.python-version }}-pipx
             - name: Check with sqlfluff
               run: |
-                  pipenv install sqlfluff~=3.2
-                  pipenv run sqlfluff lint migrations/*.sql
+                  pipx install sqlfluff~=3.2
+                  sqlfluff lint migrations/*.sql
