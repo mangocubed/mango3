@@ -27,6 +27,10 @@ impl Default for MailerConfig {
 
 impl MailerConfig {
     pub(crate) fn load() -> Self {
-        extract_from_env("MAILER_")
+        if cfg!(test) {
+            extract_from_env("MAILER_")
+        } else {
+            Self::default()
+        }
     }
 }
