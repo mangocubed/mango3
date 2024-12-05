@@ -1,4 +1,7 @@
 import { test, expect, Page } from "@playwright/test";
+import path from "path";
+
+export const storageFile = path.join(__dirname, "../.end2end-storage.json");
 
 const loginPageUrl = "http://accounts.mango3.local/login";
 
@@ -10,8 +13,6 @@ export async function expectRedirectToLoginPage(page: Page) {
     await expect(page).toHaveURL(loginPageUrl);
 }
 
-export async function mocksLoginPage(page: Page) {
-    await page.route(loginPageUrl, async route => {
-        await route.fullFill({ status: 200, body: "Login" });
-    });
-}
+export const testAsUser = test.extend<{}>({
+    storageState: ({}, use) => use(storageFile),
+});

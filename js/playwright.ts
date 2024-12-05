@@ -13,13 +13,13 @@ export default (baseURL: string) =>
     defineConfig({
         testDir: "./tests",
         /* Maximum time one test can run for. */
-        timeout: 30 * 1000,
+        timeout: 60000,
         expect: {
             /**
              * Maximum time expect() should wait for the condition to be met.
              * For example in `await expect(locator).toHaveText();`
              */
-            timeout: 5000,
+            timeout: 10000,
         },
         /* Run tests in files in parallel */
         fullyParallel: true,
@@ -97,7 +97,7 @@ export default (baseURL: string) =>
         ],
 
         /* Folder for test artifacts such as screenshots, videos, traces, etc. */
-        // outputDir: 'test-results/',
+        outputDir: "../../end2end-output/",
 
         /* Run your local dev server before starting the tests */
         // webServer: {

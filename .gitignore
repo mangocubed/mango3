@@ -1,5 +1,6 @@
+/.end2end-storage.json
 /.env
 /node_modules
 /storage
 /target
-/test-results
+/end2end-output
