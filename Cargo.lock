@@ -3126,6 +3126,7 @@ version = "0.0.0-SNAPSHOT"
 dependencies = [
  "async-trait",
  "console_error_panic_hook",
+ "futures",
  "leptos",
  "leptos_i18n",
  "leptos_meta",
