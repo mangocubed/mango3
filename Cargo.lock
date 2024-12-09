@@ -1433,9 +1433,9 @@ dependencies = [
 
 [[package]]
 name = "fred"
-version = "10.0.0"
+version = "10.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9dfdd0e46d87d0e8fc1e6636a5dd3b9a5c708722e9662df289ba62a8c198a721"
+checksum = "0f5fbcd7118f15ce0ed032105c91137efa563996788a76a770e2fd928ddb243a"
 dependencies = [
  "arc-swap",
  "async-trait",
@@ -3126,7 +3126,6 @@ version = "0.0.0-SNAPSHOT"
 dependencies = [
  "async-trait",
  "console_error_panic_hook",
- "futures",
  "leptos",
  "leptos_i18n",
  "leptos_meta",
