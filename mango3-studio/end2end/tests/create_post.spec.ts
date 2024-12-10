@@ -20,7 +20,10 @@ testAsUser("should create a new post", async ({ page }) => {
 
     await expect(page.locator("h2")).toHaveText("My websites");
 
-    await page.locator("div.card", { has: page.getByText(websiteName) }).getByRole("link", { name: "Select" }).click();
+    await page
+        .locator("div.card", { has: page.getByText(websiteName) })
+        .getByRole("link", { name: "Select" })
+        .click();
 
     await page.getByText("Posts").click();
     await page.getByText("New post").click();
@@ -30,13 +33,21 @@ testAsUser("should create a new post", async ({ page }) => {
     await page.getByLabel("Title").pressSequentially(faker.lorem.sentence());
     await page.getByLabel("Content").fill(faker.lorem.paragraphs());
 
-    const fileChooserPromise = page.waitForEvent("filechooser");
+    const attachedImagesChooserPromise = page.waitForEvent("filechooser");
+
+    await page.getByLabel("Attached images").click();
+
+    const attachedImagesChooser = await attachedImagesChooserPromise;
+
+    await attachedImagesChooser.setFiles(path.join(__dirname, "../../../assets/favicon.png"));
+
+    const coverImageChooserPromise = page.waitForEvent("filechooser");
 
     await page.getByLabel("Cover image").click();
 
-    const fileChooser = await fileChooserPromise;
+    const coverImageChooser = await coverImageChooserPromise;
 
-    await fileChooser.setFiles(path.join(__dirname, "../../../assets/favicon.png"));
+    await coverImageChooser.setFiles(path.join(__dirname, "../../../assets/favicon.png"));
 
     await page.getByText("Submit").click();
 

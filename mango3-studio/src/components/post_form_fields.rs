@@ -3,7 +3,7 @@ use leptos::prelude::*;
 use server_fn::error::NoCustomError;
 
 use mango3_leptos_utils::components::{ImageUploadField, SwitchField, TextField, TextareaField};
-use mango3_leptos_utils::i18n::{t, t_string, use_i18n};
+use mango3_leptos_utils::i18n::{t_string, use_i18n};
 use mango3_leptos_utils::models::{ActionFormResp, BlobResp};
 
 use crate::models::EditPostResp;
@@ -44,7 +44,7 @@ pub fn PostFormFields(
     Effect::new(move || {
         if let Some(blob) = value_uploaded_blob.get() {
             value_blobs.update(|blobs| {
-                blobs.push(blob);
+                blobs.insert(0, blob);
             });
             value_uploaded_blob.set(None);
         }
@@ -73,11 +73,14 @@ pub fn PostFormFields(
             error=error_content
         />
 
-        <div class="form-control">
-            <div class="label">
-                <span class="label-text">{t!(i18n, studio.attached_images)}</span>
-            </div>
+        <ImageUploadField
+            id="blob_ids"
+            label=t_string!(i18n, studio.attached_images)
+            name="blob_ids[]"
+            value=value_uploaded_blob
+        />
 
+        <div class="form-control">
             <ForEnumerate
                 each=move || value_blobs.get()
                 key=|blob| blob.id.clone()
@@ -100,8 +103,6 @@ pub fn PostFormFields(
                     }
                 }
             />
-
-            <ImageUploadField id="blob_ids" name="blob_ids[]" value=value_uploaded_blob />
         </div>
 
         <ImageUploadField
