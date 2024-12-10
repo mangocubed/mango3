@@ -7,6 +7,7 @@ use super::extract_from_env;
 #[derive(Deserialize, Serialize)]
 pub struct MiscConfig {
     pub(crate) confirmation_code_length: u8,
+    pub google_adsense_client: String,
     pub(crate) invitation_code_length: u8,
     pub(crate) max_page_content_length: u32,
     pub(crate) max_post_content_length: u32,
@@ -17,6 +18,7 @@ impl Default for MiscConfig {
     fn default() -> Self {
         Self {
             confirmation_code_length: 6,
+            google_adsense_client: String::new(),
             invitation_code_length: 6,
             max_page_content_length: 16384,
             max_post_content_length: 16384,

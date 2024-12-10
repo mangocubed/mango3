@@ -4,6 +4,9 @@ use leptos::prelude::*;
 #[cfg(feature = "ssr")]
 use leptos_meta::HashedStylesheet;
 
+#[cfg(feature = "ssr")]
+use mango3_core::config::MISC_CONFIG;
+
 pub mod components;
 pub mod constants;
 pub mod context;
@@ -35,6 +38,16 @@ where
                 <HydrationScripts options=options.clone() />
                 <MetaTags />
                 <HashedStylesheet id="leptos" options=options />
+                <Show when=move || !MISC_CONFIG.google_adsense_client.is_empty()>
+                    <script
+                        async
+                        src=format!(
+                            "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={}",
+                            MISC_CONFIG.google_adsense_client,
+                        )
+                        crossorigin="anonymous"
+                    />
+                </Show>
             </head>
             <body class="dark:bg-neutral-950 bg-slate-50">{app_fn()}</body>
         </html>
