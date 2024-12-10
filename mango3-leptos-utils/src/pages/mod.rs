@@ -30,6 +30,7 @@ pub fn GuestPage(children: Children, #[prop(into)] title: TextProp) -> impl Into
 #[component]
 pub fn Page(
     children: Children,
+    #[prop(into, optional)] id: Option<String>,
     #[prop(into)] title: TextProp,
     #[prop(into, optional)] class: Option<String>,
 ) -> impl IntoView {
@@ -42,6 +43,8 @@ pub fn Page(
     view! {
         <Title text=title />
 
-        <div class=class>{children()}</div>
+        <div id=id class=class>
+            {children()}
+        </div>
     }
 }

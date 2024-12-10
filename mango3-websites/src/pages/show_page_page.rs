@@ -26,25 +26,28 @@ pub fn ShowPagePage() -> impl IntoView {
                             view! {
                                 <Meta name="description" content=page.title.clone() />
 
-                                {move || {
-                                    page.published_at
-                                        .map(|published_at| {
-                                            view! {
-                                                <MetaDateTime property="article:published_time" content=published_at />
-                                            }
-                                        })
-                                }}
-
-                                {move || {
-                                    page.updated_at
-                                        .map(|updated_at| {
-                                            view! {
-                                                <MetaDateTime property="article:modified_time" content=updated_at />
-                                            }
-                                        })
-                                }}
-
                                 <Page class="max-w-[1200px] w-full ml-auto mr-auto" title=page.title.clone()>
+                                    {move || {
+                                        page.published_at
+                                            .map(|published_at| {
+                                                view! {
+                                                    <MetaDateTime
+                                                        property="article:published_time"
+                                                        content=published_at
+                                                    />
+                                                }
+                                            })
+                                    }}
+
+                                    {move || {
+                                        page.updated_at
+                                            .map(|updated_at| {
+                                                view! {
+                                                    <MetaDateTime property="article:modified_time" content=updated_at />
+                                                }
+                                            })
+                                    }}
+
                                     <div class="card card-compact bg-base-100 shadow-xl mb-4">
                                         {
                                             let page_title = page.title.clone();

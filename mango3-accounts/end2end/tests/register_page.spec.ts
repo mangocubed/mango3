@@ -3,9 +3,13 @@ import { expect, test } from "@playwright/test";
 import { expectLoadToComplete, storageFile } from "../../../js/shared_expects";
 
 test("should register a new user", async ({ page }) => {
-    await page.goto("/register");
+    await page.goto("/login");
 
     await expectLoadToComplete(page);
+
+    await expect(page.locator("h2")).toHaveText("Login");
+
+    await page.getByText("I don't have an account").click();
 
     await expect(page.locator("h2")).toHaveText("Register");
 

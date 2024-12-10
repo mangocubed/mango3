@@ -11,6 +11,7 @@ count_seconds_ago: "{{count}} seconds ago"
 count_weeks_ago: "{{count}} weeks ago"
 count_years_ago: "{{count}} years ago"
 country: Country
+copy_url: Copy URL
 edited: edited
 email: Email
 failed_to_update_password: Failed to update password

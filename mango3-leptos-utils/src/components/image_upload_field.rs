@@ -2,53 +2,24 @@ use leptos::either::EitherOf3;
 use leptos::ev::{Event, MouseEvent};
 use leptos::prelude::*;
 use leptos::text_prop::TextProp;
-use server_fn::codec::{MultipartData, MultipartFormData};
+use leptos_use::{use_clipboard, UseClipboardReturn};
 use wasm_bindgen::JsCast;
 use web_sys::{FormData, HtmlInputElement};
 
-use crate::i18n::{t, use_i18n};
+use crate::i18n::{t_string, use_i18n};
+use crate::icons::{LinkOutlined, TrashOutlined};
 use crate::models::BlobResp;
-
-#[server(input = MultipartFormData)]
-pub async fn attempt_to_upload_file(data: MultipartData) -> Result<Option<BlobResp>, ServerFnError> {
-    use crate::ssr::{expect_core_context, extract_user, require_authentication};
-
-    use mango3_core::models::Blob;
-
-    if !require_authentication().await? {
-        return Ok(None);
-    }
-
-    let Some(mut data) = data.into_inner() else {
-        return Ok(None);
-    };
-
-    let Some(mut field) = data.next_field().await? else {
-        return Ok(None);
-    };
-
-    let Some("file") = field.name() else {
-        return Ok(None);
-    };
-
-    let core_context = expect_core_context();
-    let user = extract_user().await?.unwrap();
-
-    let blob = Blob::insert(&core_context, &user, &mut field).await.ok();
-
-    Ok(blob.map(|blob| blob.into()))
-}
+use crate::server_functions::attempt_to_upload_file;
 
 #[component]
 pub fn ImageUploadField(
     #[prop(optional, into)] error: MaybeProp<String>,
     #[prop(default = 48)] height: i16,
-    #[prop(into, optional)] id: Option<&'static str>,
-    #[prop(into)] label: TextProp,
+    #[prop(into)] id: String,
+    #[prop(into, optional)] label: TextProp,
     #[prop(into, optional)] value: RwSignal<Option<BlobResp>>,
     #[prop(default = 48)] width: i16,
-
-    name: &'static str,
+    #[prop(into)] name: &'static str,
 ) -> impl IntoView {
     let i18n = use_i18n();
     let upload_action = Action::new_local(|data: &FormData| attempt_to_upload_file(data.clone().into()));
@@ -59,14 +30,6 @@ pub fn ImageUploadField(
             value.set(blob_resp)
         }
     });
-
-    let field_id = move || {
-        if let Some(id) = id {
-            id.to_owned()
-        } else {
-            format!("field-{name}")
-        }
-    };
 
     let has_error = move || error.get().is_some();
 
@@ -99,10 +62,11 @@ pub fn ImageUploadField(
 
     view! {
         <div class="form-control w-full">
-            <label class="label" for=field_id>
+            <label class="label" for=id.clone()>
                 <span class="label-text">{move || label.get()}</span>
             </label>
             {move || {
+                let UseClipboardReturn { copy, is_supported, .. } = use_clipboard();
                 if upload_action.pending().get() {
                     EitherOf3::A(view! { <span class="loading loading-spinner loading-lg"></span> })
                 } else if let Some(blob) = value.get() {
@@ -112,8 +76,39 @@ pub fn ImageUploadField(
                             <input type="hidden" name=name value=blob.id />
                             <div class="flex gap-3">
                                 <img class="rounded" width=width height=height src=variant_url />
+
+                                <div class="grow input input-bordered flex items-center gap-2 pr-0">
+                                    <input class="grow" value=blob.url readonly />
+                                    <Show when=move || {
+                                        is_supported.get()
+                                    }>
+                                        {
+                                            let copy = copy.clone();
+                                            move || {
+                                                let copy = copy.clone();
+                                                let copy_url = move |event: MouseEvent| {
+                                                    event.prevent_default();
+                                                    if let Some(blob) = value.get() {
+                                                        copy(&blob.url);
+                                                    }
+                                                };
+
+                                                view! {
+                                                    <button
+                                                        class="btn btn-ghost"
+                                                        title=t_string!(i18n, shared.copy_url)
+                                                        on:click=copy_url
+                                                    >
+                                                        <LinkOutlined />
+                                                    </button>
+                                                }
+                                            }
+                                        }
+                                    </Show>
+                                </div>
+
                                 <button class="btn" on:click=remove>
-                                    {t!(i18n, shared.remove)}
+                                    <TrashOutlined />
                                 </button>
                             </div>
                         },
@@ -124,7 +119,7 @@ pub fn ImageUploadField(
                             <input
                                 class="file-input file-input-bordered w-full"
                                 class:file-input-error=has_error
-                                id=field_id
+                                id=id.clone()
                                 type="file"
                                 accept="image/bmp,image/gif,image/jpeg,image/png"
                                 on:change=upload

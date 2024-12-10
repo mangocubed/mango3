@@ -48,7 +48,7 @@ mod tests {
     #[tokio::test]
     async fn should_insert_navigation_item() {
         let core_context = setup_core_context().await;
-        let website = insert_test_website(&core_context).await;
+        let website = insert_test_website(&core_context, None).await;
         let title = fake_name();
         let url = fake_url();
 
@@ -60,7 +60,7 @@ mod tests {
     #[tokio::test]
     async fn should_not_insert_navigation_item_when_title_is_empty() {
         let core_context = setup_core_context().await;
-        let website = insert_test_website(&core_context).await;
+        let website = insert_test_website(&core_context, None).await;
         let url = fake_url();
 
         let result = NavigationItem::insert(&core_context, &website, 0, "", &url).await;

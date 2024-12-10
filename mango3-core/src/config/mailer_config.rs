@@ -1,7 +1,5 @@
 use serde::{Deserialize, Serialize};
 
-use super::extract_from_env;
-
 #[derive(Deserialize, Serialize)]
 pub struct MailerConfig {
     pub enable: bool,
@@ -26,11 +24,13 @@ impl Default for MailerConfig {
 }
 
 impl MailerConfig {
+    #[cfg(not(test))]
     pub(crate) fn load() -> Self {
-        if cfg!(test) {
-            extract_from_env("MAILER_")
-        } else {
-            Self::default()
-        }
+        super::extract_from_env("MAILER_")
+    }
+
+    #[cfg(test)]
+    pub(crate) fn load() -> Self {
+        Self::default()
     }
 }

@@ -11,6 +11,7 @@ count_seconds_ago: hace {{count}} segundos
 count_weeks_ago: hace {{count}} semanas
 count_years_ago: hace {{count}} años
 country: País
+copy_url: Copiar URL
 edited: editado
 email: Correo electrónico
 failed_to_update_password: Error al actualizar contraseña

@@ -3,8 +3,8 @@ use leptos::prelude::*;
 use server_fn::error::NoCustomError;
 
 use mango3_leptos_utils::components::{ImageUploadField, SwitchField, TextField, TextareaField};
-use mango3_leptos_utils::i18n::{t_string, use_i18n};
-use mango3_leptos_utils::models::ActionFormResp;
+use mango3_leptos_utils::i18n::{t, t_string, use_i18n};
+use mango3_leptos_utils::models::{ActionFormResp, BlobResp};
 
 use crate::models::EditPostResp;
 
@@ -21,6 +21,15 @@ pub fn PostFormFields(
     let value_title = post.as_ref().map(|p| p.title.clone()).unwrap_or_default();
     let value_slug = RwSignal::new(post.as_ref().map(|p| p.slug.clone()).unwrap_or_default());
     let value_content = post.as_ref().map(|p| p.content.clone()).unwrap_or_default();
+    let value_blobs = RwSignal::new(
+        post.as_ref()
+            .map(|p| p.attachments.to_vec())
+            .unwrap_or_default()
+            .iter()
+            .map(|a| a.blob.clone())
+            .collect::<Vec<BlobResp>>(),
+    );
+    let value_uploaded_blob = RwSignal::new(None);
     let value_cover_image_blob = RwSignal::new(post.as_ref().and_then(|p| p.cover_image_blob.clone()));
     let value_publish = post.map(|p| p.is_published).unwrap_or_default();
 
@@ -30,6 +39,15 @@ pub fn PostFormFields(
         error_title.set(response.error("title"));
         error_slug.set(response.error("slug"));
         error_content.set(response.error("content"));
+    });
+
+    Effect::new(move || {
+        if let Some(blob) = value_uploaded_blob.get() {
+            value_blobs.update(|blobs| {
+                blobs.push(blob);
+            });
+            value_uploaded_blob.set(None);
+        }
     });
 
     let title_on_input = move |event: Event| {
@@ -55,8 +73,40 @@ pub fn PostFormFields(
             error=error_content
         />
 
+        <div class="form-control">
+            <div class="label">
+                <span class="label-text">{t!(i18n, studio.attached_images)}</span>
+            </div>
+
+            <ForEnumerate
+                each=move || value_blobs.get()
+                key=|blob| blob.id.clone()
+                children=move |index, blob| {
+                    let value_blob = RwSignal::new(Some(blob));
+                    Effect::new(move || {
+                        if value_blob.get().is_none() {
+                            value_blobs
+                                .update(|blobs| {
+                                    blobs.remove(index.get());
+                                });
+                        }
+                    });
+                    view! {
+                        <ImageUploadField
+                            id=index.with(|i| format!("blob_ids_{}", i))
+                            name="blob_ids[]"
+                            value=value_blob
+                        />
+                    }
+                }
+            />
+
+            <ImageUploadField id="blob_ids" name="blob_ids[]" value=value_uploaded_blob />
+        </div>
+
         <ImageUploadField
             label=move || t_string!(i18n, studio.cover_image)
+            id="cover_image_blob_id"
             name="cover_image_blob_id"
             width=288
             value=value_cover_image_blob
