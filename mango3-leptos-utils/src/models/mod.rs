@@ -29,13 +29,13 @@ pub use basic_config_resp::BasicConfigResp;
 pub use blob_resp::BlobResp;
 pub use navigation_item_resp::NavigationItemResp;
 pub use page_resp::{PagePreviewResp, PageResp};
-pub use post_resp::{PostPreviewResp, PostResp};
+pub use post_resp::{PostAttachmentResp, PostPreviewResp, PostResp};
 pub use user_profile_resp::UserProfileResp;
 pub use user_resp::{UserPreviewResp, UserResp};
 pub use website_resp::WebsiteResp;
 
 #[cfg(feature = "ssr")]
-fn parse_html(input: &str) -> String {
+fn parse_html(input: &str, enable_links: bool) -> String {
     let mut options = Options::empty();
 
     options.insert(Options::ENABLE_FOOTNOTES);
@@ -49,6 +49,7 @@ fn parse_html(input: &str) -> String {
 
     let parser = Parser::new_ext(input, options).filter(|event| match event {
         Event::Start(Tag::HtmlBlock) | Event::End(TagEnd::HtmlBlock) | Event::Html(_) | Event::InlineHtml(_) => false,
+        Event::Start(Tag::Link { .. }) | Event::End(TagEnd::Link) => enable_links,
         _ => true,
     });
 

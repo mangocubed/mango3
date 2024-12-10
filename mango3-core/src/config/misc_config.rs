@@ -20,7 +20,10 @@ impl Default for MiscConfig {
             invitation_code_length: 6,
             max_page_content_length: 16384,
             max_post_content_length: 16384,
+            #[cfg(not(test))]
             storage_path: "./storage".to_owned(),
+            #[cfg(test)]
+            storage_path: "./storage/tests".to_owned(),
         }
     }
 }

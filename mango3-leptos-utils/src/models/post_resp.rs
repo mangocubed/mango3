@@ -3,9 +3,11 @@ use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "ssr")]
 use async_trait::async_trait;
+#[cfg(feature = "ssr")]
+use futures::future;
 
 #[cfg(feature = "ssr")]
-use mango3_core::models::Post;
+use mango3_core::models::{Post, PostAttachment};
 #[cfg(feature = "ssr")]
 use mango3_core::CoreContext;
 
@@ -15,12 +17,38 @@ use super::{BlobResp, UserPreviewResp};
 use super::{parse_html, FromCore};
 
 #[derive(Clone, Deserialize, Serialize)]
+pub struct PostAttachmentResp {
+    pub id: String,
+    pub blob: BlobResp,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: Option<DateTime<Utc>>,
+}
+
+#[cfg(feature = "ssr")]
+#[async_trait]
+impl FromCore<PostAttachment> for PostAttachmentResp {
+    async fn from_core(core_context: &CoreContext, post_attachment: &PostAttachment) -> Self {
+        Self {
+            id: post_attachment.id.to_string(),
+            blob: post_attachment
+                .blob(&core_context)
+                .await
+                .expect("Could not get blob")
+                .into(),
+            created_at: post_attachment.created_at,
+            updated_at: post_attachment.updated_at,
+        }
+    }
+}
+
+#[derive(Clone, Deserialize, Serialize)]
 pub struct PostResp {
     pub id: String,
     pub user: UserPreviewResp,
     pub title: String,
     pub slug: String,
     pub content_html: String,
+    pub attachments: Vec<PostAttachmentResp>,
     pub cover_image_blob: Option<BlobResp>,
     pub is_published: bool,
     pub url: String,
@@ -42,7 +70,14 @@ impl FromCore<Post> for PostResp {
             .await,
             title: post.title.clone(),
             slug: post.slug.clone(),
-            content_html: parse_html(&post.content),
+            content_html: parse_html(&post.content, true),
+            attachments: future::join_all(
+                post.attachments(core_context)
+                    .await
+                    .iter()
+                    .map(|attachment| PostAttachmentResp::from_core(core_context, attachment)),
+            )
+            .await,
             cover_image_blob: post
                 .cover_image_blob(&core_context)
                 .await
@@ -84,7 +119,7 @@ impl FromCore<Post> for PostPreviewResp {
             .await,
             title: post.title.clone(),
             slug: post.slug.clone(),
-            content_preview_html: parse_html(&post.content_preview()),
+            content_preview_html: parse_html(&post.content_preview(), false),
             cover_image_blob: post
                 .cover_image_blob(&core_context)
                 .await

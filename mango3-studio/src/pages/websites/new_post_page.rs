@@ -1,7 +1,7 @@
 use leptos::prelude::*;
 use leptos_i18n::t_string;
 
-use mango3_leptos_utils::components::{ActionFormAlert, SubmitButton};
+use mango3_leptos_utils::components::ActionFormAlert;
 use mango3_leptos_utils::i18n::{t, use_i18n};
 
 use crate::components::PostFormFields;
@@ -28,9 +28,7 @@ pub fn NewPostPage() -> impl IntoView {
 
             <input type="hidden" name="website_id" value=website_id />
 
-            <PostFormFields action_value=action_value />
-
-            <SubmitButton is_loading=server_action.pending() />
+            <PostFormFields action_value=action_value is_loading=server_action.pending() />
         </ActionForm>
     }
 }

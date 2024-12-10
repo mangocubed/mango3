@@ -28,25 +28,28 @@ pub fn ShowPostPage() -> impl IntoView {
                                 <Meta name="author" content=post.user.display_name.clone() />
                                 <Meta property="article:author:username" content=post.user.username.clone() />
 
-                                {move || {
-                                    post.published_at
-                                        .map(|published_at| {
-                                            view! {
-                                                <MetaDateTime property="article:published_time" content=published_at />
-                                            }
-                                        })
-                                }}
-
-                                {move || {
-                                    post.updated_at
-                                        .map(|updated_at| {
-                                            view! {
-                                                <MetaDateTime property="article:modified_time" content=updated_at />
-                                            }
-                                        })
-                                }}
-
                                 <Page class="max-w-[1200px] w-full ml-auto mr-auto" title=post.title.clone()>
+                                    {move || {
+                                        post.published_at
+                                            .map(|published_at| {
+                                                view! {
+                                                    <MetaDateTime
+                                                        property="article:published_time"
+                                                        content=published_at
+                                                    />
+                                                }
+                                            })
+                                    }}
+
+                                    {move || {
+                                        post.updated_at
+                                            .map(|updated_at| {
+                                                view! {
+                                                    <MetaDateTime property="article:modified_time" content=updated_at />
+                                                }
+                                            })
+                                    }}
+
                                     <div class="card card-compact bg-base-100 shadow-xl mb-4">
                                         {
                                             let post_title = post.title.clone();
@@ -96,12 +99,7 @@ pub fn ShowPostPage() -> impl IntoView {
                         )
                     }
                     Some(Ok(None)) => EitherOf3::B(NotFoundPage),
-                    _ => {
-                        EitherOf3::C(
-
-                            view! { <div /> },
-                        )
-                    }
+                    _ => EitherOf3::C(view! { <div /> }),
                 }
             })}
         </Suspense>

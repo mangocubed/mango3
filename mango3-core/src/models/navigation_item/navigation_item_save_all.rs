@@ -52,7 +52,7 @@ mod tests {
     #[tokio::test]
     async fn should_save_all_navigation_items() {
         let core_context = setup_core_context().await;
-        let website = insert_test_website(&core_context).await;
+        let website = insert_test_website(&core_context, None).await;
         let items = vec![
             (None, fake_name(), fake_url()),
             (None, fake_name(), fake_url()),

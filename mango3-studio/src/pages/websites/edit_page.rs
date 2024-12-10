@@ -60,12 +60,14 @@ pub fn EditPage() -> impl IntoView {
 
                     <ImageUploadField
                         label=move || t_string!(i18n, studio.icon_image)
+                        id="icon_image_blob_id"
                         name="icon_image_blob_id"
                         value=value_icon_image_blob
                     />
 
                     <ImageUploadField
                         label=move || t_string!(i18n, studio.cover_image)
+                        id="cover_image_blob_id"
                         name="cover_image_blob_id"
                         width=288
                         value=value_cover_image_blob

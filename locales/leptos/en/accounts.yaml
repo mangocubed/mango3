@@ -4,7 +4,7 @@ failed_to_authenticate_user: Failed to authenticate user
 failed_to_create_user: Failed to create user
 failed_to_get_invitation: Failed to get invitation
 failed_to_send_password_reset_code: Failed to send password reset code
-i_dont_have_an_account: I don't have and account
+i_dont_have_an_account: I don't have an account
 i_forgot_my_password: I forgot my password
 invitation_code: Invitation code
 password_reset_code_sent_successfully: Password reset code send successfully

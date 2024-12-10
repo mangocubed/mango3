@@ -2,7 +2,7 @@ use leptos::either::Either;
 use leptos::prelude::*;
 use leptos_meta::{provide_meta_context, Title};
 use leptos_router::components::{Route, Router, Routes};
-use leptos_router::{ParamSegment, SsrMode, StaticSegment};
+use leptos_router::{ParamSegment, StaticSegment};
 
 use mango3_leptos_utils::components::{AppProvider, AppTitle, BottomBar, FaviconLink};
 use mango3_leptos_utils::context::use_basic_config;
@@ -51,12 +51,7 @@ pub fn App() -> impl IntoView {
                             },
                         )
                     }
-                    None => {
-                        Either::Right(
-
-                            view! { <AppTitle /> },
-                        )
-                    }
+                    None => Either::Right(view! { <AppTitle /> }),
                 }
             } />
 
@@ -67,7 +62,7 @@ pub fn App() -> impl IntoView {
                     <Routes fallback=NotFoundPage>
                         <Route path=StaticSegment("") view=IndexPage />
                         <Route path=(StaticSegment("posts"), ParamSegment(KEY_PARAM_SLUG)) view=ShowPostPage />
-                        <Route path=ParamSegment(KEY_PARAM_SLUG) view=ShowPagePage ssr=SsrMode::PartiallyBlocked />
+                        <Route path=ParamSegment(KEY_PARAM_SLUG) view=ShowPagePage />
                     </Routes>
                 </main>
 

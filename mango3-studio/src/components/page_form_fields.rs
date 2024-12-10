@@ -57,6 +57,7 @@ pub fn PageFormFields(
 
         <ImageUploadField
             label=move || t_string!(i18n, studio.cover_image)
+            id="cover_image_blob_id"
             name="cover_image_blob_id"
             width=288
             value=value_cover_image_blob
