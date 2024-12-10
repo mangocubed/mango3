@@ -51,12 +51,12 @@ jobs:
             - name: Install Playwright
               run: npx playwright install chromium firefox --with-deps
             - name: Test Accounts
-              run: cargo leptos end-to-end --project mango3-accounts
+              run: cargo leptos end-to-end --release --project mango3-accounts
             - name: Test Home
-              run: cargo leptos end-to-end --project mango3-home
+              run: cargo leptos end-to-end --release --project mango3-home
             - name: Test My Account
-              run: cargo leptos end-to-end --project mango3-my-account
+              run: cargo leptos end-to-end --release --project mango3-my-account
             - name: Test Studio
-              run: cargo leptos end-to-end --project mango3-studio
+              run: cargo leptos end-to-end --release --project mango3-studio
             - name: Test Websites
-              run: cargo leptos end-to-end --project mango3-websites
+              run: cargo leptos end-to-end --release --project mango3-websites
