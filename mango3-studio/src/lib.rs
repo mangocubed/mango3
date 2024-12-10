@@ -1,5 +1,5 @@
-// TODO: Reduce recursion limit
-#![recursion_limit = "130"]
+// TODO: Reduce this recursion limit
+#![recursion_limit = "140"]
 
 pub mod app;
 pub mod components;
