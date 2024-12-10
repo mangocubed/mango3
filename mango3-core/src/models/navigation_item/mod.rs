@@ -78,7 +78,7 @@ mod tests {
     #[tokio::test]
     async fn should_get_zero_navigation_items() {
         let core_context = setup_core_context().await;
-        let website = insert_test_website(&core_context).await;
+        let website = insert_test_website(&core_context, None).await;
 
         let items = NavigationItem::all_by_website(&core_context, &website).await;
 
@@ -88,7 +88,7 @@ mod tests {
     #[tokio::test]
     async fn should_get_one_navigation_item() {
         let core_context = setup_core_context().await;
-        let website = insert_test_website(&core_context).await;
+        let website = insert_test_website(&core_context, None).await;
 
         insert_test_navigation_item(&core_context, Some(&website)).await;
 
@@ -100,7 +100,7 @@ mod tests {
     #[tokio::test]
     async fn should_delete_all_navigation_items() {
         let core_context = setup_core_context().await;
-        let website = insert_test_website(&core_context).await;
+        let website = insert_test_website(&core_context, None).await;
 
         insert_test_navigation_item(&core_context, Some(&website)).await;
 

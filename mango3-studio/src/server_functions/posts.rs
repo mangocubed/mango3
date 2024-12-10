@@ -6,9 +6,11 @@ use uuid::Uuid;
 use mango3_leptos_utils::models::{ActionFormResp, CursorPageResp, PostPreviewResp};
 
 #[cfg(feature = "ssr")]
-use mango3_core::models::{Blob, Post};
+use mango3_core::models::{Blob, Post, User};
 #[cfg(feature = "ssr")]
 use mango3_core::pagination::CursorPageParams;
+#[cfg(feature = "ssr")]
+use mango3_core::CoreContext;
 #[cfg(feature = "ssr")]
 use mango3_leptos_utils::models::FromCore;
 #[cfg(feature = "ssr")]
@@ -19,12 +21,27 @@ use crate::models::EditPostResp;
 #[cfg(feature = "ssr")]
 use super::my_website;
 
+#[cfg(feature = "ssr")]
+async fn get_blobs(core_context: &CoreContext, user: &User, ids: Option<Vec<String>>) -> Vec<Blob> {
+    let Some(ids) = ids else {
+        return vec![];
+    };
+
+    Blob::get_multiple_by_id(
+        &core_context,
+        ids.iter().map(|id| Uuid::try_parse(id).unwrap()).collect(),
+        Some(&user),
+    )
+    .await
+}
+
 #[server]
 pub async fn attempt_to_create_post(
     website_id: String,
     title: String,
     slug: String,
     content: String,
+    blob_ids: Option<Vec<String>>,
     cover_image_blob_id: Option<String>,
     publish: Option<bool>,
 ) -> Result<ActionFormResp, ServerFnError> {
@@ -36,7 +53,7 @@ pub async fn attempt_to_create_post(
 
     let core_context = expect_core_context();
     let user = extract_user().await?.unwrap();
-
+    let blobs = get_blobs(&core_context, &user, blob_ids).await;
     let cover_image_blob = if let Some(id) = cover_image_blob_id.as_ref().and_then(|id| Uuid::try_parse(id).ok()) {
         Blob::get_by_id(&core_context, id, Some(&user)).await.ok()
     } else {
@@ -50,6 +67,7 @@ pub async fn attempt_to_create_post(
         &title,
         &slug,
         &content,
+        blobs,
         cover_image_blob.as_ref(),
         publish.unwrap_or_default(),
     )
@@ -80,6 +98,7 @@ pub async fn attempt_to_update_post(
     title: String,
     slug: String,
     content: String,
+    blob_ids: Option<Vec<String>>,
     cover_image_blob_id: Option<String>,
     publish: Option<bool>,
 ) -> Result<ActionFormResp, ServerFnError> {
@@ -91,7 +110,7 @@ pub async fn attempt_to_update_post(
 
     let core_context = expect_core_context();
     let user = extract_user().await?.unwrap();
-
+    let blobs = get_blobs(&core_context, &user, blob_ids).await;
     let cover_image_blob = if let Some(id) = cover_image_blob_id.as_ref().and_then(|id| Uuid::try_parse(id).ok()) {
         Blob::get_by_id(&core_context, id, Some(&user)).await.ok()
     } else {
@@ -104,6 +123,7 @@ pub async fn attempt_to_update_post(
             &title,
             &slug,
             &content,
+            blobs,
             cover_image_blob.as_ref(),
             publish.unwrap_or_default(),
         )

@@ -1,6 +1,6 @@
 use sqlx::query_as;
 
-use crate::models::{Blob, User, Website};
+use crate::models::{Blob, PostAttachment, User, Website};
 use crate::validator::{ValidationErrors, Validator};
 use crate::CoreContext;
 
@@ -14,6 +14,7 @@ impl Post {
         title: &str,
         slug: &str,
         content: &str,
+        blobs: Vec<Blob>,
         cover_image_blob: Option<&Blob>,
         publish: bool,
     ) -> Result<Self, ValidationErrors> {
@@ -32,7 +33,7 @@ impl Post {
             return Err(validator.errors);
         }
 
-        query_as!(
+        let result = query_as!(
             Self,
             "INSERT INTO posts (
                 website_id, user_id, title, slug, content, cover_image_blob_id, published_at
@@ -46,7 +47,15 @@ impl Post {
             publish,             // $7
         )
         .fetch_one(&core_context.db_pool)
-        .await
-        .map_err(|_| ValidationErrors::default())
+        .await;
+
+        match result {
+            Ok(post) => {
+                let _ = PostAttachment::save_all(core_context, &post, blobs).await;
+
+                Ok(post)
+            }
+            Err(_) => Err(ValidationErrors::default()),
+        }
     }
 }

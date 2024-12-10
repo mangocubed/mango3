@@ -2,11 +2,13 @@ use leptos::prelude::*;
 
 mod chevron;
 mod eye;
+mod link;
 mod plus;
 mod trash;
 
 pub use chevron::{ChevronDownMini, ChevronUpMini};
 pub use eye::{EyeOutlined, EyeSlashOutlined};
+pub use link::LinkOutlined;
 pub use plus::PlusOutlined;
 pub use trash::TrashOutlined;
 

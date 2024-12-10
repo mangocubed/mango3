@@ -9,7 +9,7 @@ use crate::enums::{Input, InputError};
 use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
 use crate::CoreContext;
 
-use super::{Blob, User, Website};
+use super::{Blob, PostAttachment, User, Website};
 
 mod post_insert;
 mod post_paginate;
@@ -30,6 +30,10 @@ pub struct Post {
 }
 
 impl Post {
+    pub async fn attachments(&self, core_context: &CoreContext) -> Vec<PostAttachment> {
+        PostAttachment::all(core_context, Some(self)).await
+    }
+
     pub fn content_preview(&self) -> &str {
         self.content
             .lines()

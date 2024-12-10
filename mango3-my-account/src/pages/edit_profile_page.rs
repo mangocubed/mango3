@@ -102,6 +102,7 @@ pub fn EditProfilePage() -> impl IntoView {
 
                                     <ImageUploadField
                                         label=move || t_string!(i18n, my_account.avatar_image)
+                                        id="avatar_image_blob_id"
                                         name="avatar_image_blob_id"
                                         value=value_avatar_image_blob
                                     />

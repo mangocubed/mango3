@@ -2,7 +2,7 @@ use chrono::{DateTime, Utc};
 use fake::faker::address::en::CountryCode;
 use fake::faker::chrono::en::DateTimeBefore;
 use fake::faker::internet::en::{Password, SafeEmail, Username};
-use fake::faker::lorem::en::Sentence;
+use fake::faker::lorem::en::{Paragraph, Sentence};
 use fake::faker::name::en::Name;
 use fake::{Fake, Faker};
 use regex::Regex;
@@ -11,6 +11,12 @@ use uuid::Uuid;
 
 use crate::models::{NavigationItem, User, Website};
 use crate::CoreContext;
+
+mod test_blob;
+mod test_post;
+
+pub use test_blob::insert_test_blob;
+pub use test_post::insert_test_post;
 
 fn fake_birthdate() -> String {
     DateTimeBefore(Utc::now())
@@ -29,6 +35,10 @@ fn fake_email() -> String {
 
 pub fn fake_name() -> String {
     Name().fake()
+}
+
+fn fake_paragraph() -> String {
+    Paragraph(1..3).fake()
 }
 
 fn fake_password() -> String {
@@ -64,7 +74,7 @@ pub async fn insert_test_navigation_item(core_context: &CoreContext, website: Op
     let website = if let Some(website) = website {
         website
     } else {
-        &insert_test_website(core_context).await
+        &insert_test_website(core_context, None).await
     };
     let label = fake_name();
     let url = fake_url();
@@ -98,8 +108,12 @@ pub async fn insert_test_user(core_context: &CoreContext) -> User {
     .unwrap()
 }
 
-pub async fn insert_test_website(core_context: &CoreContext) -> Website {
-    let user = insert_test_user(core_context).await;
+pub async fn insert_test_website(core_context: &CoreContext, user: Option<&User>) -> Website {
+    let user = if let Some(user) = user {
+        user
+    } else {
+        &insert_test_user(core_context).await
+    };
     let name = fake_name();
     let subdomain = fake_slug();
     let description = fake_sentence();

@@ -2,8 +2,10 @@ use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "ssr")]
 use async_trait::async_trait;
+#[cfg(feature = "ssr")]
+use futures::future;
 
-use mango3_leptos_utils::models::BlobResp;
+use mango3_leptos_utils::models::{BlobResp, PostAttachmentResp};
 
 #[cfg(feature = "ssr")]
 use mango3_core::models::{Page, Post};
@@ -49,6 +51,7 @@ pub struct EditPostResp {
     pub title: String,
     pub slug: String,
     pub content: String,
+    pub attachments: Vec<PostAttachmentResp>,
     pub cover_image_blob: Option<BlobResp>,
     pub is_published: bool,
     pub url: String,
@@ -63,6 +66,13 @@ impl FromCore<Post> for EditPostResp {
             title: post.title.clone(),
             slug: post.slug.clone(),
             content: post.content.clone(),
+            attachments: future::join_all(
+                post.attachments(core_context)
+                    .await
+                    .iter()
+                    .map(|attachment| PostAttachmentResp::from_core(core_context, attachment)),
+            )
+            .await,
             cover_image_blob: post
                 .cover_image_blob(&core_context)
                 .await
