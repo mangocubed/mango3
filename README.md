@@ -14,6 +14,7 @@
 | BASIC_COPYRIGHT               | String  | © 2024, Mango³ Team                                              |
 | BASIC_DOMAIN                  | String  | mango3.local                                                     |
 | BASIC_ENABLE_REGISTER         | String  | true                                                             |
+| BASIC_GOOGLE_ADSENSE_CLIENT   | String  |                                                                  |
 | BASIC_SECURE                  | Boolean | false                                                            |
 | BASIC_TITLE                   | String  | Mango³ Dev                                                       |
 | DATABASE_MAX_CONNECTIONS      | Integer | 5                                                                |
@@ -26,7 +27,6 @@
 | MAILER_SMTP_SECURITY          | String  | none                                                             |
 | MAILER_SMTP_USERNAME          | String  |                                                                  |
 | MISC_CONFIRMATION_CODE_LENGTH | Integer | 6                                                                |
-| MISC_GOOGLE_ADSENSE_CLIENT    | String  |                                                                  |
 | MISC_INVITATION_CODE_LENGTH   | Integer | 6                                                                |
 | MISC_MAX_PAGE_CONTENT_LENGTH  | Integer | 16384                                                            |
 | MISC_MAX_POST_CONTENT_LENGTH  | Integer | 16384                                                            |
