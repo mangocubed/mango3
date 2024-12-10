@@ -1,6 +1,6 @@
 accept: Accept
 birthdate: Birthdate
-cancel: cancel
+cancel: Cancel
 change_password: Change password
 code: Code
 count_days_ago: "{{count}} days ago"

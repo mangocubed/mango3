@@ -5,7 +5,7 @@ use leptos::text_prop::TextProp;
 use wasm_bindgen::JsCast;
 use web_sys::{FormData, HtmlInputElement};
 
-use crate::components::CopyableText;
+use crate::components::{CopyableText, LoadingSpinner};
 use crate::icons::TrashOutlined;
 use crate::models::BlobResp;
 use crate::server_functions::attempt_to_upload_file;
@@ -18,7 +18,7 @@ pub fn ImageUploadField(
     #[prop(into, optional)] label: TextProp,
     #[prop(into, optional)] value: RwSignal<Option<BlobResp>>,
     #[prop(default = 48)] width: i16,
-    #[prop(into)] name: &'static str,
+    #[prop(into)] name: String,
 ) -> impl IntoView {
     let upload_action = Action::new_local(|data: &FormData| attempt_to_upload_file(data.clone().into()));
     let upload_action_value = upload_action.value();
@@ -65,12 +65,12 @@ pub fn ImageUploadField(
             </label>
             {move || {
                 if upload_action.pending().get() {
-                    EitherOf3::A(view! { <span class="loading loading-spinner loading-lg"></span> })
+                    EitherOf3::A(LoadingSpinner)
                 } else if let Some(blob) = value.get() {
                     let variant_url = blob.variant_url(width, height, true).clone();
                     EitherOf3::B(
                         view! {
-                            <input type="hidden" name=name value=blob.id />
+                            <input type="hidden" name=name.clone() value=blob.id />
                             <div class="flex gap-3">
                                 <img class="rounded" width=width height=height src=variant_url />
 
@@ -84,7 +84,6 @@ pub fn ImageUploadField(
                     )
                 } else {
                     EitherOf3::C(
-
                         view! {
                             <input
                                 class="file-input file-input-bordered w-full"

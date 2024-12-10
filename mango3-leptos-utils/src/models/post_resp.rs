@@ -70,7 +70,7 @@ impl FromCore<Post> for PostResp {
             .await,
             title: post.title.clone(),
             slug: post.slug.clone(),
-            content_html: parse_html(&post.content),
+            content_html: parse_html(&post.content, true),
             attachments: future::join_all(
                 post.attachments(core_context)
                     .await
@@ -119,7 +119,7 @@ impl FromCore<Post> for PostPreviewResp {
             .await,
             title: post.title.clone(),
             slug: post.slug.clone(),
-            content_preview_html: parse_html(&post.content_preview()),
+            content_preview_html: parse_html(&post.content_preview(), false),
             cover_image_blob: post
                 .cover_image_blob(&core_context)
                 .await

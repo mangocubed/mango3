@@ -36,7 +36,7 @@ impl FromCore<Page> for PageResp {
             id: page.id.to_string(),
             title: page.title.clone(),
             slug: page.slug.clone(),
-            content_html: parse_html(&page.content),
+            content_html: parse_html(&page.content, true),
             cover_image_blob: page
                 .cover_image_blob(&core_context)
                 .await
@@ -72,7 +72,7 @@ impl FromCore<Page> for PagePreviewResp {
             id: page.id.to_string(),
             title: page.title.clone(),
             slug: page.slug.clone(),
-            content_preview_html: parse_html(&page.content_preview()),
+            content_preview_html: parse_html(&page.content_preview(), false),
             cover_image_blob: page
                 .cover_image_blob(&core_context)
                 .await

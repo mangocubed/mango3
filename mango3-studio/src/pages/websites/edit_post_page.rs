@@ -2,7 +2,7 @@ use leptos::either::Either;
 use leptos::prelude::*;
 use leptos_router::hooks::use_params_map;
 
-use mango3_leptos_utils::components::{ActionFormAlert, SubmitButton};
+use mango3_leptos_utils::components::ActionFormAlert;
 use mango3_leptos_utils::i18n::{t, t_string, use_i18n};
 
 use crate::components::PostFormFields;
@@ -49,9 +49,11 @@ pub fn EditPostPage() -> impl IntoView {
 
                                     <input type="hidden" name="id" value=post.id.clone() />
 
-                                    <PostFormFields action_value=action_value post=post />
-
-                                    <SubmitButton is_loading=server_action.pending() />
+                                    <PostFormFields
+                                        action_value=action_value
+                                        is_loading=server_action.pending()
+                                        post=post
+                                    />
                                 </ActionForm>
                             },
                         )

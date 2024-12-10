@@ -35,8 +35,8 @@ impl FromCore<Website> for WebsiteResp {
             id: website.id.to_string(),
             name: website.name.clone(),
             description: website.description.clone(),
-            description_html: parse_html(&website.description),
-            description_preview_html: parse_html(&website.description_preview()),
+            description_html: parse_html(&website.description, true),
+            description_preview_html: parse_html(&website.description_preview(), false),
             initials: website.initials(),
             icon_image_blob: website
                 .icon_image_blob(&core_context)
