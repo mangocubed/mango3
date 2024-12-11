@@ -1,5 +1,6 @@
 use codee::string::FromToStringCodec;
 use leptos::prelude::*;
+use leptos_meta::Script;
 
 use crate::constants::COOKIE_NAME_LANGUAGE;
 use crate::context::*;
@@ -13,10 +14,25 @@ pub fn AppProvider(children: Children) -> impl IntoView {
     let basic_config = use_basic_config();
     let is_done = RwSignal::new(false);
     let language_cookie_options = use_language_cookie_options::<FromToStringCodec>();
+    let google_ads_client = basic_config.google_ads_client.clone();
 
     Effect::new(move || is_done.set(true));
 
     view! {
+        <Show when={
+            let google_ads_client = google_ads_client.clone();
+            move || !google_ads_client.is_empty()
+        }>
+            <Script
+                async_="true"
+                crossorigin="anonymous"
+                src=format!(
+                    "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={}",
+                    google_ads_client,
+                )
+            />
+        </Show>
+
         <div class="loading-overlay" class:is-done=is_done>
             <figure>
                 <div class="pulse"></div>

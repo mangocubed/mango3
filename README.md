@@ -14,6 +14,7 @@
 | BASIC_COPYRIGHT               | String  | © 2024, Mango³ Team                                              |
 | BASIC_DOMAIN                  | String  | mango3.local                                                     |
 | BASIC_ENABLE_REGISTER         | String  | true                                                             |
+| BASIC_GOOGLE_ADSENSE_CLIENT   | String  |                                                                  |
 | BASIC_SECURE                  | Boolean | false                                                            |
 | BASIC_TITLE                   | String  | Mango³ Dev                                                       |
 | DATABASE_MAX_CONNECTIONS      | Integer | 5                                                                |

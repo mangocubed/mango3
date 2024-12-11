@@ -9,6 +9,7 @@ pub struct BasicConfig {
     pub copyright: String,
     pub domain: String,
     pub enable_register: bool,
+    pub google_ads_client: String,
     pub secure: bool,
     pub title: String,
 }
@@ -19,6 +20,7 @@ impl Default for BasicConfig {
             copyright: "© 2024, Mango³ Team".to_owned(),
             domain: "mango3.local".to_owned(),
             enable_register: true,
+            google_ads_client: String::new(),
             secure: false,
             title: "Mango³ Dev".to_owned(),
         }
