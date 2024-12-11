@@ -22,3 +22,4 @@
 - Features to manage pages.
 - GitHub Actions workflows for continuous integration.
 - Features to manage websites navigation.
+- Feature to attach images to posts.

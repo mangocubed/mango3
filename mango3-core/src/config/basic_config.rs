@@ -6,22 +6,28 @@ use super::extract_from_env;
 
 #[derive(Clone, Deserialize, Serialize)]
 pub struct BasicConfig {
+    pub about_url: String,
     pub copyright: String,
     pub domain: String,
     pub enable_register: bool,
     pub google_ads_client: String,
+    pub privacy_policy_url: String,
     pub secure: bool,
+    pub terms_of_service_url: String,
     pub title: String,
 }
 
 impl Default for BasicConfig {
     fn default() -> Self {
         Self {
+            about_url: String::new(),
             copyright: "© 2024, Mango³ Team".to_owned(),
             domain: "mango3.local".to_owned(),
             enable_register: true,
             google_ads_client: String::new(),
+            privacy_policy_url: String::new(),
             secure: false,
+            terms_of_service_url: String::new(),
             title: "Mango³ Dev".to_owned(),
         }
     }

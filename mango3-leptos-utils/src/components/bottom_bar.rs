@@ -2,13 +2,13 @@ use leptos::prelude::*;
 use leptos_use::{ColorMode, UseColorModeReturn};
 
 use crate::context::{use_basic_config, use_color_mode};
-use crate::i18n::{use_i18n, Locale};
+use crate::i18n::{t, use_i18n, Locale};
 use crate::icons::{ChevronUpMini, ComputerOutlined, MoonOutlined, SunOutlined};
 
 const LANGUAGES: [(&str, Locale); 2] = [("English", Locale::en), ("Español", Locale::es)];
 
 #[component]
-pub fn BottomBar() -> impl IntoView {
+pub fn BottomBar(#[prop(optional, into)] aside_items: ViewFnOnce) -> impl IntoView {
     let basic_config = use_basic_config();
     let UseColorModeReturn { mode, set_mode, .. } = use_color_mode();
     let i18n = use_i18n();
@@ -25,14 +25,49 @@ pub fn BottomBar() -> impl IntoView {
     view! {
         <footer class="footer bg-base-200 text-base-content p-10">
             <aside>
+                <div>{aside_items.run()}</div>
+
                 <a href=basic_config.home_url.clone()>
                     <img class="h-[48px]" alt=basic_config.title.clone() src=basic_config.asset_url("logo.svg") />
                 </a>
                 <p>{basic_config.copyright.clone()}</p>
             </aside>
 
-            <nav class="justify-items-end">
-                <div class="dropdown dropdown-top dropdown-end">
+            <nav>
+                <Show when={
+                    let has_about = !basic_config.about_url.is_empty();
+                    move || has_about
+                }>
+                    <a href=basic_config.about_url.clone() target="_blank">
+                        {t!(i18n, shared.about_us)}
+                    </a>
+                </Show>
+
+                <Show when={
+                    let has_privacy_policy = !basic_config.privacy_policy_url.is_empty();
+                    move || has_privacy_policy
+                }>
+                    <a href=basic_config.privacy_policy_url.clone() target="_blank">
+                        {t!(i18n, shared.privacy_policy)}
+                    </a>
+                </Show>
+
+                <Show when={
+                    let has_terms_of_service = !basic_config.terms_of_service_url.is_empty();
+                    move || has_terms_of_service
+                }>
+                    <a href=basic_config.terms_of_service_url.clone() target="_blank">
+                        {t!(i18n, shared.terms_of_service)}
+                    </a>
+                </Show>
+
+                <a href="https://github.com/mangocubed/mango3" target="_blank">
+                    {t!(i18n, shared.source_code)}
+                </a>
+            </nav>
+
+            <nav>
+                <div class="dropdown dropdown-top">
                     <button tabindex="0" type="button" class="btn btn-outline">
                         {current_lang_name}
                         <ChevronUpMini />

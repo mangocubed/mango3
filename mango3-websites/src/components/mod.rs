@@ -35,6 +35,15 @@ where
 }
 
 #[component]
+pub fn CurrentWebsite<VF, IV>(children: VF) -> impl IntoView
+where
+    IV: IntoView + 'static,
+    VF: Fn(WebsiteResp) -> IV + Send + Sync + 'static,
+{
+    view! { <CurrentWebsiteOpt children=move |website_opt| { website_opt.map(&children) } /> }
+}
+
+#[component]
 pub fn MetaDateTime(#[prop(into)] property: TextProp, content: DateTime<Utc>) -> impl IntoView {
     view! { <Meta property=property content=content.to_rfc3339_opts(SecondsFormat::Secs, true) /> }
 }

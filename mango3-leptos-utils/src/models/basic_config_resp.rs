@@ -5,6 +5,7 @@ use mango3_core::config::BasicConfig;
 
 #[derive(Clone, Default, Deserialize, Serialize)]
 pub struct BasicConfigResp {
+    pub about_url: String,
     assets_url: String,
     pub copyright: String,
     pub domain: String,
@@ -14,8 +15,10 @@ pub struct BasicConfigResp {
     pub login_url: String,
     pub my_account_url: String,
     pub new_website_url: String,
+    pub privacy_policy_url: String,
     pub register_url: String,
     pub studio_url: String,
+    pub terms_of_service_url: String,
     pub title: String,
 }
 
@@ -23,6 +26,7 @@ pub struct BasicConfigResp {
 impl From<BasicConfig> for BasicConfigResp {
     fn from(basic_config: BasicConfig) -> Self {
         Self {
+            about_url: basic_config.about_url.clone(),
             assets_url: basic_config.assets_url().to_string(),
             copyright: basic_config.copyright.clone(),
             domain: basic_config.domain.to_string(),
@@ -32,8 +36,10 @@ impl From<BasicConfig> for BasicConfigResp {
             login_url: basic_config.login_url().to_string(),
             my_account_url: basic_config.my_account_url().to_string(),
             new_website_url: basic_config.new_website_url().to_string(),
+            privacy_policy_url: basic_config.privacy_policy_url.clone(),
             register_url: basic_config.register_url().to_string(),
             studio_url: basic_config.studio_url().to_string(),
+            terms_of_service_url: basic_config.terms_of_service_url.clone(),
             title: basic_config.title,
         }
     }
