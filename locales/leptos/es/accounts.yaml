@@ -1,5 +1,6 @@
 accounts: Cuentas
 back_to_login: Volver a inicio de sesión
+by_submitting_this_form_you_agree_to_the_following: Al enviar este formulario, usted acepta lo siguiente
 failed_to_authenticate_user: Error al autenticar usuario
 failed_to_create_user: Error al crear usuario
 failed_to_send_password_reset_code: Error al enviar código de reinicio de contraseña

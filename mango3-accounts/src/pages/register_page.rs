@@ -4,6 +4,7 @@ use leptos_i18n::t_string;
 use mango3_leptos_utils::components::*;
 use mango3_leptos_utils::context::use_basic_config;
 use mango3_leptos_utils::i18n::{t, use_i18n};
+use mango3_leptos_utils::icons::InformationCircleOutlined;
 use mango3_leptos_utils::models::ActionFormResp;
 use mango3_leptos_utils::pages::GuestPage;
 
@@ -36,6 +37,11 @@ pub fn RegisterPage() -> impl IntoView {
     });
 
     let title = move || t_string!(i18n, shared.register);
+
+    let privacy_policy_url = basic_config.privacy_policy_url.clone();
+    let terms_of_service_url = basic_config.terms_of_service_url.clone();
+    let has_privacy_policy = !privacy_policy_url.is_empty();
+    let has_terms_of_service = !terms_of_service_url.is_empty();
 
     view! {
         <GuestPage title=title>
@@ -80,6 +86,43 @@ pub fn RegisterPage() -> impl IntoView {
                     name="country_alpha2"
                     error=error_country_alpha2
                 />
+
+                <Show when=move || {
+                    has_privacy_policy || has_terms_of_service
+                }>
+                    {
+                        let privacy_policy_url = privacy_policy_url.clone();
+                        let terms_of_service_url = terms_of_service_url.clone();
+                        move || {
+                            let privacy_policy_url = privacy_policy_url.clone();
+                            let terms_of_service_url = terms_of_service_url.clone();
+                            view! {
+                                <div role="alert" class="alert my-2">
+                                    <InformationCircleOutlined class="self-start my-2" />
+                                    <div>
+                                        <div class="font-bold">
+                                            {t!(i18n, accounts.by_submitting_this_form_you_agree_to_the_following)} ": "
+                                        </div>
+                                        <Show when=move || { has_privacy_policy }>
+                                            <div class="text-sm mt-1">
+                                                <a href=privacy_policy_url.clone() target="_blank">
+                                                    {t!(i18n, shared.privacy_policy)}
+                                                </a>
+                                            </div>
+                                        </Show>
+                                        <Show when=move || has_terms_of_service>
+                                            <div class="text-sm mt-1">
+                                                <a href=terms_of_service_url.clone() target="_blank">
+                                                    {t!(i18n, shared.terms_of_service)}
+                                                </a>
+                                            </div>
+                                        </Show>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    }
+                </Show>
 
                 <SubmitButton is_loading=server_action.pending() />
             </ActionForm>

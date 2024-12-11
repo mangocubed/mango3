@@ -20,8 +20,8 @@ pub fn AppProvider(children: Children) -> impl IntoView {
 
     view! {
         <Show when={
-            let google_ads_client = google_ads_client.clone();
-            move || !google_ads_client.is_empty()
+            let has_google_ads = !google_ads_client.is_empty();
+            move || has_google_ads
         }>
             <Script
                 async_="true"

@@ -1,5 +1,6 @@
 accounts: Accounts
 back_to_login: Back to login
+by_submitting_this_form_you_agree_to_the_following: By submitting this form, you agree to the following
 failed_to_authenticate_user: Failed to authenticate user
 failed_to_create_user: Failed to create user
 failed_to_get_invitation: Failed to get invitation

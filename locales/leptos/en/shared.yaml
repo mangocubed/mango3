@@ -1,3 +1,4 @@
+about_us: About us
 accept: Accept
 birthdate: Birthdate
 cancel: Cancel
@@ -37,8 +38,11 @@ one_year_ago: one year ago
 password: Password
 password_updated_successfully: Password updated successfully
 posts: Posts
+privacy_policy: Privacy policy
 register: Register
 remove: Remove
+source_code: Source code
 studio: Studio
 submit: Submit
+terms_of_service: Terms of service
 view_more: View more

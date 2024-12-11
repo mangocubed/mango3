@@ -1,3 +1,4 @@
+about_us: Acerca de nosotros
 accept: Aceptar
 birthdate: Fecha de nacimiento
 cancel: Cancelar
@@ -37,8 +38,11 @@ one_year_ago: hace un año
 password: Contraseña
 password_updated_successfully: Contraseña actualizada exitosamente
 posts: Posts
+privacy_policy: Política de privacidad
 register: Registrate
-remove: Remover
+remove: Removera
+source_code: Código fuente
 studio: Estudio
 submit: Enviar
+terms_of_service: Términos de servicio
 view_more: Ver más
