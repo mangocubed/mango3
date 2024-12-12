@@ -31,7 +31,7 @@ pub fn TopBar(
                     <BarsOutlined />
                 </button>
 
-                <div tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] p-2 shadow w-40">
+                <div tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] p-2 shadow w-48">
                     {items.clone()}
                 </div>
             </div>
@@ -62,7 +62,7 @@ pub fn TopBar(
 
                                                 <ul
                                                     tabindex="1"
-                                                    class="dropdown-content menu bg-base-100 rounded-box z-[1] p-2 shadow w-40"
+                                                    class="dropdown-content menu bg-base-100 rounded-box z-[1] p-2 shadow w-48"
                                                 >
                                                     <li>
                                                         <a href=basic_config

@@ -41,7 +41,7 @@ pub fn SelectedWebsiteDropdown() -> impl IntoView {
 
     view! {
         <div class="dropdown">
-            <button type="button" class="btn btn-outline">
+            <button type="button" class="btn btn-outline btn-block justify-start md:justify-center">
                 {move || match selected_website.get() {
                     Some(website) => {
                         Either::Left(
@@ -55,10 +55,10 @@ pub fn SelectedWebsiteDropdown() -> impl IntoView {
                     None => Either::Right(t!(i18n, studio.select)),
                 }}
 
-                <ChevronDownMini />
+                <ChevronDownMini class="hidden md:block" />
             </button>
 
-            <ul class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+            <ul class="md:dropdown-content md:menu bg-base-100 rounded-box z-[1] md:w-48 p-2 md:shadow">
                 <MyWebsitesInfiniteScroll let:website>
                     <li>
                         <a href=format!("/websites/{}", website.id)>
@@ -69,7 +69,7 @@ pub fn SelectedWebsiteDropdown() -> impl IntoView {
                 </MyWebsitesInfiniteScroll>
 
                 <li class="disabled">
-                    <hr class="bg-gray-500 border-none h-[2px] m-2 p-0" />
+                    <div class="divider m-0"></div>
                 </li>
 
                 <li>

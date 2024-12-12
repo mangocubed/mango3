@@ -10,11 +10,17 @@ mod not_found_page;
 pub use not_found_page::NotFoundPage;
 
 #[component]
-pub fn AuthenticatedPage(children: Children, #[prop(into)] title: TextProp) -> impl IntoView {
+pub fn AuthenticatedPage(
+    children: Children,
+    #[prop(into, optional)] class: String,
+    #[prop(into)] title: TextProp,
+) -> impl IntoView {
     view! {
         <RequireAuthentication />
 
-        <Page title=title>{children()}</Page>
+        <Page class=class title=title>
+            {children()}
+        </Page>
     }
 }
 
@@ -32,7 +38,7 @@ pub fn Page(
     children: Children,
     #[prop(into, optional)] id: Option<String>,
     #[prop(into)] title: TextProp,
-    #[prop(into, optional)] class: Option<String>,
+    #[prop(into, optional)] class: String,
 ) -> impl IntoView {
     let current_user_resource = use_current_user_resource();
 
