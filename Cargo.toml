@@ -36,7 +36,7 @@ leptos_meta = "0.7.0"
 leptos_router = "0.7.0"
 leptos-use = { version = "0.14.0", default-features = false }
 rust_iso3166 = "0.1.13"
-serde = { version = "1.0.215", features = ["derive"] }
+serde = { version = "1.0.216", features = ["derive"] }
 server_fn = "0.7.0"
 tokio = { version = "1.42.0", features = ["macros", "rt-multi-thread"] }
 uuid = { version = "1.11.0", features = ["serde", "v4"] }
