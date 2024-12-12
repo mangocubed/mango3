@@ -28,7 +28,7 @@ pub fn WebsiteTopBar() -> impl IntoView {
                                                 class="rounded"
                                                 src=website.icon_image_blob.map(|blob| blob.variant_url(42, 42, true))
                                             />
-                                            <span class="hidden md:inline">{website.name.clone()}</span>
+                                            <span>{website.name.clone()}</span>
                                         </a>
                                     },
                                 )

@@ -25,7 +25,7 @@ pub fn TopBar(
     };
 
     view! {
-        <div class="navbar bg-base-300 shadow-md py-0 gap-1">
+        <div class="navbar bg-base-300 shadow-md py-0 gap-2">
             <div class="dropdown md:hidden">
                 <button class="btn btn-ghost" tabindex="0">
                     <BarsOutlined />
