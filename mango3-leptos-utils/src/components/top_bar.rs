@@ -25,7 +25,7 @@ pub fn TopBar(
     };
 
     view! {
-        <div class="navbar bg-base-300 shadow-md py-0 gap-1">
+        <div class="navbar bg-base-300 shadow-md py-0 gap-2">
             <div class="dropdown md:hidden">
                 <button class="btn btn-ghost" tabindex="0">
                     <BarsOutlined />
@@ -54,7 +54,7 @@ pub fn TopBar(
                                     Either::Left(
                                         view! {
                                             <div class="dropdown dropdown-end">
-                                                <button class="btn btn-ghost p-1 pl-2" tabindex="1">
+                                                <button class="btn btn-ghost px-2" tabindex="1">
                                                     <UserTag user=user text_class="hidden md:block" />
 
                                                     <ChevronDownMini />

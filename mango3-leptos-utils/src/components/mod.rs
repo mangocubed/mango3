@@ -112,7 +112,7 @@ pub fn GoToMango3() -> impl IntoView {
     let i18n = use_i18n();
 
     view! {
-        <a class="btn btn-ghost btn-block p-1" href=basic_config.home_url.clone()>
+        <a class="btn btn-ghost btn-block px-2" href=basic_config.home_url.clone()>
             {t!(i18n, shared.go_to_title, title = basic_config.title.clone())}
         </a>
     }
