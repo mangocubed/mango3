@@ -32,9 +32,10 @@ pub fn App() -> impl IntoView {
                     <AppTitle suffix=suffix />
 
                     <Router>
-                        <TopBar right_items=move || view! { <GoToMango3 /> }>
-                            <Brand href="/" suffix=suffix />
-
+                        <TopBar
+                            brand=move || view! { <Brand href="/" suffix=suffix /> }
+                            right_items=move || view! { <GoToMango3 /> }
+                        >
                             <SelectedWebsiteDropdown />
                         </TopBar>
 

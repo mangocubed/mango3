@@ -37,20 +37,16 @@ pub fn App() -> impl IntoView {
                     <Meta name="copyright" content=basic_config.copyright.clone() />
 
                     <Router>
-                        <TopBar>
-                            <Brand href="/" />
+                        <TopBar brand=move || view! { <Brand href="/" /> }>
+                            <ul class="menu md:menu-horizontal">
+                                <li>
+                                    <a href="/posts">{t!(i18n, shared.posts)}</a>
+                                </li>
 
-                            <a class="btn btn-ghost" href="/">
-                                {t!(i18n, shared.home)}
-                            </a>
-
-                            <a class="btn btn-ghost" href="/posts">
-                                {t!(i18n, shared.posts)}
-                            </a>
-
-                            <a class="btn btn-ghost" href="/websites">
-                                {t!(i18n, home.websites)}
-                            </a>
+                                <li>
+                                    <a href="/websites">{t!(i18n, home.websites)}</a>
+                                </li>
+                            </ul>
                         </TopBar>
 
                         <main class="grow m-6">

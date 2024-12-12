@@ -11,6 +11,7 @@ mod alert_dialog;
 mod app_provider;
 mod authentication;
 mod bottom_bar;
+mod brand;
 mod confirmation_dialog;
 mod copyable_text;
 mod country_field;
@@ -36,6 +37,7 @@ pub use alert_dialog::AlertDialog;
 pub use app_provider::AppProvider;
 pub use authentication::{RequireAuthentication, RequireNoAuthentication};
 pub use bottom_bar::BottomBar;
+pub use brand::Brand;
 pub use confirmation_dialog::ConfirmationDialog;
 pub use copyable_text::CopyableText;
 pub use country_field::CountryField;
@@ -92,18 +94,6 @@ pub fn AppTitle(#[prop(optional, into)] suffix: Option<TextProp>) -> impl IntoVi
 }
 
 #[component]
-pub fn Brand(#[prop(into)] href: String, #[prop(optional, into)] suffix: Option<TextProp>) -> impl IntoView {
-    let basic_config = use_basic_config();
-
-    view! {
-        <a class="btn btn-ghost text-xl" href=href>
-            <img class="h-[36px]" src=basic_config.asset_url("logo.svg") alt=basic_config.title.clone() />
-            {move || suffix.as_ref().map(|suffix| suffix.get())}
-        </a>
-    }
-}
-
-#[component]
 pub fn FaviconLink(#[prop(into, optional)] href: Option<String>) -> impl IntoView {
     let basic_config = use_basic_config();
 
@@ -122,7 +112,7 @@ pub fn GoToMango3() -> impl IntoView {
     let i18n = use_i18n();
 
     view! {
-        <a class="btn btn-ghost" href=basic_config.home_url.clone()>
+        <a class="btn btn-ghost btn-block p-1" href=basic_config.home_url.clone()>
             {t!(i18n, shared.go_to_title, title = basic_config.title.clone())}
         </a>
     }

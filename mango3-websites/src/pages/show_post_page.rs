@@ -91,7 +91,7 @@ pub fn ShowPostPage() -> impl IntoView {
                                                 </div>
                                             </div>
 
-                                            <div class="prose max-w-none" inner_html=post.content_html />
+                                            <div class="prose max-w-none break-words" inner_html=post.content_html />
                                         </div>
                                     </div>
                                 </Page>

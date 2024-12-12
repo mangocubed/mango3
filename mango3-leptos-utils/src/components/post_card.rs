@@ -62,7 +62,7 @@ pub fn PostCard(post: PostPreviewResp, #[prop(into, optional)] actions: ViewFn) 
                     </div>
                 </div>
 
-                <a href=href class="card-text-preview">
+                <a href=href class="card-text-preview break-words">
                     <div class="prose max-w-none" inner_html=post.content_preview_html />
                     <div class="card-text-preview-overlay" />
                 </a>

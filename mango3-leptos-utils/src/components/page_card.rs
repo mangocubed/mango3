@@ -57,7 +57,7 @@ pub fn PageCard(page: PagePreviewResp, #[prop(into, optional)] actions: ViewFn) 
                     }}
                 </div>
 
-                <a href=href class="card-text-preview">
+                <a href=href class="card-text-preview break-words">
                     <div class="prose max-w-none" inner_html=page.content_preview_html />
                     <div class="card-text-preview-overlay" />
                 </a>

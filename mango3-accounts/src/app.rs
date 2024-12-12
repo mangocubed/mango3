@@ -28,9 +28,11 @@ pub fn App() -> impl IntoView {
                     <AppTitle suffix=suffix />
 
                     <Router>
-                        <TopBar right_items=move || view! { <GoToMango3 /> } show_user_menu=false>
-                            <Brand href="/login" suffix=suffix />
-                        </TopBar>
+                        <TopBar
+                            brand=move || view! { <Brand href="/login" suffix=suffix /> }
+                            right_items=move || view! { <GoToMango3 /> }
+                            show_user_menu=false
+                        />
 
                         <main class="grow m-6">
                             <Routes fallback=NotFoundPage>

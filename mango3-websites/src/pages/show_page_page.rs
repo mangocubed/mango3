@@ -85,7 +85,7 @@ pub fn ShowPagePage() -> impl IntoView {
                                                 }}
                                             </div>
 
-                                            <div class="prose max-w-none" inner_html=page.content_html />
+                                            <div class="prose max-w-none break-words" inner_html=page.content_html />
                                         </div>
                                     </div>
                                 </Page>
