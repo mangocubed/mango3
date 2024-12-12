@@ -2,38 +2,39 @@ name: Builds
 
 on:
     workflow_call:
-        skip_accounts:
-            default: false
-            required: false
-            type: boolean
-        skip_cli:
-            default: false
-            required: false
-            type: boolean
-        skip_home:
-            default: false
-            required: false
-            type: boolean
-        skip_monitor:
-            default: false
-            required: false
-            type: boolean
-        skip_my_account:
-            default: false
-            required: false
-            type: boolean
-        skip_studio:
-            default: false
-            required: false
-            type: boolean
-        skip_uploads:
-            default: false
-            required: false
-            type: boolean
-        skip_websites:
-            default: false
-            required: false
-            type: boolean
+        inputs:
+            skip_accounts:
+                default: false
+                required: false
+                type: boolean
+            skip_cli:
+                default: false
+                required: false
+                type: boolean
+            skip_home:
+                default: false
+                required: false
+                type: boolean
+            skip_monitor:
+                default: false
+                required: false
+                type: boolean
+            skip_my_account:
+                default: false
+                required: false
+                type: boolean
+            skip_studio:
+                default: false
+                required: false
+                type: boolean
+            skip_uploads:
+                default: false
+                required: false
+                type: boolean
+            skip_websites:
+                default: false
+                required: false
+                type: boolean
 
 env:
     CARGO_TERM_COLOR: always
