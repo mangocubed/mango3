@@ -13,7 +13,8 @@ pub fn Brand(#[prop(into)] href: String, #[prop(optional, into)] suffix: Option<
                 <source media="(min-width: 768px)" srcset=basic_config.asset_url("logo.svg") />
                 <img alt=basic_config.title.clone() class="h-[36px]" src=basic_config.asset_url("icon.svg") />
             </picture>
-            <span>{move || suffix.as_ref().map(|suffix| suffix.get())}</span>
+
+            {move || suffix.as_ref().map(|suffix| suffix.get())}
         </a>
     }
 }
