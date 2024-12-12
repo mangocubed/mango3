@@ -19,7 +19,8 @@ test("should register a new user", async ({ page }) => {
     await page.getByLabel("Full name").fill(faker.person.fullName());
     await page.getByLabel("Birthdate").fill(faker.date.birthdate().toISOString().split("T")[0]);
     await page.getByLabel("Country").selectOption(faker.location.countryCode());
-    await page.getByText("Submit").click();
+
+    await page.getByRole("button", { name: "Submit" }).click();
 
     await expect(page.getByText("User created successfully")).toBeVisible();
 
