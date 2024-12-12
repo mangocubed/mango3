@@ -68,54 +68,52 @@ pub fn ShowParentPage() -> impl IntoView {
                     (format!("{home_path}/edit"), t_string!(i18n, studio.edit), vec![]),
                 ];
                 Either::Left(
-
                     view! {
-                        <AuthenticatedPage title=move || {
-                            format!("{} > {}", t_string!(i18n, studio.my_websites), website_name)
-                        }>
-                            <div class="flex grow">
-                                <ul class="menu bg-base-200 rounded-box w-56">
-                                    <For
-                                        each=menu_items
-                                        key=|(href, _, _)| href.clone()
-                                        children=move |(href, label, submenu_items)| {
-                                            let href_clone = href.clone();
-                                            let submenu_items_clone = submenu_items.clone();
-                                            let is_active = Memo::new(move |_| {
-                                                location.pathname.get() == href_clone.clone()
-                                            });
-                                            let is_dropdown = RwSignal::new(!submenu_items.is_empty());
-                                            let show_submenu = Memo::new(move |_| {
-                                                is_active.get()
-                                                    || submenu_items_clone
-                                                        .iter()
-                                                        .any(|(href, _)| location.pathname.get() == *href)
-                                            });
-                                            view! {
-                                                <li>
-                                                    <a
-                                                        class:active=is_active
-                                                        class:menu-dropdown-toggle=is_dropdown
-                                                        class:menu-dropdown-show=show_submenu
-                                                        href=href
-                                                    >
-                                                        {label}
-                                                    </a>
+                        <AuthenticatedPage
+                            class="flex grow"
+                            title=move || { format!("{} > {}", t_string!(i18n, studio.my_websites), website_name) }
+                        >
+                            <ul class="menu bg-base-200 rounded-box w-56">
+                                <For
+                                    each=menu_items
+                                    key=|(href, _, _)| href.clone()
+                                    children=move |(href, label, submenu_items)| {
+                                        let href_clone = href.clone();
+                                        let submenu_items_clone = submenu_items.clone();
+                                        let is_active = Memo::new(move |_| {
+                                            location.pathname.get() == href_clone.clone()
+                                        });
+                                        let is_dropdown = RwSignal::new(!submenu_items.is_empty());
+                                        let show_submenu = Memo::new(move |_| {
+                                            is_active.get()
+                                                || submenu_items_clone
+                                                    .iter()
+                                                    .any(|(href, _)| location.pathname.get() == *href)
+                                        });
+                                        view! {
+                                            <li>
+                                                <a
+                                                    class:active=is_active
+                                                    class:menu-dropdown-toggle=is_dropdown
+                                                    class:menu-dropdown-show=show_submenu
+                                                    href=href
+                                                >
+                                                    {label}
+                                                </a>
 
-                                                    <Submenu
-                                                        show=show_submenu
-                                                        items=submenu_items
-                                                        pathname=location.pathname
-                                                    />
-                                                </li>
-                                            }
+                                                <Submenu
+                                                    show=show_submenu
+                                                    items=submenu_items
+                                                    pathname=location.pathname
+                                                />
+                                            </li>
                                         }
-                                    />
-                                </ul>
+                                    }
+                                />
+                            </ul>
 
-                                <div class="grow ml-4">
-                                    <Outlet />
-                                </div>
+                            <div class="grow ml-4">
+                                <Outlet />
                             </div>
                         </AuthenticatedPage>
                     },

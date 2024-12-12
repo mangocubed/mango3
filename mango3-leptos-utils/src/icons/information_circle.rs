@@ -9,7 +9,7 @@ pub fn InformationCircleOutlined(#[prop(optional, into)] class: &'static str) ->
             viewBox="0 0 24 24"
             stroke-width="1.5"
             stroke="currentColor"
-            class=format!("size-6 {}", class)
+            class=format!("size-6 {class}")
         >
             <path
                 stroke-linecap="round"
