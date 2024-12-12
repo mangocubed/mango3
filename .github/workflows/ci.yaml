@@ -107,14 +107,14 @@ jobs:
                           - 'migrations/*.sql'
 
     code_analysis:
-        needs: [changes]
+        needs: changes
         uses: ./.github/workflows/code_analysis.yaml
         with:
             skip_rust: ${{ needs.changes.outputs.rust != 'true' }}
             skip_sql: ${{ needs.changes.outputs.sql != 'true' }}
 
     builds:
-        needs: code_analysis
+        needs: [changes, code_analysis]
         uses: ./.github/workflows/builds.yaml
         with:
             skip_accounts: ${{ needs.changes.outputs.accounts != 'true' }}
@@ -127,7 +127,7 @@ jobs:
             skip_websites: ${{ needs.changes.outputs.websites != 'true' }}
 
     tests:
-        needs: builds
+        needs: [changes, builds]
         uses: ./.github/workflows/tests.yaml
         with:
             skip_unit: ${{ needs.changes.outputs.rust != 'true' }}
