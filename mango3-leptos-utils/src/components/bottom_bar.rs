@@ -68,11 +68,11 @@ pub fn BottomBar(#[prop(optional, into)] aside_items: ViewFnOnce) -> impl IntoVi
 
             <nav>
                 <div class="dropdown dropdown-top">
-                    <button tabindex="0" type="button" class="btn btn-outline">
+                    <button tabindex="2" type="button" class="btn btn-outline">
                         {current_lang_name}
                         <ChevronUpMini />
                     </button>
-                    <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+                    <ul tabindex="2" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-28 p-2 shadow">
                         <For each=available_langs key=|lang| lang.0 let:lang>
                             <li>
                                 <a on:click=move |_| i18n.set_locale(lang.1)>{lang.0}</a>

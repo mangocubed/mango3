@@ -1,5 +1,6 @@
 use leptos::prelude::*;
 
+mod bars;
 mod chevron;
 mod eye;
 mod information_circle;
@@ -7,6 +8,7 @@ mod link;
 mod plus;
 mod trash;
 
+pub use bars::BarsOutlined;
 pub use chevron::{ChevronDownMini, ChevronUpMini};
 pub use eye::{EyeOutlined, EyeSlashOutlined};
 pub use information_circle::InformationCircleOutlined;

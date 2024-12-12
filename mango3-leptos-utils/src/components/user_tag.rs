@@ -3,7 +3,7 @@ use leptos::{either::Either, prelude::*};
 use crate::models::UserPreviewResp;
 
 #[component]
-pub fn UserTag(#[prop(into)] user: UserPreviewResp) -> impl IntoView {
+pub fn UserTag(#[prop(into)] user: UserPreviewResp, #[prop(into, optional)] text_class: &'static str) -> impl IntoView {
     view! {
         <div class="flex gap-2 items-center">
             {move || {
@@ -28,7 +28,7 @@ pub fn UserTag(#[prop(into)] user: UserPreviewResp) -> impl IntoView {
                         },
                     )
                 }
-            }} <div class="text-left">
+            }} <div class=format!("text-left ml-2 {text_class}")>
                 <div class="mb-1">{user.display_name}</div>
                 <div class="font-bold">"@"{user.username}</div>
             </div>

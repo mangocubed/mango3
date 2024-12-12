@@ -13,54 +13,55 @@ pub fn WebsiteTopBar() -> impl IntoView {
     let navigation_items_resource = Resource::new_blocking(|| (), |_| get_all_navigation_items());
 
     view! {
-        <TopBar right_items=move || view! { <GoToMango3 /> }>
-            <CurrentWebsiteOpt children=move |website| {
-                let basic_config = use_basic_config();
-                match website {
-                    Some(website) => {
-                        Either::Left(
-                            view! {
-                                <a class="btn btn-ghost text-xl" href="/">
-                                    <img
-                                        alt=website.name.clone()
-                                        class="rounded"
-                                        src=website.icon_image_blob.map(|blob| blob.variant_url(42, 42, true))
-                                    />
-                                    {website.name}
-                                </a>
-
-                                <Suspense>
-                                    {move || Suspend::new(async move {
-                                        navigation_items_resource
-                                            .get()
-                                            .and_then(|result| result.ok())
-                                            .map(|items| {
-                                                view! {
-                                                    <ul class="menu menu-horizontal">
-                                                        <For
-                                                            each=move || items.clone()
-                                                            key=|item| item.id.clone()
-                                                            let:item
-                                                        >
-                                                            <li>
-                                                                <a href=item.url>{item.title}</a>
-                                                            </li>
-                                                        </For>
-
-                                                    </ul>
-                                                }
-                                            })
-                                    })}
-                                </Suspense>
-                            },
-                        )
-                    }
-                    None => {
-                        let home_url = basic_config.home_url.clone();
-                        Either::Right(view! { <Brand href=home_url.clone() /> })
-                    }
+        <TopBar
+            brand=move || {
+                view! {
+                    <CurrentWebsiteOpt children=move |website| {
+                        let basic_config = use_basic_config();
+                        match website {
+                            Some(website) => {
+                                Either::Left(
+                                    view! {
+                                        <a class="btn btn-ghost text-xl p-1" href="/" title=website.name.clone()>
+                                            <img
+                                                alt=website.name.clone()
+                                                class="rounded"
+                                                src=website.icon_image_blob.map(|blob| blob.variant_url(42, 42, true))
+                                            />
+                                            <span class="hidden md:inline">{website.name.clone()}</span>
+                                        </a>
+                                    },
+                                )
+                            }
+                            None => {
+                                let home_url = basic_config.home_url.clone();
+                                Either::Right(view! { <Brand href=home_url.clone() /> })
+                            }
+                        }
+                    } />
                 }
-            } />
+            }
+            right_items=move || view! { <GoToMango3 /> }
+        >
+            <Suspense>
+                {move || Suspend::new(async move {
+                    navigation_items_resource
+                        .get()
+                        .and_then(|result| result.ok())
+                        .map(|items| {
+                            view! {
+                                <ul class="menu md:menu-horizontal">
+                                    <For each=move || items.clone() key=|item| item.id.clone() let:item>
+                                        <li>
+                                            <a href=item.url>{item.title}</a>
+                                        </li>
+                                    </For>
+
+                                </ul>
+                            }
+                        })
+                })}
+            </Suspense>
         </TopBar>
     }
 }
