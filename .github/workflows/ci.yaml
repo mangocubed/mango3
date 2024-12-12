@@ -110,29 +110,29 @@ jobs:
         needs: changes
         uses: ./.github/workflows/code_analysis.yaml
         with:
-            skip_rust: ${{ needs.changes.outputs.rust != 'true' }}
-            skip_sql: ${{ needs.changes.outputs.sql != 'true' }}
+            skip_rust: ${{ needs.changes.outputs.rust == 'false' }}
+            skip_sql: ${{ needs.changes.outputs.sql == 'false' }}
 
     builds:
         needs: [changes, code_analysis]
         uses: ./.github/workflows/builds.yaml
         with:
-            skip_accounts: ${{ needs.changes.outputs.accounts != 'true' }}
-            skip_cli: ${{ needs.changes.outputs.cli != 'true' }}
-            skip_home: ${{ needs.changes.outputs.home != 'true' }}
-            skip_monitor: ${{ needs.changes.outputs.monitor != 'true' }}
-            skip_my_account: ${{ needs.changes.outputs.my_account != 'true' }}
-            skip_studio: ${{ needs.changes.outputs.studio != 'true' }}
-            skip_uploads: ${{ needs.changes.outputs.uploads != 'true' }}
-            skip_websites: ${{ needs.changes.outputs.websites != 'true' }}
+            skip_accounts: ${{ needs.changes.outputs.accounts == 'false' }}
+            skip_cli: ${{ needs.changes.outputs.cli == 'false' }}
+            skip_home: ${{ needs.changes.outputs.home == 'false' }}
+            skip_monitor: ${{ needs.changes.outputs.monitor == 'false' }}
+            skip_my_account: ${{ needs.changes.outputs.my_account == 'false' }}
+            skip_studio: ${{ needs.changes.outputs.studio == 'false' }}
+            skip_uploads: ${{ needs.changes.outputs.uploads == 'false' }}
+            skip_websites: ${{ needs.changes.outputs.websites == 'false' }}
 
     tests:
         needs: [changes, builds]
         uses: ./.github/workflows/tests.yaml
         with:
-            skip_unit: ${{ needs.changes.outputs.rust != 'true' }}
-            skip_accounts: ${{ needs.changes.outputs.accounts != 'true' }}
-            skip_home: ${{ needs.changes.outputs.home != 'true' }}
-            skip_my_account: ${{ needs.changes.outputs.my_account != 'true' }}
-            skip_studio: ${{ needs.changes.outputs.studio != 'true' }}
-            skip_websites: ${{ needs.changes.outputs.websites != 'true' }}
+            skip_unit: ${{ needs.changes.outputs.rust == 'false' }}
+            skip_accounts: ${{ needs.changes.outputs.accounts == 'false' }}
+            skip_home: ${{ needs.changes.outputs.home == 'false' }}
+            skip_my_account: ${{ needs.changes.outputs.my_account == 'false' }}
+            skip_studio: ${{ needs.changes.outputs.studio == 'false' }}
+            skip_websites: ${{ needs.changes.outputs.websites == 'false' }}
