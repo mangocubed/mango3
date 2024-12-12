@@ -69,7 +69,7 @@ jobs:
               if: ${{ inputs.skip_accounts == false }}
               run: cargo leptos build --release --project mango3-accounts
             - name: Build Home
-              if: ${{ inputs.skip_accounts == false }}
+              if: ${{ inputs.skip_home == false }}
               run: cargo leptos build --release --project mango3-home
             - name: Build My Account
               if: ${{ inputs.skip_my_account == false}}

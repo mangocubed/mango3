@@ -39,6 +39,12 @@ jobs:
               with:
                   base: main
                   filters: |
+                      css_js:
+                          - 'js/*'
+                          - 'style/*'
+                          - 'package.json'
+                          - 'package-lock.json'
+                          - 'tailwind.config.js'
                       rust:
                           - '.clippy.toml'
                           - '.rustfmt.toml'
@@ -52,59 +58,47 @@ jobs:
                       sql:
                           - '.sqlfluff'
                           - 'migrations/*.sql'
+                      workspace:
+                          - 'Cargo.lock'
+                          - 'Cargo.toml'
+                          - 'mango3-core/**'
+                          - 'migrations/*.sql'
                       accounts:
-                          - 'Cargo.lock'
-                          - 'Cargo.toml'
-                          - 'mango3-core/**'
                           - 'mango3-leptos-utils/**'
-                          - 'mango3-accounts/**'
-                          - 'migrations/*.sql'
+                          - 'mango3-accounts/src/**.rs'
+                          - 'mango3-accounts/Cargo.toml'
+                      accounts_e2e:
+                          - 'mango3-accounts/end2end/**'
                       cli:
-                          - 'Cargo.lock'
-                          - 'Cargo.toml'
-                          - 'mango3-core/**'
                           - 'mango3-cli/**'
-                          - 'migrations/*.sql'
                       home:
-                          - 'Cargo.lock'
-                          - 'Cargo.toml'
-                          - 'mango3-core/**'
                           - 'mango3-leptos-utils/**'
-                          - 'mango3-home/**'
-                          - 'migrations/*.sql'
+                          - 'mango3-home/src/**'
+                          - 'mango3-home/Cargo.toml'
+                      home_e2e:
+                          - 'mango3-home/end2end/**'
                       monitor:
-                          - 'Cargo.lock'
-                          - 'Cargo.toml'
-                          - 'mango3-core/**'
                           - 'mango3-monitor/**'
-                          - 'migrations/*.sql'
                       my_account:
-                          - 'Cargo.lock'
-                          - 'Cargo.toml'
-                          - 'mango3-core/**'
                           - 'mango3-leptos-utils/**'
-                          - 'mango3-my-account/**'
-                          - 'migrations/*.sql'
+                          - 'mango3-my-account/src/**'
+                          - 'mango3-my-account/Cargo.toml'
+                      my_account_e2e:
+                          - 'mango3-my-account/end2end/**'
                       studio:
-                          - 'Cargo.lock'
-                          - 'Cargo.toml'
-                          - 'mango3-core/**'
                           - 'mango3-leptos-utils/**'
-                          - 'mango3-studio/**'
-                          - 'migrations/*.sql'
+                          - 'mango3-studio/src/**'
+                          - 'mango3-studio/Cargo.toml'
+                      studio_e2e:
+                          - 'mango3-studio/end2end/**'
                       uploads:
-                          - 'Cargo.lock'
-                          - 'Cargo.toml'
-                          - 'mango3-core/**'
                           - 'mango3-uploads/**'
-                          - 'migrations/*.sql'
                       websites:
-                          - 'Cargo.lock'
-                          - 'Cargo.toml'
-                          - 'mango3-core/**'
                           - 'mango3-leptos-utils/**'
-                          - 'mango3-websites/**'
-                          - 'migrations/*.sql'
+                          - 'mango3-websites/src/**'
+                          - 'mango3-websites/Cargo.toml'
+                      websites_e2e:
+                          - 'mango3-websites/end2end/**'
 
     code_analysis:
         needs: changes
@@ -118,14 +112,14 @@ jobs:
         if: ${{ success() || needs.code_analysis.result == 'skipped' }}
         uses: ./.github/workflows/builds.yaml
         with:
-            skip_accounts: ${{ needs.changes.outputs.accounts == 'false' }}
-            skip_cli: ${{ needs.changes.outputs.cli == 'false' }}
-            skip_home: ${{ needs.changes.outputs.home == 'false' }}
-            skip_monitor: ${{ needs.changes.outputs.monitor == 'false' }}
-            skip_my_account: ${{ needs.changes.outputs.my_account == 'false' }}
-            skip_studio: ${{ needs.changes.outputs.studio == 'false' }}
-            skip_uploads: ${{ needs.changes.outputs.uploads == 'false' }}
-            skip_websites: ${{ needs.changes.outputs.websites == 'false' }}
+            skip_accounts: ${{ needs.changes.outputs.workspace == 'false' && needs.changes.outputs.accounts == 'false' }}
+            skip_cli: ${{ needs.changes.outputs.workspace == 'false' && needs.changes.outputs.cli == 'false' }}
+            skip_home: ${{ needs.changes.outputs.workspace == 'false' && needs.changes.outputs.home == 'false' }}
+            skip_monitor: ${{ needs.changes.outputs.workspace == 'false' && needs.changes.outputs.monitor == 'false' }}
+            skip_my_account: ${{ needs.changes.outputs.workspace == 'false' && needs.changes.outputs.my_account == 'false' }}
+            skip_studio: ${{ needs.changes.outputs.workspace == 'false' && needs.changes.outputs.studio == 'false' }}
+            skip_uploads: ${{ needs.changes.outputs.workspace == 'false' && needs.changes.outputs.uploads == 'false' }}
+            skip_websites: ${{ needs.changes.outputs.workspace == 'false' && needs.changes.outputs.websites == 'false' }}
 
     tests:
         needs: [changes, builds]
@@ -133,8 +127,8 @@ jobs:
         uses: ./.github/workflows/tests.yaml
         with:
             skip_unit: ${{ needs.changes.outputs.rust == 'false' }}
-            skip_accounts: ${{ needs.changes.outputs.accounts == 'false' }}
-            skip_home: ${{ needs.changes.outputs.home == 'false' }}
-            skip_my_account: ${{ needs.changes.outputs.my_account == 'false' }}
-            skip_studio: ${{ needs.changes.outputs.studio == 'false' }}
-            skip_websites: ${{ needs.changes.outputs.websites == 'false' }}
+            skip_accounts_e2e: ${{ needs.changes.outputs.css_js == 'false' && needs.changes.outputs.workspace == 'false' && needs.changes.outputs.accounts == 'false' && needs.changes.outputs.accounts_e2e == 'false' }}
+            skip_home_e2e: ${{ needs.changes.outputs.css_js == 'false' && needs.changes.outputs.workspace == 'false' && needs.changes.outputs.css_js == 'false' && needs.changes.outputs.workspace == 'false' && needs.changes.outputs.home == 'false' && needs.changes.outputs.home_e2e == 'false' }}
+            skip_my_account_e2e: ${{ needs.changes.outputs.css_js == 'false' && needs.changes.outputs.workspace == 'false' && needs.changes.outputs.my_account == 'false' && needs.changes.outputs.my_account_e2e == 'false' }}
+            skip_studio_e2e: ${{ needs.changes.outputs.css_js == 'false' && needs.changes.outputs.workspace == 'false' && needs.changes.outputs.studio == 'false' && needs.changes.outputs.studio_e2e == 'false' }}
+            skip_websites_e2e: ${{ needs.changes.outputs.css_js == 'false' && needs.changes.outputs.workspace == 'false' && needs.changes.outputs.websites == 'false' && needs.changes.outputs.websites_e2e == 'false' }}
