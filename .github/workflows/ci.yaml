@@ -3,17 +3,136 @@ name: CI
 on:
     push:
         branches: [main]
+        paths-ignore:
+            - "assets/*"
+            - "config/*"
+            - "*.md"
+            - LICENSE
     pull_request:
         branches: [main]
+        paths-ignore:
+            - "assets/*"
+            - "config/*"
+            - "*.md"
+            - LICENSE
 
 jobs:
+    changes:
+        runs-on: ubuntu-24.04
+        name: Check changes
+        outputs:
+            rust: ${{ steps.filter.outputs.rust }}
+            sql: ${{ steps.filter.outputs.sql }}
+            accounts: ${{ steps.filter.outputs.accounts }}
+            cli: ${{ steps.filter.outputs.cli }}
+            home: ${{ steps.filter.outputs.home }}
+            monitor: ${{ steps.filter.outputs.monitor }}
+            my_account: ${{ steps.filter.outputs.my_account }}
+            studio: ${{ steps.filter.outputs.studio }}
+            uploads: ${{ steps.filter.outputs.uploads }}
+            websites: ${{ steps.filter.outputs.websites }}
+        steps:
+            - uses: actions/checkout@v4
+              name: Determine changed files
+            - uses: dorny/paths-filter@v3
+              id: filter
+              with:
+                  base: main
+                  filters: |
+                      rust:
+                          - '.clippy.toml'
+                          - '.rustfmt.toml'
+                          - 'leptosfmt.toml'
+                          - 'rust-toolchain.toml'
+                          - 'locales/**'
+                          - '**.rs'
+                          - 'Cargo.lock'
+                          - 'Cargo.toml'
+                          - '*/Cargo.toml'
+                      sql:
+                          - '.sqlfluff'
+                          - 'migrations/*.sql'
+                      accounts:
+                          - 'Cargo.lock'
+                          - 'Cargo.toml'
+                          - 'mango3-core/**'
+                          - 'mango3-leptos-utils/**'
+                          - 'mango3-accounts/**'
+                          - 'migrations/*.sql'
+                      cli:
+                          - 'Cargo.lock'
+                          - 'Cargo.toml'
+                          - 'mango3-core/**'
+                          - 'mango3-cli/**'
+                          - 'migrations/*.sql'
+                      home:
+                          - 'Cargo.lock'
+                          - 'Cargo.toml'
+                          - 'mango3-core/**'
+                          - 'mango3-leptos-utils/**'
+                          - 'mango3-home/**'
+                          - 'migrations/*.sql'
+                      monitor:
+                          - 'Cargo.lock'
+                          - 'Cargo.toml'
+                          - 'mango3-core/**'
+                          - 'mango3-monitor/**'
+                          - 'migrations/*.sql'
+                      my_account:
+                          - 'Cargo.lock'
+                          - 'Cargo.toml'
+                          - 'mango3-core/**'
+                          - 'mango3-leptos-utils/**'
+                          - 'mango3-my-account/**'
+                          - 'migrations/*.sql'
+                      studio:
+                          - 'Cargo.lock'
+                          - 'Cargo.toml'
+                          - 'mango3-core/**'
+                          - 'mango3-leptos-utils/**'
+                          - 'mango3-studio/**'
+                          - 'migrations/*.sql'
+                      uploads:
+                          - 'Cargo.lock'
+                          - 'Cargo.toml'
+                          - 'mango3-core/**'
+                          - 'mango3-uploads/**'
+                          - 'migrations/*.sql'
+                      websites:
+                          - 'Cargo.lock'
+                          - 'Cargo.toml'
+                          - 'mango3-core/**'
+                          - 'mango3-leptos-utils/**'
+                          - 'mango3-websites/**'
+                          - 'migrations/*.sql'
+
     code_analysis:
+        needs: [changes]
         uses: ./.github/workflows/code_analysis.yaml
+        with:
+            skip_rust: ${{ needs.changes.outputs.rust != 'true' }}
+            skip_sql: ${{ needs.changes.outputs.sql != 'true' }}
 
     builds:
         needs: code_analysis
         uses: ./.github/workflows/builds.yaml
+        with:
+            skip_accounts: ${{ needs.changes.outputs.accounts != 'true' }}
+            skip_cli: ${{ needs.changes.outputs.cli != 'true' }}
+            skip_home: ${{ needs.changes.outputs.home != 'true' }}
+            skip_monitor: ${{ needs.changes.outputs.monitor != 'true' }}
+            skip_my_account: ${{ needs.changes.outputs.my_account != 'true' }}
+            skip_studio: ${{ needs.changes.outputs.studio != 'true' }}
+            skip_uploads: ${{ needs.changes.outputs.uploads != 'true' }}
+            skip_websites: ${{ needs.changes.outputs.websites != 'true' }}
 
     tests:
         needs: builds
         uses: ./.github/workflows/tests.yaml
+        with:
+            skip_unit: ${{ needs.changes.outputs.rust != 'true' }}
+            skip_accounts: ${{ needs.changes.outputs.accounts != 'true' }}
+            skip_home: ${{ needs.changes.outputs.home != 'true' }}
+            skip_my_account: ${{ needs.changes.outputs.my_account != 'true' }}
+            skip_studio: ${{ needs.changes.outputs.studio != 'true' }}
+            skip_websites: ${{ needs.changes.outputs.websites != 'true' }}

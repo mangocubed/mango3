@@ -16,7 +16,7 @@ testAsUser("should create a new post", async ({ page }) => {
 
     await expect(page.getByText("Website created successfully")).toBeVisible();
 
-    await page.getByText("Ok").click();
+    await page.getByRole("button", { name: "Ok" }).click();
 
     await expect(page.locator("h2")).toHaveText("My websites");
 
