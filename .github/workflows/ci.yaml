@@ -23,14 +23,21 @@ jobs:
         outputs:
             rust: ${{ steps.filter.outputs.rust }}
             sql: ${{ steps.filter.outputs.sql }}
+            e2e: ${{ steps.filter.outputs.e2e }}
+            workspace: ${{ steps.filter.outputs.workspace }}
             accounts: ${{ steps.filter.outputs.accounts }}
+            accounts_e2e: ${{ steps.filter.outputs.accounts_e2e }}
             cli: ${{ steps.filter.outputs.cli }}
             home: ${{ steps.filter.outputs.home }}
+            home_e2e: ${{ steps.filter.outputs.home_e2e }}
             monitor: ${{ steps.filter.outputs.monitor }}
             my_account: ${{ steps.filter.outputs.my_account }}
+            my_account_e2e: ${{ steps.filter.outputs.my_account_e2e }}
             studio: ${{ steps.filter.outputs.studio }}
+            studio_e2e: ${{ steps.filter.outputs.studio_e2e }}
             uploads: ${{ steps.filter.outputs.uploads }}
             websites: ${{ steps.filter.outputs.websites }}
+            websites_e2e: ${{ steps.filter.outputs.websites_e2e }}
         steps:
             - uses: actions/checkout@v4
               name: Determine changed files
@@ -39,12 +46,6 @@ jobs:
               with:
                   base: main
                   filters: |
-                      css_js:
-                          - 'js/*'
-                          - 'style/*'
-                          - 'package.json'
-                          - 'package-lock.json'
-                          - 'tailwind.config.js'
                       rust:
                           - '.clippy.toml'
                           - '.rustfmt.toml'
@@ -58,6 +59,12 @@ jobs:
                       sql:
                           - '.sqlfluff'
                           - 'migrations/*.sql'
+                      e2e:
+                          - 'js/*'
+                          - 'style/*'
+                          - 'package.json'
+                          - 'package-lock.json'
+                          - 'tailwind.config.js'
                       workspace:
                           - 'Cargo.lock'
                           - 'Cargo.toml'
@@ -127,8 +134,8 @@ jobs:
         uses: ./.github/workflows/tests.yaml
         with:
             skip_unit: ${{ needs.changes.outputs.rust == 'false' }}
-            skip_accounts_e2e: ${{ needs.changes.outputs.css_js == 'false' && needs.changes.outputs.workspace == 'false' && needs.changes.outputs.accounts == 'false' && needs.changes.outputs.accounts_e2e == 'false' }}
-            skip_home_e2e: ${{ needs.changes.outputs.css_js == 'false' && needs.changes.outputs.workspace == 'false' && needs.changes.outputs.css_js == 'false' && needs.changes.outputs.workspace == 'false' && needs.changes.outputs.home == 'false' && needs.changes.outputs.home_e2e == 'false' }}
-            skip_my_account_e2e: ${{ needs.changes.outputs.css_js == 'false' && needs.changes.outputs.workspace == 'false' && needs.changes.outputs.my_account == 'false' && needs.changes.outputs.my_account_e2e == 'false' }}
-            skip_studio_e2e: ${{ needs.changes.outputs.css_js == 'false' && needs.changes.outputs.workspace == 'false' && needs.changes.outputs.studio == 'false' && needs.changes.outputs.studio_e2e == 'false' }}
-            skip_websites_e2e: ${{ needs.changes.outputs.css_js == 'false' && needs.changes.outputs.workspace == 'false' && needs.changes.outputs.websites == 'false' && needs.changes.outputs.websites_e2e == 'false' }}
+            skip_accounts_e2e: ${{ needs.changes.outputs.e2e == 'false' && needs.changes.outputs.workspace == 'false' && needs.changes.outputs.accounts == 'false' && needs.changes.outputs.accounts_e2e == 'false' }}
+            skip_home_e2e: ${{ needs.changes.outputs.e2e == 'false' && needs.changes.outputs.workspace == 'false' && needs.changes.outputs.home == 'false' && needs.changes.outputs.home_e2e == 'false' }}
+            skip_my_account_e2e: ${{ needs.changes.outputs.e2e == 'false' && needs.changes.outputs.workspace == 'false' && needs.changes.outputs.my_account == 'false' && needs.changes.outputs.my_account_e2e == 'false' }}
+            skip_studio_e2e: ${{ needs.changes.outputs.e2e == 'false' && needs.changes.outputs.workspace == 'false' && needs.changes.outputs.studio == 'false' && needs.changes.outputs.studio_e2e == 'false' }}
+            skip_websites_e2e: ${{ needs.changes.outputs.e2e == 'false' && needs.changes.outputs.workspace == 'false' && needs.changes.outputs.websites == 'false' && needs.changes.outputs.websites_e2e == 'false' }}
