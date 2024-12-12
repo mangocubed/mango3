@@ -54,7 +54,7 @@ pub fn TopBar(
                                     Either::Left(
                                         view! {
                                             <div class="dropdown dropdown-end">
-                                                <button class="btn btn-ghost p-1 pl-2" tabindex="1">
+                                                <button class="btn btn-ghost px-2" tabindex="1">
                                                     <UserTag user=user text_class="hidden md:block" />
 
                                                     <ChevronDownMini />
