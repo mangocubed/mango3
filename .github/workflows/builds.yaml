@@ -61,9 +61,8 @@ jobs:
 
     leptos_builds:
         runs-on: ubuntu-24.04
-        # if: ${{ inputs.skip_accounts == false || inputs.skip_home == false || inputs.skip_my_account == false || inputs.skip_studio == false || inputs.skip_websites == false }}
+        if: ${{ inputs.skip_accounts == false || inputs.skip_home == false || inputs.skip_my_account == false || inputs.skip_studio == false || inputs.skip_websites == false }}
         steps:
-            - run: 'echo "SKIP ACCOUNTS: ${{ inputs.skip_accounts }}"'
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-leptos
             - name: Build Accounts

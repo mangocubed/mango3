@@ -115,6 +115,7 @@ jobs:
 
     builds:
         needs: [changes, code_analysis]
+        if: ${{ success() || needs.code_analysis.result == 'skipped' }}
         uses: ./.github/workflows/builds.yaml
         with:
             skip_accounts: ${{ needs.changes.outputs.accounts == 'false' }}
@@ -128,6 +129,7 @@ jobs:
 
     tests:
         needs: [changes, builds]
+        if: ${{ success() || needs.builds.result == 'skipped' }}
         uses: ./.github/workflows/tests.yaml
         with:
             skip_unit: ${{ needs.changes.outputs.rust == 'false' }}
