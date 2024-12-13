@@ -6,6 +6,7 @@ use super::extract_from_env;
 
 #[derive(Deserialize, Serialize)]
 pub struct MiscConfig {
+    pub client_ip_source: String,
     pub(crate) confirmation_code_length: u8,
     pub(crate) invitation_code_length: u8,
     pub(crate) max_page_content_length: u32,
@@ -16,6 +17,7 @@ pub struct MiscConfig {
 impl Default for MiscConfig {
     fn default() -> Self {
         Self {
+            client_ip_source: "XRealIp".to_owned(),
             confirmation_code_length: 6,
             invitation_code_length: 6,
             max_page_content_length: 16384,
