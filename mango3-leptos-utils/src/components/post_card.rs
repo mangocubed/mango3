@@ -7,7 +7,7 @@ use crate::models::PostPreviewResp;
 use super::TimeAgo;
 
 #[component]
-pub fn PostCard(post: PostPreviewResp, #[prop(optional)] actions: Option<ViewFnOnce>) -> impl IntoView {
+pub fn PostCard(post: PostPreviewResp, #[prop(into, optional)] actions: Option<ViewFnOnce>) -> impl IntoView {
     let i18n = use_i18n();
 
     let href = move || {
