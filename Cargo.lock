@@ -2453,6 +2453,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f958d3d68f4167080a18141e10381e7634563984a537f2a49a30fd8e53ac5767"
 
 [[package]]
+name = "ipnetwork"
+version = "0.20.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bf466541e9d546596ee94f9f69590f89473455f88372423e0008fc1a7daf100e"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "is-terminal"
 version = "0.4.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2994,6 +3003,7 @@ dependencies = [
  "argon2",
  "chrono",
  "dotenvy",
+ "env_logger",
  "fake",
  "figment",
  "fluent-bundle",
@@ -3072,7 +3082,6 @@ version = "0.0.0-SNAPSHOT"
 dependencies = [
  "anyhow",
  "apalis",
- "env_logger",
  "lettre",
  "log",
  "mango3-core",
@@ -4803,6 +4812,7 @@ dependencies = [
  "hashlink",
  "hex",
  "indexmap",
+ "ipnetwork",
  "log",
  "memchr",
  "once_cell",
@@ -4929,6 +4939,7 @@ dependencies = [
  "hkdf",
  "hmac",
  "home",
+ "ipnetwork",
  "itoa",
  "log",
  "md-5",

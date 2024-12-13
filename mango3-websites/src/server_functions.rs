@@ -6,13 +6,13 @@ use uuid::Uuid;
 use mango3_leptos_utils::models::*;
 
 #[cfg(feature = "ssr")]
-use mango3_core::models::{NavigationItem, Page, Post, Website};
+use mango3_core::models::{NavigationItem, Page, Post, PostView, Website};
 #[cfg(feature = "ssr")]
 use mango3_core::pagination::CursorPageParams;
 #[cfg(feature = "ssr")]
 use mango3_leptos_utils::models::FromCore;
 #[cfg(feature = "ssr")]
-use mango3_leptos_utils::ssr::{expect_core_context, extract_host};
+use mango3_leptos_utils::ssr::{expect_core_context, extract_host, extract_ip_address, extract_user};
 
 #[cfg(feature = "ssr")]
 pub async fn current_website() -> Result<Option<Website>, ServerFnError> {
@@ -92,6 +92,11 @@ pub async fn get_post(slug: String) -> Result<Option<PostResp>, ServerFnError> {
     let result = Post::get_by_slug(&core_context, &slug, &website).await;
 
     if let Ok(post) = result {
+        let ip_address = extract_ip_address().await?;
+        let user = extract_user().await?;
+
+        let _ = PostView::insert(&core_context, &post, user.as_ref(), &ip_address).await;
+
         Ok(Some(PostResp::from_core(&core_context, &post).await))
     } else {
         Ok(None)

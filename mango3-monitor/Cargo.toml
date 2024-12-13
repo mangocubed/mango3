@@ -6,7 +6,6 @@ edition.workspace = true
 [dependencies]
 anyhow = "1.0.94"
 apalis = { workspace = true, features = ["limit"] }
-env_logger = "0.11.5"
 lettre = { version = "0.11.11", features = [
     "smtp-transport",
     "tokio1-native-tls",

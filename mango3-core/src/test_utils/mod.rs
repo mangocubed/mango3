@@ -1,7 +1,7 @@
 use chrono::{DateTime, Utc};
 use fake::faker::address::en::CountryCode;
 use fake::faker::chrono::en::DateTimeBefore;
-use fake::faker::internet::en::{Password, SafeEmail, Username};
+use fake::faker::internet::en::{IPv4, Password, SafeEmail, Username};
 use fake::faker::lorem::en::{Paragraph, Sentence};
 use fake::faker::name::en::Name;
 use fake::{Fake, Faker};
@@ -31,6 +31,10 @@ fn fake_country_alpha2() -> String {
 
 fn fake_email() -> String {
     SafeEmail().fake()
+}
+
+pub fn fake_ipv4() -> String {
+    IPv4().fake()
 }
 
 pub fn fake_name() -> String {

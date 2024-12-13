@@ -3,7 +3,7 @@ use leptos::prelude::*;
 use leptos_meta::Meta;
 
 use mango3_leptos_utils::components::{LoadingSpinner, TimeAgo, UserTag};
-use mango3_leptos_utils::i18n::{t, use_i18n};
+use mango3_leptos_utils::i18n::{t, t_string, use_i18n};
 use mango3_leptos_utils::pages::NotFoundPage;
 use mango3_leptos_utils::pages::Page;
 
@@ -50,7 +50,7 @@ pub fn ShowPostPage() -> impl IntoView {
                                             })
                                     }}
 
-                                    <div class="card card-compact bg-base-100 shadow-xl mb-4">
+                                    <div class="card card-compact bg-base-100 shadow-xl">
                                         {
                                             let post_title = post.title.clone();
                                             move || {
@@ -73,7 +73,7 @@ pub fn ShowPostPage() -> impl IntoView {
                                             <div class="flex justify-between my-4">
                                                 <UserTag user=post.user />
 
-                                                <div class="text-right">
+                                                <div class="text-right opacity-75">
                                                     <TimeAgo value=post.created_at />
 
                                                     {move || {
@@ -92,6 +92,16 @@ pub fn ShowPostPage() -> impl IntoView {
                                             </div>
 
                                             <div class="prose max-w-none break-words" inner_html=post.content_html />
+
+                                            <div class="mt-4 opacity-75">
+                                                {move || {
+                                                    if post.views_count == 1 {
+                                                        t_string!(i18n, shared.one_view).to_owned()
+                                                    } else {
+                                                        t_string!(i18n, shared.count_views, count = post.views_count)
+                                                    }
+                                                }}
+                                            </div>
                                         </div>
                                     </div>
                                 </Page>
