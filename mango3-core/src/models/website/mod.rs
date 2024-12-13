@@ -75,6 +75,10 @@ impl Website {
         .await
     }
 
+    pub fn host(&self) -> String {
+        self.url().host().unwrap().to_string()
+    }
+
     pub async fn icon_image_blob(&self, core_context: &CoreContext) -> Option<sqlx::Result<Blob>> {
         if let Some(id) = self.icon_image_blob_id {
             Some(Blob::get_by_id(core_context, id, None).await)

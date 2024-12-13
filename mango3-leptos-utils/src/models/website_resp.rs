@@ -24,6 +24,7 @@ pub struct WebsiteResp {
     pub icon_image_blob: Option<BlobResp>,
     pub cover_image_blob: Option<BlobResp>,
     pub is_published: bool,
+    pub host: String,
     pub url: String,
 }
 
@@ -49,6 +50,7 @@ impl FromCore<Website> for WebsiteResp {
                 .and_then(|result| result.ok())
                 .map(|blob| blob.into()),
             is_published: website.is_published(),
+            host: website.host(),
             url: website.url().to_string(),
         }
     }

@@ -27,7 +27,7 @@ pub fn PostsPage() -> impl IntoView {
                     resource=posts_resource
                     let:post
                 >
-                    <PostCard post=post />
+                    <PostCard post=post show_host=true />
                 </InfiniteScroll>
             </section>
         </Page>
