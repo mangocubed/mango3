@@ -18,8 +18,6 @@ use crate::workers::{guest_mailer_worker, mailer_worker};
 async fn main() -> anyhow::Result<()> {
     load_config();
 
-    env_logger::init();
-
     info!("Monitor starting");
 
     let mut sigint = tokio::signal::unix::signal(SignalKind::interrupt())?;

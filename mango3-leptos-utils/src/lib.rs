@@ -51,6 +51,8 @@ pub async fn leptos_http_server<F, IV1, IV2>(
     IV1: IntoView + 'static,
     IV2: IntoView + 'static,
 {
+    use std::net::SocketAddr;
+
     use axum::Router;
     use cookie::{Key, SameSite};
     use fred::prelude::{ClientLike, Config, Pool};
@@ -115,7 +117,9 @@ pub async fn leptos_http_server<F, IV1, IV2>(
 
     let listener = TcpListener::bind(&addr).await.unwrap();
 
-    axum::serve(listener, app.into_make_service()).await.unwrap();
+    axum::serve(listener, app.into_make_service_with_connect_info::<SocketAddr>())
+        .await
+        .unwrap();
 
     redis_conn.await.unwrap().unwrap();
 }

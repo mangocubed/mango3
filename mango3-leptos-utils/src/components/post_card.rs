@@ -1,13 +1,13 @@
 use leptos::prelude::*;
 
 use crate::components::UserTag;
-use crate::i18n::{t, use_i18n};
+use crate::i18n::{t, t_string, use_i18n};
 use crate::models::PostPreviewResp;
 
 use super::TimeAgo;
 
 #[component]
-pub fn PostCard(post: PostPreviewResp, #[prop(into, optional)] actions: ViewFn) -> impl IntoView {
+pub fn PostCard(post: PostPreviewResp, #[prop(into, optional)] actions: Option<ViewFnOnce>) -> impl IntoView {
     let i18n = use_i18n();
 
     let href = move || {
@@ -44,7 +44,7 @@ pub fn PostCard(post: PostPreviewResp, #[prop(into, optional)] actions: ViewFn) 
                 <div class="flex justify-between my-1">
                     <UserTag user=post.user />
 
-                    <div class="text-right">
+                    <div class="text-right opacity-75">
                         <TimeAgo value=post.created_at />
 
                         {move || {
@@ -67,7 +67,17 @@ pub fn PostCard(post: PostPreviewResp, #[prop(into, optional)] actions: ViewFn) 
                     <div class="card-text-preview-overlay" />
                 </a>
 
-                <div class="card-actions justify-end">{actions.run()}</div>
+                <div class="my-1 opacity-75">
+                    {move || {
+                        if post.views_count == 1 {
+                            t_string!(i18n, shared.one_view).to_owned()
+                        } else {
+                            t_string!(i18n, shared.count_views, count = post.views_count)
+                        }
+                    }}
+                </div>
+
+                {actions.map(|a| view! { <div class="card-actions justify-end">{a.run()}</div> })}
             </div>
         </div>
     }

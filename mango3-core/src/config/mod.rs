@@ -25,6 +25,9 @@ lazy_static! {
 
 pub fn load_config() {
     let _ = dotenv();
+
+    env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
+
     let _ = fs::create_dir_all(MISC_CONFIG.storage_tmp_path());
 }
 

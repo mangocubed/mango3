@@ -12,6 +12,7 @@ figment = { version = "0.10.19", features = ["env"] }
 fluent-templates = "0.11.0"
 fluent-bundle = "0.15.3"
 futures-util = "0.3.31"
+env_logger = "0.11.5"
 image = "0.25.5"
 lazy_static = "1.5.0"
 md-5 = "0.10.6"
@@ -21,7 +22,7 @@ rand = "0.8.5"
 regex = "1.11.1"
 rust_iso3166 = { workspace = true }
 serde = { workspace = true }
-sqlx = { version = "0.8.2", features = ["chrono", "runtime-tokio", "postgres", "tls-rustls", "uuid"] }
+sqlx = { version = "0.8.2", features = ["chrono", "ipnetwork", "postgres", "runtime-tokio", "tls-rustls", "uuid"] }
 strum = { version = "0.26.3", features = ["derive"] }
 unic-langid = { version = "0.9.5", features = ["serde"] }
 url = { version = "2.5.4", features = ["serde"] }

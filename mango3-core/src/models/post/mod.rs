@@ -9,7 +9,7 @@ use crate::enums::{Input, InputError};
 use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
 use crate::CoreContext;
 
-use super::{Blob, PostAttachment, User, Website};
+use super::{Blob, PostAttachment, PostView, User, Website};
 
 mod post_insert;
 mod post_paginate;
@@ -104,6 +104,10 @@ impl Post {
 
     pub async fn user(&self, core_context: &CoreContext) -> sqlx::Result<User> {
         User::get_by_id(core_context, self.user_id).await
+    }
+
+    pub async fn views_count(&self, core_context: &CoreContext) -> sqlx::Result<i64> {
+        PostView::count(core_context, self).await
     }
 
     pub async fn website(&self, core_context: &CoreContext) -> sqlx::Result<Website> {

@@ -9,6 +9,7 @@ count_hours_ago: hace {{count}} horas
 count_minutes_ago: hace {{count}} minutos
 count_months_ago: hace {{count}} meses
 count_seconds_ago: hace {{count}} segundos
+count_views: "{{count}} vistas"
 count_weeks_ago: hace {{count}} semanas
 count_years_ago: hace {{count}} años
 country: País
@@ -33,6 +34,7 @@ one_hour_ago: hace una hora
 one_minute_ago: hace un minuto
 one_month_ago: hace un mes
 one_second_ago: hace un segundo
+one_view: 1 vista
 one_week_ago: hace una semana
 one_year_ago: hace un año
 password: Contraseña

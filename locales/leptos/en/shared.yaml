@@ -9,6 +9,7 @@ count_hours_ago: "{{count}} hours ago"
 count_minutes_ago: "{{count}} minutes ago"
 count_months_ago: "{{count}} months ago"
 count_seconds_ago: "{{count}} seconds ago"
+count_views: "{{count}} views"
 count_weeks_ago: "{{count}} weeks ago"
 count_years_ago: "{{count}} years ago"
 country: Country
@@ -33,6 +34,7 @@ one_hour_ago: one hour ago
 one_minute_ago: one minute ago
 one_month_ago: one month ago
 one_second_ago: one second ago
+one_view: 1 view
 one_week_ago: one week ago
 one_year_ago: one year ago
 password: Password

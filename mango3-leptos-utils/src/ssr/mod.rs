@@ -1,4 +1,6 @@
-use axum::extract::Host;
+use std::net::SocketAddr;
+
+use axum::extract::{ConnectInfo, Host};
 use codee::string::FromToStringCodec;
 use http::header::{HeaderMap, ACCEPT_LANGUAGE};
 use leptos::prelude::*;
@@ -12,6 +14,12 @@ use crate::context::use_language_cookie;
 mod user_sessions;
 
 pub use user_sessions::*;
+
+pub async fn extract_ip_address() -> Result<String, ServerFnError> {
+    let ConnectInfo(socket_addr) = leptos_axum::extract::<ConnectInfo<SocketAddr>>().await?;
+
+    Ok(socket_addr.ip().to_string())
+}
 
 pub fn expect_core_context() -> CoreContext {
     expect_context::<CoreContext>()
