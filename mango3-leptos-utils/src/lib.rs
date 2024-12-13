@@ -52,8 +52,10 @@ pub async fn leptos_http_server<F, IV1, IV2>(
     IV2: IntoView + 'static,
 {
     use std::net::SocketAddr;
+    use std::str::FromStr;
 
     use axum::Router;
+    use axum_client_ip::SecureClientIpSource;
     use cookie::{Key, SameSite};
     use fred::prelude::{ClientLike, Config, Pool};
     use leptos::logging::log;
@@ -63,7 +65,7 @@ pub async fn leptos_http_server<F, IV1, IV2>(
     use tower_sessions::{Expiry, SessionManagerLayer};
     use tower_sessions_redis_store::RedisStore;
 
-    use mango3_core::config::{load_config, BASIC_CONFIG, SESSIONS_CONFIG};
+    use mango3_core::config::{load_config, BASIC_CONFIG, MISC_CONFIG, SESSIONS_CONFIG};
     use mango3_core::CoreContext;
 
     load_config();
@@ -95,6 +97,9 @@ pub async fn leptos_http_server<F, IV1, IV2>(
         .with_private(Key::from(SESSIONS_CONFIG.key.as_bytes()))
         .with_same_site(SameSite::Strict)
         .with_secure(BASIC_CONFIG.secure);
+    let client_ip_source_layer = SecureClientIpSource::from_str(&MISC_CONFIG.client_ip_source)
+        .expect("Could not get client IP source.")
+        .into_extension();
 
     let app = Router::new()
         .leptos_routes_with_context(
@@ -111,6 +116,7 @@ pub async fn leptos_http_server<F, IV1, IV2>(
         )
         .fallback(file_and_error_handler(shell_fn))
         .layer(session_layer)
+        .layer(client_ip_source_layer)
         .with_state(leptos_options);
 
     log!("listening on http://{}", &addr);

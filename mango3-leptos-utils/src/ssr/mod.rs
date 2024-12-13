@@ -1,6 +1,5 @@
-use std::net::SocketAddr;
-
-use axum::extract::{ConnectInfo, Host};
+use axum::extract::Host;
+use axum_client_ip::InsecureClientIp;
 use codee::string::FromToStringCodec;
 use http::header::{HeaderMap, ACCEPT_LANGUAGE};
 use leptos::prelude::*;
@@ -15,10 +14,14 @@ mod user_sessions;
 
 pub use user_sessions::*;
 
-pub async fn extract_ip_address() -> Result<String, ServerFnError> {
-    let ConnectInfo(socket_addr) = leptos_axum::extract::<ConnectInfo<SocketAddr>>().await?;
+pub async fn extract_client_ip() -> Result<String, ServerFnError> {
+    let header_map = leptos_axum::extract::<HeaderMap>().await?;
 
-    Ok(socket_addr.ip().to_string())
+    leptos::logging::log!("HEADER MAP: {:?}", header_map);
+
+    let InsecureClientIp(client_ip) = leptos_axum::extract::<InsecureClientIp>().await?;
+
+    Ok(client_ip.to_string())
 }
 
 pub fn expect_core_context() -> CoreContext {
@@ -49,6 +52,7 @@ async fn extract_requested_language() -> Result<String, ServerFnError> {
     }
 
     let header_map = leptos_axum::extract::<HeaderMap>().await?;
+
     let accept_language = header_map.get(ACCEPT_LANGUAGE).and_then(|al| al.to_str().ok());
 
     if let Some(accept_language) = accept_language {
