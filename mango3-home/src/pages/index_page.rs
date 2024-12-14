@@ -27,9 +27,7 @@ pub fn IndexPage() -> impl IntoView {
             <section>
                 <div class="hero">
                     <div class="hero-content text-center flex-col">
-                        <h2 class="text-2xl font-bold">
-                            {t!(i18n, home.welcome_to_title, title = basic_config.title)}
-                        </h2>
+                        <h1 class="h1 mb-0">{t!(i18n, home.welcome_to_title, title = basic_config.title)}</h1>
                         <p class="py-3">{page_title}</p>
                     </div>
                 </div>
