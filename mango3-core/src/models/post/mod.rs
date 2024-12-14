@@ -89,6 +89,10 @@ impl Post {
         .await
     }
 
+    pub async fn host(&self, core_context: &CoreContext) -> String {
+        self.website(core_context).await.unwrap().host()
+    }
+
     pub async fn is_published(&self, core_context: &CoreContext) -> bool {
         self.website(core_context).await.unwrap().is_published() && self.published_at.is_some()
     }

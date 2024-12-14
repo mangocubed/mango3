@@ -29,8 +29,8 @@ pub fn UserTag(#[prop(into)] user: UserPreviewResp, #[prop(into, optional)] text
                     )
                 }
             }} <div class=format!("text-left ml-2 {text_class}")>
-                <div class="mb-1">{user.display_name}</div>
-                <div class="font-bold">"@"{user.username}</div>
+                <div class="mb-1 font-bold">{user.display_name}</div>
+                <div class="opacity-70">"@"{user.username}</div>
             </div>
         </div>
     }

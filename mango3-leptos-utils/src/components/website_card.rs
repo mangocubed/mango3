@@ -16,7 +16,7 @@ pub fn WebsiteCard(website: WebsiteResp, #[prop(into, optional)] actions: ViewFn
     view! {
         <div class="card card-compact bg-base-100 shadow-xl mb-4">
             <div class="card-body">
-                <div class="flex gap-3">
+                <div class="flex gap-3 items-center">
                     <a href=href
                         .clone()>
                         {
@@ -53,9 +53,12 @@ pub fn WebsiteCard(website: WebsiteResp, #[prop(into, optional)] actions: ViewFn
                         }
                     </a>
 
-                    <h3 class="card-title">
-                        <a href=href>{website.name.clone()}</a>
-                    </h3>
+                    <div class="card-title">
+                        <a href=href>
+                            <div class="font-bold text-lg">{website.name.clone()}</div>
+                            <div class="text-base opacity-70">{website.host.clone()}</div>
+                        </a>
+                    </div>
                 </div>
 
                 <div class="card-text-preview">

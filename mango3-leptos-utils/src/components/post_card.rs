@@ -7,7 +7,11 @@ use crate::models::PostPreviewResp;
 use super::TimeAgo;
 
 #[component]
-pub fn PostCard(post: PostPreviewResp, #[prop(into, optional)] actions: Option<ViewFnOnce>) -> impl IntoView {
+pub fn PostCard(
+    post: PostPreviewResp,
+    #[prop(into, optional)] actions: Option<ViewFnOnce>,
+    #[prop(optional)] show_host: bool,
+) -> impl IntoView {
     let i18n = use_i18n();
 
     let href = move || {
@@ -44,7 +48,7 @@ pub fn PostCard(post: PostPreviewResp, #[prop(into, optional)] actions: Option<V
                 <div class="flex justify-between my-1">
                     <UserTag user=post.user />
 
-                    <div class="text-right opacity-75">
+                    <div class="text-right opacity-70">
                         <TimeAgo value=post.created_at />
 
                         {move || {
@@ -59,6 +63,10 @@ pub fn PostCard(post: PostPreviewResp, #[prop(into, optional)] actions: Option<V
                                     }
                                 })
                         }}
+
+                        <Show when=move || show_host>
+                            <div class="text-right opacity-70">{post.host.clone()}</div>
+                        </Show>
                     </div>
                 </div>
 
@@ -67,7 +75,7 @@ pub fn PostCard(post: PostPreviewResp, #[prop(into, optional)] actions: Option<V
                     <div class="card-text-preview-overlay" />
                 </a>
 
-                <div class="my-1 opacity-75">
+                <div class="my-1 opacity-70">
                     {move || {
                         if post.views_count == 1 {
                             t_string!(i18n, shared.one_view).to_owned()

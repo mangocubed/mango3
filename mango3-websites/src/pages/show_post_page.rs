@@ -73,7 +73,7 @@ pub fn ShowPostPage() -> impl IntoView {
                                             <div class="flex justify-between my-4">
                                                 <UserTag user=post.user />
 
-                                                <div class="text-right opacity-75">
+                                                <div class="text-right opacity-70">
                                                     <TimeAgo value=post.created_at />
 
                                                     {move || {
@@ -93,7 +93,7 @@ pub fn ShowPostPage() -> impl IntoView {
 
                                             <div class="prose max-w-none break-words" inner_html=post.content_html />
 
-                                            <div class="mt-4 opacity-75">
+                                            <div class="mt-4 opacity-70">
                                                 {move || {
                                                     if post.views_count == 1 {
                                                         t_string!(i18n, shared.one_view).to_owned()

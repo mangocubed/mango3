@@ -105,6 +105,7 @@ pub struct PostPreviewResp {
     pub is_published: bool,
     pub views_count: i64,
     pub url: String,
+    pub host: String,
     pub created_at: DateTime<Utc>,
     pub updated_at: Option<DateTime<Utc>>,
 }
@@ -131,6 +132,7 @@ impl FromCore<Post> for PostPreviewResp {
             is_published: post.is_published(core_context).await,
             views_count: post.views_count(core_context).await.expect("Could not get views count"),
             url: post.url(&core_context).await.to_string(),
+            host: post.host(&core_context).await.to_string(),
             created_at: post.created_at,
             updated_at: post.updated_at,
         }
