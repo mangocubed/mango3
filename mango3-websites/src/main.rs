@@ -9,7 +9,7 @@ use mango3_websites::app::App;
 
 #[cfg(feature = "ssr")]
 fn shell_fn(leptos_options: LeptosOptions) -> impl IntoView {
-    shell(leptos_options, App)
+    shell(leptos_options, App, None)
 }
 
 #[cfg(feature = "ssr")]

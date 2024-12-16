@@ -9,7 +9,7 @@ use mango3_my_account::app::App;
 
 #[cfg(feature = "ssr")]
 fn shell_fn(leptos_options: LeptosOptions) -> impl IntoView {
-    shell(leptos_options, App)
+    shell(leptos_options, App, Some("dark:bg-neutral-950 bg-slate-50"))
 }
 
 #[cfg(feature = "ssr")]

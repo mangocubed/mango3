@@ -83,6 +83,42 @@ lazy_static! {
     ];
     pub(crate) static ref BLACKLISTED_SUBDOMAINS: Vec<String> = BLACKLISTED_SLUGS.to_vec();
     pub(crate) static ref BLACKLISTED_USERNAMES: Vec<String> = BLACKLISTED_SLUGS.to_vec();
+    pub(crate) static ref DARK_THEMES: Vec<String> = vec![
+        "dark".to_owned(),
+        "aqua".to_owned(),
+        "black".to_owned(),
+        "business".to_owned(),
+        "coffee".to_owned(),
+        "dim".to_owned(),
+        "dracula".to_owned(),
+        "forest".to_owned(),
+        "halloween".to_owned(),
+        "luxury".to_owned(),
+        "night".to_owned(),
+        "sunset".to_owned(),
+        "synthwave".to_owned(),
+    ];
+    pub(crate) static ref LIGHT_THEMES: Vec<String> = vec![
+        "light".to_owned(),
+        "acid".to_owned(),
+        "autumn".to_owned(),
+        "bumblebee".to_owned(),
+        "cmyk".to_owned(),
+        "corpoate".to_owned(),
+        "cupcake".to_owned(),
+        "cyberpunk".to_owned(),
+        "fantasy".to_owned(),
+        "emerald".to_owned(),
+        "garden".to_owned(),
+        "lemonade".to_owned(),
+        "lofi".to_owned(),
+        "nord".to_owned(),
+        "pastel".to_owned(),
+        "retro".to_owned(),
+        "valentine".to_owned(),
+        "winter".to_owned(),
+        "wireframe".to_owned(),
+    ];
     pub(crate) static ref REGEX_EMAIL: Regex = Regex::new(r"\A[^@\s]+@[^@\s]+\z").unwrap();
     pub(crate) static ref REGEX_SLUG: regex::Regex = regex::Regex::new(r"\A[a-z0-9]+(?:-[a-z0-9]+)*\z").unwrap();
     pub(crate) static ref REGEX_SUBDOMAIN: regex::Regex = REGEX_SLUG.clone();

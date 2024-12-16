@@ -71,14 +71,16 @@ pub fn ImageUploadField(
                     EitherOf3::B(
                         view! {
                             <input type="hidden" name=name.clone() value=blob.id />
-                            <div class="flex gap-3">
+                            <div class="flex flex-wrap gap-3">
                                 <img class="rounded" width=width height=height src=variant_url />
 
-                                <CopyableText value=blob.url />
+                                <div class="flex flex-1 gap-3">
+                                    <CopyableText value=blob.url />
 
-                                <button class="btn" on:click=remove>
-                                    <TrashOutlined />
-                                </button>
+                                    <button class="btn" on:click=remove>
+                                        <TrashOutlined />
+                                    </button>
+                                </div>
                             </div>
                         },
                     )

@@ -2,7 +2,7 @@ use codee::string::FromToStringCodec;
 use default_struct_builder::DefaultBuilder;
 use leptos::prelude::*;
 use leptos::reactive::wrappers::read::Signal;
-use leptos_use::core::{ElementMaybeSignal, IntoElementMaybeSignal, MaybeRwSignal};
+use leptos_use::core::MaybeRwSignal;
 use leptos_use::*;
 use std::marker::PhantomData;
 use std::sync::Arc;
@@ -10,12 +10,21 @@ use std::sync::Arc;
 use super::use_basic_config;
 
 pub fn use_color_mode() -> UseColorModeReturn {
+    use_color_mode_with_options(UseColorModeOptions::default())
+}
+
+pub fn use_color_mode_with_options<M>(options: UseColorModeOptions<M>) -> UseColorModeReturn
+where
+    M: ?Sized,
+{
     let UseColorModeOptions {
-        target,
         initial_value,
         on_changed,
+        light_theme,
+        dark_theme,
+
         _marker,
-    } = UseColorModeOptions::default();
+    } = options;
 
     let preferred_dark = use_preferred_dark();
 
@@ -53,20 +62,17 @@ pub fn use_color_mode() -> UseColorModeReturn {
         }
     });
 
-    let target = target.into_element_maybe_signal();
-
-    let update_html_attrs = {
-        move |target: ElementMaybeSignal<web_sys::Element>, value: ColorMode| {
-            let el = target.get_untracked();
-
-            if let Some(el) = el {
-                let _ = el.set_attribute("data-theme", &value.to_string());
-            }
-        }
-    };
-
     let default_on_changed = move |mode: ColorMode| {
-        update_html_attrs(target.clone(), mode);
+        let el = use_document().query_selector("html");
+
+        if let Ok(Some(el)) = el {
+            let data_theme = match mode {
+                ColorMode::Dark => dark_theme.as_str(),
+                _ => light_theme.as_str(),
+            };
+
+            let _ = el.set_attribute("data-theme", data_theme);
+        }
     };
 
     let on_changed = move |mode: ColorMode| {
@@ -108,14 +114,10 @@ fn get_cookie_signal() -> (Signal<Option<ColorMode>>, WriteSignal<Option<ColorMo
 }
 
 #[derive(DefaultBuilder)]
-pub struct UseColorModeOptions<El, M>
+pub struct UseColorModeOptions<M>
 where
-    El: IntoElementMaybeSignal<web_sys::Element, M>,
     M: ?Sized,
 {
-    /// Element that the color mode will be applied to. Defaults to `"html"`.
-    target: El,
-
     /// Initial value of the color mode. Defaults to `"Auto"`.
     #[builder(into)]
     initial_value: MaybeRwSignal<ColorMode>,
@@ -128,18 +130,22 @@ where
     ///     -`default_handler: Arc<dyn Fn(ColorMode)>`: The default handler that would have been called if the `on_changed` handler had not been specified.
     on_changed: OnChangedFn,
 
+    light_theme: String,
+    dark_theme: String,
+
     #[builder(skip)]
     _marker: PhantomData<M>,
 }
 
 type OnChangedFn = Arc<dyn Fn(ColorMode, Arc<dyn Fn(ColorMode) + Send + Sync>) + Send + Sync>;
 
-impl Default for UseColorModeOptions<&'static str, str> {
+impl Default for UseColorModeOptions<str> {
     fn default() -> Self {
         Self {
-            target: "html",
             initial_value: ColorMode::Auto.into(),
             on_changed: Arc::new(move |mode, default_handler| (default_handler)(mode)),
+            light_theme: "light".to_owned(),
+            dark_theme: "dark".to_owned(),
             _marker: PhantomData,
         }
     }

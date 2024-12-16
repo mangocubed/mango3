@@ -41,6 +41,8 @@ pub async fn attempt_to_update_website(
     description: String,
     icon_image_blob_id: Option<String>,
     cover_image_blob_id: Option<String>,
+    light_theme: String,
+    dark_theme: String,
     publish: Option<bool>,
 ) -> Result<ActionFormResp, ServerFnError> {
     let i18n = extract_i18n().await?;
@@ -71,6 +73,8 @@ pub async fn attempt_to_update_website(
             &description,
             icon_image_blob.as_ref(),
             cover_image_blob.as_ref(),
+            &light_theme,
+            &dark_theme,
             publish.unwrap_or_default(),
         )
         .await;

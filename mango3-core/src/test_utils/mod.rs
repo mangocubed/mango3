@@ -49,7 +49,7 @@ fn fake_password() -> String {
     Password(6..128).fake()
 }
 
-fn fake_sentence() -> String {
+pub fn fake_sentence() -> String {
     Sentence(2..5).fake()
 }
 

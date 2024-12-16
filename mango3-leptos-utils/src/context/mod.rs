@@ -6,7 +6,7 @@ use crate::server_functions::get_current_user;
 mod use_color_mode;
 mod use_language_cookie;
 
-pub use use_color_mode::use_color_mode;
+pub use use_color_mode::{use_color_mode, use_color_mode_with_options, UseColorModeOptions};
 pub use use_language_cookie::{use_language_cookie, use_language_cookie_options};
 
 pub fn provide_basic_config() {

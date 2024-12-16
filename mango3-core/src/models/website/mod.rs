@@ -23,6 +23,8 @@ pub struct Website {
     pub description: String,
     pub icon_image_blob_id: Option<Uuid>,
     pub cover_image_blob_id: Option<Uuid>,
+    pub light_theme: String,
+    pub dark_theme: String,
     pub published_at: Option<DateTime<Utc>>,
     pub created_at: DateTime<Utc>,
     pub updated_at: Option<DateTime<Utc>>,
