@@ -63,7 +63,7 @@ pub fn TopBar(
 
                                                 <ul
                                                     tabindex="1"
-                                                    class="dropdown-content menu bg-base-100 rounded-box z-[1] p-2 shadow w-48"
+                                                    class="dropdown-content menu bg-base-200 rounded-box z-[1] p-2 shadow w-48"
                                                 >
                                                     <li>
                                                         <a href=basic_config
