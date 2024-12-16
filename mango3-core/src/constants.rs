@@ -104,7 +104,7 @@ lazy_static! {
         "autumn".to_owned(),
         "bumblebee".to_owned(),
         "cmyk".to_owned(),
-        "corpoate".to_owned(),
+        "corporate".to_owned(),
         "cupcake".to_owned(),
         "cyberpunk".to_owned(),
         "fantasy".to_owned(),

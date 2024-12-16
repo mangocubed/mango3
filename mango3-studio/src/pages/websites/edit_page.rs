@@ -28,7 +28,7 @@ const LIGHT_THEMES: [&str; 19] = [
     "autumn",
     "bumblebee",
     "cmyk",
-    "corpoate",
+    "corporate",
     "cupcake",
     "cyberpunk",
     "fantasy",
@@ -118,7 +118,7 @@ pub fn EditPage() -> impl IntoView {
                     />
 
                     <ThemeSelectorField
-                        label=t_string!(i18n, studio.light_theme)
+                        label=move || t_string!(i18n, studio.light_theme)
                         name="light_theme"
                         options=LIGHT_THEMES.to_vec()
                         value=value_light_theme
@@ -127,7 +127,7 @@ pub fn EditPage() -> impl IntoView {
                     />
 
                     <ThemeSelectorField
-                        label=t_string!(i18n, studio.dark_theme)
+                        label=move || t_string!(i18n, studio.dark_theme)
                         name="dark_theme"
                         options=DARK_THEMES.to_vec()
                         value=value_dark_theme

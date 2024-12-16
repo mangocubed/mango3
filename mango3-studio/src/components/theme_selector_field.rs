@@ -1,4 +1,5 @@
 use leptos::prelude::*;
+use leptos::text_prop::TextProp;
 
 use mango3_leptos_utils::components::TopBar;
 use mango3_leptos_utils::models::WebsiteResp;
@@ -6,7 +7,7 @@ use mango3_leptos_utils::models::WebsiteResp;
 #[component]
 pub fn ThemeSelectorField(
     #[prop(into, optional)] error: MaybeProp<String>,
-    #[prop(into)] label: String,
+    #[prop(into)] label: TextProp,
     name: &'static str,
     options: Vec<&'static str>,
     value: RwSignal<String>,
@@ -24,7 +25,7 @@ pub fn ThemeSelectorField(
             <input type="hidden" name=name value=value />
 
             <label class="label">
-                <span class="label-text">{label.clone()}</span>
+                <span class="label-text">{move || label.get()}</span>
             </label>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -61,12 +62,12 @@ pub fn ThemeSelectorField(
                                                     </a>
                                                 }
                                             }
-                                            class="bg-base-100"
+                                            class="bg-base-200"
                                             show_user_menu=false
                                         />
 
                                         <div class="m-6 max-w-[640px]">
-                                            <div class="card card-compact bg-base-100 shadow-xl">
+                                            <div class="card card-compact bg-base-200 shadow-xl">
                                                 <div class="card-body">
                                                     <div class="card-title">{"Lorem ipsum."}</div>
 

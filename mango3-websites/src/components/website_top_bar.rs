@@ -42,7 +42,7 @@ pub fn WebsiteTopBar() -> impl IntoView {
                     } />
                 }
             }
-            class="bg-base-100"
+            class="bg-base-200"
             right_items=move || view! { <GoToMango3 /> }
         >
             <Suspense>

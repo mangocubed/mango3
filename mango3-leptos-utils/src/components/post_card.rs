@@ -23,7 +23,7 @@ pub fn PostCard(
     };
 
     view! {
-        <div class="card card-compact bg-base-100 shadow-xl mb-4">
+        <div class="card card-compact bg-base-200 shadow-xl mb-4">
             {
                 let post_title = post.title.clone();
                 let href = href.clone();
