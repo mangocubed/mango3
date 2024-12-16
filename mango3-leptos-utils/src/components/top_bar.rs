@@ -1,7 +1,7 @@
 use leptos::either::Either;
 use leptos::prelude::*;
 
-use crate::components::{CurrentUserResource, UserTag};
+use crate::components::{CurrentUserOpt, UserTag};
 use crate::context::use_basic_config;
 use crate::i18n::{t, use_i18n};
 use crate::icons::{BarsOutlined, ChevronDownMini};
@@ -10,6 +10,7 @@ use crate::icons::{BarsOutlined, ChevronDownMini};
 pub fn TopBar(
     #[prop(optional)] children: Option<ChildrenFn>,
     #[prop(into)] brand: ViewFnOnce,
+    #[prop(default = "bg-base-300")] class: &'static str,
     #[prop(default = true)] show_user_menu: bool,
     #[prop(into, optional)] right_items: ViewFn,
 ) -> impl IntoView {
@@ -25,7 +26,7 @@ pub fn TopBar(
     };
 
     view! {
-        <div class="navbar bg-base-300 shadow-md py-0 gap-2">
+        <div class=format!("navbar shadow-md py-0 gap-2 {class}")>
             <div class="dropdown md:hidden">
                 <button class="btn btn-ghost" tabindex="0">
                     <BarsOutlined />
@@ -49,7 +50,7 @@ pub fn TopBar(
                     let basic_config = use_basic_config();
                     view! {
                         <div class="flex-none">
-                            <CurrentUserResource children=move |user| {
+                            <CurrentUserOpt children=move |user| {
                                 if let Some(user) = user {
                                     Either::Left(
                                         view! {

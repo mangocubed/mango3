@@ -1,16 +1,24 @@
 use leptos::prelude::*;
 use leptos_use::{ColorMode, UseColorModeReturn};
 
-use crate::context::{use_basic_config, use_color_mode};
+use crate::context::{use_basic_config, use_color_mode_with_options, UseColorModeOptions};
 use crate::i18n::{t, use_i18n, Locale};
 use crate::icons::{ChevronUpMini, ComputerOutlined, MoonOutlined, SunOutlined};
 
 const LANGUAGES: [(&str, Locale); 2] = [("English", Locale::en), ("Español", Locale::es)];
 
 #[component]
-pub fn BottomBar(#[prop(optional, into)] aside_items: ViewFnOnce) -> impl IntoView {
+pub fn BottomBar(
+    #[prop(optional, into)] aside_items: ViewFnOnce,
+    #[prop(default = "light".to_owned(), into)] light_theme: String,
+    #[prop(default = "dark".to_owned(), into)] dark_theme: String,
+) -> impl IntoView {
     let basic_config = use_basic_config();
-    let UseColorModeReturn { mode, set_mode, .. } = use_color_mode();
+    let UseColorModeReturn { mode, set_mode, .. } = use_color_mode_with_options(
+        UseColorModeOptions::default()
+            .light_theme(light_theme)
+            .dark_theme(dark_theme),
+    );
     let i18n = use_i18n();
 
     let current_lang_name = move || {

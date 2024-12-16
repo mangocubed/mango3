@@ -1,7 +1,7 @@
 use leptos::prelude::*;
 use leptos_i18n::t_string;
 
-use mango3_leptos_utils::components::{ActionFormAlert, CurrentUserResource, PasswordField, SubmitButton, TextField};
+use mango3_leptos_utils::components::{ActionFormAlert, CurrentUser, PasswordField, SubmitButton, TextField};
 use mango3_leptos_utils::context::use_current_user_resource;
 use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::models::ActionFormResp;
@@ -36,15 +36,13 @@ pub fn EditEmailPage() -> impl IntoView {
                 <h3 class="h3">{t!(i18n, my_account.current_email)}</h3>
 
                 <div class="flex items-center justify-between">
-                    <CurrentUserResource children=move |user| {
-                        user.map(|user| {
-                            let email_is_confirmed = RwSignal::new(user.email_is_confirmed);
-                            view! {
-                                <span>{user.email}</span>
+                    <CurrentUser children=move |user| {
+                        let email_is_confirmed = RwSignal::new(user.email_is_confirmed);
+                        view! {
+                            <span>{user.email}</span>
 
-                                <EmailConfirmationBadge is_confirmed=email_is_confirmed />
-                            }
-                        })
+                            <EmailConfirmationBadge is_confirmed=email_is_confirmed />
+                        }
                     } />
                 </div>
             </section>

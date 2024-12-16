@@ -18,7 +18,7 @@ pub mod ssr;
 leptos_i18n::load_locales!();
 
 #[cfg(feature = "ssr")]
-pub fn shell<F, IV>(options: LeptosOptions, app_fn: F) -> impl IntoView
+pub fn shell<F, IV>(options: LeptosOptions, app_fn: F, body_class: Option<&'static str>) -> impl IntoView
 where
     F: Fn() -> IV + Clone + Copy + Send + 'static,
     IV: IntoView + 'static,
@@ -36,7 +36,7 @@ where
                 <MetaTags />
                 <HashedStylesheet id="leptos" options=options />
             </head>
-            <body class="dark:bg-neutral-950 bg-slate-50">{app_fn()}</body>
+            <body class=body_class>{app_fn()}</body>
         </html>
     }
 }

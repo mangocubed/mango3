@@ -79,11 +79,29 @@ pub fn App() -> impl IntoView {
                             </Routes>
                         </main>
 
-                        <BottomBar aside_items=move || {
-                            view! {
-                                <CurrentWebsite let:_>
-                                    {t!(i18n, websites.this_website_is_part_of_title_ecosystem, title = title.clone())}
-                                </CurrentWebsite>
+                        <CurrentWebsiteOpt children=move |website| {
+                            match website {
+                                Some(website) => {
+                                    let title = title.clone();
+                                    Either::Left(
+                                        view! {
+                                            <BottomBar
+                                                light_theme=website.light_theme.clone()
+                                                dark_theme=website.dark_theme.clone()
+                                                aside_items=move || {
+                                                    view! {
+                                                        <CurrentWebsite let:_>
+                                                            {t!(
+                                                                i18n, websites.this_website_is_part_of_title_ecosystem, title = title.clone()
+                                                            )}
+                                                        </CurrentWebsite>
+                                                    }
+                                                }
+                                            />
+                                        },
+                                    )
+                                }
+                                None => Either::Right(view! { <BottomBar /> }),
                             }
                         } />
                     </Router>

@@ -14,7 +14,7 @@
     .form {
         @apply max-w-[640px] ml-auto mr-auto mt-4 mb-4 w-full;
     }
-    
+
     .h1 {
         @apply text-2xl font-bold mb-6;
     }
@@ -81,6 +81,10 @@
 .loading-overlay.is-done .pulse {
     opacity: 0;
     visibility: hidden;
+}
+
+.zoom-75 {
+    zoom: 0.75;
 }
 
 @keyframes pulse {

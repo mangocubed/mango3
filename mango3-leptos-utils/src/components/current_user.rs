@@ -5,7 +5,7 @@ use crate::context::use_current_user_resource;
 use crate::models::UserResp;
 
 #[component]
-pub fn CurrentUserResource<VF, IV>(children: VF) -> impl IntoView
+pub fn CurrentUserOpt<VF, IV>(children: VF) -> impl IntoView
 where
     IV: IntoView + 'static,
     VF: Fn(Option<UserResp>) -> IV + Send + Sync + 'static,
@@ -23,4 +23,13 @@ where
             })}
         </Transition>
     }
+}
+
+#[component]
+pub fn CurrentUser<VF, IV>(children: VF) -> impl IntoView
+where
+    IV: IntoView + 'static,
+    VF: Fn(UserResp) -> IV + Send + Sync + 'static,
+{
+    view! { <CurrentUserOpt children=move |user_opt| { user_opt.map(&children) } /> }
 }

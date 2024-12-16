@@ -4,8 +4,45 @@ use mango3_leptos_utils::components::*;
 use mango3_leptos_utils::i18n::{t, t_string, use_i18n};
 use mango3_leptos_utils::models::ActionFormResp;
 
-use crate::components::MyWebsite;
+use crate::components::{MyWebsite, ThemeSelectorField};
 use crate::server_functions::AttemptToUpdateWebsite;
+
+const DARK_THEMES: [&str; 13] = [
+    "dark",
+    "aqua",
+    "black",
+    "business",
+    "coffee",
+    "dim",
+    "dracula",
+    "forest",
+    "halloween",
+    "luxury",
+    "night",
+    "sunset",
+    "synthwave",
+];
+const LIGHT_THEMES: [&str; 19] = [
+    "light",
+    "acid",
+    "autumn",
+    "bumblebee",
+    "cmyk",
+    "corpoate",
+    "cupcake",
+    "cyberpunk",
+    "fantasy",
+    "emerald",
+    "garden",
+    "lemonade",
+    "lofi",
+    "nord",
+    "pastel",
+    "retro",
+    "valentine",
+    "winter",
+    "wireframe",
+];
 
 #[component]
 pub fn EditPage() -> impl IntoView {
@@ -13,6 +50,8 @@ pub fn EditPage() -> impl IntoView {
     let action_value = server_action.value();
     let error_name = RwSignal::new(None);
     let error_description = RwSignal::new(None);
+    let error_light_theme = RwSignal::new(None);
+    let error_dark_theme = RwSignal::new(None);
     let error_publish = RwSignal::new(None);
 
     Effect::new(move || {
@@ -20,17 +59,22 @@ pub fn EditPage() -> impl IntoView {
 
         error_name.set(response.error("name"));
         error_description.set(response.error("description"));
+        error_light_theme.set(response.error("light-theme"));
+        error_dark_theme.set(response.error("dark-theme"));
         error_publish.set(response.error("publish"));
     });
 
     view! {
         <MyWebsite children=move |website| {
             let i18n = use_i18n();
-            let value_name = RwSignal::new(website.name);
-            let value_description = RwSignal::new(website.description);
-            let value_icon_image_blob = RwSignal::new(website.icon_image_blob);
-            let value_cover_image_blob = RwSignal::new(website.cover_image_blob);
+            let value_name = RwSignal::new(website.name.clone());
+            let value_description = RwSignal::new(website.description.clone());
+            let value_icon_image_blob = RwSignal::new(website.icon_image_blob.clone());
+            let value_cover_image_blob = RwSignal::new(website.cover_image_blob.clone());
             let value_publish = RwSignal::new(website.is_published);
+            let value_light_theme = RwSignal::new(website.light_theme.clone());
+            let value_dark_theme = RwSignal::new(website.dark_theme.clone());
+
             view! {
                 <h2 class="h2">{t!(i18n, studio.edit)}</h2>
 
@@ -42,7 +86,7 @@ pub fn EditPage() -> impl IntoView {
                         success_message=move || { t_string!(i18n, studio.website_updated_successfully) }
                     />
 
-                    <input type="hidden" name="id" value=website.id />
+                    <input type="hidden" name="id" value=website.id.clone() />
 
                     <TextField
                         label=move || t_string!(i18n, studio.name)
@@ -71,6 +115,24 @@ pub fn EditPage() -> impl IntoView {
                         name="cover_image_blob_id"
                         width=288
                         value=value_cover_image_blob
+                    />
+
+                    <ThemeSelectorField
+                        label=t_string!(i18n, studio.light_theme)
+                        name="light_theme"
+                        options=LIGHT_THEMES.to_vec()
+                        value=value_light_theme
+                        error=error_light_theme
+                        website=website.clone()
+                    />
+
+                    <ThemeSelectorField
+                        label=t_string!(i18n, studio.dark_theme)
+                        name="dark_theme"
+                        options=DARK_THEMES.to_vec()
+                        value=value_dark_theme
+                        error=error_dark_theme
+                        website=website.clone()
                     />
 
                     <SwitchField

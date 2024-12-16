@@ -23,6 +23,8 @@ pub struct WebsiteResp {
     pub initials: String,
     pub icon_image_blob: Option<BlobResp>,
     pub cover_image_blob: Option<BlobResp>,
+    pub light_theme: String,
+    pub dark_theme: String,
     pub is_published: bool,
     pub host: String,
     pub url: String,
@@ -49,6 +51,8 @@ impl FromCore<Website> for WebsiteResp {
                 .await
                 .and_then(|result| result.ok())
                 .map(|blob| blob.into()),
+            light_theme: website.light_theme.clone(),
+            dark_theme: website.dark_theme.clone(),
             is_published: website.is_published(),
             host: website.host(),
             url: website.url().to_string(),

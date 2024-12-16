@@ -4,6 +4,7 @@ are_you_sure_you_want_to_delete_this_post: ¿Seguro deseas eliminar este post?
 attached_images: Imágenes adjuntas
 content: Contenido
 cover_image: Imagen de portada
+dark_theme: Tema oscuro
 delete: Eliminar
 edit: Editar
 edit_page: Editar página
@@ -17,6 +18,7 @@ failed_to_update_post: Error al actualizar post
 failed_to_update_website: Error al actualizar website
 description: Descripción
 icon_image: Imagen de icono
+light_theme: Tema claro
 my_websites: My websites
 name: Nombre
 navigation: Navegación
