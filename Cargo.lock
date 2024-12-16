@@ -207,9 +207,9 @@ dependencies = [
 
 [[package]]
 name = "apalis-redis"
-version = "0.6.1"
+version = "0.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "acaa77ff1ac7a943617602c8b5efc90b3a04dd3f888aca93f3a456e23e769dec"
+checksum = "2aed7b5442cf844e5ebe3fe705b66902fedbd654cb2cf27d3a162760cd7cbb58"
 dependencies = [
  "apalis-core",
  "chrono",
