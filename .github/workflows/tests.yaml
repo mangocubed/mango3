@@ -27,7 +27,6 @@ on:
                 default: false
                 required: false
                 type: boolean
-    workflow_dispatch:
 
 env:
     CARGO_TERM_COLOR: always

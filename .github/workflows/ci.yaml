@@ -129,7 +129,7 @@ jobs:
 
     builds:
         needs: [changes, code_analysis]
-        if: ${{ needs.code_analysis.result == 'success' || needs.code_analysis.result == 'skipped' }}
+        if: ${{ always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}
         uses: ./.github/workflows/builds.yaml
         with:
             skip_accounts: ${{ needs.changes.outputs.accounts == 'false' }}
@@ -143,7 +143,7 @@ jobs:
 
     tests:
         needs: [changes, builds]
-        if: ${{ needs.builds.result == 'success' || needs.builds.result == 'skipped' }}
+        if: ${{ always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}
         uses: ./.github/workflows/tests.yaml
         with:
             skip_unit: ${{ needs.changes.outputs.rust == 'false' }}
