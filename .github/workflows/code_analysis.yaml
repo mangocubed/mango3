@@ -19,7 +19,7 @@ env:
 jobs:
     check_rust:
         runs-on: ubuntu-24.04
-        if: ${{ inputs.skip_rust == false }}
+        if: ${{ !inputs.skip_rust }}
         steps:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-rust
@@ -35,7 +35,7 @@ jobs:
 
     check_sql:
         runs-on: ubuntu-24.04
-        if: ${{ inputs.skip_sql == false }}
+        if: ${{ !inputs.skip_sql }}
         steps:
             - uses: actions/checkout@v4
             - uses: actions/setup-python@v5
