@@ -20,22 +20,6 @@ jobs:
     changes:
         runs-on: ubuntu-24.04
         name: Check changes
-        outputs:
-            rust: ${{ steps.filter.outputs.rust }}
-            sql: ${{ steps.filter.outputs.sql }}
-            accounts: ${{ steps.filter.outputs.accounts }}
-            accounts_e2e: ${{ steps.filter.outputs.accounts_e2e }}
-            cli: ${{ steps.filter.outputs.cli }}
-            home: ${{ steps.filter.outputs.home }}
-            home_e2e: ${{ steps.filter.outputs.home_e2e }}
-            monitor: ${{ steps.filter.outputs.monitor }}
-            my_account: ${{ steps.filter.outputs.my_account }}
-            my_account_e2e: ${{ steps.filter.outputs.my_account_e2e }}
-            studio: ${{ steps.filter.outputs.studio }}
-            studio_e2e: ${{ steps.filter.outputs.studio_e2e }}
-            uploads: ${{ steps.filter.outputs.uploads }}
-            websites: ${{ steps.filter.outputs.websites }}
-            websites_e2e: ${{ steps.filter.outputs.websites_e2e }}
         steps:
             - uses: actions/checkout@v4
               name: Determine changed files
@@ -52,6 +36,7 @@ jobs:
                           - 'tailwind.config.js'
                       rust:
                           - '.clippy.toml'
+                          - '.github/**.yaml'
                           - '.rustfmt.toml'
                           - 'leptosfmt.toml'
                           - 'rust-toolchain.toml'
@@ -61,9 +46,11 @@ jobs:
                           - 'Cargo.toml'
                           - '*/Cargo.toml'
                       sql:
+                          - '.github/**.yaml'
                           - '.sqlfluff'
                           - 'migrations/*.sql'
                       workspace: &workspace
+                          - '.github/**'
                           - 'Cargo.lock'
                           - 'Cargo.toml'
                           - 'mango3-core/**'
@@ -119,6 +106,22 @@ jobs:
                           - *websites
                           - *css_js
                           - 'mango3-websites/end2end/**'
+        outputs:
+            rust: ${{ steps.filter.outputs.rust }}
+            sql: ${{ steps.filter.outputs.sql }}
+            accounts: ${{ steps.filter.outputs.accounts }}
+            accounts_e2e: ${{ steps.filter.outputs.accounts_e2e }}
+            cli: ${{ steps.filter.outputs.cli }}
+            home: ${{ steps.filter.outputs.home }}
+            home_e2e: ${{ steps.filter.outputs.home_e2e }}
+            monitor: ${{ steps.filter.outputs.monitor }}
+            my_account: ${{ steps.filter.outputs.my_account }}
+            my_account_e2e: ${{ steps.filter.outputs.my_account_e2e }}
+            studio: ${{ steps.filter.outputs.studio }}
+            studio_e2e: ${{ steps.filter.outputs.studio_e2e }}
+            uploads: ${{ steps.filter.outputs.uploads }}
+            websites: ${{ steps.filter.outputs.websites }}
+            websites_e2e: ${{ steps.filter.outputs.websites_e2e }}
 
     code_analysis:
         needs: changes
