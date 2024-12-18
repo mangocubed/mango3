@@ -2364,9 +2364,9 @@ dependencies = [
 
 [[package]]
 name = "leptos_axum"
-version = "0.7.0"
+version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7b0d388392939f629c45b8c7bcc83997cb6c6026813b57f50953651ad5be63d8"
+checksum = "0c528ee359969865bfc93c0d822ec95877d2575bb886aa3a8a4c5f07ea13eac4"
 dependencies = [
  "any_spawner",
  "axum",
@@ -2493,9 +2493,9 @@ dependencies = [
 
 [[package]]
 name = "leptos_integration_utils"
-version = "0.7.0"
+version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d293a2f64a558d4ca10ef01125d055134f3582f27c407102c4259bb54ca8b55b"
+checksum = "296a1b3dd6481a77cdf6dfd06f787c76b98d188db19a63adef45c17f08bdfa4b"
 dependencies = [
  "futures",
  "hydration_context",
@@ -2530,9 +2530,9 @@ dependencies = [
 
 [[package]]
 name = "leptos_meta"
-version = "0.7.0"
+version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7c651d788bbbf1c57ee95dd3835f9d433b85a409b6256f338c3c7146eb8b7f53"
+checksum = "8de8e47639a539f473338dc44ca67262c9bda7444024abd1479f45474140a221"
 dependencies = [
  "futures",
  "indexmap",
@@ -2546,9 +2546,9 @@ dependencies = [
 
 [[package]]
 name = "leptos_router"
-version = "0.7.0"
+version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "32a4f1784486ebf36805dac22faee21e3e610aa64b6662a7386f065eeec27ae8"
+checksum = "453ff6d084158b180e9f8d091228011783f812b1489ac63de2a452675b490d36"
 dependencies = [
  "any_spawner",
  "either_of",
@@ -2571,9 +2571,9 @@ dependencies = [
 
 [[package]]
 name = "leptos_router_macro"
-version = "0.7.0"
+version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eee7ecef3f1c69b51864190c564e4873d84f200e44efb37934208f9525f02a5f"
+checksum = "f884c5f51f3dd4e59d48ece0b45db7e27db59e80d53656efe6b9f0cfa741c718"
 dependencies = [
  "proc-macro-error2",
  "proc-macro2",
