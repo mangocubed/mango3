@@ -35,6 +35,7 @@ on:
                 default: false
                 required: false
                 type: boolean
+        workflow_dispatch:
 
 env:
     CARGO_TERM_COLOR: always
@@ -44,39 +45,39 @@ env:
 jobs:
     rust_builds:
         runs-on: ubuntu-24.04
-        if: ${{ inputs.skip_cli == false || inputs.skip_monitor == false || inputs.skip_uploads == false }}
+        if: ${{ !inputs.skip_cli || !inputs.skip_monitor || !inputs.skip_uploads }}
         steps:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-rust
             - uses: ./.github/actions/setup-database
             - name: Build Monitor
-              if: ${{ inputs.skip_monitor == false }}
+              if: ${{ !inputs.skip_monitor }}
               run: cargo build --release --bin mango3-monitor
             - name: Build Uploads
-              if: ${{ inputs.skip_uploads == false }}
+              if: ${{ !inputs.skip_uploads }}
               run: cargo build --release --bin mango3-uploads
             - name: Build CLI
-              if: ${{ inputs.skip_cli == false }}
+              if: ${{ !inputs.skip_cli }}
               run: cargo build --release --bin mango3-cli
 
     leptos_builds:
         runs-on: ubuntu-24.04
-        if: ${{ inputs.skip_accounts == false || inputs.skip_home == false || inputs.skip_my_account == false || inputs.skip_studio == false || inputs.skip_websites == false }}
+        if: ${{ !inputs.skip_accounts || !inputs.skip_home || !inputs.skip_my_account || !inputs.skip_studio || !inputs.skip_websites }}
         steps:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-leptos
             - name: Build Accounts
-              if: ${{ inputs.skip_accounts == false }}
+              if: ${{ !inputs.skip_accounts }}
               run: cargo leptos build --release --project mango3-accounts
             - name: Build Home
-              if: ${{ inputs.skip_home == false }}
+              if: ${{ !inputs.skip_home }}
               run: cargo leptos build --release --project mango3-home
             - name: Build My Account
-              if: ${{ inputs.skip_my_account == false}}
+              if: ${{ !inputs.skip_my_account }}
               run: cargo leptos build --release --project mango3-my-account
             - name: Build Studio
-              if: ${{ inputs.skip_studio == false }}
+              if: ${{ !inputs.skip_studio  }}
               run: cargo leptos build --release --project mango3-studio
             - name: Build Websites
-              if: ${{ inputs.skip_websites == false }}
+              if: ${{ !inputs.skip_websites  }}
               run: cargo leptos build --release --project mango3-websites
