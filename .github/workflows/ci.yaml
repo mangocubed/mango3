@@ -29,14 +29,15 @@ jobs:
                   base: main
                   filters: |
                       css_js: &css_js
-                          - 'js/*'
-                          - 'style/*'
+                          - 'js/**'
+                          - 'style/**'
                           - 'package.json'
                           - 'package-lock.json'
                           - 'tailwind.config.js'
                       rust:
                           - '.clippy.toml'
-                          - '.github/**.yaml'
+                          - '.github/workflows/code_analysis.yaml'
+                          - '.github/workflows/tests.yaml'
                           - '.rustfmt.toml'
                           - 'leptosfmt.toml'
                           - 'rust-toolchain.toml'
@@ -46,11 +47,12 @@ jobs:
                           - 'Cargo.toml'
                           - '*/Cargo.toml'
                       sql:
-                          - '.github/**.yaml'
+                          - '.github/workflows/code_analysis.yaml'
                           - '.sqlfluff'
                           - 'migrations/*.sql'
                       workspace: &workspace
-                          - '.github/**'
+                          - '.github/workflows/builds.yaml'
+                          - '.github/workflows/tests.yaml'
                           - 'Cargo.lock'
                           - 'Cargo.toml'
                           - 'mango3-core/**'
@@ -58,7 +60,7 @@ jobs:
                       accounts: &accounts
                           - *workspace
                           - 'mango3-leptos-utils/**'
-                          - 'mango3-accounts/src/**.rs'
+                          - 'mango3-accounts/src/**'
                           - 'mango3-accounts/Cargo.toml'
                       accounts_e2e:
                           - *accounts
