@@ -2302,9 +2302,9 @@ checksum = "03087c2bad5e1034e8cace5926dec053fb3790248370865f5117a7d0213354c8"
 
 [[package]]
 name = "leptos"
-version = "0.7.0"
+version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ba5046c590aea121f6ad5e71fcb75453a933425d39527b9a3b1b295235afc8df"
+checksum = "748f262c2500fdd84fa68ecf82adaf40b95129720593c79a5988cb040b311d97"
 dependencies = [
  "any_spawner",
  "base64",
@@ -2388,9 +2388,9 @@ dependencies = [
 
 [[package]]
 name = "leptos_config"
-version = "0.7.0"
+version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5e2d64c43e2554108c26da3127f8384d92ca76c6f0b7288d1c09c8cc68152064"
+checksum = "5d84757c6532fc724c45a7ccb4b7cf69614480eb11680bad9752d6a561db6287"
 dependencies = [
  "config",
  "regex",
@@ -2401,9 +2401,9 @@ dependencies = [
 
 [[package]]
 name = "leptos_dom"
-version = "0.7.0"
+version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6c15aca81dc2edd040b51c46734f65c6f36e6ba8a31347c1354c94b958044ae0"
+checksum = "a19dae83ed684680c49e26ca884fa414c3db19e757927753c65f95e19e9a1846"
 dependencies = [
  "js-sys",
  "or_poisoned",
@@ -2416,9 +2416,9 @@ dependencies = [
 
 [[package]]
 name = "leptos_hot_reload"
-version = "0.7.0"
+version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0445f3a62696d2d66bef288911af34405718880b4b8dd6c5cfb7751fd8ffcc6b"
+checksum = "744cb94044da4a43b07de1e6890efa973f4d1732fd1177bc941bc5933e180523"
 dependencies = [
  "anyhow",
  "camino",
@@ -2508,9 +2508,9 @@ dependencies = [
 
 [[package]]
 name = "leptos_macro"
-version = "0.7.0"
+version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "92f690c955274f1722ee6c66463ace79301d53a8c2bf7f6e4e61b978ca239e20"
+checksum = "303e41bcd81b290e6c9890fd8e7d8cd989d96d352affbd4e8792efe5a8b21cb8"
 dependencies = [
  "attribute-derive",
  "cfg-if",
@@ -2582,9 +2582,9 @@ dependencies = [
 
 [[package]]
 name = "leptos_server"
-version = "0.7.0"
+version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "93450589df3b3e398c7f5ea64d8f1c8369b1ba9b90e1f70f6cb996b8d443ca3e"
+checksum = "4c3ed98f60b2322fbcfb59551e89a0501dea7e6e0304993fc4faacf12b25b8de"
 dependencies = [
  "any_spawner",
  "base64",
