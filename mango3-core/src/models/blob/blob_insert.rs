@@ -20,7 +20,8 @@ lazy_static! {
         IMAGE_BMP.to_string(),
         IMAGE_GIF.to_string(),
         IMAGE_JPEG.to_string(),
-        IMAGE_PNG.to_string()
+        IMAGE_PNG.to_string(),
+        "image/webp".to_owned(),
     ];
 }
 
@@ -56,10 +57,12 @@ impl Blob {
         .await;
 
         if let Ok(blob) = result {
+            let _ = fs::remove_file(tmp_file_path);
             return Ok(blob);
         }
 
         if !ALLOWED_TYPES.contains(&content_type.to_owned()) {
+            let _ = fs::remove_file(tmp_file_path);
             return Err(ValidationErrors::default());
         }
 
@@ -81,7 +84,8 @@ impl Blob {
         match result {
             Ok(blob) => {
                 let _ = fs::create_dir_all(blob.directory());
-                let _ = fs::rename(tmp_file_path, blob.default_path());
+                let _ = fs::rename(&tmp_file_path, blob.default_path());
+                let _ = fs::remove_file(tmp_file_path);
 
                 Ok(blob)
             }
