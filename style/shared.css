@@ -4,11 +4,11 @@
 
 @layer components {
     .card-text-preview {
-        @apply max-h-[3.5rem] relative overflow-y-hidden;
+        @apply max-h-[3.5rem] relative overflow-y-hidden break-words;
     }
 
     .card-text-preview-overlay {
-        @apply absolute bottom-0 left-0 right-0 top-7 bg-gradient-to-b from-transparent to-base-100 pointer-events-none;
+        @apply absolute bottom-0 left-0 right-0 top-7 bg-gradient-to-b from-transparent pointer-events-none;
     }
 
     .form {
@@ -26,6 +26,14 @@
     .h3 {
         @apply text-lg font-bold mb-4;
     }
+}
+
+pre:has(.hljs) {
+    padding: 0;
+}
+
+.hljs {
+    background: unset !important;
 }
 
 .loading-overlay {

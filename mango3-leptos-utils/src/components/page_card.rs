@@ -18,7 +18,7 @@ pub fn PageCard(page: PagePreviewResp, #[prop(into, optional)] actions: ViewFn) 
     };
 
     view! {
-        <div class="card card-compact bg-base-100 shadow-xl mb-4">
+        <div class="card card-compact bg-base-200 shadow-xl mb-4">
             {
                 let page_title = page.title.clone();
                 let href = href.clone();
@@ -57,9 +57,9 @@ pub fn PageCard(page: PagePreviewResp, #[prop(into, optional)] actions: ViewFn) 
                     }}
                 </div>
 
-                <a href=href class="card-text-preview break-words">
+                <a href=href class="card-text-preview">
                     <div class="prose max-w-none" inner_html=page.content_preview_html />
-                    <div class="card-text-preview-overlay" />
+                    <div class="card-text-preview-overlay to-base-200" />
                 </a>
 
                 <div class="card-actions justify-end">{actions.run()}</div>

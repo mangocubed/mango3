@@ -44,6 +44,24 @@ where
 }
 
 #[component]
+pub fn HighLightCode(content: String) -> impl IntoView {
+    let has_code = move || content.contains("</code>");
+
+    view! {
+        <Show when=has_code>
+            <link
+                rel="stylesheet"
+                href="https://unpkg.com/@highlightjs/cdn-assets@11.11.0/styles/github-dark-dimmed.min.css"
+            />
+            <script type="module">
+                r#"import hljs from "https://unpkg.com/@highlightjs/cdn-assets@11.11.0/es/highlight.min.js";
+                document.body.querySelectorAll("pre code").forEach((element) => { hljs.highlightElement(element); });"#
+            </script>
+        </Show>
+    }
+}
+
+#[component]
 pub fn MetaDateTime(#[prop(into)] property: TextProp, content: DateTime<Utc>) -> impl IntoView {
     view! { <Meta property=property content=content.to_rfc3339_opts(SecondsFormat::Secs, true) /> }
 }

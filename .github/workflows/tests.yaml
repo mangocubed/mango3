@@ -32,7 +32,7 @@ env:
     CARGO_TERM_COLOR: always
     DATABASE_URL: postgres://mango3:mango3@localhost:5432/mango3_test
     JOBS_REDIS_URL: redis://127.0.0.1:6379/10
-    LEPTOS_WASM_OPT_VERSION: version_119
+    LEPTOS_WASM_OPT_VERSION: version_121
     SESSIONS_REDIS_URL: redis://127.0.0.1:6379/11
 
 jobs:

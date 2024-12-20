@@ -54,17 +54,17 @@ pub fn WebsiteCard(website: WebsiteResp, #[prop(into, optional)] actions: ViewFn
                     </a>
 
                     <div class="card-title">
-                        <a href=href>
+                        <a href=href.clone()>
                             <div class="font-bold text-lg">{website.name.clone()}</div>
                             <div class="text-base opacity-70">{website.host.clone()}</div>
                         </a>
                     </div>
                 </div>
 
-                <div class="card-text-preview">
+                <a href=href class="card-text-preview">
                     <div class="prose max-w-none" inner_html=website.description_preview_html />
-                    <div class="card-text-preview-overlay" />
-                </div>
+                    <div class="card-text-preview-overlay to-base-100" />
+                </a>
 
                 <div class="card-actions justify-end">{actions.run()}</div>
             </div>
