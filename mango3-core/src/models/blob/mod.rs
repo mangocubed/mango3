@@ -41,13 +41,7 @@ impl Blob {
         let mime = self.mime();
         match (mime.type_(), mime.subtype()) {
             (IMAGE, JPEG) => ".jpg".to_owned(),
-            (IMAGE, subtype) => format!(".{subtype}"),
-            _ => format!(
-                ".{}",
-                self.file_name.split('.').collect::<Vec<&str>>()[1]
-                    .to_string()
-                    .to_lowercase()
-            ),
+            (_, subtype) => format!(".{subtype}"),
         }
     }
 
