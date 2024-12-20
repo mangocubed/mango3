@@ -7,7 +7,7 @@ use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::pages::NotFoundPage;
 use mango3_leptos_utils::pages::Page;
 
-use crate::components::MetaDateTime;
+use crate::components::{HighLightCode, MetaDateTime};
 use crate::context::use_slug_param;
 use crate::server_functions::get_page;
 
@@ -48,7 +48,7 @@ pub fn ShowPagePage() -> impl IntoView {
                                             })
                                     }}
 
-                                    <div class="card card-compact bg-base-100 shadow-xl mb-4">
+                                    <div class="card card-compact bg-base-200 shadow-xl mb-4">
                                         {
                                             let page_title = page.title.clone();
                                             move || {
@@ -85,9 +85,14 @@ pub fn ShowPagePage() -> impl IntoView {
                                                 }}
                                             </div>
 
-                                            <div class="prose max-w-none break-words" inner_html=page.content_html />
+                                            <div
+                                                class="prose max-w-none break-words"
+                                                inner_html=page.content_html.clone()
+                                            />
                                         </div>
                                     </div>
+
+                                    <HighLightCode content=page.content_html />
                                 </Page>
                             },
                         )

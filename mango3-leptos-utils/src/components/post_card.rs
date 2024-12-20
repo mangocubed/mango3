@@ -70,9 +70,9 @@ pub fn PostCard(
                     </div>
                 </div>
 
-                <a href=href class="card-text-preview break-words">
+                <a href=href class="card-text-preview">
                     <div class="prose max-w-none" inner_html=post.content_preview_html />
-                    <div class="card-text-preview-overlay" />
+                    <div class="card-text-preview-overlay to-base-200" />
                 </a>
 
                 <div class="my-1 opacity-70">

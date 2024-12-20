@@ -15,10 +15,6 @@ mod user_sessions;
 pub use user_sessions::*;
 
 pub async fn extract_client_ip() -> Result<String, ServerFnError> {
-    let header_map = leptos_axum::extract::<HeaderMap>().await?;
-
-    leptos::logging::log!("HEADER MAP: {:?}", header_map);
-
     let InsecureClientIp(client_ip) = leptos_axum::extract::<InsecureClientIp>().await?;
 
     Ok(client_ip.to_string())
