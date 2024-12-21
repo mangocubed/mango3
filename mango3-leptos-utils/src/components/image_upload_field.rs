@@ -92,7 +92,7 @@ pub fn ImageUploadField(
                                 class:file-input-error=has_error
                                 id=id.clone()
                                 type="file"
-                                accept="image/bmp,image/gif,image/jpeg,image/png"
+                                accept="image/bmp,image/gif,image/jpeg,image/png,image/webp"
                                 on:change=upload
                             />
                         },

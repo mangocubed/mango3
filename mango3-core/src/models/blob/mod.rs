@@ -3,7 +3,7 @@ use std::path::Path;
 use std::str::FromStr;
 
 use image::imageops::FilterType;
-use mime::{Mime, BMP, GIF, IMAGE, JPEG, PNG};
+use mime::{Mime, IMAGE, JPEG};
 use sqlx::query_as;
 use sqlx::types::chrono::{DateTime, Utc};
 use sqlx::types::Uuid;
@@ -40,13 +40,8 @@ impl Blob {
     pub fn extension(&self) -> String {
         let mime = self.mime();
         match (mime.type_(), mime.subtype()) {
-            (IMAGE, BMP) => ".bmp".to_owned(),
-            (IMAGE, GIF) => ".gif".to_owned(),
             (IMAGE, JPEG) => ".jpg".to_owned(),
-            (IMAGE, PNG) => ".png".to_owned(),
-            _ => self.file_name.split('.').collect::<Vec<&str>>()[1]
-                .to_string()
-                .to_lowercase(),
+            (_, subtype) => format!(".{subtype}"),
         }
     }
 
