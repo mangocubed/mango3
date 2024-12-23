@@ -4,7 +4,7 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
-anyhow = "1.0.94"
+anyhow = "1.0.95"
 apalis = { workspace = true, features = ["limit"] }
 lettre = { version = "0.11.11", features = [
     "smtp-transport",
