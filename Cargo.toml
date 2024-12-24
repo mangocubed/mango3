@@ -27,14 +27,14 @@ console_error_panic_hook = "0.1.7"
 futures = "0.3.31"
 leptos = "0.7.2"
 leptos_axum = "0.7.2"
-leptos_i18n = { version = "0.5.1", default-features = false, features = [
+leptos_i18n = { version = "0.5.2", default-features = false, features = [
     "cookie",
     "interpolate_display",
     "yaml_files",
 ] }
 leptos_meta = "0.7.2"
 leptos_router = "0.7.2"
-leptos-use = { version = "0.14.0", default-features = false }
+leptos-use = { version = "0.15.0", default-features = false }
 rust_iso3166 = "0.1.13"
 serde = { version = "1.0.216", features = ["derive"] }
 server_fn = "0.7.2"
