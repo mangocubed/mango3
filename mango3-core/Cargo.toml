@@ -9,7 +9,7 @@ apalis = { workspace = true }
 apalis-redis = { workspace = true }
 dotenvy = "0.15.7"
 figment = { version = "0.10.19", features = ["env"] }
-fluent-templates = "0.11.0"
+fluent-templates = "0.12.0"
 fluent-bundle = "0.15.3"
 futures-util = "0.3.31"
 env_logger = "0.11.6"

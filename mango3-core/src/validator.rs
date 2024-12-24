@@ -13,8 +13,8 @@ impl InputError {
             InputError::InvalidLength(min, max) => {
                 let mut text_args = HashMap::new();
 
-                text_args.insert("min".to_owned(), min.unwrap_or_default().into());
-                text_args.insert("max".to_owned(), max.unwrap_or_default().into());
+                text_args.insert("min".into(), min.unwrap_or_default().into());
+                text_args.insert("max".into(), max.unwrap_or_default().into());
 
                 i18n.text_with_args(&self.to_string(), &text_args)
             }
