@@ -28,7 +28,7 @@ pub async fn mailer_worker(job: MailerJob) -> Result<(), Error> {
 pub async fn send_confirmation_code_email(i18n: &I18n, user: &User, action: &str, code: &str) {
     let title = i18n.text(KEY_TEXT_CONFIRMATION_CODE);
     let mut text_args = HashMap::new();
-    text_args.insert(KEY_TEXT_ARG_ACTION.to_owned(), action.into());
+    text_args.insert(KEY_TEXT_ARG_ACTION.into(), action.into());
     let message = format!(
         "{} {},\n\n{}:\n\n{}",
         i18n.text(KEY_TEXT_HELLO),
@@ -42,7 +42,7 @@ pub async fn send_confirmation_code_email(i18n: &I18n, user: &User, action: &str
 
 async fn send_welcome_email(i18n: &I18n, user: &User) {
     let mut text_args = HashMap::new();
-    text_args.insert(KEY_TEXT_ARG_TITLE.to_owned(), BASIC_CONFIG.title.clone().into());
+    text_args.insert(KEY_TEXT_ARG_TITLE.into(), BASIC_CONFIG.title.clone().into());
     let title = i18n.text_with_args(KEY_TEXT_WELCOME_TO_TITLE, &text_args);
     let message = format!("{} @{},\n\n{}", i18n.text(KEY_TEXT_HELLO), user.username, title);
 

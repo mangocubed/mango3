@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use std::collections::HashMap;
 use std::str::FromStr;
 
@@ -27,7 +28,7 @@ impl I18n {
         LOCALES.lookup(&self.0, text_id)
     }
 
-    pub fn text_with_args<T: AsRef<str>>(&self, text_id: &str, args: &HashMap<T, FluentValue>) -> String {
+    pub fn text_with_args(&self, text_id: &str, args: &HashMap<Cow<'static, str>, FluentValue>) -> String {
         LOCALES.lookup_with_args(&self.0, text_id, args)
     }
 }
