@@ -41,7 +41,7 @@ impl Post {
 
         let result = query_as!(
             Self,
-            "UPDATE posts SET
+            r#"UPDATE posts SET
                 title = $2,
                 slug = $3,
                 content = $4,
@@ -51,7 +51,20 @@ impl Post {
                     WHEN $6 IS TRUE THEN current_timestamp
                     ELSE NULL
                 END
-            WHERE id = $1 RETURNING *",
+            WHERE id = $1
+            RETURNING
+                id,
+                website_id,
+                user_id,
+                language::varchar as "language!",
+                title,
+                slug,
+                content,
+                cover_image_blob_id,
+                published_at,
+                NULL::real AS search_rank,
+                created_at,
+                updated_at"#,
             self.id,             // $1
             title,               // $2
             slug,                // $3

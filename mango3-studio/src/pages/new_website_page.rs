@@ -6,6 +6,7 @@ use mango3_leptos_utils::i18n::use_i18n;
 use mango3_leptos_utils::models::ActionFormResp;
 use mango3_leptos_utils::pages::AuthenticatedPage;
 
+use crate::context::use_selected_website;
 use crate::server_functions::AttemptToCreateWebsite;
 
 #[component]
@@ -17,6 +18,10 @@ pub fn NewWebsitePage() -> impl IntoView {
     let error_subdomain = RwSignal::new(None);
     let error_description = RwSignal::new(None);
     let value_subdomain = RwSignal::new("".to_owned());
+
+    let selected_website = use_selected_website();
+
+    selected_website.set(None);
 
     Effect::new(move || {
         let response = ActionFormResp::from(action_value);

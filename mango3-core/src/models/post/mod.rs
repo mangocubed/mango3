@@ -13,6 +13,7 @@ use super::{Blob, PostAttachment, PostView, User, Website};
 
 mod post_insert;
 mod post_paginate;
+mod post_search;
 mod post_update;
 
 #[derive(Clone)]
@@ -20,11 +21,13 @@ pub struct Post {
     pub id: Uuid,
     pub website_id: Uuid,
     pub user_id: Uuid,
+    pub language: String,
     pub title: String,
     pub slug: String,
     pub content: String,
     pub cover_image_blob_id: Option<Uuid>,
     pub published_at: Option<DateTime<Utc>>,
+    pub search_rank: Option<f32>,
     pub created_at: DateTime<Utc>,
     pub updated_at: Option<DateTime<Utc>>,
 }
@@ -63,16 +66,31 @@ impl Post {
         id: Uuid,
         website: Option<&Website>,
         user: Option<&User>,
+        query: Option<&str>,
     ) -> sqlx::Result<Self> {
         let website_id = website.map(|website| website.id);
         let user_id = user.map(|user| user.id);
         query_as!(
             Self,
-            "SELECT * FROM posts WHERE id = $1 AND ($2::uuid IS NULL OR website_id = $2)
-                AND ($3::uuid IS NULL OR user_id = $3) LIMIT 1",
+            r#"SELECT
+                id,
+                website_id,
+                user_id,
+                language::varchar AS "language!",
+                title,
+                slug,
+                content,
+                cover_image_blob_id,
+                published_at,
+                CASE WHEN $4::varchar IS NOT NULL THEN ts_rank(search, websearch_to_tsquery($4)) ELSE NULL END AS search_rank,
+                created_at,
+                updated_at
+            FROM posts WHERE id = $1 AND ($2::uuid IS NULL OR website_id = $2)
+                AND ($3::uuid IS NULL OR user_id = $3) LIMIT 1"#,
             id,         // $1
             website_id, // $2
-            user_id     // $3
+            user_id,    // $3
+            query,      // $4
         )
         .fetch_one(&core_context.db_pool)
         .await
@@ -81,7 +99,20 @@ impl Post {
     pub async fn get_by_slug(core_context: &CoreContext, slug: &str, website: &Website) -> sqlx::Result<Self> {
         query_as!(
             Self,
-            "SELECT * FROM posts WHERE slug = $1 AND website_id = $2 AND published_at IS NOT NULL LIMIT 1",
+            r#"SELECT
+                id,
+                website_id,
+                user_id,
+                language::varchar as "language!",
+                title,
+                slug,
+                content,
+                cover_image_blob_id,
+                published_at,
+                NULL::real AS search_rank,
+                created_at,
+                updated_at
+            FROM posts WHERE slug = $1 AND website_id = $2 AND published_at IS NOT NULL LIMIT 1"#,
             slug,       // $1
             website.id  // $2
         )

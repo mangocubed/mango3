@@ -1,15 +1,15 @@
 use leptos::prelude::*;
-use leptos_i18n::t_string;
 use leptos_meta::{provide_meta_context, Meta};
 use leptos_router::components::{Route, Router, Routes};
 use leptos_router::StaticSegment;
 
 use mango3_leptos_utils::components::{AppProvider, AppTitle, BottomBar, Brand, FaviconLink, TopBar};
 use mango3_leptos_utils::context::use_basic_config;
-use mango3_leptos_utils::i18n::{t, use_i18n};
+use mango3_leptos_utils::i18n::{t, t_string, use_i18n};
 use mango3_leptos_utils::pages::NotFoundPage;
 
-use crate::pages::{IndexPage, PostsPage, WebsitesPage};
+use crate::components::SearchBar;
+use crate::pages::{IndexPage, PostsPage, SearchPage, WebsitesPage};
 
 #[component]
 pub fn App() -> impl IntoView {
@@ -38,13 +38,17 @@ pub fn App() -> impl IntoView {
 
                     <Router>
                         <TopBar brand=move || view! { <Brand href="/" /> }>
-                            <ul class="menu md:menu-horizontal">
+                            <ul class="menu md:menu-horizontal gap-1">
                                 <li>
                                     <a href="/posts">{t!(i18n, shared.posts)}</a>
                                 </li>
 
                                 <li>
                                     <a href="/websites">{t!(i18n, home.websites)}</a>
+                                </li>
+
+                                <li class="max-w-full">
+                                    <SearchBar />
                                 </li>
                             </ul>
                         </TopBar>
@@ -54,6 +58,7 @@ pub fn App() -> impl IntoView {
                                 <Route path=StaticSegment("") view=IndexPage />
                                 <Route path=StaticSegment("posts") view=PostsPage />
                                 <Route path=StaticSegment("websites") view=WebsitesPage />
+                                <Route path=StaticSegment("search") view=SearchPage />
                             </Routes>
                         </main>
 

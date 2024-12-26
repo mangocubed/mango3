@@ -67,6 +67,7 @@ jobs:
                           - *css_js
                           - 'mango3-accounts/end2end/**'
                       cli:
+                          - *workspace
                           - 'mango3-cli/**'
                       home: &home
                           - *workspace
@@ -78,6 +79,7 @@ jobs:
                           - *css_js
                           - 'mango3-home/end2end/**'
                       monitor:
+                          - *workspace
                           - 'mango3-monitor/**'
                       my_account: &my_account
                           - *workspace
@@ -98,6 +100,7 @@ jobs:
                           - *css_js
                           - 'mango3-studio/end2end/**'
                       uploads:
+                          - *workspace
                           - 'mango3-uploads/**'
                       websites: &websites
                           - *workspace

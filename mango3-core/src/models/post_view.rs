@@ -77,7 +77,7 @@ mod tests {
     #[tokio::test]
     async fn should_count_post_views() {
         let core_context = setup_core_context().await;
-        let post = insert_test_post(&core_context, None).await;
+        let post = insert_test_post(&core_context, None, None).await;
 
         let count = PostView::count(&core_context, &post).await.unwrap();
 
@@ -87,7 +87,7 @@ mod tests {
     #[tokio::test]
     async fn should_insert_post_view() {
         let core_context = setup_core_context().await;
-        let post = insert_test_post(&core_context, None).await;
+        let post = insert_test_post(&core_context, None, None).await;
         let user = insert_test_user(&core_context).await;
         let ip_address = fake_ipv4();
 

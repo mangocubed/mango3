@@ -5,6 +5,7 @@ use fake::faker::internet::en::{IPv4, Password, SafeEmail, Username};
 use fake::faker::lorem::en::{Paragraph, Sentence};
 use fake::faker::name::en::Name;
 use fake::{Fake, Faker};
+use rand::{thread_rng, Rng};
 use regex::Regex;
 use url::Url;
 use uuid::Uuid;
@@ -18,6 +19,10 @@ mod test_post;
 pub use test_blob::insert_test_blob;
 pub use test_post::insert_test_post;
 
+fn random_number() -> i32 {
+    thread_rng().gen_range(0..99)
+}
+
 fn fake_birthdate() -> String {
     DateTimeBefore(Utc::now())
         .fake::<DateTime<Utc>>()
@@ -30,7 +35,7 @@ fn fake_country_alpha2() -> String {
 }
 
 fn fake_email() -> String {
-    SafeEmail().fake()
+    format!("{}_{}", random_number(), SafeEmail().fake::<String>())
 }
 
 pub fn fake_ipv4() -> String {
@@ -38,7 +43,10 @@ pub fn fake_ipv4() -> String {
 }
 
 pub fn fake_name() -> String {
-    Name().fake()
+    let mut name = Name().fake::<String>();
+    name.truncate(253);
+
+    format!("{} {}", name, random_number())
 }
 
 fn fake_paragraph() -> String {
@@ -62,8 +70,8 @@ fn fake_slug() -> String {
 
 fn fake_username() -> String {
     let mut username = Username().fake::<String>();
-    username.truncate(16);
-    username
+    username.truncate(13);
+    format!("{}_{}", username, random_number())
 }
 
 pub fn fake_uuid() -> Uuid {

@@ -96,7 +96,7 @@ mod tests {
     async fn should_insert_post_attachment() {
         let core_context = setup_core_context().await;
         let user = insert_test_user(&core_context).await;
-        let post = insert_test_post(&core_context, Some(&user)).await;
+        let post = insert_test_post(&core_context, None, Some(&user)).await;
         let blob = insert_test_blob(&core_context, Some(&user)).await;
 
         let result = PostAttachment::insert(&core_context, &post, &blob).await;
@@ -107,7 +107,7 @@ mod tests {
     #[tokio::test]
     async fn should_get_all_post_attachments() {
         let core_context = setup_core_context().await;
-        let post = insert_test_post(&core_context, None).await;
+        let post = insert_test_post(&core_context, None, None).await;
 
         let all = PostAttachment::all(&core_context, Some(&post)).await;
 
@@ -118,7 +118,7 @@ mod tests {
     async fn should_save_all_post_attachments() {
         let core_context = setup_core_context().await;
         let user = insert_test_user(&core_context).await;
-        let post = insert_test_post(&core_context, Some(&user)).await;
+        let post = insert_test_post(&core_context, None, Some(&user)).await;
         let blob = insert_test_blob(&core_context, Some(&user)).await;
 
         let result = PostAttachment::save_all(&core_context, &post, vec![blob]).await;
