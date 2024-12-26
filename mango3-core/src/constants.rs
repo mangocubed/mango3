@@ -53,6 +53,7 @@ lazy_static! {
         "register".to_owned(),
         "reset-password".to_owned(),
         "root".to_owned(),
+        "search".to_owned(),
         "shop".to_owned(),
         "sign-in".to_owned(),
         "sign-out".to_owned(),

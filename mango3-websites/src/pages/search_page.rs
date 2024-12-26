@@ -2,12 +2,12 @@ use leptos::prelude::*;
 
 use leptos_router::hooks::use_query_map;
 use mango3_leptos_utils::components::{InfiniteScroll, PostCard};
-use mango3_leptos_utils::context::param_query;
 use mango3_leptos_utils::i18n::{t_string, use_i18n};
 use mango3_leptos_utils::models::PostPreviewResp;
 use mango3_leptos_utils::pages::Page;
 
 use crate::server_functions::get_posts_search;
+use mango3_leptos_utils::context::param_query;
 
 #[component]
 pub fn SearchPage() -> impl IntoView {
@@ -42,7 +42,7 @@ pub fn SearchPage() -> impl IntoView {
                     resource=posts_resource
                     let:post
                 >
-                    <PostCard post=post show_host=true />
+                    <PostCard post=post />
                 </InfiniteScroll>
             </section>
         </Page>

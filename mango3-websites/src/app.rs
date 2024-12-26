@@ -12,7 +12,7 @@ use mango3_leptos_utils::pages::NotFoundPage;
 use crate::components::{CurrentWebsite, CurrentWebsiteOpt, WebsiteTopBar};
 use crate::constants::KEY_PARAM_SLUG;
 use crate::context::provide_current_website_resource;
-use crate::pages::{IndexPage, ShowPagePage, ShowPostPage};
+use crate::pages::{IndexPage, SearchPage, ShowPagePage, ShowPostPage};
 
 #[component]
 pub fn App() -> impl IntoView {
@@ -75,6 +75,7 @@ pub fn App() -> impl IntoView {
                             <Routes fallback=NotFoundPage>
                                 <Route path=StaticSegment("") view=IndexPage />
                                 <Route path=(StaticSegment("posts"), ParamSegment(KEY_PARAM_SLUG)) view=ShowPostPage />
+                                <Route path=StaticSegment("search") view=SearchPage />
                                 <Route path=ParamSegment(KEY_PARAM_SLUG) view=ShowPagePage />
                             </Routes>
                         </main>
