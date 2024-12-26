@@ -35,9 +35,22 @@ impl Post {
 
         let result = query_as!(
             Self,
-            "INSERT INTO posts (
+            r#"INSERT INTO posts (
                 website_id, user_id, title, slug, content, cover_image_blob_id, published_at
-            ) VALUES ($1, $2, $3, $4, $5, $6, CASE WHEN $7 IS TRUE THEN current_timestamp ELSE NULL END) RETURNING *",
+                ) VALUES ($1, $2, $3, $4, $5, $6, CASE WHEN $7 IS TRUE THEN current_timestamp ELSE NULL END)
+            RETURNING
+                id,
+                website_id,
+                user_id,
+                language::varchar as "language!",
+                title,
+                slug,
+                content,
+                cover_image_blob_id,
+                published_at,
+                NULL::real AS search_rank,
+                created_at,
+                updated_at"#,
             website.id,          // $1
             user.id,             // $2
             title,               // $3

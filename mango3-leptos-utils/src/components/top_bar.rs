@@ -19,7 +19,7 @@ pub fn TopBar(
 
     let items = move || {
         view! {
-            <div class="md:flex-1">{children_store.read_value().as_ref().map(|c| c())}</div>
+            <div class="md:flex-1 max-w-full">{children_store.read_value().as_ref().map(|c| c())}</div>
 
             <div class="md:flex-none">{right_items.run()}</div>
         }
@@ -32,7 +32,7 @@ pub fn TopBar(
                     <BarsOutlined />
                 </button>
 
-                <div tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] p-2 shadow w-48">
+                <div tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] p-2 shadow w-72">
                     {items.clone()}
                 </div>
             </div>

@@ -6,6 +6,7 @@ use leptos_use::use_element_visibility;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
 
+use crate::i18n::{t, use_i18n};
 use crate::models::CursorPageResp;
 
 use super::LoadingSpinner;
@@ -14,6 +15,7 @@ use super::LoadingSpinner;
 pub fn InfiniteScroll<T, IV, F, K, KF>(
     after: RwSignal<Option<String>>,
     children: F,
+    #[prop(default = RwSignal::new(true), into)] is_loading: RwSignal<bool>,
     key: KF,
     #[prop(into, optional)] nodes: RwSignal<Vec<T>>,
     #[prop(into)] resource: Resource<Result<CursorPageResp<T>, ServerFnError>>,
@@ -25,11 +27,11 @@ where
     K: Eq + Hash + 'static,
     KF: Fn(&T) -> K + Clone + Send + 'static,
 {
+    let i18n = use_i18n();
     let node_ref = NodeRef::<Div>::new();
     let bottom_is_visible = use_element_visibility(node_ref);
     let end_cursor = RwSignal::new(None);
     let has_next_page = RwSignal::new(false);
-    let is_loading = RwSignal::new(true);
 
     Effect::new(move || {
         if let Some(Ok(mut page)) = resource.get() {
@@ -53,12 +55,16 @@ where
         resource.refetch();
     });
 
-    Effect::new(move || {});
-
     view! {
-        <For each=move || nodes.get() key=key let:data>
-            {children(data)}
-        </For>
+        <div>
+            <For each=move || nodes.get() key=key let:data>
+                {children(data)}
+            </For>
+        </div>
+
+        <Show when=move || !is_loading.get() && nodes.get().is_empty()>
+            <div class="text-center text-gray-500">{t!(i18n, shared.no_results_found)}</div>
+        </Show>
 
         <div node_ref=node_ref>
             <Show when=move || is_loading.get()>

@@ -5,6 +5,7 @@ mod chevron;
 mod eye;
 mod information_circle;
 mod link;
+mod magnifying_glass;
 mod plus;
 mod trash;
 
@@ -13,6 +14,7 @@ pub use chevron::{ChevronDownMini, ChevronUpMini};
 pub use eye::{EyeOutlined, EyeSlashOutlined};
 pub use information_circle::InformationCircleOutlined;
 pub use link::LinkOutlined;
+pub use magnifying_glass::MagnifyingGlassMini;
 pub use plus::PlusOutlined;
 pub use trash::TrashOutlined;
 

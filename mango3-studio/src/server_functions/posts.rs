@@ -173,7 +173,7 @@ async fn my_post(website_id: &str, id: &str) -> Result<Option<Post>, ServerFnErr
     let user = extract_user().await?.unwrap();
 
     Ok(
-        Post::get_by_id(&core_context, Uuid::try_parse(id)?, Some(&website), Some(&user))
+        Post::get_by_id(&core_context, Uuid::try_parse(id)?, Some(&website), Some(&user), None)
             .await
             .ok(),
     )
