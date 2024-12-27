@@ -1,17 +1,17 @@
 use leptos::prelude::*;
-use leptos_router::hooks::{use_navigate, use_query_map};
-
-use mango3_leptos_utils::i18n::{t_string, use_i18n};
-use mango3_leptos_utils::icons::MagnifyingGlassMini;
+use leptos_router::hooks::{use_location, use_navigate, use_query_map};
 
 use crate::context::param_query;
+use crate::i18n::{t_string, use_i18n};
+use crate::icons::MagnifyingGlassMini;
 
 #[component]
 pub fn SearchBar() -> impl IntoView {
     let i18n = use_i18n();
+    let location = use_location();
     let navigate = use_navigate();
     let query_map = use_query_map();
-    let query = RwSignal::new(param_query(query_map));
+    let query = RwSignal::new(String::new());
     let action = Action::new(move |()| {
         let navigate = navigate.clone();
         async move {
@@ -27,7 +27,9 @@ pub fn SearchBar() -> impl IntoView {
     });
 
     Effect::new(move || {
-        query.set(param_query(query_map));
+        if location.pathname.get() == "/search" {
+            query.set(param_query(query_map));
+        }
     });
 
     view! {

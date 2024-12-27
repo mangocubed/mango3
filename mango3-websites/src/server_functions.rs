@@ -83,6 +83,25 @@ pub async fn get_posts(after: Option<String>) -> Result<CursorPageResp<PostPrevi
 }
 
 #[server]
+pub async fn get_posts_search(
+    query: String,
+    after: Option<String>,
+) -> Result<CursorPageResp<PostPreviewResp>, ServerFnError> {
+    let Some(website) = current_website().await? else {
+        return Ok(CursorPageResp::default());
+    };
+
+    let core_context = expect_core_context();
+    let page_params = CursorPageParams {
+        after: after.as_ref().and_then(|id| Uuid::try_parse(id).ok()),
+        first: 10,
+    };
+    let page = Post::search(&core_context, &page_params, Some(&website), None, Some(true), &query).await;
+
+    Ok(CursorPageResp::from_core(&core_context, &page).await)
+}
+
+#[server]
 pub async fn get_post(slug: String) -> Result<Option<PostResp>, ServerFnError> {
     let Some(website) = current_website().await? else {
         return Ok(None);

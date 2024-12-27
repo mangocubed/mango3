@@ -44,6 +44,7 @@ posts: Posts
 privacy_policy: Política de privacidad
 register: Registrate
 remove: Removera
+search_results_for: Resultados de busqueda para "{{query}}"
 source_code: Código fuente
 studio: Estudio
 submit: Enviar

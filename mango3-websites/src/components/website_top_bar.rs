@@ -1,7 +1,7 @@
 use leptos::either::Either;
 use leptos::prelude::*;
 
-use mango3_leptos_utils::components::{Brand, GoToMango3, TopBar};
+use mango3_leptos_utils::components::{Brand, GoToMango3, SearchBar, TopBar};
 use mango3_leptos_utils::context::use_basic_config;
 
 use crate::server_functions::get_all_navigation_items;
@@ -52,13 +52,16 @@ pub fn WebsiteTopBar() -> impl IntoView {
                         .and_then(|result| result.ok())
                         .map(|items| {
                             view! {
-                                <ul class="menu md:menu-horizontal">
+                                <ul class="menu md:menu-horizontal gap-1">
                                     <For each=move || items.clone() key=|item| item.id.clone() let:item>
                                         <li>
                                             <a href=item.url>{item.title}</a>
                                         </li>
                                     </For>
 
+                                    <li>
+                                        <SearchBar />
+                                    </li>
                                 </ul>
                             }
                         })
