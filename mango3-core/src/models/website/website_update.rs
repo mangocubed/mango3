@@ -44,7 +44,7 @@ impl Website {
 
         query_as!(
             Self,
-            "UPDATE websites SET
+            r#"UPDATE websites SET
                 name = $2,
                 description = $3,
                 icon_image_blob_id = $4,
@@ -56,7 +56,21 @@ impl Website {
                     WHEN $8 IS TRUE THEN current_timestamp
                     ELSE NULL
                 END
-            WHERE id = $1 RETURNING *",
+            WHERE id = $1 RETURNING
+                id,
+                user_id,
+                name,
+                subdomain,
+                description,
+                icon_image_blob_id,
+                cover_image_blob_id,
+                light_theme,
+                dark_theme,
+                language::varchar AS "language!",
+                published_at,
+                NULL::real AS search_rank,
+                created_at,
+                updated_at"#,
             self.id,             // $1
             name,                // $2
             description,         // $3

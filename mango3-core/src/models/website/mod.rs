@@ -12,6 +12,7 @@ use super::{Blob, User};
 
 mod website_insert;
 mod website_paginate;
+mod website_search;
 mod website_update;
 
 #[derive(Clone)]
@@ -25,7 +26,9 @@ pub struct Website {
     pub cover_image_blob_id: Option<Uuid>,
     pub light_theme: String,
     pub dark_theme: String,
+    pub language: String,
     pub published_at: Option<DateTime<Utc>>,
+    pub search_rank: Option<f32>,
     pub created_at: DateTime<Utc>,
     pub updated_at: Option<DateTime<Utc>>,
 }
@@ -55,13 +58,35 @@ impl Website {
             .unwrap_or_default()
     }
 
-    pub async fn get_by_id(core_context: &CoreContext, id: Uuid, user: Option<&User>) -> sqlx::Result<Self> {
+    pub async fn get_by_id(
+        core_context: &CoreContext,
+        id: Uuid,
+        user: Option<&User>,
+        query: Option<&str>,
+    ) -> sqlx::Result<Self> {
         let user_id = user.map(|user| user.id);
         query_as!(
             Self,
-            "SELECT * FROM websites WHERE id = $1 AND ($2::uuid IS NULL OR user_id = $2) LIMIT 1",
+            r#"SELECT
+                id,
+                user_id,
+                name,
+                subdomain,
+                description,
+                icon_image_blob_id,
+                cover_image_blob_id,
+                light_theme,
+                dark_theme,
+                language::varchar AS "language!",
+                published_at,
+                CASE WHEN $3::varchar IS NOT NULL THEN ts_rank(search, websearch_to_tsquery($3)) ELSE NULL END AS search_rank,
+                created_at,
+                updated_at
+            FROM websites WHERE id = $1 AND ($2::uuid IS NULL OR user_id = $2) LIMIT 1"#,
             id,      // $1
-            user_id  // $2
+            user_id, // $2
+            query,   // $3
+
         )
         .fetch_one(&core_context.db_pool)
         .await
@@ -70,7 +95,22 @@ impl Website {
     pub async fn get_by_subdomain(core_context: &CoreContext, subdomain: &str) -> sqlx::Result<Self> {
         query_as!(
             Self,
-            "SELECT * FROM websites WHERE subdomain = $1 AND published_at IS NOT NULL LIMIT 1",
+            r#"SELECT
+                id,
+                user_id,
+                name,
+                subdomain,
+                description,
+                icon_image_blob_id,
+                cover_image_blob_id,
+                light_theme,
+                dark_theme,
+                language::varchar AS "language!",
+                published_at,
+                NULL::real AS search_rank,
+                created_at,
+                updated_at
+            FROM websites WHERE subdomain = $1 AND published_at IS NOT NULL LIMIT 1"#,
             subdomain // $1
         )
         .fetch_one(&core_context.db_pool)
