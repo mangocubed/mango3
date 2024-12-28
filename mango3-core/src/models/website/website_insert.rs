@@ -53,7 +53,21 @@ impl Website {
 
         query_as!(
             Self,
-            "INSERT INTO websites (user_id, name, subdomain, description) VALUES ($1, $2, $3, $4) RETURNING *",
+            r#"INSERT INTO websites (user_id, name, subdomain, description) VALUES ($1, $2, $3, $4) RETURNING
+                id,
+                user_id,
+                name,
+                subdomain,
+                description,
+                icon_image_blob_id,
+                cover_image_blob_id,
+                light_theme,
+                dark_theme,
+                language::varchar AS "language!",
+                published_at,
+                NULL::real AS search_rank,
+                created_at,
+                updated_at"#,
             user.id,     // $1
             name,        // $2
             subdomain,   // $3

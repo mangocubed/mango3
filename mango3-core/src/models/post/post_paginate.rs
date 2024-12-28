@@ -74,9 +74,17 @@ mod tests {
     #[tokio::test]
     async fn should_get_zero_posts() {
         let core_context = setup_core_context().await;
+        let user = insert_test_user(&core_context).await;
+        let website = insert_test_website(&core_context, Some(&user)).await;
 
-        let cursor_page =
-            Post::paginate_by_created_at_desc(&core_context, &CursorPageParams::default(), None, None, None).await;
+        let cursor_page = Post::paginate_by_created_at_desc(
+            &core_context,
+            &CursorPageParams::default(),
+            Some(&website),
+            Some(&user),
+            None,
+        )
+        .await;
 
         assert!(cursor_page.nodes.is_empty());
     }
