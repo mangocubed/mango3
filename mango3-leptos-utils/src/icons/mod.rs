@@ -2,19 +2,25 @@ use leptos::prelude::*;
 
 mod bars;
 mod chevron;
+mod document;
 mod eye;
+mod home;
 mod information_circle;
 mod link;
 mod magnifying_glass;
+mod pencil;
 mod plus;
 mod trash;
 
-pub use bars::BarsOutlined;
+pub use bars::Bars3Outlined;
 pub use chevron::{ChevronDownMini, ChevronUpMini};
+pub use document::{DocumentOutlined, DocumentTextOutlined};
 pub use eye::{EyeOutlined, EyeSlashOutlined};
+pub use home::HomeOutlined;
 pub use information_circle::InformationCircleOutlined;
 pub use link::LinkOutlined;
 pub use magnifying_glass::MagnifyingGlassMini;
+pub use pencil::PencilSquareOutlined;
 pub use plus::PlusOutlined;
 pub use trash::TrashOutlined;
 

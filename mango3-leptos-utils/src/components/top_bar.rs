@@ -4,7 +4,7 @@ use leptos::prelude::*;
 use crate::components::{CurrentUserOpt, UserTag};
 use crate::context::use_basic_config;
 use crate::i18n::{t, use_i18n};
-use crate::icons::{BarsOutlined, ChevronDownMini};
+use crate::icons::{Bars3Outlined, ChevronDownMini};
 
 #[component]
 pub fn TopBar(
@@ -29,7 +29,7 @@ pub fn TopBar(
         <div class=format!("navbar shadow-md py-0 gap-2 {class}")>
             <div class="dropdown md:hidden">
                 <button class="btn btn-ghost" tabindex="0">
-                    <BarsOutlined />
+                    <Bars3Outlined />
                 </button>
 
                 <div tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] p-2 shadow w-72">

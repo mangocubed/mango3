@@ -34,7 +34,7 @@ pub fn App() -> impl IntoView {
                             show_user_menu=false
                         />
 
-                        <main class="grow m-6">
+                        <main class="grow md:m-6 m-4">
                             <Routes fallback=NotFoundPage>
                                 <Route path=StaticSegment("login") view=LoginPage />
                                 <Route path=StaticSegment("register") view=RegisterPage />

@@ -4,7 +4,7 @@
 
 @layer components {
     .card-text-preview {
-        @apply max-h-[3.5rem] relative overflow-y-hidden break-words;
+        @apply max-h-[3.5rem] relative overflow-y-hidden;
     }
 
     .card-text-preview-overlay {

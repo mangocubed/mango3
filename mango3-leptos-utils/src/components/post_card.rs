@@ -71,7 +71,7 @@ pub fn PostCard(
                 </div>
 
                 <a href=href class="card-text-preview">
-                    <div class="prose max-w-none" inner_html=post.content_preview_html />
+                    <div class="prose max-w-none break-words" inner_html=post.content_preview_html />
                     <div class="card-text-preview-overlay to-base-200" />
                 </a>
 

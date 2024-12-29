@@ -1,19 +1,21 @@
 use leptos::prelude::*;
+use leptos_router::hooks::use_params_map;
 
 use mango3_leptos_utils::components::{ConfirmationDialog, InfiniteScroll, PostCard};
 use mango3_leptos_utils::i18n::{t, use_i18n};
+use mango3_leptos_utils::icons::PlusOutlined;
 use mango3_leptos_utils::models::PostPreviewResp;
 
-use crate::context::use_website_id_param;
+use crate::context::param_website_id;
 use crate::server_functions::{get_my_posts, AttemptToDeletePost};
 
 #[component]
 pub fn PostsPage() -> impl IntoView {
-    let website_id = use_website_id_param();
+    let params_map = use_params_map();
     let i18n = use_i18n();
     let after = RwSignal::new(None);
     let my_posts_resource = Resource::new_blocking(
-        move || (website_id.get().unwrap_or_default(), after.get()),
+        move || (param_website_id(params_map).unwrap_or_default(), after.get()),
         |(website_id, after)| async { get_my_posts(website_id, after).await },
     );
     let posts = RwSignal::new(vec![]);
@@ -28,7 +30,7 @@ pub fn PostsPage() -> impl IntoView {
                 let id = delete_post.get().map(|p: PostPreviewResp| p.id).unwrap();
                 server_action
                     .dispatch(AttemptToDeletePost {
-                        website_id: website_id.get().unwrap_or_default(),
+                        website_id: param_website_id(params_map).unwrap_or_default(),
                         id: id.clone(),
                     });
                 posts
@@ -43,7 +45,17 @@ pub fn PostsPage() -> impl IntoView {
 
         <h2 class="h2">{t!(i18n, shared.posts)}</h2>
 
-        <section class="max-w-[640px] w-full ml-auto mr-auto">
+        <section class="flex justify-end max-w-[640px] w-full mb-5 mx-auto">
+            <a
+                class="btn btn-outline"
+                href=move || format!("/websites/{}/posts/new", param_website_id(params_map).unwrap_or_default())
+            >
+                <PlusOutlined />
+                {t!(i18n, studio.new_post)}
+            </a>
+        </section>
+
+        <section class="max-w-[640px] w-full mx-auto">
             <InfiniteScroll
                 after=after
                 key=|post: &PostPreviewResp| post.id.clone()
@@ -58,11 +70,16 @@ pub fn PostsPage() -> impl IntoView {
                                 view! {
                                     <a
                                         class="btn btn-ghost font-bold"
-                                        href=format!(
-                                            "/websites/{}/posts/{}/edit",
-                                            website_id.get().unwrap_or_default(),
-                                            &post.id,
-                                        )
+                                        href={
+                                            let post_id = post.id.clone();
+                                            move || {
+                                                format!(
+                                                    "/websites/{}/posts/{}/edit",
+                                                    param_website_id(params_map).unwrap_or_default(),
+                                                    post_id,
+                                                )
+                                            }
+                                        }
                                     >
                                         {t!(i18n, studio.edit)}
                                     </a>

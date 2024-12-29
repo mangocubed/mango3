@@ -58,7 +58,7 @@ pub fn SelectedWebsiteDropdown() -> impl IntoView {
                 <ChevronDownMini class="hidden md:block" />
             </button>
 
-            <ul class="md:dropdown-content md:menu bg-base-100 rounded-box z-[1] md:w-48 p-2 md:shadow">
+            <ul class="md:dropdown-content md:menu bg-base-100 rounded-box z-[1] w-[17rem] p-2 md:shadow">
                 <MyWebsitesInfiniteScroll let:website>
                     <li>
                         <a href=format!("/websites/{}", website.id)>
