@@ -39,7 +39,7 @@ pub fn App() -> impl IntoView {
                             <SelectedWebsiteDropdown />
                         </TopBar>
 
-                        <main class="flex flex-col grow m-6">
+                        <main class="flex flex-col grow md:m-6 m-4">
                             <Routes fallback=NotFoundPage>
                                 <Route path=StaticSegment("") view=IndexPage />
                                 <Route path=StaticSegment("new-website") view=NewWebsitePage />

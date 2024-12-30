@@ -32,7 +32,7 @@ pub fn EditProfilePage() -> impl IntoView {
 
     let title = move || t_string!(i18n, my_account.edit_profile);
 
-    let var_name = view! {
+    view! {
         <AuthenticatedPage title=title>
             <h2 class="h2">{title}</h2>
 
@@ -115,6 +115,5 @@ pub fn EditProfilePage() -> impl IntoView {
             </Suspense>
 
         </AuthenticatedPage>
-    };
-    var_name
+    }
 }

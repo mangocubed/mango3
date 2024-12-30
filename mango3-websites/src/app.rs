@@ -71,7 +71,7 @@ pub fn App() -> impl IntoView {
                     <Router>
                         <WebsiteTopBar />
 
-                        <main class="grow m-6">
+                        <main class="grow md:m-6 m-4">
                             <Routes fallback=NotFoundPage>
                                 <Route path=StaticSegment("") view=IndexPage />
                                 <Route path=(StaticSegment("posts"), ParamSegment(KEY_PARAM_SLUG)) view=ShowPostPage />

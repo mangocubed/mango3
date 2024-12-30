@@ -62,7 +62,7 @@ pub fn WebsiteCard(website: WebsiteResp, #[prop(into, optional)] actions: ViewFn
                 </div>
 
                 <a href=href class="card-text-preview">
-                    <div class="prose max-w-none" inner_html=website.description_preview_html />
+                    <div class="prose max-w-none break-words" inner_html=website.description_preview_html />
                     <div class="card-text-preview-overlay to-base-100" />
                 </a>
 

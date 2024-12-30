@@ -33,7 +33,7 @@ pub fn App() -> impl IntoView {
                             right_items=move || view! { <GoToMango3 /> }
                         />
 
-                        <main class="flex flex-col grow m-6">
+                        <main class="flex flex-col grow md:m-6 m-4">
                             <Routes fallback=NotFoundPage>
                                 <ParentRoute path=StaticSegment("") view=IndexParentPage>
                                     <Route path=StaticSegment("") view=IndexPage />

@@ -7,19 +7,22 @@ use mango3_leptos_utils::i18n::{t, t_string, use_i18n};
 
 use crate::components::PageFormFields;
 use crate::constants::KEY_PARAM_PAGE_ID;
-use crate::context::use_website_id_param;
+use crate::context::param_website_id;
 use crate::server_functions::{get_my_page, AttemptToUpdatePage};
 
 #[component]
 pub fn EditPagePage() -> impl IntoView {
     let i18n = use_i18n();
     let params_map = use_params_map();
-    let website_id = use_website_id_param();
-    let page_id = params_map.with(|params| params.get(KEY_PARAM_PAGE_ID).unwrap_or_default());
     let server_action = ServerAction::<AttemptToUpdatePage>::new();
     let action_value = server_action.value();
     let page_resource = Resource::new_blocking(
-        move || (website_id.get().unwrap_or_default(), page_id.clone()),
+        move || {
+            (
+                param_website_id(params_map).unwrap_or_default(),
+                params_map.with(|params| params.get(KEY_PARAM_PAGE_ID).unwrap_or_default()),
+            )
+        },
         |(website_id, id)| async { get_my_page(website_id, id).await },
     );
 
@@ -41,11 +44,15 @@ pub fn EditPagePage() -> impl IntoView {
                                     <ActionFormAlert
                                         action_value=action_value
                                         error_message=move || { t_string!(i18n, studio.failed_to_update_page) }
-                                        redirect_to=format!("/websites/{}/pages", website_id.get().unwrap_or_default())
+                                        redirect_to=format!(
+                                            "/websites/{}/pages",
+                                            param_website_id(params_map).unwrap_or_default(),
+                                        )
+
                                         success_message=move || { t_string!(i18n, studio.page_updated_successfully) }
                                     />
 
-                                    <input type="hidden" name="website_id" value=website_id />
+                                    <input type="hidden" name="website_id" value=move || param_website_id(params_map) />
 
                                     <input type="hidden" name="id" value=page.id.clone() />
 

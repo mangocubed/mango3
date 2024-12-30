@@ -1,6 +1,7 @@
 use leptos::prelude::*;
 use leptos_router::hooks::use_params_map;
 
+use leptos_router::params::ParamsMap;
 use mango3_leptos_utils::models::WebsiteResp;
 
 use crate::constants::KEY_PARAM_WEBSITE_ID;
@@ -11,9 +12,9 @@ pub fn provide_selected_website() {
 }
 
 pub fn provide_my_website_resource() {
-    let website_id = use_website_id_param();
+    let params_map = use_params_map();
     provide_context(Resource::new_blocking(
-        move || website_id.get(),
+        move || param_website_id(params_map),
         |website_id| async {
             if let Some(id) = website_id {
                 get_my_website(id).await
@@ -28,10 +29,8 @@ pub fn use_selected_website() -> RwSignal<Option<WebsiteResp>> {
     use_context::<RwSignal<Option<WebsiteResp>>>().unwrap()
 }
 
-pub fn use_website_id_param() -> Memo<Option<String>> {
-    let params_map = use_params_map();
-
-    Memo::new(move |_| params_map.with(|params| params.get(KEY_PARAM_WEBSITE_ID)))
+pub fn param_website_id(params_map: Memo<ParamsMap>) -> Option<String> {
+    params_map.with(|params| params.get(KEY_PARAM_WEBSITE_ID))
 }
 
 pub fn use_my_website_resource() -> Resource<Result<Option<WebsiteResp>, ServerFnError>> {
