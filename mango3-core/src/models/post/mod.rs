@@ -133,7 +133,7 @@ impl Post {
             .await
             .unwrap()
             .url()
-            .join(&format!("posts/{}", self.slug))
+            .join(&self.slug)
             .unwrap()
     }
 

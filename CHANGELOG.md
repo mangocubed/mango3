@@ -19,7 +19,8 @@
 - Feature to reset password.
 - Feature to register only with invitation code.
 - Feature to update and delete posts.
-- Features to manage pages.
 - GitHub Actions workflows for continuous integration.
 - Features to manage websites navigation.
 - Feature to attach images to posts.
+- Feature to manage websites themes.
+- Features to search websites and posts.

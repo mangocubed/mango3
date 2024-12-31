@@ -24,11 +24,11 @@ pub fn ShowPostPage() -> impl IntoView {
                     Some(Ok(Some(post))) => {
                         EitherOf3::A(
                             view! {
-                                <Meta name="description" content=post.title.clone() />
-                                <Meta name="author" content=post.user.display_name.clone() />
-                                <Meta property="article:author:username" content=post.user.username.clone() />
-
                                 <Page class="max-w-[1200px] w-full ml-auto mr-auto" title=post.title.clone()>
+                                    <Meta name="description" content=post.title.clone() />
+                                    <Meta name="author" content=post.user.display_name.clone() />
+                                    <Meta property="article:author:username" content=post.user.username.clone() />
+
                                     {move || {
                                         post.published_at
                                             .map(|published_at| {

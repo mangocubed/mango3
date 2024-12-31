@@ -17,7 +17,7 @@ where
 {
     pub async fn new<'a, CT, CF, RT, RF, QF>(
         core_context: &'a CoreContext,
-        page_params: &CursorPageParams,
+        cursor_page_params: &CursorPageParams,
         cursor_fn: CF,
         cursor_resource_fn: RF,
         query_fn: QF,
@@ -29,15 +29,15 @@ where
         RT: Future<Output = Vec<T>>,
         QF: Fn(&'a CoreContext, Option<T>, i64) -> RT,
     {
-        let cursor_resource = if let Some(after) = page_params.after {
+        let cursor_resource = if let Some(after) = cursor_page_params.after {
             cursor_resource_fn(core_context, after).await
         } else {
             None
         };
-        let limit = page_params.first + 1;
+        let limit = cursor_page_params.first + 1;
         let mut nodes = query_fn(core_context, cursor_resource, limit.into()).await;
 
-        let has_next_page = if nodes.len() > page_params.first as usize {
+        let has_next_page = if nodes.len() > cursor_page_params.first as usize {
             nodes.remove(nodes.len() - 1);
 
             true
