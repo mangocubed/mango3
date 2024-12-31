@@ -8,7 +8,7 @@ use mango3_leptos_utils::i18n::{t_string, use_i18n};
 use mango3_leptos_utils::pages::NotFoundPage;
 
 use crate::components::SelectedWebsiteDropdown;
-use crate::constants::{KEY_PARAM_PAGE_ID, KEY_PARAM_POST_ID, KEY_PARAM_WEBSITE_ID};
+use crate::constants::{KEY_PARAM_POST_ID, KEY_PARAM_WEBSITE_ID};
 use crate::context::provide_selected_website;
 use crate::pages::{websites, IndexPage, NewWebsitePage};
 
@@ -60,19 +60,6 @@ pub fn App() -> impl IntoView {
                                             StaticSegment("edit"),
                                         )
                                         view=websites::EditPostPage
-                                    />
-                                    <Route path=StaticSegment("pages") view=websites::PagesPage />
-                                    <Route
-                                        path=(StaticSegment("pages"), StaticSegment("new"))
-                                        view=websites::NewPagePage
-                                    />
-                                    <Route
-                                        path=(
-                                            StaticSegment("pages"),
-                                            ParamSegment(KEY_PARAM_PAGE_ID),
-                                            StaticSegment("edit"),
-                                        )
-                                        view=websites::EditPagePage
                                     />
                                     <Route path=StaticSegment("navigation") view=websites::NavigationPage />
                                     <Route path=StaticSegment("edit") view=websites::EditPage />

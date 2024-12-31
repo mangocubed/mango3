@@ -9,7 +9,7 @@ use super::Post;
 impl Post {
     pub async fn search<'a>(
         core_context: &'a CoreContext,
-        page_params: &CursorPageParams,
+        cursor_page_params: &CursorPageParams,
         website: Option<&'a Website>,
         user: Option<&'a User>,
         is_published: Option<bool>,
@@ -17,7 +17,7 @@ impl Post {
     ) -> CursorPage<Self> {
         CursorPage::new(
             core_context,
-            page_params,
+            cursor_page_params,
             |node: Self| node.id,
             move |core_context, after| async move {
                 Self::get_by_id(core_context, after, website, user, Some(query))

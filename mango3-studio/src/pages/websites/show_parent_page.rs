@@ -43,7 +43,6 @@ pub fn ShowParentPage() -> impl IntoView {
                 let website_name = website.name.clone();
                 let home_path = format!("/websites/{}", website.id);
                 let posts_path = format!("{home_path}/posts");
-                let pages_path = format!("{home_path}/pages");
                 let navigation_path = format!("{home_path}/navigation");
                 let edit_path = format!("{home_path}/edit");
                 Either::Left(
@@ -63,12 +62,6 @@ pub fn ShowParentPage() -> impl IntoView {
                                     href=posts_path
                                     icon=move || view! { <DocumentTextOutlined /> }
                                     label=move || t_string!(i18n, shared.posts)
-                                />
-
-                                <MenuItem
-                                    href=pages_path
-                                    icon=move || view! { <DocumentOutlined /> }
-                                    label=move || t_string!(i18n, studio.pages)
                                 />
 
                                 <MenuItem
