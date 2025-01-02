@@ -1,7 +1,7 @@
 use leptos::either::Either;
 use leptos::prelude::*;
 
-use mango3_leptos_utils::components::{Brand, GoToMango3, SearchBar, TopBar};
+use mango3_leptos_utils::components::{Brand, GoToMango3, SearchBar, TopBar, WebsiteIcon};
 use mango3_leptos_utils::context::use_basic_config;
 
 use crate::server_functions::get_all_navigation_items;
@@ -23,11 +23,7 @@ pub fn WebsiteTopBar() -> impl IntoView {
                                 Either::Left(
                                     view! {
                                         <a class="btn btn-ghost text-xl pl-1 pr-2" href="/" title=website.name.clone()>
-                                            <img
-                                                alt=website.name.clone()
-                                                class="rounded"
-                                                src=website.icon_image_blob.map(|blob| blob.variant_url(42, 42, true))
-                                            />
+                                            <WebsiteIcon website=website.clone() size=42 />
 
                                             {website.name.clone()}
                                         </a>

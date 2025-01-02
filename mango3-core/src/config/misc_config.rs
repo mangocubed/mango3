@@ -8,6 +8,7 @@ use super::extract_from_env;
 pub struct MiscConfig {
     pub client_ip_source: String,
     pub(crate) confirmation_code_length: u8,
+    pub(crate) font_path: String,
     pub(crate) invitation_code_length: u8,
     pub(crate) max_post_content_length: u32,
     pub(crate) storage_path: String,
@@ -18,6 +19,7 @@ impl Default for MiscConfig {
         Self {
             client_ip_source: "XRealIp".to_owned(),
             confirmation_code_length: 6,
+            font_path: "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf".to_owned(),
             invitation_code_length: 6,
             max_post_content_length: 16384,
             #[cfg(not(test))]

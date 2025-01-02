@@ -22,12 +22,22 @@ pub struct WebsiteResp {
     pub description_preview_html: String,
     pub initials: String,
     pub icon_image_blob: Option<BlobResp>,
+    pub text_icon_url: String,
     pub cover_image_blob: Option<BlobResp>,
     pub light_theme: String,
     pub dark_theme: String,
     pub is_published: bool,
     pub host: String,
     pub url: String,
+}
+
+impl WebsiteResp {
+    pub fn icon_image_url(&self, size: u16) -> String {
+        self.icon_image_blob
+            .as_ref()
+            .map(|blob| blob.variant_url(size, size, true))
+            .unwrap_or_else(|| format!("{}?size={}", self.text_icon_url, size))
+    }
 }
 
 #[cfg(feature = "ssr")]
@@ -46,6 +56,7 @@ impl FromCore<Website> for WebsiteResp {
                 .await
                 .and_then(|result| result.ok())
                 .map(|blob| blob.into()),
+            text_icon_url: website.text_icon_url().to_string(),
             cover_image_blob: website
                 .cover_image_blob(&core_context)
                 .await

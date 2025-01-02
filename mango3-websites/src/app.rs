@@ -33,6 +33,7 @@ pub fn App() -> impl IntoView {
                         move |website| {
                             match website {
                                 Some(website) => {
+                                    let website_name = website.name.clone();
                                     let title = title.clone();
                                     Either::Left(
                                         view! {
@@ -44,22 +45,14 @@ pub fn App() -> impl IntoView {
                                                 })
                                                     + &format!(
                                                         "{} ({})",
-                                                        website.name.clone(),
+                                                        website_name.clone(),
                                                         t_string!(
                                                             i18n, websites.powered_by_title, title = title.clone()
                                                         ),
                                                     )
                                             } />
 
-                                            {move || {
-                                                if let Some(icon_image_blob) = &website.icon_image_blob {
-                                                    view! {
-                                                        <FaviconLink href=icon_image_blob.variant_url(32, 32, true) />
-                                                    }
-                                                } else {
-                                                    view! { <FaviconLink /> }
-                                                }
-                                            }}
+                                            <FaviconLink href=website.icon_image_url(32) />
                                         },
                                     )
                                 }

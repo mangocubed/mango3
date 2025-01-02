@@ -31,6 +31,7 @@
 | MAILER_SMTP_USERNAME          | String  |                                                                  |
 | MISC_CLIENT_IP_SOURCE         | String  | XRealIp                                                          |
 | MISC_CONFIRMATION_CODE_LENGTH | Integer | 6                                                                |
+| MISC_FONT_PATH                | String  | /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf                  |
 | MISC_INVITATION_CODE_LENGTH   | Integer | 6                                                                |
 | MISC_MAX_POST_CONTENT_LENGTH  | Integer | 16384                                                            |
 | MISC_STORAGE_PATH             | String  | ./storage                                                        |

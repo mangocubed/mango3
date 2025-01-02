@@ -5,6 +5,7 @@ use leptos_meta::{Link, Title};
 
 use crate::context::use_basic_config;
 use crate::i18n::{t, use_i18n};
+use crate::models::WebsiteResp;
 
 mod action_form_alert;
 mod alert_dialog;
@@ -115,5 +116,14 @@ pub fn GoToMango3() -> impl IntoView {
         <a class="btn btn-ghost btn-block px-2" href=basic_config.home_url.clone()>
             {t!(i18n, shared.go_to_title, title = basic_config.title.clone())}
         </a>
+    }
+}
+
+#[component]
+pub fn WebsiteIcon(website: WebsiteResp, #[prop(default = 32)] size: u16) -> impl IntoView {
+    view! {
+        <div class="avatar">
+            <img alt=website.initials.clone() class="rounded" width=size height=size src=website.icon_image_url(size) />
+        </div>
     }
 }

@@ -141,6 +141,10 @@ impl Website {
         self.published_at.is_some()
     }
 
+    pub fn text_icon_url(&self) -> Url {
+        BASIC_CONFIG.text_icon_url(&self.initials())
+    }
+
     pub fn url(&self) -> Url {
         BASIC_CONFIG.website_url(&self.subdomain)
     }

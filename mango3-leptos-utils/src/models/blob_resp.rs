@@ -20,7 +20,7 @@ impl From<Blob> for BlobResp {
 }
 
 impl BlobResp {
-    pub fn variant_url(&self, width: i16, height: i16, fill: bool) -> String {
+    pub fn variant_url(&self, width: u16, height: u16, fill: bool) -> String {
         format!("{}?width={width}&height={height}&fill={fill}", self.url)
     }
 }

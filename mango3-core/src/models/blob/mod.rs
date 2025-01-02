@@ -84,7 +84,7 @@ impl Blob {
         Mime::from_str(&self.content_type).unwrap()
     }
 
-    pub fn variant_filename(&self, width: Option<u32>, height: Option<u32>, fill: Option<bool>) -> String {
+    pub fn variant_filename(&self, width: Option<u16>, height: Option<u16>, fill: Option<bool>) -> String {
         if width.is_some() && height.is_some() {
             let width = width.unwrap();
             let height = height.unwrap();
@@ -103,7 +103,7 @@ impl Blob {
         self.file_name.clone()
     }
 
-    pub fn image_variant_path(&self, width: u32, height: u32, fill: bool) -> String {
+    pub fn image_variant_path(&self, width: u16, height: u16, fill: bool) -> String {
         format!(
             "{}/{}x{}{}{}",
             self.directory(),
@@ -114,7 +114,7 @@ impl Blob {
         )
     }
 
-    pub fn read(&self, width: Option<u32>, height: Option<u32>, fill: Option<bool>) -> Option<Vec<u8>> {
+    pub fn read(&self, width: Option<u16>, height: Option<u16>, fill: Option<bool>) -> Option<Vec<u8>> {
         if width.is_some() && height.is_some() {
             let width = width.unwrap();
             let height = height.unwrap();
@@ -125,9 +125,9 @@ impl Blob {
             if !Path::new(&variant_path).exists() {
                 let mut image = image::open(self.default_path()).unwrap();
                 image = if fill {
-                    image.resize_to_fill(width, height, FilterType::Triangle)
+                    image.resize_to_fill(width as u32, height as u32, FilterType::Triangle)
                 } else {
-                    image.resize(width, height, FilterType::Triangle)
+                    image.resize(width as u32, height as u32, FilterType::Triangle)
                 };
                 image.save(variant_path.clone()).unwrap();
             }
