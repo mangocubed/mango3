@@ -4,12 +4,12 @@ use leptos_meta::{provide_meta_context, Title};
 use leptos_router::components::{Route, Router, Routes};
 use leptos_router::{ParamSegment, StaticSegment};
 
-use mango3_leptos_utils::components::{AppProvider, AppTitle, BottomBar, FaviconLink};
+use mango3_leptos_utils::components::{AppProvider, AppTitle, BottomBar, FaviconLink, LoadingOverlay};
 use mango3_leptos_utils::context::use_basic_config;
 use mango3_leptos_utils::i18n::{t, t_string, use_i18n};
 use mango3_leptos_utils::pages::NotFoundPage;
 
-use crate::components::{CurrentWebsite, CurrentWebsiteOpt, WebsiteTopBar};
+use crate::components::{CurrentWebsiteOpt, WebsiteTopBar};
 use crate::constants::KEY_PARAM_SLUG;
 use crate::context::provide_current_website_resource;
 use crate::pages::{IndexPage, SearchPage, ShowPostPage};
@@ -84,11 +84,9 @@ pub fn App() -> impl IntoView {
                                                 dark_theme=website.dark_theme.clone()
                                                 aside_items=move || {
                                                     view! {
-                                                        <CurrentWebsite let:_>
-                                                            {t!(
-                                                                i18n, websites.this_website_is_part_of_title_ecosystem, title = title.clone()
-                                                            )}
-                                                        </CurrentWebsite>
+                                                        {t!(
+                                                            i18n, websites.this_website_is_part_of_title_ecosystem, title = title.clone()
+                                                        )}
                                                     }
                                                 }
                                             />
@@ -99,6 +97,23 @@ pub fn App() -> impl IntoView {
                             }
                         } />
                     </Router>
+
+                    <CurrentWebsiteOpt children=move |website| {
+                        match website {
+                            Some(website) => {
+                                Either::Left(
+                                    view! {
+                                        <LoadingOverlay
+                                            icon_class="rounded-xl"
+                                            icon_url=website.icon_image_url(128)
+                                            pulse_class="rounded"
+                                        />
+                                    },
+                                )
+                            }
+                            None => Either::Right(view! { <LoadingOverlay /> }),
+                        }
+                    } />
                 }
             }}
         </AppProvider>

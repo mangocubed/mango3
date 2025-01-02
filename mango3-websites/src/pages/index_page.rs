@@ -23,7 +23,7 @@ pub fn IndexPage() -> impl IntoView {
                     Either::Left(
                         view! {
                             <Page title=move || t_string!(i18n, shared.home)>
-                                <section class="max-w-[1200px] w-full ml-auto mr-auto">
+                                <section class="max-w-[1200px] w-full mx-auto">
                                     {move || {
                                         website
                                             .cover_image_blob
@@ -37,7 +37,7 @@ pub fn IndexPage() -> impl IntoView {
 
                                 </section>
 
-                                <section class="max-w-[640px] w-full ml-auto mr-auto mt-4">
+                                <section class="max-w-[640px] w-full mx-auto mt-4">
                                     <InfiniteScroll
                                         after=after
                                         key=|post: &PostPreviewResp| post.id.clone()
