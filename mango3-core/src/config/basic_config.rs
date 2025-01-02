@@ -86,6 +86,10 @@ impl BasicConfig {
         Url::parse(&format!("{}://{}.{}", self.scheme(), subdomain, self.domain)).unwrap()
     }
 
+    pub fn text_icon_url(&self, text: &str) -> Url {
+        self.uploads_url().join(&format!("text-icons/{text}")).unwrap()
+    }
+
     fn uploads_url(&self) -> Url {
         self.subdomain_url("uploads")
     }
