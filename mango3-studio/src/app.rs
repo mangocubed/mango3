@@ -3,7 +3,7 @@ use leptos_meta::{provide_meta_context, Meta};
 use leptos_router::components::{ParentRoute, Route, Router, Routes};
 use leptos_router::{ParamSegment, StaticSegment};
 
-use mango3_leptos_utils::components::{AppProvider, AppTitle, BottomBar, Brand, FaviconLink, GoToMango3, TopBar};
+use mango3_leptos_utils::components::*;
 use mango3_leptos_utils::i18n::{t_string, use_i18n};
 use mango3_leptos_utils::pages::NotFoundPage;
 
@@ -69,6 +69,8 @@ pub fn App() -> impl IntoView {
 
                         <BottomBar />
                     </Router>
+
+                    <LoadingOverlay />
                 }
             }}
         </AppProvider>

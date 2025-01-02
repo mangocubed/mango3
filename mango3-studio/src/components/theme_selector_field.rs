@@ -1,7 +1,7 @@
 use leptos::prelude::*;
 use leptos::text_prop::TextProp;
 
-use mango3_leptos_utils::components::TopBar;
+use mango3_leptos_utils::components::{TopBar, WebsiteIcon};
 use mango3_leptos_utils::models::WebsiteResp;
 
 #[component]
@@ -14,10 +14,6 @@ pub fn ThemeSelectorField(
     website: WebsiteResp,
 ) -> impl IntoView {
     let website_name = website.name.clone();
-    let website_image_blob_url = website
-        .icon_image_blob
-        .as_ref()
-        .map(|blob| blob.variant_url(42, 42, true));
     let options_store = StoredValue::new(options);
 
     view! {
@@ -34,7 +30,6 @@ pub fn ThemeSelectorField(
                     key=|key| key.to_owned()
                     children=move |key| {
                         let website_name = website_name.clone();
-                        let website_icon_image_blob_url = website_image_blob_url.clone();
                         let is_selected = move || value.get() == key;
                         view! {
                             <div
@@ -50,16 +45,16 @@ pub fn ThemeSelectorField(
 
                                     <div class="relative zoom-75" data-theme=key>
                                         <TopBar
-                                            brand=move || {
-                                                view! {
-                                                    <a class="btn btn-ghost text-xl pl-1 pr-2">
-                                                        <img
-                                                            alt=website_name.clone()
-                                                            class="rounded w-[42px] h-[42px]"
-                                                            src=website_icon_image_blob_url
-                                                        />
-                                                        {website_name.clone()}
-                                                    </a>
+                                            brand={
+                                                let website = website.clone();
+                                                move || {
+                                                    view! {
+                                                        <a class="btn btn-ghost text-xl pl-1 pr-2">
+                                                            <WebsiteIcon website=website size=42 />
+
+                                                            {website_name.clone()}
+                                                        </a>
+                                                    }
                                                 }
                                             }
                                             class="bg-base-200"
