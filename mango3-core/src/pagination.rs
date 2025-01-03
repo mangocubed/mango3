@@ -67,7 +67,7 @@ impl<T> Default for CursorPage<T> {
 
 pub struct CursorPageParams {
     pub after: Option<Uuid>,
-    pub first: i8,
+    pub first: u8,
 }
 
 impl Default for CursorPageParams {

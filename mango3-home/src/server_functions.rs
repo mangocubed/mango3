@@ -15,12 +15,12 @@ use mango3_leptos_utils::models::FromCore;
 use mango3_leptos_utils::ssr::expect_core_context;
 
 #[server]
-pub async fn get_posts(after: Option<String>) -> Result<CursorPageResp<PostPreviewResp>, ServerFnError> {
+pub async fn get_posts(first: u8, after: Option<String>) -> Result<CursorPageResp<PostPreviewResp>, ServerFnError> {
     let core_context = expect_core_context();
 
     let page_params = CursorPageParams {
         after: after.as_ref().and_then(|id| Uuid::try_parse(id).ok()),
-        first: 10,
+        first,
     };
     let page = Post::paginate_by_created_at_desc(&core_context, &page_params, None, None, Some(true)).await;
 
@@ -44,12 +44,12 @@ pub async fn get_posts_search(
 }
 
 #[server]
-pub async fn get_websites(after: Option<String>) -> Result<CursorPageResp<WebsiteResp>, ServerFnError> {
+pub async fn get_websites(first: u8, after: Option<String>) -> Result<CursorPageResp<WebsiteResp>, ServerFnError> {
     let core_context = expect_core_context();
 
     let page_params = CursorPageParams {
         after: after.as_ref().and_then(|id| Uuid::try_parse(id).ok()),
-        first: 10,
+        first,
     };
     let page = Website::paginate_by_created_at_desc(&core_context, &page_params, None, Some(true)).await;
 
