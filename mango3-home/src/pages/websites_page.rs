@@ -12,7 +12,10 @@ use crate::server_functions::get_websites;
 pub fn WebsitesPage() -> impl IntoView {
     let i18n = use_i18n();
     let after = RwSignal::new(None);
-    let websites_resource = Resource::new_blocking(move || after.get(), get_websites);
+    let websites_resource = Resource::new_blocking(
+        move || after.get(),
+        |after| async move { get_websites(10, after).await },
+    );
 
     let title = move || t_string!(i18n, home.websites);
 
