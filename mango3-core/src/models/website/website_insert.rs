@@ -3,7 +3,7 @@ use sqlx::{query, query_as};
 
 use crate::constants::{BLACKLISTED_SUBDOMAINS, REGEX_SUBDOMAIN};
 use crate::enums::{Input, InputError};
-use crate::models::User;
+use crate::models::{Hashtag, User};
 use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
 use crate::CoreContext;
 
@@ -51,14 +51,19 @@ impl Website {
             return Err(validator.errors);
         }
 
+        let hashtags = Hashtag::get_or_insert_all(core_context, description).await?;
+        let hashtag_ids = hashtags.iter().map(|hashtag| hashtag.id).collect::<Vec<Uuid>>();
+
         query_as!(
             Self,
-            r#"INSERT INTO websites (user_id, name, subdomain, description) VALUES ($1, $2, $3, $4) RETURNING
+            r#"INSERT INTO websites (user_id, name, subdomain, description, hashtag_ids) VALUES ($1, $2, $3, $4, $5)
+            RETURNING
                 id,
                 user_id,
                 name,
                 subdomain,
                 description,
+                hashtag_ids,
                 icon_image_blob_id,
                 cover_image_blob_id,
                 light_theme,
@@ -68,10 +73,11 @@ impl Website {
                 NULL::real AS search_rank,
                 created_at,
                 updated_at"#,
-            user.id,     // $1
-            name,        // $2
-            subdomain,   // $3
-            description, // $4
+            user.id,      // $1
+            name,         // $2
+            subdomain,    // $3
+            description,  // $4
+            &hashtag_ids, // $5
         )
         .fetch_one(&core_context.db_pool)
         .await

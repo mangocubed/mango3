@@ -38,7 +38,7 @@ pub fn ShowParentPage() -> impl IntoView {
     view! {
         <MyWebsiteOpt children=move |website| {
             let selected_website = use_selected_website();
-            selected_website.set(website.clone());
+            selected_website.set(website.as_ref().map(|w| w.into()));
             if let Some(website) = website {
                 let website_name = website.name.clone();
                 let home_path = format!("/websites/{}", website.id);

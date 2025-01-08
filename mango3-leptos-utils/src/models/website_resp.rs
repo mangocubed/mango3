@@ -70,3 +70,69 @@ impl FromCore<Website> for WebsiteResp {
         }
     }
 }
+
+#[derive(Clone, Deserialize, Serialize)]
+pub struct WebsitePreviewResp {
+    pub id: String,
+    pub name: String,
+    pub description_preview_html: String,
+    pub initials: String,
+    pub icon_image_blob: Option<BlobResp>,
+    pub text_icon_url: String,
+    pub is_published: bool,
+    pub host: String,
+    pub url: String,
+}
+
+impl WebsitePreviewResp {
+    pub fn icon_image_url(&self, size: u16) -> String {
+        self.icon_image_blob
+            .as_ref()
+            .map(|blob| blob.variant_url(size, size, true))
+            .unwrap_or_else(|| format!("{}?size={}", self.text_icon_url, size))
+    }
+}
+
+#[cfg(feature = "ssr")]
+#[async_trait]
+impl FromCore<Website> for WebsitePreviewResp {
+    async fn from_core(core_context: &CoreContext, website: &Website) -> Self {
+        Self {
+            id: website.id.to_string(),
+            name: website.name.clone(),
+            description_preview_html: parse_html(&website.description_preview(), false),
+            initials: website.initials(),
+            icon_image_blob: website
+                .icon_image_blob(&core_context)
+                .await
+                .and_then(|result| result.ok())
+                .map(|blob| blob.into()),
+            text_icon_url: website.text_icon_url().to_string(),
+            is_published: website.is_published(),
+            host: website.host(),
+            url: website.url().to_string(),
+        }
+    }
+}
+
+impl From<&WebsiteResp> for WebsitePreviewResp {
+    fn from(website: &WebsiteResp) -> Self {
+        Self {
+            id: website.id.clone(),
+            name: website.name.clone(),
+            description_preview_html: website.description_preview_html.clone(),
+            initials: website.initials.clone(),
+            icon_image_blob: website.icon_image_blob.clone(),
+            text_icon_url: website.text_icon_url.clone(),
+            is_published: website.is_published,
+            host: website.host.clone(),
+            url: website.url.clone(),
+        }
+    }
+}
+
+impl From<WebsiteResp> for WebsitePreviewResp {
+    fn from(website: WebsiteResp) -> Self {
+        Self::from(&website)
+    }
+}

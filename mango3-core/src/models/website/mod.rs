@@ -8,7 +8,7 @@ use crate::enums::{Input, InputError};
 use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
 use crate::CoreContext;
 
-use super::{Blob, User};
+use super::{Blob, Hashtag, User};
 
 mod website_insert;
 mod website_paginate;
@@ -22,6 +22,7 @@ pub struct Website {
     pub name: String,
     pub subdomain: String,
     pub description: String,
+    pub hashtag_ids: Vec<Uuid>,
     pub icon_image_blob_id: Option<Uuid>,
     pub cover_image_blob_id: Option<Uuid>,
     pub light_theme: String,
@@ -73,6 +74,7 @@ impl Website {
                 name,
                 subdomain,
                 description,
+                hashtag_ids,
                 icon_image_blob_id,
                 cover_image_blob_id,
                 light_theme,
@@ -101,6 +103,7 @@ impl Website {
                 name,
                 subdomain,
                 description,
+                hashtag_ids,
                 icon_image_blob_id,
                 cover_image_blob_id,
                 light_theme,
@@ -115,6 +118,10 @@ impl Website {
         )
         .fetch_one(&core_context.db_pool)
         .await
+    }
+
+    pub async fn hashtags(&self, core_context: &CoreContext) -> Vec<Hashtag> {
+        Hashtag::all_by_ids(core_context, &self.hashtag_ids).await
     }
 
     pub fn host(&self) -> String {

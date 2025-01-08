@@ -2,7 +2,7 @@ use leptos::prelude::*;
 use leptos::text_prop::TextProp;
 
 use mango3_leptos_utils::components::{TopBar, WebsiteIcon};
-use mango3_leptos_utils::models::WebsiteResp;
+use mango3_leptos_utils::models::WebsitePreviewResp;
 
 #[component]
 pub fn ThemeSelectorField(
@@ -11,7 +11,7 @@ pub fn ThemeSelectorField(
     name: &'static str,
     options: Vec<&'static str>,
     value: RwSignal<String>,
-    website: WebsiteResp,
+    #[prop(into)] website: WebsitePreviewResp,
 ) -> impl IntoView {
     let website_name = website.name.clone();
     let options_store = StoredValue::new(options);

@@ -11,7 +11,7 @@ use mango3_core::models::{Post, PostAttachment};
 #[cfg(feature = "ssr")]
 use mango3_core::CoreContext;
 
-use super::{BlobResp, UserPreviewResp};
+use super::{BlobResp, HashtagResp, UserPreviewResp, WebsitePreviewResp};
 
 #[cfg(feature = "ssr")]
 use super::{parse_html, FromCore};
@@ -48,6 +48,7 @@ pub struct PostResp {
     pub title: String,
     pub slug: String,
     pub content_html: String,
+    pub hashtags: Vec<HashtagResp>,
     pub attachments: Vec<PostAttachmentResp>,
     pub cover_image_blob: Option<BlobResp>,
     pub is_published: bool,
@@ -72,6 +73,12 @@ impl FromCore<Post> for PostResp {
             title: post.title.clone(),
             slug: post.slug.clone(),
             content_html: parse_html(&post.content, true),
+            hashtags: post
+                .hashtags(&core_context)
+                .await
+                .iter()
+                .map(|hashtag| hashtag.into())
+                .collect(),
             attachments: future::join_all(
                 post.attachments(core_context)
                     .await
@@ -97,15 +104,16 @@ impl FromCore<Post> for PostResp {
 #[derive(Clone, Deserialize, Serialize)]
 pub struct PostPreviewResp {
     pub id: String,
+    pub website: WebsitePreviewResp,
     pub user: UserPreviewResp,
     pub title: String,
     pub slug: String,
     pub content_preview_html: String,
+    pub hashtags: Vec<HashtagResp>,
     pub cover_image_blob: Option<BlobResp>,
     pub is_published: bool,
     pub views_count: i64,
     pub url: String,
-    pub host: String,
     pub created_at: DateTime<Utc>,
     pub updated_at: Option<DateTime<Utc>>,
 }
@@ -116,6 +124,11 @@ impl FromCore<Post> for PostPreviewResp {
     async fn from_core(core_context: &CoreContext, post: &Post) -> Self {
         Self {
             id: post.id.to_string(),
+            website: WebsitePreviewResp::from_core(
+                &core_context,
+                &post.website(&core_context).await.expect("Could not get website"),
+            )
+            .await,
             user: UserPreviewResp::from_core(
                 &core_context,
                 &post.user(&core_context).await.expect("Could not get user"),
@@ -124,6 +137,12 @@ impl FromCore<Post> for PostPreviewResp {
             title: post.title.clone(),
             slug: post.slug.clone(),
             content_preview_html: parse_html(&post.content_preview(), false),
+            hashtags: post
+                .hashtags(&core_context)
+                .await
+                .iter()
+                .map(|hashtag| hashtag.into())
+                .collect(),
             cover_image_blob: post
                 .cover_image_blob(&core_context)
                 .await
@@ -132,7 +151,6 @@ impl FromCore<Post> for PostPreviewResp {
             is_published: post.is_published(core_context).await,
             views_count: post.views_count(core_context).await.expect("Could not get views count"),
             url: post.url(&core_context).await.to_string(),
-            host: post.host(&core_context).await.to_string(),
             created_at: post.created_at,
             updated_at: post.updated_at,
         }

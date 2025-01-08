@@ -41,6 +41,7 @@ impl Post {
                         title,
                         slug,
                         content,
+                        hashtag_ids,
                         cover_image_blob_id,
                         published_at,
                         ts_rank(search, websearch_to_tsquery($4)) AS search_rank,

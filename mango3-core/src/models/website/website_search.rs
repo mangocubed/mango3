@@ -37,6 +37,7 @@ impl Website {
                         name,
                         subdomain,
                         description,
+                        hashtag_ids,
                         icon_image_blob_id,
                         cover_image_blob_id,
                         light_theme,

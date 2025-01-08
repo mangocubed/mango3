@@ -20,7 +20,7 @@ pub fn SearchPage() -> impl IntoView {
         <Page title=title>
             <h1 class="h2">{title}</h1>
 
-            <section class="max-w-[640px] w-full ml-auto mr-auto">
+            <section class="max-w-[640px] w-full mx-auto">
                 <div role="tablist" class="tabs tabs-bordered mb-5">
                     <a
                         role="tab"

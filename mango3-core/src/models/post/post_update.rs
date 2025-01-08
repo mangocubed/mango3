@@ -1,6 +1,7 @@
 use sqlx::query_as;
+use sqlx::types::uuid::Uuid;
 
-use crate::models::{Blob, PostAttachment};
+use crate::models::{Blob, Hashtag, PostAttachment};
 use crate::validator::{ValidationErrors, Validator};
 use crate::CoreContext;
 
@@ -24,6 +25,9 @@ impl Post {
         let content = content.trim();
         let cover_image_blob_id = cover_image_blob.map(|blob| blob.id);
 
+        let hashtags = Hashtag::get_or_insert_all(core_context, content).await?;
+        let hashtag_ids = hashtags.iter().map(|hashtag| hashtag.id).collect::<Vec<Uuid>>();
+
         validator.validate_post_title(title);
         validator
             .validate_post_slug(
@@ -45,10 +49,11 @@ impl Post {
                 title = $2,
                 slug = $3,
                 content = $4,
-                cover_image_blob_id = $5,
+                hashtag_ids = $5,
+                cover_image_blob_id = $6,
                 published_at = CASE
-                    WHEN $6 IS TRUE AND published_at IS NOT NULL THEN published_at
-                    WHEN $6 IS TRUE THEN current_timestamp
+                    WHEN $7 IS TRUE AND published_at IS NOT NULL THEN published_at
+                    WHEN $7 IS TRUE THEN current_timestamp
                     ELSE NULL
                 END
             WHERE id = $1
@@ -60,6 +65,7 @@ impl Post {
                 title,
                 slug,
                 content,
+                hashtag_ids,
                 cover_image_blob_id,
                 published_at,
                 NULL::real AS search_rank,
@@ -69,8 +75,9 @@ impl Post {
             title,               // $2
             slug,                // $3
             content,             // $4
-            cover_image_blob_id, // $5
-            publish,             // $6
+            &hashtag_ids,        // $5
+            cover_image_blob_id, // $6
+            publish,             // $7
         )
         .fetch_one(&core_context.db_pool)
         .await;

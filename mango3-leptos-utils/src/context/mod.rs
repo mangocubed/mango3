@@ -1,6 +1,7 @@
 use leptos::prelude::*;
 use leptos_router::params::ParamsMap;
 
+use crate::constants::KEY_PARAM_NAME;
 use crate::models::{BasicConfigResp, UserResp};
 use crate::server_functions::get_current_user;
 
@@ -9,6 +10,10 @@ mod use_language_cookie;
 
 pub use use_color_mode::{use_color_mode, use_color_mode_with_options, UseColorModeOptions};
 pub use use_language_cookie::{use_language_cookie, use_language_cookie_options};
+
+pub fn param_name(params_map: Memo<ParamsMap>) -> String {
+    params_map.with(|params| params.get(KEY_PARAM_NAME).unwrap_or_default())
+}
 
 pub fn param_query(params_map: Memo<ParamsMap>) -> String {
     params_map.with(|params| params.get("q").unwrap_or_default())

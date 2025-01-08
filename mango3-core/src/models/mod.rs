@@ -8,6 +8,7 @@ use sqlx::types::chrono::NaiveDate;
 
 mod blob;
 mod confirmation_code;
+mod hashtag;
 mod invitation_code;
 mod navigation_item;
 mod post;
@@ -19,6 +20,7 @@ mod website;
 
 pub use blob::Blob;
 pub use confirmation_code::ConfirmationCode;
+pub use hashtag::Hashtag;
 pub use invitation_code::InvitationCode;
 pub use navigation_item::NavigationItem;
 pub use post::Post;

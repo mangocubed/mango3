@@ -14,7 +14,8 @@ use crate::server_functions::get_posts;
 pub fn IndexPage() -> impl IntoView {
     let i18n = use_i18n();
     let after = RwSignal::new(None);
-    let posts_resource = Resource::new_blocking(move || after.get(), get_posts);
+    let posts_resource =
+        Resource::new_blocking(move || after.get(), |after| async move { get_posts(None, after).await });
 
     view! {
         <CurrentWebsiteOpt children=move |website| {

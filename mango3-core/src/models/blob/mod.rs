@@ -29,6 +29,24 @@ pub struct Blob {
 }
 
 impl Blob {
+    pub async fn all_by_ids(core_context: &CoreContext, ids: Vec<Uuid>, user: Option<&User>) -> Vec<Self> {
+        if ids.is_empty() {
+            return vec![];
+        }
+
+        let user_id = user.map(|u| u.id);
+
+        query_as!(
+            Self,
+            "SELECT * FROM blobs WHERE id = ANY($1) AND ($2::uuid IS NULL OR user_id = $2)",
+            &ids,    // $1
+            user_id  // $2
+        )
+        .fetch_all(&core_context.db_pool)
+        .await
+        .unwrap_or_default()
+    }
+
     pub fn default_path(&self) -> String {
         format!("{}/default{}", self.directory(), self.extension())
     }
@@ -60,24 +78,6 @@ impl Blob {
         )
         .fetch_one(&core_context.db_pool)
         .await
-    }
-
-    pub async fn get_multiple_by_id(core_context: &CoreContext, ids: Vec<Uuid>, user: Option<&User>) -> Vec<Self> {
-        if ids.is_empty() {
-            return vec![];
-        }
-
-        let user_id = user.map(|u| u.id);
-
-        query_as!(
-            Self,
-            "SELECT * FROM blobs WHERE id = ANY($1) AND ($2::uuid IS NULL OR user_id = $2)",
-            &ids,    // $1
-            user_id  // $2
-        )
-        .fetch_all(&core_context.db_pool)
-        .await
-        .unwrap_or_default()
     }
 
     pub fn mime(&self) -> Mime {

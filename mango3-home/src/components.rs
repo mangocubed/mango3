@@ -3,7 +3,7 @@ use leptos::prelude::*;
 use leptos_router::params::ParamsMap;
 use mango3_leptos_utils::components::{InfiniteScroll, PostCard, WebsiteCard};
 use mango3_leptos_utils::context::param_query;
-use mango3_leptos_utils::models::{PostPreviewResp, WebsiteResp};
+use mango3_leptos_utils::models::{PostPreviewResp, WebsitePreviewResp};
 
 use crate::server_functions::{get_posts_search, get_websites_search};
 
@@ -50,7 +50,7 @@ pub fn SearchWebsitesTab(params_map: Memo<ParamsMap>) -> impl IntoView {
     view! {
         <InfiniteScroll
             after=after
-            key=|website: &WebsiteResp| website.id.clone()
+            key=|website: &WebsitePreviewResp| website.id.clone()
             is_loading=is_loading
             nodes=nodes
             resource=websites_resource

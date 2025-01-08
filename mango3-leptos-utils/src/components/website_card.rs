@@ -1,10 +1,13 @@
 use leptos::prelude::*;
 
 use crate::components::WebsiteIcon;
-use crate::models::WebsiteResp;
+use crate::models::WebsitePreviewResp;
 
 #[component]
-pub fn WebsiteCard(website: WebsiteResp, #[prop(into, optional)] actions: ViewFn) -> impl IntoView {
+pub fn WebsiteCard(
+    #[prop(into)] website: WebsitePreviewResp,
+    #[prop(into, optional)] actions: ViewFn,
+) -> impl IntoView {
     let website_url = website.url.clone();
 
     let href = if website.is_published {

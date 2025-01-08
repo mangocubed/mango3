@@ -13,6 +13,7 @@ figment = { version = "0.10.19", features = ["env"] }
 fluent-templates = "0.12.0"
 fluent-bundle = "0.15.3"
 futures-util = "0.3.31"
+futures = { workspace = true }
 env_logger = "0.11.6"
 image = "0.25.5"
 imageproc = "0.25.0"
@@ -21,7 +22,7 @@ md-5 = "0.10.6"
 mime = "0.3.17"
 multer = "3.1.0"
 rand = "0.8.5"
-regex = "1.11.1"
+regex = { workspace = true }
 rust_iso3166 = { workspace = true }
 serde = { workspace = true }
 sqlx = { version = "0.8.2", features = ["chrono", "ipnetwork", "postgres", "runtime-tokio", "tls-rustls", "uuid"] }

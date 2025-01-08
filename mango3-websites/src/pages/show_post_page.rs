@@ -96,6 +96,41 @@ pub fn ShowPostPage() -> impl IntoView {
                                                 inner_html=post.content_html.clone()
                                             />
 
+                                            <Show when={
+                                                let show_hashtags = !post.hashtags.is_empty() || !post.is_published;
+                                                move || show_hashtags
+                                            }>
+                                                {
+                                                    let post_hashtags = post.hashtags.clone();
+                                                    move || {
+                                                        let post_hashtags = post_hashtags.clone();
+                                                        view! {
+                                                            <div class="my-4 flex flex-wrap gap-2">
+                                                                <Show when=move || !post.is_published>
+                                                                    <a class="btn btn-sm btn-outline btn-info no-animation">
+                                                                        {t!(i18n, shared.unpublished)}
+                                                                    </a>
+                                                                </Show>
+
+                                                                <For
+                                                                    each=move || post_hashtags.clone()
+                                                                    key=|hashtag| hashtag.id.clone()
+                                                                    let:hashtag
+                                                                >
+                                                                    <a
+                                                                        class="btn btn-sm btn-outline"
+                                                                        href=format!("/hashtags/{}", hashtag.name)
+                                                                    >
+                                                                        "#"
+                                                                        {hashtag.name.clone()}
+                                                                    </a>
+                                                                </For>
+                                                            </div>
+                                                        }
+                                                    }
+                                                }
+                                            </Show>
+
                                             <div class="mt-4 opacity-70">
                                                 {move || {
                                                     if post.views_count == 1 {

@@ -9,7 +9,7 @@ use crate::enums::{Input, InputError};
 use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
 use crate::CoreContext;
 
-use super::{Blob, PostAttachment, PostView, User, Website};
+use super::{Blob, Hashtag, PostAttachment, PostView, User, Website};
 
 mod post_insert;
 mod post_paginate;
@@ -25,6 +25,7 @@ pub struct Post {
     pub title: String,
     pub slug: String,
     pub content: String,
+    pub hashtag_ids: Vec<Uuid>,
     pub cover_image_blob_id: Option<Uuid>,
     pub published_at: Option<DateTime<Utc>>,
     pub search_rank: Option<f32>,
@@ -80,6 +81,7 @@ impl Post {
                 title,
                 slug,
                 content,
+                hashtag_ids,
                 cover_image_blob_id,
                 published_at,
                 CASE WHEN $4::varchar IS NOT NULL THEN ts_rank(search, websearch_to_tsquery($4)) ELSE NULL END AS search_rank,
@@ -107,6 +109,7 @@ impl Post {
                 title,
                 slug,
                 content,
+                hashtag_ids,
                 cover_image_blob_id,
                 published_at,
                 NULL::real AS search_rank,
@@ -120,8 +123,8 @@ impl Post {
         .await
     }
 
-    pub async fn host(&self, core_context: &CoreContext) -> String {
-        self.website(core_context).await.unwrap().host()
+    pub async fn hashtags(&self, core_context: &CoreContext) -> Vec<Hashtag> {
+        Hashtag::all_by_ids(core_context, &self.hashtag_ids).await
     }
 
     pub async fn is_published(&self, core_context: &CoreContext) -> bool {
@@ -168,7 +171,7 @@ impl Validator {
             && self.validate_format(Input::Slug, slug, &REGEX_SLUG)
             && self.validate_length(Input::Slug, slug, Some(1), Some(255))
             && self.custom_validation(Input::Slug, InputError::IsInvalid, &|| Uuid::try_parse(slug).is_err())
-            && self.custom_validation(Input::Username, InputError::IsInvalid, &|| {
+            && self.custom_validation(Input::Slug, InputError::IsInvalid, &|| {
                 !BLACKLISTED_SLUGS.contains(&slug.to_owned())
             })
         {
