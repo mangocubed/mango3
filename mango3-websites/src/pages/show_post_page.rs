@@ -105,7 +105,7 @@ pub fn ShowPostPage() -> impl IntoView {
                                                     move || {
                                                         let post_hashtags = post_hashtags.clone();
                                                         view! {
-                                                            <div class="my-4 flex gap-2">
+                                                            <div class="my-4 flex flex-wrap gap-2">
                                                                 <Show when=move || !post.is_published>
                                                                     <a class="btn btn-sm btn-outline btn-info no-animation">
                                                                         {t!(i18n, shared.unpublished)}

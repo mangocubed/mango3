@@ -87,7 +87,7 @@ pub fn PostCard(
                             let post_hashtags = post_hashtags.clone();
                             let hashtags_base_url = hashtags_base_url.clone();
                             view! {
-                                <div class="my-1 flex gap-2">
+                                <div class="my-1 flex gap-2 overflow-x-auto">
                                     <Show when=move || !post.is_published>
                                         <a class="btn btn-sm btn-outline btn-info no-animation">
                                             {t!(i18n, shared.unpublished)}
