@@ -25,15 +25,15 @@ axum = "0.7.9"
 chrono = {version = "0.4.39", features = ["serde"] }
 console_error_panic_hook = "0.1.7"
 futures = "0.3.31"
-leptos = "0.7.2"
-leptos_axum = "0.7.2"
+leptos = "0.7.3"
+leptos_axum = "0.7.3"
 leptos_i18n = { version = "0.5.3", default-features = false, features = [
     "cookie",
     "interpolate_display",
     "yaml_files",
 ] }
-leptos_meta = "0.7.2"
-leptos_router = "0.7.2"
+leptos_meta = "0.7.3"
+leptos_router = "0.7.3"
 leptos-use = { version = "0.15.2", default-features = false }
 regex = "1.11.1"
 rust_iso3166 = "0.1.13"
