@@ -37,7 +37,7 @@ pub fn SearchPage() -> impl IntoView {
                             <Page title=title>
                                 <h1 class="h2">{title}</h1>
 
-                                <section class="max-w-[640px] w-full ml-auto mr-auto">
+                                <section class="max-w-[640px] w-full mx-auto">
                                     <InfiniteScroll
                                         after=after
                                         key=|post: &PostPreviewResp| post.id.clone()

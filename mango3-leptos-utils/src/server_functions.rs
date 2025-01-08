@@ -39,11 +39,6 @@ pub async fn attempt_to_upload_file(data: MultipartData) -> Result<Option<BlobRe
 }
 
 #[server]
-pub async fn is_authenticated() -> Result<bool, ServerFnError> {
-    crate::ssr::is_authenticated().await
-}
-
-#[server]
 pub async fn get_current_user() -> Result<Option<UserResp>, ServerFnError> {
     let Some(user) = extract_user().await? else {
         return Ok(None);
@@ -52,4 +47,9 @@ pub async fn get_current_user() -> Result<Option<UserResp>, ServerFnError> {
     let core_context = expect_core_context();
 
     Ok(Some(UserResp::from_core(&core_context, &user).await))
+}
+
+#[server]
+pub async fn is_authenticated() -> Result<bool, ServerFnError> {
+    crate::ssr::is_authenticated().await
 }

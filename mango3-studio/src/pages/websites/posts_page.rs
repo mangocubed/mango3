@@ -65,6 +65,7 @@ pub fn PostsPage() -> impl IntoView {
                     view! {
                         <PostCard
                             post=post.clone()
+                            hashtags_base_url=post.website.url.clone()
                             actions=move || {
                                 let post = post.clone();
                                 view! {

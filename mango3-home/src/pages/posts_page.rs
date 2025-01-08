@@ -12,7 +12,10 @@ use crate::server_functions::get_posts;
 pub fn PostsPage() -> impl IntoView {
     let i18n = use_i18n();
     let after = RwSignal::new(None);
-    let posts_resource = Resource::new_blocking(move || after.get(), |after| async move { get_posts(10, after).await });
+    let posts_resource = Resource::new_blocking(
+        move || after.get(),
+        |after| async move { get_posts(None, 10, after).await },
+    );
 
     let title = move || t_string!(i18n, shared.posts);
 

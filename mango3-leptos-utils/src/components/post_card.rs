@@ -8,9 +8,10 @@ use super::TimeAgo;
 
 #[component]
 pub fn PostCard(
-    post: PostPreviewResp,
+    #[prop(into)] post: PostPreviewResp,
     #[prop(into, optional)] actions: Option<ViewFnOnce>,
     #[prop(optional)] show_host: bool,
+    #[prop(default = "/".to_owned())] hashtags_base_url: String,
 ) -> impl IntoView {
     let i18n = use_i18n();
 
@@ -65,7 +66,7 @@ pub fn PostCard(
                         }}
 
                         <Show when=move || show_host>
-                            <div class="text-right opacity-70">{post.host.clone()}</div>
+                            <div class="text-right opacity-70">{post.website.host.clone()}</div>
                         </Show>
                     </div>
                 </div>
@@ -74,6 +75,43 @@ pub fn PostCard(
                     <div class="prose max-w-none break-words" inner_html=post.content_preview_html />
                     <div class="card-text-preview-overlay to-base-200" />
                 </a>
+
+                <Show when={
+                    let show_hashtags = !post.hashtags.is_empty() || !post.is_published;
+                    move || show_hashtags
+                }>
+                    {
+                        let post_hashtags = post.hashtags.clone();
+                        let hashtags_base_url = hashtags_base_url.clone();
+                        move || {
+                            let post_hashtags = post_hashtags.clone();
+                            let hashtags_base_url = hashtags_base_url.clone();
+                            view! {
+                                <div class="my-1 flex gap-2">
+                                    <Show when=move || !post.is_published>
+                                        <a class="btn btn-sm btn-outline btn-info no-animation">
+                                            {t!(i18n, shared.unpublished)}
+                                        </a>
+                                    </Show>
+
+                                    <For
+                                        each=move || post_hashtags.clone()
+                                        key=|hashtag| hashtag.id.clone()
+                                        let:hashtag
+                                    >
+                                        <a
+                                            class="btn btn-sm btn-outline"
+                                            href=format!("{}hashtags/{}", hashtags_base_url, hashtag.name)
+                                        >
+                                            "#"
+                                            {hashtag.name.clone()}
+                                        </a>
+                                    </For>
+                                </div>
+                            }
+                        }
+                    }
+                </Show>
 
                 <div class="my-1 opacity-70">
                     {move || {

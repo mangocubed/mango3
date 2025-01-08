@@ -2,13 +2,13 @@ use leptos::prelude::*;
 use leptos_router::hooks::use_params_map;
 
 use leptos_router::params::ParamsMap;
-use mango3_leptos_utils::models::WebsiteResp;
+use mango3_leptos_utils::models::{WebsitePreviewResp, WebsiteResp};
 
 use crate::constants::KEY_PARAM_WEBSITE_ID;
 use crate::server_functions::get_my_website;
 
 pub fn provide_selected_website() {
-    provide_context::<RwSignal<Option<WebsiteResp>>>(RwSignal::new(None));
+    provide_context::<RwSignal<Option<WebsitePreviewResp>>>(RwSignal::new(None));
 }
 
 pub fn provide_my_website_resource() {
@@ -25,8 +25,8 @@ pub fn provide_my_website_resource() {
     ))
 }
 
-pub fn use_selected_website() -> RwSignal<Option<WebsiteResp>> {
-    use_context::<RwSignal<Option<WebsiteResp>>>().unwrap()
+pub fn use_selected_website() -> RwSignal<Option<WebsitePreviewResp>> {
+    use_context::<RwSignal<Option<WebsitePreviewResp>>>().unwrap()
 }
 
 pub fn param_website_id(params_map: Memo<ParamsMap>) -> Option<String> {

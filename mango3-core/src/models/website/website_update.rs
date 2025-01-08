@@ -1,8 +1,9 @@
 use sqlx::query_as;
+use sqlx::types::uuid::Uuid;
 
 use crate::constants::{DARK_THEMES, LIGHT_THEMES};
 use crate::enums::{Input, InputError};
-use crate::models::Blob;
+use crate::models::{Blob, Hashtag};
 use crate::validator::{ValidationErrors, Validator};
 use crate::CoreContext;
 
@@ -42,18 +43,22 @@ impl Website {
             return Err(validator.errors);
         }
 
+        let hashtags = Hashtag::get_or_insert_all(core_context, description).await?;
+        let hashtag_ids = hashtags.iter().map(|hashtag| hashtag.id).collect::<Vec<Uuid>>();
+
         query_as!(
             Self,
             r#"UPDATE websites SET
                 name = $2,
                 description = $3,
-                icon_image_blob_id = $4,
-                cover_image_blob_id = $5,
-                light_theme = $6,
-                dark_theme = $7,
+                hashtag_ids = $4,
+                icon_image_blob_id = $5,
+                cover_image_blob_id = $6,
+                light_theme = $7,
+                dark_theme = $8,
                 published_at = CASE
-                    WHEN $8 IS TRUE AND published_at IS NOT NULL THEN published_at
-                    WHEN $8 IS TRUE THEN current_timestamp
+                    WHEN $9 IS TRUE AND published_at IS NOT NULL THEN published_at
+                    WHEN $9 IS TRUE THEN current_timestamp
                     ELSE NULL
                 END
             WHERE id = $1 RETURNING
@@ -62,6 +67,7 @@ impl Website {
                 name,
                 subdomain,
                 description,
+                hashtag_ids,
                 icon_image_blob_id,
                 cover_image_blob_id,
                 light_theme,
@@ -74,11 +80,12 @@ impl Website {
             self.id,             // $1
             name,                // $2
             description,         // $3
-            icon_image_blob_id,  // $4
-            cover_image_blob_id, // $5
-            light_theme,         // $6
-            dark_theme,          // $7
-            publish,             // $8
+            &hashtag_ids,        // $4
+            icon_image_blob_id,  // $5
+            cover_image_blob_id, // $6
+            light_theme,         // $7
+            dark_theme,          // $8
+            publish,             // $9
         )
         .fetch_one(&core_context.db_pool)
         .await

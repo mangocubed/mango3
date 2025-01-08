@@ -5,6 +5,7 @@ use leptos_router::components::{Route, Router, Routes};
 use leptos_router::{ParamSegment, StaticSegment};
 
 use mango3_leptos_utils::components::{AppProvider, AppTitle, BottomBar, FaviconLink, LoadingOverlay};
+use mango3_leptos_utils::constants::KEY_PARAM_NAME;
 use mango3_leptos_utils::context::use_basic_config;
 use mango3_leptos_utils::i18n::{t, t_string, use_i18n};
 use mango3_leptos_utils::pages::NotFoundPage;
@@ -12,7 +13,7 @@ use mango3_leptos_utils::pages::NotFoundPage;
 use crate::components::{CurrentWebsiteOpt, WebsiteTopBar};
 use crate::constants::KEY_PARAM_SLUG;
 use crate::context::provide_current_website_resource;
-use crate::pages::{IndexPage, SearchPage, ShowPostPage};
+use crate::pages::{IndexPage, SearchPage, ShowHashtagPage, ShowPostPage};
 
 #[component]
 pub fn App() -> impl IntoView {
@@ -69,6 +70,10 @@ pub fn App() -> impl IntoView {
                                 <Route path=StaticSegment("") view=IndexPage />
                                 <Route path=(StaticSegment("posts"), ParamSegment(KEY_PARAM_SLUG)) view=ShowPostPage />
                                 <Route path=StaticSegment("search") view=SearchPage />
+                                <Route
+                                    path=(StaticSegment("hashtags"), ParamSegment(KEY_PARAM_NAME))
+                                    view=ShowHashtagPage
+                                />
                                 <Route path=ParamSegment(KEY_PARAM_SLUG) view=ShowPostPage />
                             </Routes>
                         </main>

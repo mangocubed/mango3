@@ -1,7 +1,7 @@
 use leptos::prelude::*;
 
 use mango3_leptos_utils::components::InfiniteScroll;
-use mango3_leptos_utils::models::WebsiteResp;
+use mango3_leptos_utils::models::WebsitePreviewResp;
 
 use crate::context::use_selected_website;
 use crate::server_functions::get_my_websites;
@@ -10,7 +10,7 @@ use crate::server_functions::get_my_websites;
 pub fn MyWebsitesInfiniteScroll<IV, VF>(children: VF) -> impl IntoView
 where
     IV: IntoView + 'static,
-    VF: Fn(WebsiteResp) -> IV + Clone + Send + Sync + 'static,
+    VF: Fn(WebsitePreviewResp) -> IV + Clone + Send + Sync + 'static,
 {
     let after = RwSignal::new(None);
     let my_websites_resource = Resource::new_blocking(move || after.get(), get_my_websites);
@@ -21,7 +21,7 @@ where
     view! {
         <InfiniteScroll
             after=after
-            key=|website: &WebsiteResp| website.id.clone()
+            key=|website: &WebsitePreviewResp| website.id.clone()
             resource=my_websites_resource
             children=children
         />

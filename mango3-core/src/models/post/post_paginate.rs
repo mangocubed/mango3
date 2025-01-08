@@ -1,6 +1,6 @@
 use sqlx::query_as;
 
-use crate::models::{User, Website};
+use crate::models::{Hashtag, User, Website};
 use crate::pagination::{CursorPage, CursorPageParams};
 use crate::CoreContext;
 
@@ -12,6 +12,7 @@ impl Post {
         cursor_page_params: &CursorPageParams,
         website: Option<&'a Website>,
         user: Option<&'a User>,
+        hashtag: Option<&'a Hashtag>,
         is_published: Option<bool>,
     ) -> CursorPage<Self> {
         CursorPage::new(
@@ -22,6 +23,7 @@ impl Post {
             move |core_context, cursor_resource, limit| async move {
                 let website_id = website.map(|w| w.id);
                 let user_id = user.map(|u| u.id);
+                let hashtag_id = hashtag.map(|h| h.id);
                 let (cursor_id, cursor_created_at) = cursor_resource
                     .map(|c| (Some(c.id), Some(c.created_at)))
                     .unwrap_or_default();
@@ -36,6 +38,7 @@ impl Post {
                         title,
                         slug,
                         content,
+                        hashtag_ids,
                         cover_image_blob_id,
                         published_at,
                         NULL::real AS search_rank,
@@ -43,17 +46,18 @@ impl Post {
                         updated_at
                     FROM posts
                     WHERE ($1::uuid IS NULL OR website_id = $1) AND ($2::uuid IS NULL OR user_id = $2)
-                        AND (
-                            $3::bool IS NULL OR ($3 IS TRUE AND published_at IS NOT NULL)
-                            OR ($3 IS FALSE AND published_at IS NULL)
-                        ) AND ($5::timestamptz IS NULL OR created_at < $5 OR (created_at = $5 AND id < $4))
-                    ORDER BY created_at DESC, id DESC LIMIT $6"#,
+                        AND ($3::uuid IS NULL OR $3 = ANY(hashtag_ids)) AND (
+                            $4::bool IS NULL OR ($4 IS TRUE AND published_at IS NOT NULL)
+                            OR ($4 IS FALSE AND published_at IS NULL)
+                        ) AND ($6::timestamptz IS NULL OR created_at < $6 OR (created_at = $6 AND id < $5))
+                    ORDER BY created_at DESC, id DESC LIMIT $7"#,
                     website_id,        // $1
                     user_id,           // $2
-                    is_published,      // $3
-                    cursor_id,         // $4
-                    cursor_created_at, // $5
-                    limit,             // $6
+                    hashtag_id,        // $3
+                    is_published,      // $4
+                    cursor_id,         // $5
+                    cursor_created_at, // $6
+                    limit,             // $7
                 )
                 .fetch_all(&core_context.db_pool)
                 .await
@@ -83,6 +87,7 @@ mod tests {
             Some(&website),
             Some(&user),
             None,
+            None,
         )
         .await;
 
@@ -101,6 +106,7 @@ mod tests {
             &CursorPageParams::default(),
             Some(&website),
             Some(&user),
+            None,
             None,
         )
         .await;

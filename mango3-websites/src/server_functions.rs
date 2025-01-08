@@ -6,7 +6,7 @@ use uuid::Uuid;
 use mango3_leptos_utils::models::*;
 
 #[cfg(feature = "ssr")]
-use mango3_core::models::{NavigationItem, Post, PostView, Website};
+use mango3_core::models::{Hashtag, NavigationItem, Post, PostView, Website};
 #[cfg(feature = "ssr")]
 use mango3_core::pagination::CursorPageParams;
 #[cfg(feature = "ssr")]
@@ -51,7 +51,24 @@ pub async fn get_current_website() -> Result<Option<WebsiteResp>, ServerFnError>
 }
 
 #[server]
-pub async fn get_posts(after: Option<String>) -> Result<CursorPageResp<PostPreviewResp>, ServerFnError> {
+pub async fn get_hashtag(name: String) -> Result<Option<HashtagResp>, ServerFnError> {
+    if current_website().await?.is_none() {
+        return Ok(None);
+    };
+
+    let core_context = expect_core_context();
+
+    Ok(Hashtag::get_by_name(&core_context, &name)
+        .await
+        .map(|hashtag| (&hashtag).into())
+        .ok())
+}
+
+#[server]
+pub async fn get_posts(
+    hashtag: Option<String>,
+    after: Option<String>,
+) -> Result<CursorPageResp<PostPreviewResp>, ServerFnError> {
     let Some(website) = current_website().await? else {
         return Ok(CursorPageResp::default());
     };
@@ -61,7 +78,26 @@ pub async fn get_posts(after: Option<String>) -> Result<CursorPageResp<PostPrevi
         after: after.as_ref().and_then(|id| Uuid::try_parse(id).ok()),
         first: 10,
     };
-    let page = Post::paginate_by_created_at_desc(&core_context, &page_params, Some(&website), None, Some(true)).await;
+
+    let hashtag = if let Some(name) = hashtag {
+        let Ok(hashtag) = Hashtag::get_by_name(&core_context, &name).await else {
+            return Ok(CursorPageResp::default());
+        };
+
+        Some(hashtag)
+    } else {
+        None
+    };
+
+    let page = Post::paginate_by_created_at_desc(
+        &core_context,
+        &page_params,
+        Some(&website),
+        None,
+        hashtag.as_ref(),
+        Some(true),
+    )
+    .await;
 
     Ok(CursorPageResp::from_core(&core_context, &page).await)
 }

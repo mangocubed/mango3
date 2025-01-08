@@ -1,6 +1,7 @@
 use sqlx::query_as;
+use sqlx::types::uuid::Uuid;
 
-use crate::models::{Blob, PostAttachment, User, Website};
+use crate::models::{Blob, Hashtag, PostAttachment, User, Website};
 use crate::validator::{ValidationErrors, Validator};
 use crate::CoreContext;
 
@@ -25,6 +26,9 @@ impl Post {
         let content = content.trim();
         let cover_image_blob_id = cover_image_blob.map(|blob| blob.id);
 
+        let hashtags = Hashtag::get_or_insert_all(core_context, content).await?;
+        let hashtag_ids = hashtags.iter().map(|hashtag| hashtag.id).collect::<Vec<Uuid>>();
+
         validator.validate_post_title(title);
         validator.validate_post_slug(core_context, None, website, &slug).await;
         validator.validate_post_content(content);
@@ -36,8 +40,8 @@ impl Post {
         let result = query_as!(
             Self,
             r#"INSERT INTO posts (
-                website_id, user_id, title, slug, content, cover_image_blob_id, published_at
-                ) VALUES ($1, $2, $3, $4, $5, $6, CASE WHEN $7 IS TRUE THEN current_timestamp ELSE NULL END)
+                website_id, user_id, title, slug, content, hashtag_ids, cover_image_blob_id, published_at
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, CASE WHEN $8 IS TRUE THEN current_timestamp ELSE NULL END)
             RETURNING
                 id,
                 website_id,
@@ -46,6 +50,7 @@ impl Post {
                 title,
                 slug,
                 content,
+                hashtag_ids,
                 cover_image_blob_id,
                 published_at,
                 NULL::real AS search_rank,
@@ -56,8 +61,9 @@ impl Post {
             title,               // $3
             slug,                // $4
             content,             // $5
-            cover_image_blob_id, // $6
-            publish,             // $7
+            &hashtag_ids,        // $6
+            cover_image_blob_id, // $7
+            publish,             // $8
         )
         .fetch_one(&core_context.db_pool)
         .await;

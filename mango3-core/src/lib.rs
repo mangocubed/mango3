@@ -4,6 +4,7 @@ use ab_glyph::{FontRef, PxScale};
 use image::{Rgb, RgbImage};
 use imageproc::drawing::{draw_filled_rect_mut, draw_text_mut, text_size};
 use imageproc::rect::Rect;
+use regex::Match;
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
 
@@ -20,6 +21,7 @@ pub mod pagination;
 pub mod validator;
 
 use config::{DATABASE_CONFIG, MISC_CONFIG};
+use constants::HASHTAG_LOOKAROUND;
 use jobs::Jobs;
 
 type DBPool = PgPool;
@@ -45,6 +47,11 @@ impl CoreContext {
             jobs: Jobs::setup().await,
         }
     }
+}
+
+pub fn hashtag_has_lookaround(content: &str, match_: Match) -> bool {
+    (match_.start() == 1 || HASHTAG_LOOKAROUND.contains(&content.get(match_.start() - 2..match_.start() - 1)))
+        && HASHTAG_LOOKAROUND.contains(&content.get(match_.end()..match_.end() + 1))
 }
 
 pub fn text_icon(text: String, size: u16) -> io::Result<Vec<u8>> {

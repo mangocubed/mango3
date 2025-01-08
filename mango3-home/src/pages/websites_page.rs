@@ -3,7 +3,7 @@ use leptos_i18n::t_string;
 
 use mango3_leptos_utils::components::{InfiniteScroll, WebsiteCard};
 use mango3_leptos_utils::i18n::use_i18n;
-use mango3_leptos_utils::models::WebsiteResp;
+use mango3_leptos_utils::models::WebsitePreviewResp;
 use mango3_leptos_utils::pages::Page;
 
 use crate::server_functions::get_websites;
@@ -26,7 +26,7 @@ pub fn WebsitesPage() -> impl IntoView {
             <section class="max-w-[640px] w-full ml-auto mr-auto">
                 <InfiniteScroll
                     after=after
-                    key=|website: &WebsiteResp| website.id.clone()
+                    key=|website: &WebsitePreviewResp| website.id.clone()
                     resource=websites_resource
                     let:website
                 >

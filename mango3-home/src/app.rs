@@ -1,14 +1,15 @@
 use leptos::prelude::*;
 use leptos_meta::{provide_meta_context, Meta};
 use leptos_router::components::{Route, Router, Routes};
-use leptos_router::StaticSegment;
+use leptos_router::{ParamSegment, StaticSegment};
 
 use mango3_leptos_utils::components::*;
+use mango3_leptos_utils::constants::KEY_PARAM_NAME;
 use mango3_leptos_utils::context::use_basic_config;
 use mango3_leptos_utils::i18n::{t, t_string, use_i18n};
 use mango3_leptos_utils::pages::NotFoundPage;
 
-use crate::pages::{IndexPage, PostsPage, SearchPage, WebsitesPage};
+use crate::pages::{IndexPage, PostsPage, SearchPage, ShowHashtagPage, WebsitesPage};
 
 #[component]
 pub fn App() -> impl IntoView {
@@ -58,6 +59,10 @@ pub fn App() -> impl IntoView {
                                 <Route path=StaticSegment("posts") view=PostsPage />
                                 <Route path=StaticSegment("websites") view=WebsitesPage />
                                 <Route path=StaticSegment("search") view=SearchPage />
+                                <Route
+                                    path=(StaticSegment("hashtags"), ParamSegment(KEY_PARAM_NAME))
+                                    view=ShowHashtagPage
+                                />
                             </Routes>
                         </main>
 

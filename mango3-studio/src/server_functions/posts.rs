@@ -27,7 +27,7 @@ async fn get_blobs(core_context: &CoreContext, user: &User, ids: Option<Vec<Stri
         return vec![];
     };
 
-    Blob::get_multiple_by_id(
+    Blob::all_by_ids(
         &core_context,
         ids.iter().map(|id| Uuid::try_parse(id).unwrap()).collect(),
         Some(&user),
@@ -158,7 +158,8 @@ pub async fn get_my_posts(
         after: after.as_ref().and_then(|id| Uuid::try_parse(id).ok()),
         first: 10,
     };
-    let page = Post::paginate_by_created_at_desc(&core_context, &page_params, Some(&website), Some(&user), None).await;
+    let page =
+        Post::paginate_by_created_at_desc(&core_context, &page_params, Some(&website), Some(&user), None, None).await;
 
     Ok(CursorPageResp::from_core(&core_context, &page).await)
 }

@@ -1,3 +1,5 @@
+use std::sync::LazyLock;
+
 use lazy_static::lazy_static;
 use regex::Regex;
 
@@ -31,6 +33,8 @@ lazy_static! {
         "forum".to_owned(),
         "graphql".to_owned(),
         "groups".to_owned(),
+        "hashtag".to_owned(),
+        "hashtags".to_owned(),
         "imap".to_owned(),
         "inbound".to_owned(),
         "legal".to_owned(),
@@ -121,10 +125,20 @@ lazy_static! {
         "wireframe".to_owned(),
     ];
     pub(crate) static ref REGEX_EMAIL: Regex = Regex::new(r"\A[^@\s]+@[^@\s]+\z").unwrap();
-    pub(crate) static ref REGEX_SLUG: regex::Regex = regex::Regex::new(r"\A[a-z0-9]+(?:-[a-z0-9]+)*\z").unwrap();
-    pub(crate) static ref REGEX_SUBDOMAIN: regex::Regex = REGEX_SLUG.clone();
-    pub(crate) static ref REGEX_USERNAME: Regex = Regex::new(r"\A[-_.]?([a-zA-Z0-9]+[-_.]?)+\z").unwrap();
+    pub(crate) static ref REGEX_SLUG: Regex = Regex::new(r"\A[[:alnum:]]+(?:-[[:alnum:]]+)*\z").unwrap();
+    pub(crate) static ref REGEX_SUBDOMAIN: Regex = REGEX_SLUG.clone();
+    pub(crate) static ref REGEX_USERNAME: Regex = Regex::new(r"\A[-_.]?([[:alnum:]]+[-_.]?)+\z").unwrap();
 }
+
+pub static BLACKLISTED_HASHTAGS: LazyLock<[&str; 6]> =
+    LazyLock::new(|| ["each", "if", "log", "lookup", "unless", "with"]);
+
+pub(crate) const HASHTAG_LOOKAROUND: [Option<&str>; 3] = [Some(" "), Some("\n"), None];
 
 pub(crate) const KEY_TEXT_CONFIRM_YOUR_EMAIL: &str = "confirm-your-email";
 pub(crate) const KEY_TEXT_RESET_YOUR_PASSWORD: &str = "reset-your-password";
+
+pub static REGEX_FIND_HASHTAGS: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"#(?<name>[a-zA-Z0-9]+(?:[-_][a-zA-Z0-9]+)*)").unwrap());
+pub(crate) static REGEX_HASHTAG: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"\A[[:alnum:]]+(?:[-_][[:alnum:]]+)*\z").unwrap());

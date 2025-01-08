@@ -61,7 +61,7 @@ pub fn fake_sentence() -> String {
     Sentence(2..5).fake()
 }
 
-fn fake_slug() -> String {
+pub fn fake_slug() -> String {
     Regex::new(r"[._]")
         .unwrap()
         .replace_all(&fake_username(), "-")

@@ -3,7 +3,7 @@ use leptos::prelude::*;
 #[cfg(feature = "ssr")]
 use uuid::Uuid;
 
-use mango3_leptos_utils::models::{ActionFormResp, CursorPageResp, WebsiteResp};
+use mango3_leptos_utils::models::{ActionFormResp, CursorPageResp, WebsitePreviewResp, WebsiteResp};
 
 #[cfg(feature = "ssr")]
 use mango3_core::models::{Blob, Website};
@@ -94,7 +94,7 @@ pub async fn get_my_website(id: String) -> Result<Option<WebsiteResp>, ServerFnE
 }
 
 #[server]
-pub async fn get_my_websites(after: Option<String>) -> Result<CursorPageResp<WebsiteResp>, ServerFnError> {
+pub async fn get_my_websites(after: Option<String>) -> Result<CursorPageResp<WebsitePreviewResp>, ServerFnError> {
     if !require_authentication().await? {
         return Ok(CursorPageResp::default());
     }

@@ -7,16 +7,21 @@ use futures::future;
 #[cfg(feature = "ssr")]
 use pulldown_cmark::html::push_html;
 #[cfg(feature = "ssr")]
-use pulldown_cmark::{Event, Options, Parser, Tag, TagEnd};
+use pulldown_cmark::{Event, HeadingLevel, Options, Parser, Tag, TagEnd};
+#[cfg(feature = "ssr")]
+use regex::Captures;
 
+#[cfg(feature = "ssr")]
+use mango3_core::constants::{BLACKLISTED_HASHTAGS, REGEX_FIND_HASHTAGS};
 #[cfg(feature = "ssr")]
 use mango3_core::pagination::CursorPage;
 #[cfg(feature = "ssr")]
-use mango3_core::CoreContext;
+use mango3_core::{hashtag_has_lookaround, CoreContext};
 
 mod action_form_resp;
 mod basic_config_resp;
 mod blob_resp;
+mod hashtag_resp;
 mod navigation_item_resp;
 mod post_resp;
 mod user_profile_resp;
@@ -26,11 +31,12 @@ mod website_resp;
 pub use action_form_resp::ActionFormResp;
 pub use basic_config_resp::BasicConfigResp;
 pub use blob_resp::BlobResp;
+pub use hashtag_resp::HashtagResp;
 pub use navigation_item_resp::NavigationItemResp;
 pub use post_resp::{PostAttachmentResp, PostPreviewResp, PostResp};
 pub use user_profile_resp::UserProfileResp;
 pub use user_resp::{UserPreviewResp, UserResp};
-pub use website_resp::WebsiteResp;
+pub use website_resp::{WebsitePreviewResp, WebsiteResp};
 
 #[cfg(feature = "ssr")]
 fn parse_html(input: &str, enable_links: bool) -> String {
@@ -45,7 +51,23 @@ fn parse_html(input: &str, enable_links: bool) -> String {
     options.insert(Options::ENABLE_TABLES);
     options.insert(Options::ENABLE_YAML_STYLE_METADATA_BLOCKS);
 
-    let parser = Parser::new_ext(input, options).filter(|event| match event {
+    let input = REGEX_FIND_HASHTAGS.replace_all(input, |captures: &Captures| {
+        let match_ = captures.name("name").expect("Could not get match");
+        let name = match_.as_str();
+
+        if !BLACKLISTED_HASHTAGS.contains(&name) && hashtag_has_lookaround(input, match_) {
+            format!("[#{name}](/hashtags/{name})")
+        } else {
+            format!("#{name}")
+        }
+    });
+
+    let parser = Parser::new_ext(&input, options).filter(|event| match event {
+        Event::Start(Tag::Heading {
+            level: HeadingLevel::H1,
+            ..
+        })
+        | Event::End(TagEnd::Heading(HeadingLevel::H1)) => false,
         Event::Start(Tag::HtmlBlock) | Event::End(TagEnd::HtmlBlock) | Event::Html(_) | Event::InlineHtml(_) => false,
         Event::Start(Tag::Link { .. }) | Event::End(TagEnd::Link) => enable_links,
         _ => true,

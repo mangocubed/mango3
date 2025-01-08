@@ -9,7 +9,7 @@ use crate::locales::I18n;
 use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
 use crate::CoreContext;
 
-use super::Blob;
+use super::{Blob, Hashtag};
 
 mod user_email;
 mod user_insert;
@@ -32,6 +32,7 @@ pub struct User {
     pub language_code: String,
     pub country_alpha2: String,
     pub bio: String,
+    pub hashtag_ids: Vec<Uuid>,
     pub avatar_image_blob_id: Option<Uuid>,
     pub created_at: DateTime<Utc>,
     pub updated_at: Option<DateTime<Utc>>,
@@ -90,6 +91,10 @@ impl User {
         )
         .fetch_one(&core_context.db_pool)
         .await
+    }
+
+    pub async fn hashtags(&self, core_context: &CoreContext) -> Vec<Hashtag> {
+        Hashtag::all_by_ids(core_context, &self.hashtag_ids).await
     }
 
     pub fn i18n(&self) -> I18n {
