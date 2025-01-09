@@ -25,7 +25,7 @@ rand = "0.8.5"
 regex = { workspace = true }
 rust_iso3166 = { workspace = true }
 serde = { workspace = true }
-sqlx = { version = "0.8.2", features = ["chrono", "ipnetwork", "postgres", "runtime-tokio", "tls-rustls", "uuid"] }
+sqlx = { version = "0.8.3", features = ["chrono", "ipnetwork", "postgres", "runtime-tokio", "tls-rustls", "uuid"] }
 strum = { version = "0.26.3", features = ["derive"] }
 unic-langid = { version = "0.9.5", features = ["serde"] }
 url = { version = "2.5.4", features = ["serde"] }
