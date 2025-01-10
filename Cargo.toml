@@ -18,7 +18,7 @@ edition = "2021"
 version = "0.0.0-SNAPSHOT"
 
 [workspace.dependencies]
-apalis = "0.6.2"
+apalis = "0.6.3"
 apalis-redis = "0.6.3"
 async-trait = "0.1.85"
 axum = "0.7.9"
