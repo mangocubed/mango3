@@ -4,7 +4,7 @@ use sqlx::{query, query_as};
 use url::Url;
 
 use crate::config::MISC_CONFIG;
-use crate::constants::{BLACKLISTED_SLUGS, REGEX_SLUG};
+use crate::constants::{BLACKLISTED_SLUGS, REGEX_HANDLEBARS, REGEX_SLUG};
 use crate::enums::{Input, InputError};
 use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
 use crate::CoreContext;
@@ -38,11 +38,13 @@ impl Post {
         PostAttachment::all(core_context, Some(self)).await
     }
 
-    pub fn content_preview(&self) -> &str {
-        self.content
+    pub fn content_preview(&self) -> String {
+        REGEX_HANDLEBARS
+            .replace_all(&self.content, "")
+            .trim()
             .lines()
             .next()
-            .map(|line| line.get(..256).unwrap_or(line).trim())
+            .map(|line| line.get(..256).unwrap_or(line).trim().to_owned())
             .unwrap_or_default()
     }
 

@@ -138,6 +138,7 @@ pub(crate) const HASHTAG_LOOKAROUND: [Option<&str>; 3] = [Some(" "), Some("\n"),
 pub(crate) const KEY_TEXT_CONFIRM_YOUR_EMAIL: &str = "confirm-your-email";
 pub(crate) const KEY_TEXT_RESET_YOUR_PASSWORD: &str = "reset-your-password";
 
+pub static REGEX_HANDLEBARS: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\{\{(?s:.)*?\}\}").unwrap());
 pub static REGEX_FIND_HASHTAGS: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"#(?<name>[a-zA-Z0-9]+(?:[-_][a-zA-Z0-9]+)*)").unwrap());
 pub(crate) static REGEX_HASHTAG: LazyLock<Regex> =
