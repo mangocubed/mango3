@@ -5,25 +5,18 @@ use async_trait::async_trait;
 #[cfg(feature = "ssr")]
 use futures::future;
 #[cfg(feature = "ssr")]
-use handlebars::{Handlebars, RenderError};
-#[cfg(feature = "ssr")]
 use pulldown_cmark::html::push_html;
 #[cfg(feature = "ssr")]
 use pulldown_cmark::{Event, HeadingLevel, Options, Parser, Tag, TagEnd};
 #[cfg(feature = "ssr")]
 use regex::Captures;
-#[cfg(feature = "ssr")]
-use serde_json::{Map, Value};
 
 #[cfg(feature = "ssr")]
-use mango3_core::constants::{BLACKLISTED_HASHTAGS, REGEX_FIND_HASHTAGS, REGEX_HANDLEBARS};
+use mango3_core::constants::{BLACKLISTED_HASHTAGS, REGEX_FIND_HASHTAGS};
 #[cfg(feature = "ssr")]
 use mango3_core::pagination::CursorPage;
 #[cfg(feature = "ssr")]
 use mango3_core::{hashtag_has_lookaround, CoreContext};
-
-#[cfg(feature = "ssr")]
-use crate::constants::REGEX_HANDLEBARS_DECLARE;
 
 mod action_form_resp;
 mod basic_config_resp;
@@ -44,42 +37,6 @@ pub use post_resp::{PostAttachmentResp, PostPreviewResp, PostResp};
 pub use user_profile_resp::UserProfileResp;
 pub use user_resp::{UserPreviewResp, UserResp};
 pub use website_resp::{WebsitePreviewResp, WebsiteResp};
-
-#[cfg(feature = "ssr")]
-fn render_handlebars(input: &str) -> Result<String, RenderError> {
-    if !REGEX_HANDLEBARS.is_match(input) {
-        return Ok(input.to_owned());
-    }
-
-    let mut registry = Handlebars::new();
-    let mut data = Map::new();
-
-    registry.set_prevent_indent(true);
-
-    let input = REGEX_HANDLEBARS_DECLARE.replace_all(input, |captures: &Captures| {
-        let key = captures.name("key").expect("Could not get match").as_str().to_owned();
-
-        let value = if let Some(value) = captures.name("bool") {
-            Value::Bool(value.as_str() == "true")
-        } else if let Some(value) = captures.name("number") {
-            Value::Number(serde_json::from_str(value.as_str()).unwrap_or_else(|_| 0.into()))
-        } else if let Some(value) = captures.name("string") {
-            Value::String(value.as_str().to_owned())
-        } else if let Some(value) = captures.name("array") {
-            Value::Array(serde_json::from_str(value.as_str()).unwrap_or_default())
-        } else if let Some(value) = captures.name("object") {
-            Value::Object(serde_json::from_str(value.as_str()).unwrap_or_default())
-        } else {
-            Value::Null
-        };
-
-        data.insert(key, value);
-
-        ""
-    });
-
-    registry.render_template(&input, &data)
-}
 
 #[cfg(feature = "ssr")]
 fn parse_html(input: &str, enable_links: bool) -> String {
