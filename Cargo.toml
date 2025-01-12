@@ -34,12 +34,12 @@ leptos_i18n = { version = "0.5.3", default-features = false, features = [
 ] }
 leptos_meta = "0.7.3"
 leptos_router = "0.7.3"
-leptos-use = { version = "0.15.2", default-features = false }
+leptos-use = { version = "0.15.3", default-features = false }
 regex = "1.11.1"
 rust_iso3166 = "0.1.13"
 serde = { version = "1.0.217", features = ["derive"] }
 server_fn = "0.7.3"
-tokio = { version = "1.42.0", features = ["macros", "rt-multi-thread"] }
+tokio = { version = "1.43.0", features = ["macros", "rt-multi-thread"] }
 uuid = { version = "1.11.0", features = ["serde", "v4"] }
 wasm-bindgen = "0.2.99"
 mango3-core = { path = "mango3-core" }

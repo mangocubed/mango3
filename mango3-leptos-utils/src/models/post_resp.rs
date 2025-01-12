@@ -11,10 +11,13 @@ use mango3_core::models::{Post, PostAttachment};
 #[cfg(feature = "ssr")]
 use mango3_core::CoreContext;
 
+#[cfg(feature = "ssr")]
+use crate::ssr::render_handlebars;
+
 use super::{BlobResp, HashtagResp, UserPreviewResp, WebsitePreviewResp};
 
 #[cfg(feature = "ssr")]
-use super::{parse_html, render_handlebars, FromCore};
+use super::{parse_html, FromCore};
 
 #[derive(Clone, Deserialize, Serialize)]
 pub struct PostAttachmentResp {
@@ -72,7 +75,7 @@ impl FromCore<Post> for PostResp {
             .await,
             title: post.title.clone(),
             slug: post.slug.clone(),
-            content_html: parse_html(&render_handlebars(&post.content).unwrap_or_default(), true),
+            content_html: parse_html(&render_handlebars(&post.content).unwrap(), true),
             hashtags: post
                 .hashtags(&core_context)
                 .await
