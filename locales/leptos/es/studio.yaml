@@ -28,5 +28,6 @@ slug: Slug
 subdomain: Subdominio
 title: Título
 url: URL
+variables: Variables
 website_created_successfully: Website creado exitosamente
 website_updated_successfully: Website actualizado exitosamente

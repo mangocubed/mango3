@@ -1,5 +1,6 @@
 use sqlx::query_as;
 use sqlx::types::uuid::Uuid;
+use sqlx::types::JsonValue;
 
 use crate::models::{Blob, Hashtag, PostAttachment};
 use crate::validator::{ValidationErrors, Validator};
@@ -14,6 +15,7 @@ impl Post {
         title: &str,
         slug: &str,
         content: &str,
+        variables: &str,
         blobs: Vec<Blob>,
         cover_image_blob: Option<&Blob>,
         publish: bool,
@@ -23,6 +25,7 @@ impl Post {
         let title = title.trim();
         let slug = slug.trim().to_lowercase();
         let content = content.trim();
+        let variables = variables.parse::<JsonValue>().ok();
         let cover_image_blob_id = cover_image_blob.map(|blob| blob.id);
 
         let hashtags = Hashtag::get_or_insert_all(core_context, content).await?;
@@ -38,6 +41,7 @@ impl Post {
             )
             .await;
         validator.validate_post_content(content);
+        validator.validate_post_variables(variables.as_ref());
 
         if !validator.is_valid {
             return Err(validator.errors);
@@ -49,13 +53,15 @@ impl Post {
                 title = $2,
                 slug = $3,
                 content = $4,
-                hashtag_ids = $5,
-                cover_image_blob_id = $6,
+                variables = $5,
+                hashtag_ids = $6,
+                cover_image_blob_id = $7,
                 published_at = CASE
-                    WHEN $7 IS TRUE AND published_at IS NOT NULL THEN published_at
-                    WHEN $7 IS TRUE THEN current_timestamp
+                    WHEN $8 IS TRUE AND published_at IS NOT NULL THEN published_at
+                    WHEN $8 IS TRUE THEN current_timestamp
                     ELSE NULL
-                END
+                END,
+                modified_at = CASE WHEN $8 IS TRUE THEN current_timestamp ELSE NULL END
             WHERE id = $1
             RETURNING
                 id,
@@ -65,9 +71,11 @@ impl Post {
                 title,
                 slug,
                 content,
+                variables,
                 hashtag_ids,
                 cover_image_blob_id,
                 published_at,
+                modified_at,
                 NULL::real AS search_rank,
                 created_at,
                 updated_at"#,
@@ -75,9 +83,10 @@ impl Post {
             title,               // $2
             slug,                // $3
             content,             // $4
-            &hashtag_ids,        // $5
-            cover_image_blob_id, // $6
-            publish,             // $7
+            variables,           // $5
+            &hashtag_ids,        // $6
+            cover_image_blob_id, // $7
+            publish,             // $8
         )
         .fetch_one(&core_context.db_pool)
         .await;

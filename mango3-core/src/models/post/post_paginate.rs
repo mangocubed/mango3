@@ -38,9 +38,11 @@ impl Post {
                         title,
                         slug,
                         content,
+                        variables,
                         hashtag_ids,
                         cover_image_blob_id,
                         published_at,
+                        modified_at,
                         NULL::real AS search_rank,
                         created_at,
                         updated_at

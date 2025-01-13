@@ -26,6 +26,7 @@ pub async fn insert_test_post(core_context: &CoreContext, website: Option<&Websi
         &title,
         &slug,
         &content,
+        "{}",
         vec![blob.clone()],
         Some(&blob),
         true,

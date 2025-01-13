@@ -41,9 +41,11 @@ impl Post {
                         title,
                         slug,
                         content,
+                        variables,
                         hashtag_ids,
                         cover_image_blob_id,
                         published_at,
+                        modified_at,
                         ts_rank(search, websearch_to_tsquery($4)) AS search_rank,
                         created_at,
                         updated_at

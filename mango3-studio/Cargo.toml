@@ -15,6 +15,7 @@ leptos_i18n = { workspace = true }
 leptos_meta = { workspace = true }
 leptos_router = { workspace = true }
 serde = { workspace = true }
+serde_json = { workspace = true, optional = true }
 slug = "0.1.6"
 tokio = { workspace = true, optional = true }
 uuid = { workspace = true, optional = true }
@@ -27,6 +28,7 @@ hydrate = ["leptos/hydrate", "leptos_i18n/hydrate", "mango3-leptos-utils/hydrate
 ssr = [
     "dep:async-trait",
     "dep:futures",
+    "dep:serde_json",
     "dep:tokio",
     "dep:uuid",
     "dep:mango3-core",
