@@ -44,6 +44,7 @@ Install dependencies:
 
 ```sh
 cargo install sqlx-cli --no-default-features --features completions,native-tls,postgres
+cargo install cargo-leptos@0.2.24
 npm install
 ```
 
