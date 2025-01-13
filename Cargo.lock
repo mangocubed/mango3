@@ -3019,6 +3019,7 @@ dependencies = [
  "mango3-core",
  "mango3-leptos-utils",
  "serde",
+ "serde_json",
  "slug",
  "tokio",
  "uuid",

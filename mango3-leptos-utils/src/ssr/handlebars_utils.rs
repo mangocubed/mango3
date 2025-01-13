@@ -2,12 +2,9 @@ use attohttpc::header::{HeaderName, HeaderValue};
 use attohttpc::RequestBuilder;
 use handlebars::*;
 use handlebars_misc_helpers::{assign_helpers, json_helpers};
-use regex::Captures;
-use serde_json::{Map, Value};
+use serde_json::Value;
 
 use mango3_core::constants::REGEX_HANDLEBARS;
-
-use crate::constants::REGEX_HANDLEBARS_DECLARE;
 
 fn create_block<'rc>(param: &PathAndJson<'rc>) -> BlockContext<'rc> {
     let mut block = BlockContext::new();
@@ -123,37 +120,14 @@ fn helper_http_post<'reg, 'rc>(
     push_response(helper, registry, context, render_context, output, request_builder)
 }
 
-pub fn render_handlebars(input: &str) -> Result<String, RenderError> {
+pub fn render_handlebars(input: &str, data: &Value) -> Result<String, RenderError> {
     if !REGEX_HANDLEBARS.is_match(input) {
         return Ok(input.to_owned());
     }
 
     let mut registry = Handlebars::new();
-    let mut data = Map::new();
 
     registry.set_prevent_indent(true);
-
-    let input = REGEX_HANDLEBARS_DECLARE.replace_all(input, |captures: &Captures| {
-        let key = captures.name("key").expect("Could not get match").as_str().to_owned();
-
-        let value = if let Some(value) = captures.name("bool") {
-            Value::Bool(value.as_str() == "true")
-        } else if let Some(value) = captures.name("number") {
-            Value::Number(serde_json::from_str(value.as_str()).unwrap_or_else(|_| 0.into()))
-        } else if let Some(value) = captures.name("string") {
-            Value::String(value.as_str().to_owned())
-        } else if let Some(value) = captures.name("array") {
-            Value::Array(serde_json::from_str(value.as_str()).unwrap_or_default())
-        } else if let Some(value) = captures.name("object") {
-            Value::Object(serde_json::from_str(value.as_str()).unwrap_or_default())
-        } else {
-            Value::Null
-        };
-
-        data.insert(key, value);
-
-        ""
-    });
 
     assign_helpers::register(&mut registry);
     json_helpers::register(&mut registry);
@@ -161,5 +135,5 @@ pub fn render_handlebars(input: &str) -> Result<String, RenderError> {
     registry.register_helper("http_get", Box::new(helper_http_get));
     registry.register_helper("http_post", Box::new(helper_http_post));
 
-    registry.render_template(&input, &data)
+    registry.render_template(input, data)
 }

@@ -1,5 +1,5 @@
 use sqlx::types::chrono::{DateTime, Utc};
-use sqlx::types::Uuid;
+use sqlx::types::{JsonValue, Uuid};
 use sqlx::{query, query_as};
 use url::Url;
 
@@ -25,9 +25,11 @@ pub struct Post {
     pub title: String,
     pub slug: String,
     pub content: String,
+    pub variables: JsonValue,
     pub hashtag_ids: Vec<Uuid>,
     pub cover_image_blob_id: Option<Uuid>,
     pub published_at: Option<DateTime<Utc>>,
+    pub modified_at: Option<DateTime<Utc>>,
     pub search_rank: Option<f32>,
     pub created_at: DateTime<Utc>,
     pub updated_at: Option<DateTime<Utc>>,
@@ -83,9 +85,11 @@ impl Post {
                 title,
                 slug,
                 content,
+                variables,
                 hashtag_ids,
                 cover_image_blob_id,
                 published_at,
+                modified_at,
                 CASE WHEN $4::varchar IS NOT NULL THEN ts_rank(search, websearch_to_tsquery($4)) ELSE NULL END AS search_rank,
                 created_at,
                 updated_at
@@ -111,9 +115,11 @@ impl Post {
                 title,
                 slug,
                 content,
+                variables,
                 hashtag_ids,
                 cover_image_blob_id,
                 published_at,
+                modified_at,
                 NULL::real AS search_rank,
                 created_at,
                 updated_at
@@ -195,5 +201,9 @@ impl Validator {
 
     fn validate_post_content(&mut self, value: &str) -> bool {
         self.validate_length(Input::Content, value, None, Some(MISC_CONFIG.max_post_content_length))
+    }
+
+    fn validate_post_variables(&mut self, value: Option<&JsonValue>) -> bool {
+        self.custom_validation(Input::Variables, InputError::IsInvalid, &|| value.is_some())
     }
 }

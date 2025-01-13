@@ -6,7 +6,7 @@ use leptos_use::{use_textarea_autosize_with_options, UseTextareaAutosizeOptions,
 pub fn TextareaField(
     #[prop(into, optional)] error: MaybeProp<String>,
     #[prop(into, optional)] id: Option<&'static str>,
-    #[prop(into)] label: TextProp,
+    #[prop(into, optional)] label: TextProp,
     #[prop(default = 4, into)] rows: i8,
     #[prop(optional, into)] value: Signal<String>,
     name: &'static str,

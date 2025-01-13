@@ -53,13 +53,13 @@ pub fn PostCard(
                         <TimeAgo value=post.created_at />
 
                         {move || {
-                            post.updated_at
-                                .map(|update_at| {
+                            post.modified_at
+                                .map(|modified_at| {
                                     view! {
                                         " ("
                                         {t!(i18n, shared.edited)}
                                         " "
-                                        <TimeAgo value=update_at />
+                                        <TimeAgo value=modified_at />
                                         ")"
                                     }
                                 })

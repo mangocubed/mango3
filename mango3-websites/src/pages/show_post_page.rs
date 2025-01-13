@@ -42,10 +42,13 @@ pub fn ShowPostPage() -> impl IntoView {
                                     }}
 
                                     {move || {
-                                        post.updated_at
-                                            .map(|updated_at| {
+                                        post.modified_at
+                                            .map(|modified_at| {
                                                 view! {
-                                                    <MetaDateTime property="article:modified_time" content=updated_at />
+                                                    <MetaDateTime
+                                                        property="article:modified_time"
+                                                        content=modified_at
+                                                    />
                                                 }
                                             })
                                     }}

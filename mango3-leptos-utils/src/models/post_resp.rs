@@ -58,6 +58,7 @@ pub struct PostResp {
     pub url: String,
     pub views_count: i64,
     pub published_at: Option<DateTime<Utc>>,
+    pub modified_at: Option<DateTime<Utc>>,
     pub created_at: DateTime<Utc>,
     pub updated_at: Option<DateTime<Utc>>,
 }
@@ -75,7 +76,7 @@ impl FromCore<Post> for PostResp {
             .await,
             title: post.title.clone(),
             slug: post.slug.clone(),
-            content_html: parse_html(&render_handlebars(&post.content).unwrap(), true),
+            content_html: parse_html(&render_handlebars(&post.content, &post.variables).unwrap(), true),
             hashtags: post
                 .hashtags(&core_context)
                 .await
@@ -98,6 +99,7 @@ impl FromCore<Post> for PostResp {
             url: post.url(&core_context).await.to_string(),
             views_count: post.views_count(core_context).await.expect("Could not get views count"),
             published_at: post.published_at,
+            modified_at: post.modified_at,
             created_at: post.created_at,
             updated_at: post.updated_at,
         }
@@ -117,6 +119,7 @@ pub struct PostPreviewResp {
     pub is_published: bool,
     pub views_count: i64,
     pub url: String,
+    pub modified_at: Option<DateTime<Utc>>,
     pub created_at: DateTime<Utc>,
     pub updated_at: Option<DateTime<Utc>>,
 }
@@ -154,6 +157,7 @@ impl FromCore<Post> for PostPreviewResp {
             is_published: post.is_published(core_context).await,
             views_count: post.views_count(core_context).await.expect("Could not get views count"),
             url: post.url(&core_context).await.to_string(),
+            modified_at: post.modified_at,
             created_at: post.created_at,
             updated_at: post.updated_at,
         }
