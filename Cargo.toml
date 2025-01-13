@@ -27,7 +27,7 @@ console_error_panic_hook = "0.1.7"
 futures = "0.3.31"
 leptos = "0.7.3"
 leptos_axum = "0.7.3"
-leptos_i18n = { version = "0.5.3", default-features = false, features = [
+leptos_i18n = { version = "0.5.5", default-features = false, features = [
     "cookie",
     "interpolate_display",
     "yaml_files",
