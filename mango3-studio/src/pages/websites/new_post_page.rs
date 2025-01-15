@@ -19,7 +19,7 @@ pub fn NewPostPage() -> impl IntoView {
     view! {
         <h2 class="h2">{t!(i18n, studio.new_post)}</h2>
 
-        <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
+        <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form max-w-5xl">
             <ActionFormAlert
                 action_value=action_value
                 error_message=move || { t_string!(i18n, studio.failed_to_create_post) }

@@ -32,10 +32,6 @@ pre:has(.hljs) {
     padding: 0;
 }
 
-.hljs {
-    background: unset !important;
-}
-
 .loading-overlay {
     align-items: center;
     background-color: #000;
