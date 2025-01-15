@@ -23,5 +23,6 @@ where
 
     UseCookieOptions::default()
         .domain(basic_config.domain.clone())
+        .path("/")
         .same_site(SameSite::Strict)
 }

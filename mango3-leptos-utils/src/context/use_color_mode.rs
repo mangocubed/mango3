@@ -109,6 +109,7 @@ fn get_cookie_signal() -> (Signal<Option<ColorMode>>, WriteSignal<Option<ColorMo
         "_mango3_color_mode",
         UseCookieOptions::default()
             .domain(basic_config.domain.clone())
+            .path("/")
             .same_site(SameSite::Strict),
     )
 }

@@ -39,7 +39,7 @@ pub fn EditPostPage() -> impl IntoView {
                                     action=server_action
                                     attr:autocomplete="off"
                                     attr:novalidate="true"
-                                    attr:class="form"
+                                    attr:class="form max-w-5xl"
                                 >
                                     <ActionFormAlert
                                         action_value=action_value

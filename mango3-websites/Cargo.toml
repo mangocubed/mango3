@@ -13,6 +13,7 @@ leptos = { workspace = true }
 leptos_i18n = { workspace = true }
 leptos_meta = { workspace = true }
 leptos_router = { workspace = true }
+leptos-use = { workspace = true, features = ["use_color_mode"] }
 tokio = { workspace = true, optional = true }
 uuid = { workspace = true, optional = true }
 wasm-bindgen = { workspace = true }

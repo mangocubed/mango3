@@ -9,8 +9,10 @@ use mango3_leptos_utils::models::WebsiteResp;
 
 use crate::context::use_current_website_resource;
 
+mod highlight_code;
 mod website_top_bar;
 
+pub use highlight_code::HighLightCode;
 pub use website_top_bar::WebsiteTopBar;
 
 #[component]
@@ -41,24 +43,6 @@ where
     VF: Fn(WebsiteResp) -> IV + Send + Sync + 'static,
 {
     view! { <CurrentWebsiteOpt children=move |website_opt| { website_opt.map(&children) } /> }
-}
-
-#[component]
-pub fn HighLightCode(content: String) -> impl IntoView {
-    let has_code = move || content.contains("</code>");
-
-    view! {
-        <Show when=has_code>
-            <link
-                rel="stylesheet"
-                href="https://unpkg.com/@highlightjs/cdn-assets@11.11.0/styles/github-dark-dimmed.min.css"
-            />
-            <script type="module">
-                r#"import hljs from "https://unpkg.com/@highlightjs/cdn-assets@11.11.0/es/highlight.min.js";
-                document.body.querySelectorAll("pre code").forEach((element) => { hljs.highlightElement(element); });"#
-            </script>
-        </Show>
-    }
 }
 
 #[component]
