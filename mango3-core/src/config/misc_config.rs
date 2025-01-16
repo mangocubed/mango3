@@ -2,11 +2,14 @@ use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 
+use crate::enums::UserRole;
+
 use super::extract_from_env;
 
 #[derive(Deserialize, Serialize)]
 pub struct MiscConfig {
     pub client_ip_source: String,
+    pub(crate) default_user_role: UserRole,
     pub(crate) confirmation_code_length: u8,
     pub(crate) font_path: String,
     pub(crate) invitation_code_length: u8,
@@ -19,6 +22,7 @@ impl Default for MiscConfig {
         Self {
             client_ip_source: "XRealIp".to_owned(),
             confirmation_code_length: 6,
+            default_user_role: UserRole::User,
             font_path: "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf".to_owned(),
             invitation_code_length: 6,
             max_post_content_length: 16384,

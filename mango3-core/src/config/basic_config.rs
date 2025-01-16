@@ -21,7 +21,7 @@ impl Default for BasicConfig {
     fn default() -> Self {
         Self {
             about_url: String::new(),
-            copyright: "© 2024, Mango³ Team".to_owned(),
+            copyright: "© 2025, Mango³ Team".to_owned(),
             domain: "mango3.local".to_owned(),
             enable_register: true,
             google_ads_client: String::new(),

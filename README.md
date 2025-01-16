@@ -12,7 +12,7 @@
 | Name                          | Type    | Default                                                          |
 | ----------------------------- | ------- | ---------------------------------------------------------------- |
 | BASIC_ABOUT_URL               | String  |                                                                  |
-| BASIC_COPYRIGHT               | String  | © 2024, Mango³ Team                                              |
+| BASIC_COPYRIGHT               | String  | © 2025, Mango³ Team                                              |
 | BASIC_DOMAIN                  | String  | mango3.local                                                     |
 | BASIC_ENABLE_REGISTER         | String  | true                                                             |
 | BASIC_GOOGLE_ADSENSE_CLIENT   | String  |                                                                  |
@@ -32,6 +32,7 @@
 | MISC_CLIENT_IP_SOURCE         | String  | XRealIp                                                          |
 | MISC_CONFIRMATION_CODE_LENGTH | Integer | 6                                                                |
 | MISC_FONT_PATH                | String  | /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf                  |
+| MISC_DEFAULT_USER_ROLE        | String  | user                                                             |
 | MISC_INVITATION_CODE_LENGTH   | Integer | 6                                                                |
 | MISC_MAX_POST_CONTENT_LENGTH  | Integer | 16384                                                            |
 | MISC_STORAGE_PATH             | String  | ./storage                                                        |
