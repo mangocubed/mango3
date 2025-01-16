@@ -50,6 +50,7 @@ pub enum MailerJobCommand {
 }
 
 #[derive(sqlx::Type, strum::Display, Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename(deserialize = "kebab-case"))]
 #[sqlx(type_name = "user_role", rename_all = "snake_case")]
 #[strum(serialize_all = "kebab-case")]
 pub enum UserRole {
