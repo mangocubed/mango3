@@ -52,11 +52,15 @@ pub fn TopBar(
                         <div class="flex-none">
                             <CurrentUserOpt children=move |user| {
                                 if let Some(user) = user {
+                                    let is_creator = user.role.clone() != "user";
+                                    let new_website_url = basic_config.new_website_url.clone();
+                                    let studio_url = basic_config.studio_url.clone();
+                                    let my_account_url = basic_config.my_account_url.clone();
                                     Either::Left(
                                         view! {
                                             <div class="dropdown dropdown-end">
                                                 <button class="btn btn-ghost px-2" tabindex="1">
-                                                    <UserTag user=user text_class="hidden md:block" />
+                                                    <UserTag user=user.clone() text_class="hidden md:block" />
 
                                                     <ChevronDownMini />
                                                 </button>
@@ -65,20 +69,31 @@ pub fn TopBar(
                                                     tabindex="1"
                                                     class="dropdown-content menu bg-base-200 rounded-box z-[1] p-2 shadow w-48"
                                                 >
+
+                                                    <Show when=move || {
+                                                        is_creator
+                                                    }>
+                                                        {
+                                                            let new_website_url = new_website_url.clone();
+                                                            let studio_url = studio_url.clone();
+                                                            move || {
+                                                                let new_website_url = new_website_url.clone();
+                                                                let studio_url = studio_url.clone();
+                                                                view! {
+                                                                    <li>
+                                                                        <a href=new_website_url>{t!(i18n, shared.new_website)}</a>
+                                                                    </li>
+
+                                                                    <li>
+                                                                        <a href=studio_url>{t!(i18n, shared.studio)}</a>
+                                                                    </li>
+                                                                }
+                                                            }
+                                                        }
+                                                    </Show>
+
                                                     <li>
-                                                        <a href=basic_config
-                                                            .new_website_url
-                                                            .clone()>{t!(i18n, shared.new_website)}</a>
-                                                    </li>
-                                                    <li>
-                                                        <a href=basic_config
-                                                            .studio_url
-                                                            .clone()>{t!(i18n, shared.studio)}</a>
-                                                    </li>
-                                                    <li>
-                                                        <a href=basic_config
-                                                            .my_account_url
-                                                            .clone()>{t!(i18n, shared.my_account)}</a>
+                                                        <a href=my_account_url>{t!(i18n, shared.my_account)}</a>
                                                     </li>
                                                 </ul>
                                             </div>

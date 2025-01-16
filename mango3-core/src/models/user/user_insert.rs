@@ -2,7 +2,7 @@ use sqlx::types::Uuid;
 use sqlx::{query, query_as};
 
 use crate::constants::{BLACKLISTED_USERNAMES, REGEX_EMAIL, REGEX_USERNAME};
-use crate::enums::{Input, InputError, MailerJobCommand};
+use crate::enums::{Input, InputError, MailerJobCommand, UserRole};
 use crate::models::{encrypt_password, find_country, parse_date};
 use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
 use crate::CoreContext;
@@ -79,9 +79,27 @@ impl User {
 
         let result = query_as!(
             Self,
-            "INSERT INTO users (
+            r#"INSERT INTO users (
                 username, email, encrypted_password, display_name, full_name, birthdate, language_code, country_alpha2
-            ) VALUES ($1::text, $2::text, $3, $4, $5, $6, $7, $8) RETURNING *",
+            ) VALUES ($1::text, $2::text, $3, $4, $5, $6, $7, $8) RETURNING
+                id,
+                username,
+                email,
+                email_confirmation_code_id,
+                email_confirmed_at,
+                encrypted_password,
+                password_reset_confirmation_code_id,
+                display_name,
+                full_name,
+                birthdate,
+                language_code,
+                country_alpha2,
+                bio,
+                hashtag_ids,
+                avatar_image_blob_id,
+                role as "role!: UserRole",
+                created_at,
+                updated_at"#,
             username,                // $1
             email,                   // $2
             encrypted_password,      // $3

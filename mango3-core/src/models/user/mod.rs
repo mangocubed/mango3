@@ -4,7 +4,7 @@ use sqlx::query_as;
 use sqlx::types::chrono::{DateTime, NaiveDate, Utc};
 use sqlx::types::Uuid;
 
-use crate::enums::{Input, InputError};
+use crate::enums::{Input, InputError, UserRole};
 use crate::locales::I18n;
 use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
 use crate::CoreContext;
@@ -34,6 +34,7 @@ pub struct User {
     pub bio: String,
     pub hashtag_ids: Vec<Uuid>,
     pub avatar_image_blob_id: Option<Uuid>,
+    pub role: UserRole,
     pub created_at: DateTime<Utc>,
     pub updated_at: Option<DateTime<Utc>>,
 }
@@ -77,16 +78,58 @@ impl User {
     }
 
     pub async fn get_by_id(core_context: &CoreContext, id: Uuid) -> sqlx::Result<Self> {
-        query_as!(Self, "SELECT * FROM users WHERE id = $1 LIMIT 1", id)
-            .fetch_one(&core_context.db_pool)
-            .await
+        query_as!(
+            Self,
+            r#"SELECT
+                id,
+                username,
+                email,
+                email_confirmation_code_id,
+                email_confirmed_at,
+                encrypted_password,
+                password_reset_confirmation_code_id,
+                display_name,
+                full_name,
+                birthdate,
+                language_code,
+                country_alpha2,
+                bio,
+                hashtag_ids,
+                avatar_image_blob_id,
+                role as "role!: UserRole",
+                created_at,
+                updated_at
+            FROM users WHERE id = $1 LIMIT 1"#,
+            id
+        )
+        .fetch_one(&core_context.db_pool)
+        .await
     }
 
     pub async fn get_by_username_or_email(core_context: &CoreContext, username_or_email: &str) -> sqlx::Result<Self> {
         query_as!(
             Self,
-            "SELECT * FROM users WHERE LOWER(username) = $1 OR (email_confirmed_at IS NOT NULL AND LOWER(email) = $1)
-            LIMIT 1",
+            r#"SELECT
+                id,
+                username,
+                email,
+                email_confirmation_code_id,
+                email_confirmed_at,
+                encrypted_password,
+                password_reset_confirmation_code_id,
+                display_name,
+                full_name,
+                birthdate,
+                language_code,
+                country_alpha2,
+                bio,
+                hashtag_ids,
+                avatar_image_blob_id,
+                role as "role!: UserRole",
+                created_at,
+                updated_at
+            FROM users WHERE LOWER(username) = $1 OR (email_confirmed_at IS NOT NULL AND LOWER(email) = $1)
+            LIMIT 1"#,
             username_or_email.to_lowercase()
         )
         .fetch_one(&core_context.db_pool)
