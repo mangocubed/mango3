@@ -34,7 +34,7 @@ leptos_i18n = { version = "0.5.5", default-features = false, features = [
 ] }
 leptos_meta = "0.7.3"
 leptos_router = "0.7.3"
-leptos-use = { version = "0.15.3", default-features = false }
+leptos-use = { version = "0.15.4", default-features = false }
 regex = "1.11.1"
 rust_iso3166 = "0.1.13"
 serde_json = { version = "1.0.135" }
