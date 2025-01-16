@@ -7,7 +7,7 @@
         "tailwindcss": "^3.4.17"
     },
     "devDependencies": {
-        "@faker-js/faker": "^9.3.0",
+        "@faker-js/faker": "^9.4.0",
         "@playwright/test": "^1.49.1",
         "@types/node": "^22.10.6"
     }
