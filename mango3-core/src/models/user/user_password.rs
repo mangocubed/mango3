@@ -1,7 +1,7 @@
 use sqlx::query_as;
 
 use crate::constants::KEY_TEXT_RESET_YOUR_PASSWORD;
-use crate::enums::{Input, InputError};
+use crate::enums::{Input, InputError, UserRole};
 use crate::models::{encrypt_password, verify_password, ConfirmationCode};
 use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
 use crate::CoreContext;
@@ -30,7 +30,25 @@ impl User {
 
         query_as!(
             Self,
-            "UPDATE users SET password_reset_confirmation_code_id = $2 WHERE id = $1 RETURNING *",
+            r#"UPDATE users SET password_reset_confirmation_code_id = $2 WHERE id = $1 RETURNING
+                id,
+                username,
+                email,
+                email_confirmation_code_id,
+                email_confirmed_at,
+                encrypted_password,
+                password_reset_confirmation_code_id,
+                display_name,
+                full_name,
+                birthdate,
+                language_code,
+                country_alpha2,
+                bio,
+                hashtag_ids,
+                avatar_image_blob_id,
+                role as "role!: UserRole",
+                created_at,
+                updated_at"#,
             self.id,              // $1
             confirmation_code.id, // $2
         )
@@ -67,7 +85,25 @@ impl User {
 
         query_as!(
             Self,
-            "UPDATE users SET encrypted_password = $2 WHERE id = $1 RETURNING *",
+            r#"UPDATE users SET encrypted_password = $2 WHERE id = $1 RETURNING
+                id,
+                username,
+                email,
+                email_confirmation_code_id,
+                email_confirmed_at,
+                encrypted_password,
+                password_reset_confirmation_code_id,
+                display_name,
+                full_name,
+                birthdate,
+                language_code,
+                country_alpha2,
+                bio,
+                hashtag_ids,
+                avatar_image_blob_id,
+                role as "role!: UserRole",
+                created_at,
+                updated_at"#,
             self.id,            // $1
             encrypted_password, // $2
         )
@@ -105,8 +141,26 @@ impl User {
 
         query_as!(
             Self,
-            "UPDATE users SET encrypted_password = $2, password_reset_confirmation_code_id = NULL WHERE id = $1
-            RETURNING *",
+            r#"UPDATE users SET encrypted_password = $2, password_reset_confirmation_code_id = NULL WHERE id = $1
+            RETURNING
+                id,
+                username,
+                email,
+                email_confirmation_code_id,
+                email_confirmed_at,
+                encrypted_password,
+                password_reset_confirmation_code_id,
+                display_name,
+                full_name,
+                birthdate,
+                language_code,
+                country_alpha2,
+                bio,
+                hashtag_ids,
+                avatar_image_blob_id,
+                role as "role!: UserRole",
+                created_at,
+                updated_at"#,
             self.id,            // $1
             encrypted_password, // $2
         )

@@ -1,7 +1,7 @@
 use sqlx::{query, query_as};
 
 use crate::constants::{KEY_TEXT_CONFIRM_YOUR_EMAIL, REGEX_EMAIL};
-use crate::enums::{Input, InputError};
+use crate::enums::{Input, InputError, UserRole};
 use crate::models::ConfirmationCode;
 use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
 use crate::CoreContext;
@@ -29,8 +29,26 @@ impl User {
 
         query_as!(
             Self,
-            "UPDATE users SET email_confirmation_code_id = NULL, email_confirmed_at = current_timestamp
-            WHERE email_confirmed_at IS NULL AND id = $1 RETURNING *",
+            r#"UPDATE users SET email_confirmation_code_id = NULL, email_confirmed_at = current_timestamp
+            WHERE email_confirmed_at IS NULL AND id = $1 RETURNING
+                id,
+                username,
+                email,
+                email_confirmation_code_id,
+                email_confirmed_at,
+                encrypted_password,
+                password_reset_confirmation_code_id,
+                display_name,
+                full_name,
+                birthdate,
+                language_code,
+                country_alpha2,
+                bio,
+                hashtag_ids,
+                avatar_image_blob_id,
+                role as "role!: UserRole",
+                created_at,
+                updated_at"#,
             self.id, // $1
         )
         .fetch_one(&core_context.db_pool)
@@ -61,7 +79,25 @@ impl User {
 
         query_as!(
             Self,
-            "UPDATE users SET email_confirmation_code_id = $2 WHERE id = $1 RETURNING *",
+            r#"UPDATE users SET email_confirmation_code_id = $2 WHERE id = $1 RETURNING
+                id,
+                username,
+                email,
+                email_confirmation_code_id,
+                email_confirmed_at,
+                encrypted_password,
+                password_reset_confirmation_code_id,
+                display_name,
+                full_name,
+                birthdate,
+                language_code,
+                country_alpha2,
+                bio,
+                hashtag_ids,
+                avatar_image_blob_id,
+                role as "role!: UserRole",
+                created_at,
+                updated_at"#,
             self.id,              // $1
             confirmation_code.id, // $2
         )
@@ -111,11 +147,26 @@ impl User {
 
         query_as!(
             Self,
-            "UPDATE users SET
-                email = $2::text,
-                email_confirmed_at = NULL,
-                email_confirmation_code_id = NULL
-            WHERE id = $1 RETURNING *",
+            r#"UPDATE users SET email = $2::text, email_confirmed_at = NULL, email_confirmation_code_id = NULL
+            WHERE id = $1 RETURNING
+                id,
+                username,
+                email,
+                email_confirmation_code_id,
+                email_confirmed_at,
+                encrypted_password,
+                password_reset_confirmation_code_id,
+                display_name,
+                full_name,
+                birthdate,
+                language_code,
+                country_alpha2,
+                bio,
+                hashtag_ids,
+                avatar_image_blob_id,
+                role as "role!: UserRole",
+                created_at,
+                updated_at"#,
             self.id, // $1
             email,   // $2
         )

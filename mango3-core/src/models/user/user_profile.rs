@@ -1,6 +1,6 @@
 use sqlx::query_as;
 
-use crate::enums::Input;
+use crate::enums::{Input, UserRole};
 use crate::models::{find_country, parse_date, Blob};
 use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
 use crate::CoreContext;
@@ -45,7 +45,7 @@ impl User {
 
         query_as!(
             User,
-            "UPDATE users
+            r#"UPDATE users
             SET
                 display_name = $2,
                 full_name = $3,
@@ -53,7 +53,25 @@ impl User {
                 country_alpha2 = $5,
                 bio = $6,
                 avatar_image_blob_id = $7
-            WHERE id = $1 RETURNING *",
+            WHERE id = $1 RETURNING
+                id,
+                username,
+                email,
+                email_confirmation_code_id,
+                email_confirmed_at,
+                encrypted_password,
+                password_reset_confirmation_code_id,
+                display_name,
+                full_name,
+                birthdate,
+                language_code,
+                country_alpha2,
+                bio,
+                hashtag_ids,
+                avatar_image_blob_id,
+                role as "role!: UserRole",
+                created_at,
+                updated_at"#,
             self.id,                 // $1
             display_name,            // $2
             full_name,               // $3

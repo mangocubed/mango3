@@ -24,3 +24,4 @@
 - Feature to attach images to posts.
 - Feature to manage websites themes.
 - Features to search websites and posts.
+- Support for Handlebars on posts content.
