@@ -15,7 +15,6 @@
 | BASIC_COPYRIGHT               | String  | © 2025, Mango³ Team                                              |
 | BASIC_DOMAIN                  | String  | mango3.local                                                     |
 | BASIC_ENABLE_REGISTER         | String  | true                                                             |
-| BASIC_GOOGLE_ADSENSE_CLIENT   | String  |                                                                  |
 | BASIC_PRIVACY_POLICY_URL      | String  |                                                                  |
 | BASIC_SECURE                  | Boolean | false                                                            |
 | BASIC_TERMS_OF_SERVICE_URL    | String  |                                                                  |
