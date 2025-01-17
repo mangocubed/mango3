@@ -11,20 +11,22 @@ pub fn TimeAgo(value: DateTime<Utc>) -> impl IntoView {
     let time_delta = RwSignal::new(Utc::now() - value);
     let value_rfc3339 = value.to_rfc3339_opts(SecondsFormat::Secs, true);
 
-    use_interval_fn(
-        move || {
-            let dt = Utc::now() - value;
+    Effect::new(move || {
+        use_interval_fn(
+            move || {
+                let dt = Utc::now() - value;
 
-            time_delta.set(dt);
+                time_delta.set(dt);
 
-            interval.set(match dt.num_seconds() {
-                ..60 => 1000,
-                60..3600 => 60000,
-                _ => 3600000,
-            });
-        },
-        interval,
-    );
+                interval.set(match dt.num_seconds() {
+                    ..60 => 1000,
+                    60..3600 => 60000,
+                    _ => 3600000,
+                });
+            },
+            interval,
+        );
+    });
 
     view! {
         <time title=value_rfc3339.clone() datetime=value_rfc3339>
