@@ -50,7 +50,6 @@ pub enum MailerJobCommand {
 }
 
 #[derive(sqlx::Type, strum::Display, Clone, Debug, Deserialize, PartialEq, Serialize)]
-#[serde(rename(deserialize = "kebab-case"))]
 #[sqlx(type_name = "user_role", rename_all = "snake_case")]
 #[strum(serialize_all = "kebab-case")]
 pub enum UserRole {
@@ -58,4 +57,15 @@ pub enum UserRole {
     Creator,
     Admin,
     Superuser,
+}
+
+impl From<&String> for UserRole {
+    fn from(value: &String) -> Self {
+        match value.as_str() {
+            "superuser" => Self::Superuser,
+            "admin" => Self::Admin,
+            "creator" => Self::Creator,
+            _ => Self::User,
+        }
+    }
 }

@@ -109,15 +109,15 @@ impl User {
                 role as "role!: UserRole",
                 created_at,
                 updated_at"#,
-            username,                                    // $1
-            email,                                       // $2
-            encrypted_password,                          // $3
-            display_name,                                // $4
-            full_name,                                   // $5
-            birthdate,                                   // $6
-            language_code,                               // $7
-            country.unwrap().alpha2,                     // $8
-            &MISC_CONFIG.default_user_role as &UserRole, // $9
+            username,                                      // $1
+            email,                                         // $2
+            encrypted_password,                            // $3
+            display_name,                                  // $4
+            full_name,                                     // $5
+            birthdate,                                     // $6
+            language_code,                                 // $7
+            country.unwrap().alpha2,                       // $8
+            &MISC_CONFIG.default_user_role() as &UserRole, // $9
         )
         .fetch_one(&core_context.db_pool)
         .await;

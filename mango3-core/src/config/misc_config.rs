@@ -9,7 +9,7 @@ use super::extract_from_env;
 #[derive(Deserialize, Serialize)]
 pub struct MiscConfig {
     pub client_ip_source: String,
-    pub(crate) default_user_role: UserRole,
+    default_user_role: String,
     pub(crate) confirmation_code_length: u8,
     pub(crate) font_path: String,
     pub(crate) invitation_code_length: u8,
@@ -22,7 +22,7 @@ impl Default for MiscConfig {
         Self {
             client_ip_source: "XRealIp".to_owned(),
             confirmation_code_length: 6,
-            default_user_role: UserRole::User,
+            default_user_role: "user".to_owned(),
             font_path: "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf".to_owned(),
             invitation_code_length: 6,
             max_post_content_length: 16384,
@@ -37,6 +37,10 @@ impl Default for MiscConfig {
 impl MiscConfig {
     pub(crate) fn load() -> Self {
         extract_from_env("MISC_")
+    }
+
+    pub(crate) fn default_user_role(&self) -> UserRole {
+        (&self.default_user_role).into()
     }
 
     pub fn storage_tmp_path(&self) -> PathBuf {
