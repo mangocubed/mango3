@@ -1,13 +1,33 @@
+// Based on: https://github.com/Synphonyte/leptos-use/blob/main/src/use_color_mode.rs
+
 use codee::string::FromToStringCodec;
 use default_struct_builder::DefaultBuilder;
 use leptos::prelude::*;
 use leptos::reactive::wrappers::read::Signal;
 use leptos_use::core::MaybeRwSignal;
-use leptos_use::*;
+use leptos_use::{
+    sync_signal_with_options, use_cookie_with_options, use_document, ColorMode, SameSite, SyncSignalOptions,
+    UseColorModeReturn, UseCookieOptions,
+};
 use std::marker::PhantomData;
 use std::sync::Arc;
 
 use super::use_basic_config;
+
+fn use_preferred_dark() -> Signal<bool> {
+    #[cfg(not(feature = "ssr"))]
+    {
+        leptos_use::use_media_query("(prefers-color-scheme: dark)")
+    }
+
+    #[cfg(feature = "ssr")]
+    {
+        Signal::derive(move || {
+            leptos_use::utils::header(http::HeaderName::from_static("sec-ch-prefers-color-scheme"))
+                == Some("dark".to_string())
+        })
+    }
+}
 
 pub fn use_color_mode() -> UseColorModeReturn {
     use_color_mode_with_options(UseColorModeOptions::default())
@@ -87,6 +107,7 @@ where
         }
     });
 
+    #[cfg(not(feature = "ssr"))]
     on_cleanup(move || {
         on_changed(state.get());
     });
