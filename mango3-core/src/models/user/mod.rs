@@ -151,6 +151,10 @@ impl User {
             .collect::<String>()
             .to_uppercase()
     }
+
+    pub fn is_creator(&self) -> bool {
+        self.role != UserRole::User
+    }
 }
 
 impl Validator {

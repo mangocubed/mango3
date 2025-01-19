@@ -52,7 +52,7 @@ pub fn TopBar(
                         <div class="flex-none">
                             <CurrentUserOpt children=move |user| {
                                 if let Some(user) = user {
-                                    let is_creator = user.role.clone() != "user";
+                                    let is_creator = user.is_creator;
                                     let new_website_url = basic_config.new_website_url.clone();
                                     let studio_url = basic_config.studio_url.clone();
                                     let my_account_url = basic_config.my_account_url.clone();
