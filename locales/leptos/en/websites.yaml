@@ -1,2 +1,5 @@
+comment_submitted_successfully: Comment submitted successfully
+comments: Comments
+failed_to_submit_comment: Failed to submit comment
 powered_by_title: powered by {{title}}
 this_website_is_part_of_title_ecosystem: This website is part of {{title}} ecosystem.

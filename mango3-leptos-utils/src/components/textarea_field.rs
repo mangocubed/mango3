@@ -34,9 +34,23 @@ pub fn TextareaField(
 
     view! {
         <div class="form-control w-full">
-            <label class="label" for=field_id>
-                <span class="label-text">{move || label.get()}</span>
-            </label>
+            <Show when={
+                let label_is_present = !label.get().is_empty();
+                move || label_is_present
+            }>
+                {
+                    let label = label.clone();
+                    move || {
+                        let label = label.clone();
+                        view! {
+                            <label class="label" for=field_id>
+                                <span class="label-text">{move || label.get()}</span>
+                            </label>
+                        }
+                    }
+                }
+            </Show>
+
             <textarea
                 node_ref=node_ref
                 prop:value=content

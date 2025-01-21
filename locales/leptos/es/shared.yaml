@@ -4,6 +4,7 @@ birthdate: Fecha de nacimiento
 cancel: Cancelar
 change_password: Cambiar contraseña
 code: Código
+count_comments: "{{count}} comentarios"
 count_days_ago: hace {{count}} días
 count_hours_ago: hace {{count}} horas
 count_minutes_ago: hace {{count}} minutos
@@ -30,6 +31,7 @@ my_account: Mi cuenta
 new_password: Contraseña nueva
 new_website: Nuevo website
 no_results_found: No se encontraron resultados.
+one_comment: 1 comentario
 one_day_ago: hace un día
 one_hour_ago: hace una hora
 one_minute_ago: hace un minuto

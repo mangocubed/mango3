@@ -1,21 +1,22 @@
 use leptos::either::EitherOf3;
 use leptos::prelude::*;
 use leptos_meta::Meta;
+use leptos_router::hooks::use_params_map;
 
-use mango3_leptos_utils::components::{LoadingSpinner, TimeAgo, UserTag};
-use mango3_leptos_utils::i18n::{t, t_string, use_i18n};
+use mango3_leptos_utils::components::{LoadingSpinner, PostBottomBar, TimeAgo, UserTag};
+use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::pages::NotFoundPage;
 use mango3_leptos_utils::pages::Page;
 
-use crate::components::{HighLightCode, MetaDateTime};
-use crate::context::use_slug_param;
+use crate::components::{HighLightCode, MetaDateTime, PostComments};
+use crate::context::param_slug;
 use crate::server_functions::get_post;
 
 #[component]
 pub fn ShowPostPage() -> impl IntoView {
     let i18n = use_i18n();
-    let slug = use_slug_param();
-    let post_resource = Resource::new_blocking(move || slug.get(), get_post);
+    let params_map = use_params_map();
+    let post_resource = Resource::new_blocking(move || param_slug(params_map), get_post);
 
     view! {
         <Suspense fallback=LoadingSpinner>
@@ -134,15 +135,12 @@ pub fn ShowPostPage() -> impl IntoView {
                                                 }
                                             </Show>
 
-                                            <div class="mt-4 opacity-70">
-                                                {move || {
-                                                    if post.views_count == 1 {
-                                                        t_string!(i18n, shared.one_view).to_owned()
-                                                    } else {
-                                                        t_string!(i18n, shared.count_views, count = post.views_count)
-                                                    }
-                                                }}
-                                            </div>
+                                            <PostBottomBar
+                                                comments_count=post.comments_count
+                                                views_count=post.views_count
+                                            />
+
+                                            <PostComments post_id=post.id />
                                         </div>
                                     </div>
 

@@ -13,6 +13,7 @@ pub struct MiscConfig {
     pub(crate) confirmation_code_length: u8,
     pub(crate) font_path: String,
     pub(crate) invitation_code_length: u8,
+    pub(crate) max_comment_content_length: u32,
     pub(crate) max_post_content_length: u32,
     pub(crate) storage_path: String,
 }
@@ -25,6 +26,7 @@ impl Default for MiscConfig {
             default_user_role: "user".to_owned(),
             font_path: "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf".to_owned(),
             invitation_code_length: 6,
+            max_comment_content_length: 8192,
             max_post_content_length: 16384,
             #[cfg(not(test))]
             storage_path: "./storage".to_owned(),

@@ -19,7 +19,11 @@ impl Post {
             core_context,
             cursor_page_params,
             |node: Self| node.id,
-            move |core_context, after| async move { Self::get_by_id(core_context, after, website, user, None).await.ok() },
+            move |core_context, after| async move {
+                Self::get_by_id(core_context, after, website, user, is_published, None)
+                    .await
+                    .ok()
+            },
             move |core_context, cursor_resource, limit| async move {
                 let website_id = website.map(|w| w.id);
                 let user_id = user.map(|u| u.id);
@@ -41,6 +45,8 @@ impl Post {
                         variables,
                         hashtag_ids,
                         cover_image_blob_id,
+                        (SELECT COUNT(*) FROM post_views WHERE post_id = posts.id LIMIT 1) AS "views_count!",
+                        (SELECT COUNT(*) FROM post_comments WHERE post_id = posts.id LIMIT 1) AS "comments_count!",
                         published_at,
                         modified_at,
                         NULL::real AS search_rank,

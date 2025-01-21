@@ -1,10 +1,9 @@
 use leptos::prelude::*;
 
-use crate::components::UserTag;
-use crate::i18n::{t, t_string, use_i18n};
+use crate::i18n::{t, use_i18n};
 use crate::models::PostPreviewResp;
 
-use super::TimeAgo;
+use super::{PostBottomBar, TimeAgo, UserTag};
 
 #[component]
 pub fn PostCard(
@@ -113,15 +112,7 @@ pub fn PostCard(
                     }
                 </Show>
 
-                <div class="my-1 opacity-70">
-                    {move || {
-                        if post.views_count == 1 {
-                            t_string!(i18n, shared.one_view).to_owned()
-                        } else {
-                            t_string!(i18n, shared.count_views, count = post.views_count)
-                        }
-                    }}
-                </div>
+                <PostBottomBar comments_count=post.comments_count views_count=post.views_count />
 
                 {actions.map(|a| view! { <div class="card-actions justify-end">{a.run()}</div> })}
             </div>

@@ -9,7 +9,7 @@ use crate::enums::{Input, InputError};
 use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
 use crate::CoreContext;
 
-use super::{Blob, Hashtag, PostAttachment, PostView, User, Website};
+use super::{Blob, Hashtag, PostAttachment, User, Website};
 
 mod post_insert;
 mod post_paginate;
@@ -28,6 +28,8 @@ pub struct Post {
     pub variables: JsonValue,
     pub hashtag_ids: Vec<Uuid>,
     pub cover_image_blob_id: Option<Uuid>,
+    pub views_count: i64,
+    pub comments_count: i64,
     pub published_at: Option<DateTime<Utc>>,
     pub modified_at: Option<DateTime<Utc>>,
     pub search_rank: Option<f32>,
@@ -71,6 +73,7 @@ impl Post {
         id: Uuid,
         website: Option<&Website>,
         user: Option<&User>,
+        is_published: Option<bool>,
         query: Option<&str>,
     ) -> sqlx::Result<Self> {
         let website_id = website.map(|website| website.id);
@@ -88,17 +91,26 @@ impl Post {
                 variables,
                 hashtag_ids,
                 cover_image_blob_id,
+                (SELECT COUNT(*) FROM post_views WHERE post_id = posts.id LIMIT 1) AS "views_count!",
+                (SELECT COUNT(*) FROM post_comments WHERE post_id = posts.id LIMIT 1) AS "comments_count!",
                 published_at,
                 modified_at,
-                CASE WHEN $4::varchar IS NOT NULL THEN ts_rank(search, websearch_to_tsquery($4)) ELSE NULL END AS search_rank,
+                CASE WHEN $5::varchar IS NOT NULL THEN ts_rank(search, websearch_to_tsquery($5)) ELSE NULL END AS search_rank,
                 created_at,
                 updated_at
-            FROM posts WHERE id = $1 AND ($2::uuid IS NULL OR website_id = $2)
-                AND ($3::uuid IS NULL OR user_id = $3) LIMIT 1"#,
+            FROM posts
+            WHERE id = $1 AND ($2::uuid IS NULL OR website_id = $2)
+                AND ($3::uuid IS NULL OR user_id = $3)
+                AND (
+                    $4::bool IS NULL OR ($4 IS TRUE AND published_at IS NOT NULL)
+                    OR ($4 IS FALSE AND published_at IS NULL)
+                )
+            LIMIT 1"#,
             id,         // $1
             website_id, // $2
             user_id,    // $3
-            query,      // $4
+            is_published, // $4
+            query,      // $5
         )
         .fetch_one(&core_context.db_pool)
         .await
@@ -118,6 +130,8 @@ impl Post {
                 variables,
                 hashtag_ids,
                 cover_image_blob_id,
+                (SELECT COUNT(*) FROM post_views WHERE post_id = posts.id LIMIT 1) AS "views_count!",
+                (SELECT COUNT(*) FROM post_comments WHERE post_id = posts.id LIMIT 1) AS "comments_count!",
                 published_at,
                 modified_at,
                 NULL::real AS search_rank,
@@ -150,10 +164,6 @@ impl Post {
 
     pub async fn user(&self, core_context: &CoreContext) -> sqlx::Result<User> {
         User::get_by_id(core_context, self.user_id).await
-    }
-
-    pub async fn views_count(&self, core_context: &CoreContext) -> sqlx::Result<i64> {
-        PostView::count(core_context, self).await
     }
 
     pub async fn website(&self, core_context: &CoreContext) -> sqlx::Result<Website> {

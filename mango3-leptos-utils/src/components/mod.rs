@@ -23,6 +23,7 @@ mod loading_overlay;
 mod loading_spinner;
 mod multiple_image_upload_field;
 mod password_field;
+mod post_bottom_bar;
 mod post_card;
 mod search_bar;
 mod submit_button;
@@ -50,6 +51,7 @@ pub use loading_overlay::LoadingOverlay;
 pub use loading_spinner::LoadingSpinner;
 pub use multiple_image_upload_field::MultipleImageUploadField;
 pub use password_field::PasswordField;
+pub use post_bottom_bar::PostBottomBar;
 pub use post_card::PostCard;
 pub use search_bar::SearchBar;
 pub use submit_button::SubmitButton;
@@ -72,7 +74,7 @@ where
     }
 }
 
-pub struct BoxedFn(Box<dyn Fn() + 'static>);
+pub struct BoxedFn(pub Box<dyn Fn() + 'static>);
 
 impl<T> From<T> for BoxedFn
 where

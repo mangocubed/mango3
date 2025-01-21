@@ -54,12 +54,18 @@ pub fn ActionFormAlert(
                 </div>
             </dialog>
         }),
-        Some(false) => EitherOf3::B(
-            error_message
-                .as_ref()
-                .map(|error_msg| view! { <ActionFormError message=error_msg.clone() /> }),
-        ),
-        _ => EitherOf3::C(()),
+        Some(false) => {
+            is_done.set(false);
+            EitherOf3::B(
+                error_message
+                    .as_ref()
+                    .map(|error_msg| view! { <ActionFormError message=error_msg.clone() /> }),
+            )
+        }
+        _ => {
+            is_done.set(false);
+            EitherOf3::C(())
+        }
     }
 }
 
