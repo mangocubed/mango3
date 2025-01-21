@@ -55,12 +55,14 @@ impl PostComment {
 
         let content = content.trim();
 
-        validator.validate_length(
-            Input::Content,
-            content,
-            Some(1),
-            Some(MISC_CONFIG.max_comment_content_length),
-        );
+        if validator.validate_presence(Input::Content, content) {
+            validator.validate_length(
+                Input::Content,
+                content,
+                Some(1),
+                Some(MISC_CONFIG.max_comment_content_length),
+            );
+        }
 
         if !validator.is_valid {
             return Err(validator.errors);
