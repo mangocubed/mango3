@@ -3,9 +3,15 @@ use leptos::{either::Either, prelude::*};
 use crate::models::UserPreviewResp;
 
 #[component]
-pub fn UserTag(#[prop(into)] user: UserPreviewResp, #[prop(into, optional)] text_class: &'static str) -> impl IntoView {
+pub fn UserTag(
+    #[prop(into)] user: UserPreviewResp,
+    #[prop(optional)] class: &'static str,
+    #[prop(optional)] text_class: &'static str,
+) -> impl IntoView {
     view! {
-        <div class="flex gap-2 items-center">
+        <div class=format!(
+            "flex gap-2 items-center {class}",
+        )>
             {move || {
                 if let Some(avatar_image_blob) = &user.avatar_image_blob {
                     Either::Left(

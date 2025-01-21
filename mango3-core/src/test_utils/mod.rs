@@ -15,9 +15,11 @@ use crate::CoreContext;
 
 mod test_blob;
 mod test_post;
+mod test_post_comment;
 
 pub use test_blob::insert_test_blob;
 pub use test_post::insert_test_post;
+pub use test_post_comment::insert_test_post_comment;
 
 fn random_number() -> i32 {
     thread_rng().gen_range(0..99)
@@ -49,7 +51,7 @@ pub fn fake_name() -> String {
     format!("{} {}", name, random_number())
 }
 
-fn fake_paragraph() -> String {
+pub fn fake_paragraph() -> String {
     Paragraph(1..3).fake()
 }
 

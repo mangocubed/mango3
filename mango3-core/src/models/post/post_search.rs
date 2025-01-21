@@ -20,7 +20,7 @@ impl Post {
             cursor_page_params,
             |node: Self| node.id,
             move |core_context, after| async move {
-                Self::get_by_id(core_context, after, website, user, Some(query))
+                Self::get_by_id(core_context, after, website, user, is_published, Some(query))
                     .await
                     .ok()
             },
@@ -44,6 +44,8 @@ impl Post {
                         variables,
                         hashtag_ids,
                         cover_image_blob_id,
+                        (SELECT COUNT(*) FROM post_views WHERE post_id = posts.id LIMIT 1) AS "views_count!",
+                        (SELECT COUNT(*) FROM post_comments WHERE post_id = posts.id LIMIT 1) AS "comments_count!",
                         published_at,
                         modified_at,
                         ts_rank(search, websearch_to_tsquery($4)) AS search_rank,

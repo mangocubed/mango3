@@ -6,7 +6,7 @@ use mango3_leptos_utils::context::{use_color_mode_with_options, UseColorModeOpti
 use super::CurrentWebsite;
 
 #[component]
-pub fn HighLightCode(content: String) -> impl IntoView {
+pub fn HighLightCode(#[prop(into)] content: String) -> impl IntoView {
     let has_code = move || content.contains("</code>");
 
     view! {

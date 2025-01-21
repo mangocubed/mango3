@@ -1,6 +1,5 @@
 #[cfg(feature = "ssr")]
 use leptos::prelude::*;
-
 #[cfg(feature = "ssr")]
 use leptos_meta::HashedStylesheet;
 
