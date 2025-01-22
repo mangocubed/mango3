@@ -1,13 +1,18 @@
 use leptos::prelude::*;
 
+use crate::components::Hashtags;
 use crate::components::WebsiteIcon;
+use crate::i18n::{t, use_i18n};
 use crate::models::WebsitePreviewResp;
 
 #[component]
 pub fn WebsiteCard(
     #[prop(into)] website: WebsitePreviewResp,
     #[prop(into, optional)] actions: ViewFn,
+    #[prop(default = "/".to_owned())] hashtags_base_url: String,
 ) -> impl IntoView {
+    let i18n = use_i18n();
+
     let website_url = website.url.clone();
 
     let href = if website.is_published {
@@ -36,6 +41,14 @@ pub fn WebsiteCard(
                     <div class="prose max-w-none break-words" inner_html=website.description_preview_html />
                     <div class="card-text-preview-overlay to-base-100" />
                 </a>
+
+                <div class="empty:hidden my-1 flex gap-2 overflow-x-auto">
+                    <Show when=move || !website.is_published>
+                        <a class="btn btn-sm btn-outline btn-info no-animation">{t!(i18n, shared.unpublished)}</a>
+                    </Show>
+
+                    <Hashtags hashtags=website.hashtags base_url=hashtags_base_url />
+                </div>
 
                 <div class="card-actions justify-end">{actions.run()}</div>
             </div>

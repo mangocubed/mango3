@@ -8,7 +8,7 @@ use mango3_core::models::Website;
 #[cfg(feature = "ssr")]
 use mango3_core::CoreContext;
 
-use super::BlobResp;
+use super::{BlobResp, HashtagResp};
 
 #[cfg(feature = "ssr")]
 use super::{parse_html, FromCore};
@@ -20,6 +20,7 @@ pub struct WebsiteResp {
     pub description: String,
     pub description_html: String,
     pub description_preview_html: String,
+    pub hashtags: Vec<HashtagResp>,
     pub initials: String,
     pub icon_image_blob: Option<BlobResp>,
     pub text_icon_url: String,
@@ -50,6 +51,12 @@ impl FromCore<Website> for WebsiteResp {
             description: website.description.clone(),
             description_html: parse_html(&website.description, true),
             description_preview_html: parse_html(&website.description_preview(), false),
+            hashtags: website
+                .hashtags(&core_context)
+                .await
+                .iter()
+                .map(|hashtag| hashtag.into())
+                .collect(),
             initials: website.initials(),
             icon_image_blob: website
                 .icon_image_blob(&core_context)
@@ -76,6 +83,7 @@ pub struct WebsitePreviewResp {
     pub id: String,
     pub name: String,
     pub description_preview_html: String,
+    pub hashtags: Vec<HashtagResp>,
     pub initials: String,
     pub icon_image_blob: Option<BlobResp>,
     pub text_icon_url: String,
@@ -101,6 +109,12 @@ impl FromCore<Website> for WebsitePreviewResp {
             id: website.id.to_string(),
             name: website.name.clone(),
             description_preview_html: parse_html(&website.description_preview(), false),
+            hashtags: website
+                .hashtags(&core_context)
+                .await
+                .iter()
+                .map(|hashtag| hashtag.into())
+                .collect(),
             initials: website.initials(),
             icon_image_blob: website
                 .icon_image_blob(&core_context)
@@ -121,6 +135,7 @@ impl From<&WebsiteResp> for WebsitePreviewResp {
             id: website.id.clone(),
             name: website.name.clone(),
             description_preview_html: website.description_preview_html.clone(),
+            hashtags: website.hashtags.clone(),
             initials: website.initials.clone(),
             icon_image_blob: website.icon_image_blob.clone(),
             text_icon_url: website.text_icon_url.clone(),
