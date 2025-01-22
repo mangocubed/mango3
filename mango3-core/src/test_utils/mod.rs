@@ -22,7 +22,7 @@ pub use test_post::insert_test_post;
 pub use test_post_comment::insert_test_post_comment;
 
 fn random_number() -> i32 {
-    thread_rng().gen_range(0..99)
+    thread_rng().gen_range(0..999)
 }
 
 fn fake_birthdate() -> String {
@@ -46,7 +46,7 @@ pub fn fake_ipv4() -> String {
 
 pub fn fake_name() -> String {
     let mut name = Name().fake::<String>();
-    name.truncate(253);
+    name.truncate(252);
 
     format!("{} {}", name, random_number())
 }
@@ -72,7 +72,7 @@ pub fn fake_slug() -> String {
 
 fn fake_username() -> String {
     let mut username = Username().fake::<String>();
-    username.truncate(13);
+    username.truncate(12);
     format!("{}_{}", username, random_number())
 }
 

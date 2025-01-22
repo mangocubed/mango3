@@ -1,5 +1,6 @@
 use leptos::prelude::*;
 
+use crate::components::Hashtags;
 use crate::i18n::{t, use_i18n};
 use crate::models::PostPreviewResp;
 
@@ -75,42 +76,13 @@ pub fn PostCard(
                     <div class="card-text-preview-overlay to-base-200" />
                 </a>
 
-                <Show when={
-                    let show_hashtags = !post.hashtags.is_empty() || !post.is_published;
-                    move || show_hashtags
-                }>
-                    {
-                        let post_hashtags = post.hashtags.clone();
-                        let hashtags_base_url = hashtags_base_url.clone();
-                        move || {
-                            let post_hashtags = post_hashtags.clone();
-                            let hashtags_base_url = hashtags_base_url.clone();
-                            view! {
-                                <div class="my-1 flex gap-2 overflow-x-auto">
-                                    <Show when=move || !post.is_published>
-                                        <a class="btn btn-sm btn-outline btn-info no-animation">
-                                            {t!(i18n, shared.unpublished)}
-                                        </a>
-                                    </Show>
+                <div class="empty:hidden my-1 flex gap-2 overflow-x-auto">
+                    <Show when=move || !post.is_published>
+                        <a class="btn btn-sm btn-outline btn-info no-animation">{t!(i18n, shared.unpublished)}</a>
+                    </Show>
 
-                                    <For
-                                        each=move || post_hashtags.clone()
-                                        key=|hashtag| hashtag.id.clone()
-                                        let:hashtag
-                                    >
-                                        <a
-                                            class="btn btn-sm btn-outline"
-                                            href=format!("{}hashtags/{}", hashtags_base_url, hashtag.name)
-                                        >
-                                            "#"
-                                            {hashtag.name.clone()}
-                                        </a>
-                                    </For>
-                                </div>
-                            }
-                        }
-                    }
-                </Show>
+                    <Hashtags hashtags=post.hashtags base_url=hashtags_base_url />
+                </div>
 
                 <PostBottomBar comments_count=post.comments_count views_count=post.views_count />
 

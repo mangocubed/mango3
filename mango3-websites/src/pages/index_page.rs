@@ -2,7 +2,7 @@ use leptos::either::Either;
 use leptos::prelude::*;
 use leptos_i18n::t_string;
 
-use mango3_leptos_utils::components::{InfiniteScroll, PostCard};
+use mango3_leptos_utils::components::{Hashtags, InfiniteScroll, PostCard};
 use mango3_leptos_utils::i18n::use_i18n;
 use mango3_leptos_utils::models::PostPreviewResp;
 use mango3_leptos_utils::pages::{NotFoundPage, Page};
@@ -30,23 +30,35 @@ pub fn IndexPage() -> impl IntoView {
                                             .cover_image_blob
                                             .clone()
                                             .map(|blob| {
-                                                view! {
-                                                    <img class="rounded mb-4" src=blob.variant_url(1200, 200, true) />
-                                                }
+                                                view! { <img class="rounded" src=blob.variant_url(1200, 200, true) /> }
                                             })
-                                    }} <h3 class="text-lg font-bold">{website.description}</h3>
-
+                                    }}
                                 </section>
 
-                                <section class="max-w-[640px] w-full mx-auto mt-4">
-                                    <InfiniteScroll
-                                        after=after
-                                        key=|post: &PostPreviewResp| post.id.clone()
-                                        resource=posts_resource
-                                        let:post
-                                    >
-                                        <PostCard post=post />
-                                    </InfiniteScroll>
+                                <section class="flex flex-wrap justify-center gap-4 max-w-[1200px] mt-4 mx-auto">
+                                    <div class="card card-compact bg-base-200 shadow-xl flex-1 self-start min-w-[320px] max-w-[640px]">
+                                        <div class="card-body">
+                                            <div
+                                                class="prose prose-pre:bg-transparent max-w-none break-words"
+                                                inner_html=website.description_html.clone()
+                                            />
+                                        </div>
+
+                                        <div class="empty:hidden my-4 flex flex-wrap gap-2">
+                                            <Hashtags hashtags=website.hashtags />
+                                        </div>
+                                    </div>
+
+                                    <div class="shrink-0 max-w-[640px] w-full">
+                                        <InfiniteScroll
+                                            after=after
+                                            key=|post: &PostPreviewResp| post.id.clone()
+                                            resource=posts_resource
+                                            let:post
+                                        >
+                                            <PostCard post=post />
+                                        </InfiniteScroll>
+                                    </div>
                                 </section>
                             </Page>
                         },

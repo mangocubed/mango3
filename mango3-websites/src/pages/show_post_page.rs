@@ -3,7 +3,7 @@ use leptos::prelude::*;
 use leptos_meta::Meta;
 use leptos_router::hooks::use_params_map;
 
-use mango3_leptos_utils::components::{LoadingSpinner, PostBottomBar, TimeAgo, UserTag};
+use mango3_leptos_utils::components::{Hashtags, LoadingSpinner, PostBottomBar, TimeAgo, UserTag};
 use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::pages::NotFoundPage;
 use mango3_leptos_utils::pages::Page;
@@ -100,40 +100,9 @@ pub fn ShowPostPage() -> impl IntoView {
                                                 inner_html=post.content_html.clone()
                                             />
 
-                                            <Show when={
-                                                let show_hashtags = !post.hashtags.is_empty() || !post.is_published;
-                                                move || show_hashtags
-                                            }>
-                                                {
-                                                    let post_hashtags = post.hashtags.clone();
-                                                    move || {
-                                                        let post_hashtags = post_hashtags.clone();
-                                                        view! {
-                                                            <div class="my-4 flex flex-wrap gap-2">
-                                                                <Show when=move || !post.is_published>
-                                                                    <a class="btn btn-sm btn-outline btn-info no-animation">
-                                                                        {t!(i18n, shared.unpublished)}
-                                                                    </a>
-                                                                </Show>
-
-                                                                <For
-                                                                    each=move || post_hashtags.clone()
-                                                                    key=|hashtag| hashtag.id.clone()
-                                                                    let:hashtag
-                                                                >
-                                                                    <a
-                                                                        class="btn btn-sm btn-outline"
-                                                                        href=format!("/hashtags/{}", hashtag.name)
-                                                                    >
-                                                                        "#"
-                                                                        {hashtag.name.clone()}
-                                                                    </a>
-                                                                </For>
-                                                            </div>
-                                                        }
-                                                    }
-                                                }
-                                            </Show>
+                                            <div class="empty:hidden my-4 flex flex-wrap gap-2">
+                                                <Hashtags hashtags=post.hashtags />
+                                            </div>
 
                                             <PostBottomBar
                                                 comments_count=post.comments_count
