@@ -52,7 +52,7 @@ pub fn TopBar(
                         <div class="flex-none">
                             <CurrentUserOpt children=move |user| {
                                 if let Some(user) = user {
-                                    let is_creator = user.is_creator;
+                                    let can_insert_website = user.can_insert_website;
                                     let new_website_url = basic_config.new_website_url.clone();
                                     let studio_url = basic_config.studio_url.clone();
                                     let my_account_url = basic_config.my_account_url.clone();
@@ -71,26 +71,24 @@ pub fn TopBar(
                                                 >
 
                                                     <Show when=move || {
-                                                        is_creator
+                                                        can_insert_website
                                                     }>
                                                         {
                                                             let new_website_url = new_website_url.clone();
-                                                            let studio_url = studio_url.clone();
                                                             move || {
                                                                 let new_website_url = new_website_url.clone();
-                                                                let studio_url = studio_url.clone();
                                                                 view! {
                                                                     <li>
                                                                         <a href=new_website_url>{t!(i18n, shared.new_website)}</a>
-                                                                    </li>
-
-                                                                    <li>
-                                                                        <a href=studio_url>{t!(i18n, shared.studio)}</a>
                                                                     </li>
                                                                 }
                                                             }
                                                         }
                                                     </Show>
+
+                                                    <li>
+                                                        <a href=studio_url>{t!(i18n, shared.studio)}</a>
+                                                    </li>
 
                                                     <li>
                                                         <a href=my_account_url>{t!(i18n, shared.my_account)}</a>

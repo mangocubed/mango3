@@ -20,7 +20,6 @@ pub struct UserPreviewResp {
     pub display_name: String,
     pub initials: String,
     pub avatar_image_blob: Option<BlobResp>,
-    pub is_creator: bool,
 }
 
 #[cfg(feature = "ssr")]
@@ -37,7 +36,6 @@ impl FromCore<User> for UserPreviewResp {
                 .await
                 .and_then(|result| result.ok())
                 .map(|blob| blob.into()),
-            is_creator: user.is_creator(),
         }
     }
 }
@@ -50,7 +48,6 @@ impl From<UserResp> for UserPreviewResp {
             display_name: value.display_name,
             initials: value.initials,
             avatar_image_blob: value.avatar_image_blob,
-            is_creator: value.is_creator,
         }
     }
 }
@@ -64,7 +61,7 @@ pub struct UserResp {
     pub email: String,
     pub email_is_confirmed: bool,
     pub avatar_image_blob: Option<BlobResp>,
-    pub is_creator: bool,
+    pub can_insert_website: bool,
 }
 
 #[cfg(feature = "ssr")]
@@ -83,7 +80,7 @@ impl FromCore<User> for UserResp {
                 .await
                 .and_then(|result| result.ok())
                 .map(|blob| blob.into()),
-            is_creator: user.is_creator(),
+            can_insert_website: user.can_insert_website(&core_context).await,
         }
     }
 }

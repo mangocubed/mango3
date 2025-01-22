@@ -9,7 +9,7 @@ use crate::locales::I18n;
 use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
 use crate::CoreContext;
 
-use super::{Blob, Hashtag};
+use super::{Blob, Hashtag, Website};
 
 mod user_email;
 mod user_insert;
@@ -71,6 +71,14 @@ impl User {
         } else {
             None
         }
+    }
+
+    pub async fn can_insert_website(&self, core_context: &CoreContext) -> bool {
+        self.role != UserRole::User
+            || Website::count(core_context, Some(self))
+                .await
+                .expect("could not get websites count")
+                < 1
     }
 
     pub fn country(&self) -> CountryCode {
@@ -150,10 +158,6 @@ impl User {
             .filter_map(|word| word.chars().next())
             .collect::<String>()
             .to_uppercase()
-    }
-
-    pub fn is_creator(&self) -> bool {
-        self.role != UserRole::User
     }
 }
 

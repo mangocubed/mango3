@@ -42,10 +42,10 @@ pub fn IndexPage() -> impl IntoView {
                                                 class="prose prose-pre:bg-transparent max-w-none break-words"
                                                 inner_html=website.description_html.clone()
                                             />
-                                        </div>
 
-                                        <div class="empty:hidden my-4 flex flex-wrap gap-2">
-                                            <Hashtags hashtags=website.hashtags />
+                                            <div class="empty:hidden my-4 flex flex-wrap gap-2">
+                                                <Hashtags hashtags=website.hashtags />
+                                            </div>
                                         </div>
                                     </div>
 

@@ -36,7 +36,7 @@ pub fn IndexPage() -> impl IntoView {
 
                 <CurrentUser let:user>
                     <Show when=move || {
-                        user.is_creator
+                        user.can_insert_website
                     }>
                         {move || {
                             let basic_config = use_basic_config();
