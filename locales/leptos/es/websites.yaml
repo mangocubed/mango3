@@ -1,5 +1,7 @@
 comment_submitted_successfully: Comentario enviado exitosamente
 comments: Comentarios
 failed_to_submit_comment: Error al enviar comentario
+no_reactions_yet: Sin reacciones aún
 powered_by_title: potenciado por {{title}}
+reactions: Reacciones
 this_website_is_part_of_title_ecosystem: Este website es parte del ecosistema de {{ title }}.

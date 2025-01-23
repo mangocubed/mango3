@@ -84,7 +84,11 @@ pub fn PostCard(
                     <Hashtags hashtags=post.hashtags base_url=hashtags_base_url />
                 </div>
 
-                <PostBottomBar comments_count=post.comments_count views_count=post.views_count />
+                <PostBottomBar
+                    comments_count=post.comments_count
+                    reactions_count=post.reactions_count
+                    views_count=post.views_count
+                />
 
                 {actions.map(|a| view! { <div class="card-actions justify-end">{a.run()}</div> })}
             </div>

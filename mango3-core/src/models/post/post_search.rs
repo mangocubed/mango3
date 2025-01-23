@@ -46,6 +46,7 @@ impl Post {
                         cover_image_blob_id,
                         (SELECT COUNT(*) FROM post_views WHERE post_id = posts.id LIMIT 1) AS "views_count!",
                         (SELECT COUNT(*) FROM post_comments WHERE post_id = posts.id LIMIT 1) AS "comments_count!",
+                        (SELECT COUNT(*) FROM post_reactions WHERE post_id = posts.id LIMIT 1) AS "reactions_count!",
                         published_at,
                         modified_at,
                         ts_rank(search, websearch_to_tsquery($4)) AS search_rank,

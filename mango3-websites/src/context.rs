@@ -1,7 +1,7 @@
 use leptos::prelude::*;
 use leptos_router::params::ParamsMap;
 
-use mango3_leptos_utils::models::WebsiteResp;
+use mango3_leptos_utils::models::{PostResp, WebsiteResp};
 
 use crate::constants::KEY_PARAM_SLUG;
 use crate::server_functions::get_current_website;
@@ -16,4 +16,8 @@ pub fn provide_current_website_resource() {
 
 pub fn use_current_website_resource() -> Resource<Result<Option<WebsiteResp>, ServerFnError>> {
     use_context::<Resource<Result<Option<WebsiteResp>, ServerFnError>>>().unwrap()
+}
+
+pub fn use_current_post() -> PostResp {
+    use_context::<PostResp>().unwrap()
 }
