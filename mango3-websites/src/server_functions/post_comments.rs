@@ -6,7 +6,7 @@ use uuid::Uuid;
 use mango3_leptos_utils::models::{ActionFormResp, CursorPageResp, PostCommentResp};
 
 #[cfg(feature = "ssr")]
-use mango3_core::models::{Post, PostComment};
+use mango3_core::models::PostComment;
 #[cfg(feature = "ssr")]
 use mango3_core::pagination::CursorPageParams;
 #[cfg(feature = "ssr")]
@@ -15,26 +15,7 @@ use mango3_leptos_utils::models::FromCore;
 use mango3_leptos_utils::ssr::{expect_core_context, extract_i18n, extract_user, require_authentication};
 
 #[cfg(feature = "ssr")]
-use super::current_website;
-
-#[cfg(feature = "ssr")]
-async fn current_post(id: String) -> Result<Post, ServerFnError> {
-    let Some(website) = current_website().await? else {
-        return Err(ServerFnError::new("website not found"));
-    };
-
-    let core_context = expect_core_context();
-
-    Ok(Post::get_by_id(
-        &core_context,
-        Uuid::try_parse(&id)?,
-        Some(&website),
-        None,
-        Some(true),
-        None,
-    )
-    .await?)
-}
+use super::posts::current_post;
 
 #[server]
 pub async fn attempt_to_create_post_comment(post_id: String, content: String) -> Result<ActionFormResp, ServerFnError> {
@@ -44,8 +25,8 @@ pub async fn attempt_to_create_post_comment(post_id: String, content: String) ->
         return ActionFormResp::new_with_error(&i18n);
     }
 
-    let user = extract_user().await?.unwrap();
     let post = current_post(post_id).await?;
+    let user = extract_user().await?.unwrap();
     let core_context = expect_core_context();
 
     let result = PostComment::insert(&core_context, &post, &user, &content).await;

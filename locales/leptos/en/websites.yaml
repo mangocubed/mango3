@@ -1,5 +1,7 @@
 comment_submitted_successfully: Comment submitted successfully
 comments: Comments
 failed_to_submit_comment: Failed to submit comment
+no_reactions_yet: No reactions yet
 powered_by_title: powered by {{title}}
+reactions: Reactions
 this_website_is_part_of_title_ecosystem: This website is part of {{title}} ecosystem.

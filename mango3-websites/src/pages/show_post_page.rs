@@ -8,7 +8,7 @@ use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::pages::NotFoundPage;
 use mango3_leptos_utils::pages::Page;
 
-use crate::components::{HighLightCode, MetaDateTime, PostComments};
+use crate::components::{HighLightCode, MetaDateTime, PostComments, PostReactions};
 use crate::context::param_slug;
 use crate::server_functions::get_post;
 
@@ -106,8 +106,11 @@ pub fn ShowPostPage() -> impl IntoView {
 
                                             <PostBottomBar
                                                 comments_count=post.comments_count
+                                                reactions_count=post.reactions_count
                                                 views_count=post.views_count
                                             />
+
+                                            <PostReactions post_id=post.id.clone() />
 
                                             <PostComments post_id=post.id />
                                         </div>

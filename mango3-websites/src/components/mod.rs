@@ -11,10 +11,12 @@ use crate::context::use_current_website_resource;
 
 mod highlight_code;
 mod post_comments;
+mod post_reactions;
 mod website_top_bar;
 
 pub use highlight_code::HighLightCode;
 pub use post_comments::PostComments;
+pub use post_reactions::PostReactions;
 pub use website_top_bar::WebsiteTopBar;
 
 #[component]

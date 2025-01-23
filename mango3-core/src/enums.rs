@@ -18,6 +18,7 @@ pub enum Input {
     Description,
     DisplayName,
     Email,
+    Emoji,
     FullName,
     LightTheme,
     Name,

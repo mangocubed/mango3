@@ -17,6 +17,25 @@ use mango3_leptos_utils::ssr::{expect_core_context, extract_client_ip, extract_u
 #[cfg(feature = "ssr")]
 use super::current_website;
 
+#[cfg(feature = "ssr")]
+pub async fn current_post(id: String) -> Result<Post, ServerFnError> {
+    let Some(website) = current_website().await? else {
+        return Err(ServerFnError::new("website not found"));
+    };
+
+    let core_context = expect_core_context();
+
+    Ok(Post::get_by_id(
+        &core_context,
+        Uuid::try_parse(&id)?,
+        Some(&website),
+        None,
+        Some(true),
+        None,
+    )
+    .await?)
+}
+
 #[server]
 pub async fn get_posts(
     hashtag: Option<String>,
