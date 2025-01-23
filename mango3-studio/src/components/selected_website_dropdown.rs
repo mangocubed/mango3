@@ -44,17 +44,17 @@ pub fn SelectedWebsiteDropdown() -> impl IntoView {
                     </li>
                 </MyWebsitesInfiniteScroll>
 
-                <li class="disabled">
-                    <div class="divider m-0"></div>
-                </li>
-
                 <CurrentUser let:user>
                     <Show when=move || {
-                        user.is_creator
+                        user.can_insert_website
                     }>
                         {move || {
                             let basic_config = use_basic_config();
                             view! {
+                                <li class="disabled">
+                                    <div class="divider m-0"></div>
+                                </li>
+
                                 <li>
                                     <a href=basic_config.new_website_url>
                                         <PlusOutlined />

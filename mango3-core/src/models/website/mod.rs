@@ -35,6 +35,18 @@ pub struct Website {
 }
 
 impl Website {
+    pub async fn count(core_context: &CoreContext, user: Option<&User>) -> sqlx::Result<i64> {
+        let user_id = user.map(|u| u.id);
+
+        query!(
+            "SELECT COUNT(*) FROM websites WHERE $1::uuid IS NULL OR user_id = $1 LIMIT 1",
+            user_id, // $1
+        )
+        .fetch_one(&core_context.db_pool)
+        .await
+        .map(|record| record.count.unwrap_or_default())
+    }
+
     pub async fn cover_image_blob(&self, core_context: &CoreContext) -> Option<sqlx::Result<Blob>> {
         if let Some(id) = self.cover_image_blob_id {
             Some(Blob::get_by_id(core_context, id, None).await)

@@ -6,8 +6,6 @@ use uuid::Uuid;
 use mango3_leptos_utils::models::{ActionFormResp, CursorPageResp, WebsitePreviewResp, WebsiteResp};
 
 #[cfg(feature = "ssr")]
-use mango3_core::enums::UserRole;
-#[cfg(feature = "ssr")]
 use mango3_core::models::{Blob, Website};
 #[cfg(feature = "ssr")]
 use mango3_core::pagination::CursorPageParams;
@@ -31,7 +29,7 @@ pub async fn attempt_to_create_website(
     let core_context = expect_core_context();
     let user = extract_user().await?.unwrap();
 
-    if user.role == UserRole::User {
+    if !user.can_insert_website(&core_context).await {
         return ActionFormResp::new_with_error(&i18n);
     }
 
