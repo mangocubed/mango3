@@ -70,7 +70,7 @@ pub fn fake_slug() -> String {
         .to_string()
 }
 
-fn fake_username() -> String {
+pub fn fake_username() -> String {
     let mut username = Username().fake::<String>();
     username.truncate(12);
     format!("{}_{}", username, random_number())

@@ -46,6 +46,7 @@ password: Password
 password_updated_successfully: Password updated successfully
 posts: Posts
 privacy_policy: Privacy policy
+profile: Profile
 register: Register
 remove: Remove
 search_results_for: Search results for "{{query}}"

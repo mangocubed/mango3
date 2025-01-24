@@ -75,7 +75,15 @@ pub fn ShowPostPage() -> impl IntoView {
                                             <h1 class="card-title h1 mb-6">{post.title}</h1>
 
                                             <div class="flex justify-between my-4">
-                                                <UserTag user=post.user />
+                                                <a
+                                                    href=post.user.url
+                                                    title={
+                                                        let username = post.user.username;
+                                                        move || format!("@{}", username)
+                                                    }
+                                                >
+                                                    <UserTag user=post.user.clone() />
+                                                </a>
 
                                                 <div class="text-right opacity-70">
                                                     <TimeAgo value=post.created_at />

@@ -1,7 +1,8 @@
 use sqlx::query_as;
+use sqlx::types::uuid::Uuid;
 
 use crate::enums::{Input, UserRole};
-use crate::models::{find_country, parse_date, Blob};
+use crate::models::{find_country, parse_date, Blob, Hashtag};
 use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
 use crate::CoreContext;
 
@@ -43,6 +44,9 @@ impl User {
             return Err(validator.errors);
         }
 
+        let hashtags = Hashtag::get_or_insert_all(core_context, bio).await?;
+        let hashtag_ids = hashtags.iter().map(|hashtag| hashtag.id).collect::<Vec<Uuid>>();
+
         query_as!(
             User,
             r#"UPDATE users
@@ -52,7 +56,8 @@ impl User {
                 birthdate = $4,
                 country_alpha2 = $5,
                 bio = $6,
-                avatar_image_blob_id = $7
+                hashtag_ids = $7,
+                avatar_image_blob_id = $8
             WHERE id = $1 RETURNING
                 id,
                 username,
@@ -78,7 +83,8 @@ impl User {
             birthdate,               // $4
             country.unwrap().alpha2, // $5
             bio,                     // $6
-            avatar_image_blob_id,    // $7
+            &hashtag_ids,            // $7
+            avatar_image_blob_id,    // $8
         )
         .fetch_one(&core_context.db_pool)
         .await

@@ -1,9 +1,10 @@
 use rust_iso3166::CountryCode;
 use serde::{Deserialize, Serialize};
-use sqlx::query_as;
 use sqlx::types::chrono::{DateTime, NaiveDate, Utc};
 use sqlx::types::Uuid;
+use url::Url;
 
+use crate::config::BASIC_CONFIG;
 use crate::enums::{Input, InputError, UserRole};
 use crate::locales::I18n;
 use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
@@ -12,6 +13,7 @@ use crate::CoreContext;
 use super::{Blob, Hashtag, Website};
 
 mod user_email;
+mod user_get;
 mod user_insert;
 mod user_password;
 mod user_profile;
@@ -85,65 +87,6 @@ impl User {
         rust_iso3166::from_alpha2(&self.country_alpha2).unwrap()
     }
 
-    pub async fn get_by_id(core_context: &CoreContext, id: Uuid) -> sqlx::Result<Self> {
-        query_as!(
-            Self,
-            r#"SELECT
-                id,
-                username,
-                email,
-                email_confirmation_code_id,
-                email_confirmed_at,
-                encrypted_password,
-                password_reset_confirmation_code_id,
-                display_name,
-                full_name,
-                birthdate,
-                language_code,
-                country_alpha2,
-                bio,
-                hashtag_ids,
-                avatar_image_blob_id,
-                role as "role!: UserRole",
-                created_at,
-                updated_at
-            FROM users WHERE id = $1 LIMIT 1"#,
-            id
-        )
-        .fetch_one(&core_context.db_pool)
-        .await
-    }
-
-    pub async fn get_by_username_or_email(core_context: &CoreContext, username_or_email: &str) -> sqlx::Result<Self> {
-        query_as!(
-            Self,
-            r#"SELECT
-                id,
-                username,
-                email,
-                email_confirmation_code_id,
-                email_confirmed_at,
-                encrypted_password,
-                password_reset_confirmation_code_id,
-                display_name,
-                full_name,
-                birthdate,
-                language_code,
-                country_alpha2,
-                bio,
-                hashtag_ids,
-                avatar_image_blob_id,
-                role as "role!: UserRole",
-                created_at,
-                updated_at
-            FROM users WHERE LOWER(username) = $1 OR (email_confirmed_at IS NOT NULL AND LOWER(email) = $1)
-            LIMIT 1"#,
-            username_or_email.to_lowercase()
-        )
-        .fetch_one(&core_context.db_pool)
-        .await
-    }
-
     pub async fn hashtags(&self, core_context: &CoreContext) -> Vec<Hashtag> {
         Hashtag::all_by_ids(core_context, &self.hashtag_ids).await
     }
@@ -158,6 +101,14 @@ impl User {
             .filter_map(|word| word.chars().next())
             .collect::<String>()
             .to_uppercase()
+    }
+
+    pub fn text_avatar_url(&self) -> Url {
+        BASIC_CONFIG.text_icon_url(&self.initials())
+    }
+
+    pub fn url(&self) -> Url {
+        BASIC_CONFIG.user_url(&self.username)
     }
 }
 

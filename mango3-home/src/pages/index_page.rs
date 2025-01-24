@@ -12,7 +12,7 @@ use crate::server_functions::{get_posts, get_websites};
 pub fn IndexPage() -> impl IntoView {
     let i18n = use_i18n();
     let basic_config = use_basic_config();
-    let posts_resource = Resource::new_blocking(move || (), |_| async move { get_posts(None, 5, None).await });
+    let posts_resource = Resource::new_blocking(move || (), |_| async move { get_posts(5, None).await });
     let websites_resource = Resource::new_blocking(move || (), |_| async move { get_websites(5, None).await });
 
     let page_title = move || {

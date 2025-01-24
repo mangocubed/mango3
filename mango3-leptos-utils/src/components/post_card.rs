@@ -47,7 +47,15 @@ pub fn PostCard(
                 </h3>
 
                 <div class="flex justify-between my-1">
-                    <UserTag user=post.user />
+                    <a
+                        href=post.user.url
+                        title={
+                            let username = post.user.username;
+                            move || format!("@{}", username)
+                        }
+                    >
+                        <UserTag user=post.user.clone() />
+                    </a>
 
                     <div class="text-right opacity-70">
                         <TimeAgo value=post.created_at />

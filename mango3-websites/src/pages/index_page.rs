@@ -35,7 +35,7 @@ pub fn IndexPage() -> impl IntoView {
                                     }}
                                 </section>
 
-                                <section class="flex flex-wrap justify-center gap-4 max-w-[1200px] mt-4 mx-auto">
+                                <section class="flex flex-wrap justify-center gap-6 max-w-[1200px] mt-4 mx-auto">
                                     <div class="card card-compact bg-base-200 shadow-xl flex-1 self-start min-w-[320px] max-w-[640px]">
                                         <div class="card-body">
                                             <div

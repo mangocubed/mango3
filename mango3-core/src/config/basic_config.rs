@@ -92,6 +92,10 @@ impl BasicConfig {
         self.subdomain_url("uploads")
     }
 
+    pub fn user_url(&self, username: &str) -> Url {
+        self.home_url().join(&format!("users/{username}")).unwrap()
+    }
+
     pub fn website_url(&self, subdomain: &str) -> Url {
         self.subdomain_url(subdomain)
     }
