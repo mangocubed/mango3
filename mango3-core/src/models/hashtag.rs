@@ -53,7 +53,7 @@ impl Hashtag {
 
         if validator.validate_presence(Input::Name, &name)
             && validator.validate_format(Input::Name, &name, &REGEX_HASHTAG)
-            && validator.validate_length(Input::Name, &name, Some(1), Some(255))
+            && validator.validate_length(Input::Name, &name, Some(1), Some(256))
             && validator.custom_validation(Input::Name, InputError::IsInvalid, &|| Uuid::try_parse(&name).is_err())
         {
             validator.custom_validation(Input::Name, InputError::IsInvalid, &|| {

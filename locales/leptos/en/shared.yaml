@@ -50,9 +50,9 @@ profile: Profile
 register: Register
 remove: Remove
 search_results_for: Search results for "{{query}}"
-source_code: Source code
 studio: Studio
 submit: Submit
 terms_of_service: Terms of service
 unpublished: Unpublished
 view_more: View more
+view_source_code: View source code

@@ -2,7 +2,7 @@ use leptos::prelude::*;
 use leptos_use::{ColorMode, UseColorModeReturn};
 
 use crate::context::{use_basic_config, use_color_mode_with_options, UseColorModeOptions};
-use crate::i18n::{t, use_i18n, Locale};
+use crate::i18n::{t, t_string, use_i18n, Locale};
 use crate::icons::{ChevronUpMini, ComputerOutlined, MoonOutlined, SunOutlined};
 
 const LANGUAGES: [(&str, Locale); 2] = [("English", Locale::en), ("Español", Locale::es)];
@@ -69,8 +69,16 @@ pub fn BottomBar(
                     </a>
                 </Show>
 
-                <a href="https://github.com/mangocubed/mango3" target="_blank">
-                    {t!(i18n, shared.source_code)}
+                <a
+                    href=format!("https://github.com/mangocubed/mango3/tree/{}", env!("GIT_COMMIT_HASH"))
+                    target="_blank"
+                    title=move || t_string!(i18n, shared.view_source_code)
+                >
+                    "v"
+                    {env!("CARGO_PKG_VERSION")}
+                    " ("
+                    {env!("GIT_COMMIT_SHORT_HASH")}
+                    ")"
                 </a>
             </nav>
 

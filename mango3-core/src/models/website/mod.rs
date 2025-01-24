@@ -172,7 +172,7 @@ impl Website {
 impl Validator {
     async fn validate_name(&mut self, core_context: &CoreContext, website: Option<&Website>, value: &str) -> bool {
         if self.validate_presence(Input::Name, value)
-            && self.validate_length(Input::Name, value, Some(3), Some(255))
+            && self.validate_length(Input::Name, value, Some(3), Some(256))
             && self.custom_validation(Input::Name, InputError::IsInvalid, &|| Uuid::try_parse(value).is_err())
         {
             let id = website.map(|w| w.id);
