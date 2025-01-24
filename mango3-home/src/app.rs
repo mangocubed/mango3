@@ -30,12 +30,7 @@ pub fn App() -> impl IntoView {
 
                     <AppTitle />
 
-                    <Meta
-                        name="description"
-                        content=move || {
-                            t_string!(i18n, home.a_cloud_platform_to_create_websites_in_the_easiest_way_possible)
-                        }
-                    />
+                    <Meta name="description" content=basic_config.description.clone() />
 
                     <Meta name="copyright" content=basic_config.copyright.clone() />
 

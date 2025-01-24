@@ -1,5 +1,7 @@
 # Mango³
 
+An open source content management system platform written in Rust.
+
 ## Requirements
 
 - Rust
@@ -13,6 +15,7 @@
 | ------------------------------- | ------- | ---------------------------------------------------------------- |
 | BASIC_ABOUT_URL                 | String  |                                                                  |
 | BASIC_COPYRIGHT                 | String  | © 2025, Mango³ Team                                              |
+| BASIC_DESCRIPTION               | String  | An open source content management system platform.               |
 | BASIC_DOMAIN                    | String  | mango3.local                                                     |
 | BASIC_ENABLE_REGISTER           | String  | true                                                             |
 | BASIC_PRIVACY_POLICY_URL        | String  |                                                                  |
