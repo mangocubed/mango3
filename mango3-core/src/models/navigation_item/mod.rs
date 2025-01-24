@@ -65,7 +65,7 @@ impl NavigationItem {
 
 impl Validator {
     fn validate_title(&mut self, value: &str) -> bool {
-        self.validate_presence(Input::Title, value) && self.validate_length(Input::Title, value, None, Some(255))
+        self.validate_presence(Input::Title, value) && self.validate_length(Input::Title, value, None, Some(256))
     }
 }
 

@@ -177,7 +177,7 @@ impl Post {
 impl Validator {
     fn validate_post_title(&mut self, value: &str) -> bool {
         self.validate_presence(Input::Title, value)
-            && self.validate_length(Input::Title, value, Some(3), Some(255))
+            && self.validate_length(Input::Title, value, Some(3), Some(256))
             && self.custom_validation(Input::Title, InputError::IsInvalid, &|| Uuid::try_parse(value).is_err())
     }
 
@@ -190,7 +190,7 @@ impl Validator {
     ) -> bool {
         if self.validate_presence(Input::Slug, slug)
             && self.validate_format(Input::Slug, slug, &REGEX_SLUG)
-            && self.validate_length(Input::Slug, slug, Some(1), Some(255))
+            && self.validate_length(Input::Slug, slug, Some(1), Some(256))
             && self.custom_validation(Input::Slug, InputError::IsInvalid, &|| Uuid::try_parse(slug).is_err())
             && self.custom_validation(Input::Slug, InputError::IsInvalid, &|| {
                 !BLACKLISTED_SLUGS.contains(&slug.to_owned())

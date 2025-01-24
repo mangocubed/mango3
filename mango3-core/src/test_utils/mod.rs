@@ -64,9 +64,11 @@ pub fn fake_sentence() -> String {
 }
 
 pub fn fake_slug() -> String {
+    let mut slug = Username().fake::<String>();
+    slug.truncate(252);
     Regex::new(r"[._]")
         .unwrap()
-        .replace_all(&fake_username(), "-")
+        .replace_all(&format!("{}-{}", slug, random_number()), "-")
         .to_string()
 }
 

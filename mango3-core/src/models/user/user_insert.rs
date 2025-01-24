@@ -50,7 +50,7 @@ impl User {
         }
 
         if validator.validate_presence(Input::Email, &email)
-            && validator.validate_length(Input::Email, &email, Some(5), Some(255))
+            && validator.validate_length(Input::Email, &email, Some(5), Some(256))
             && validator.validate_format(Input::Email, &email, &REGEX_EMAIL)
         {
             let email_exists = query!(

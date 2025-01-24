@@ -27,7 +27,7 @@ impl Website {
 
         if validator.validate_presence(Input::Subdomain, &subdomain)
             && validator.validate_format(Input::Subdomain, &subdomain, &REGEX_SUBDOMAIN)
-            && validator.validate_length(Input::Subdomain, &subdomain, Some(3), Some(255))
+            && validator.validate_length(Input::Subdomain, &subdomain, Some(3), Some(256))
             && validator.custom_validation(Input::Subdomain, InputError::IsInvalid, &|| {
                 Uuid::try_parse(&subdomain).is_err()
             })
