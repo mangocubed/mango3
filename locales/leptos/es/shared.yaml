@@ -46,6 +46,7 @@ password: Contraseña
 password_updated_successfully: Contraseña actualizada exitosamente
 posts: Posts
 privacy_policy: Política de privacidad
+profile: Profile
 register: Registrate
 remove: Removera
 search_results_for: Resultados de busqueda para "{{query}}"

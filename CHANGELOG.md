@@ -26,3 +26,5 @@
 - Features to search websites and posts.
 - Support for Handlebars on posts content.
 - Features to insert and show post comments.
+- Post reactions.
+- User profile page.

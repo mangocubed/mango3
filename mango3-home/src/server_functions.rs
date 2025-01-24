@@ -3,10 +3,10 @@ use leptos::prelude::*;
 #[cfg(feature = "ssr")]
 use uuid::Uuid;
 
-use mango3_leptos_utils::models::{CursorPageResp, HashtagResp, PostPreviewResp, WebsitePreviewResp};
+use mango3_leptos_utils::models::{CursorPageResp, HashtagResp, PostPreviewResp, UserProfileResp, WebsitePreviewResp};
 
 #[cfg(feature = "ssr")]
-use mango3_core::models::{Hashtag, Post, Website};
+use mango3_core::models::{Hashtag, Post, User, Website};
 #[cfg(feature = "ssr")]
 use mango3_core::pagination::CursorPageParams;
 #[cfg(feature = "ssr")]
@@ -25,11 +25,27 @@ pub async fn get_hashtag(name: String) -> Result<Option<HashtagResp>, ServerFnEr
 }
 
 #[server]
-pub async fn get_posts(
-    hashtag: Option<String>,
-    first: u8,
+pub async fn get_hashtag_posts(
+    name: String,
     after: Option<String>,
 ) -> Result<CursorPageResp<PostPreviewResp>, ServerFnError> {
+    let core_context = expect_core_context();
+
+    let page_params = CursorPageParams {
+        after: after.as_ref().and_then(|id| Uuid::try_parse(id).ok()),
+        first: 10,
+    };
+
+    let hashtag = Hashtag::get_by_name(&core_context, &name).await?;
+
+    let page =
+        Post::paginate_by_created_at_desc(&core_context, &page_params, None, None, Some(&hashtag), Some(true)).await;
+
+    Ok(CursorPageResp::from_core(&core_context, &page).await)
+}
+
+#[server]
+pub async fn get_posts(first: u8, after: Option<String>) -> Result<CursorPageResp<PostPreviewResp>, ServerFnError> {
     let core_context = expect_core_context();
 
     let page_params = CursorPageParams {
@@ -37,18 +53,7 @@ pub async fn get_posts(
         first,
     };
 
-    let hashtag = if let Some(name) = hashtag {
-        let Ok(hashtag) = Hashtag::get_by_name(&core_context, &name).await else {
-            return Ok(CursorPageResp::default());
-        };
-
-        Some(hashtag)
-    } else {
-        None
-    };
-
-    let page =
-        Post::paginate_by_created_at_desc(&core_context, &page_params, None, None, hashtag.as_ref(), Some(true)).await;
+    let page = Post::paginate_by_created_at_desc(&core_context, &page_params, None, None, None, Some(true)).await;
 
     Ok(CursorPageResp::from_core(&core_context, &page).await)
 }
@@ -65,6 +70,37 @@ pub async fn get_posts_search(
         first: 10,
     };
     let page = Post::search(&core_context, &page_params, None, None, Some(true), &query).await;
+
+    Ok(CursorPageResp::from_core(&core_context, &page).await)
+}
+
+#[server]
+pub async fn get_user(username: String) -> Result<Option<UserProfileResp>, ServerFnError> {
+    let core_context = expect_core_context();
+
+    let result = User::get_by_username(&core_context, &username).await;
+
+    if let Ok(user) = result {
+        Ok(Some(UserProfileResp::from_core(&core_context, &user).await))
+    } else {
+        Ok(None)
+    }
+}
+
+#[server]
+pub async fn get_user_posts(
+    id: String,
+    after: Option<String>,
+) -> Result<CursorPageResp<PostPreviewResp>, ServerFnError> {
+    let core_context = expect_core_context();
+    let user = User::get_by_id(&core_context, Uuid::try_parse(&id)?).await?;
+    let page_params = CursorPageParams {
+        after: after.as_ref().and_then(|id| Uuid::try_parse(id).ok()),
+        first: 10,
+    };
+
+    let page =
+        Post::paginate_by_created_at_desc(&core_context, &page_params, None, Some(&user), None, Some(true)).await;
 
     Ok(CursorPageResp::from_core(&core_context, &page).await)
 }

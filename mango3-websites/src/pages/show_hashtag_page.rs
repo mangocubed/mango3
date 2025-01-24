@@ -2,7 +2,7 @@ use leptos::either::EitherOf3;
 use leptos::prelude::*;
 use leptos_router::hooks::use_params_map;
 
-use mango3_leptos_utils::components::{InfiniteScroll, PostCard};
+use mango3_leptos_utils::components::{InfiniteScroll, LoadingSpinner, PostCard};
 use mango3_leptos_utils::context::param_name;
 use mango3_leptos_utils::models::PostPreviewResp;
 use mango3_leptos_utils::pages::{NotFoundPage, Page};
@@ -15,7 +15,7 @@ pub fn ShowHashtagPage() -> impl IntoView {
     let hashtag_resource = Resource::new_blocking(move || param_name(params_map), get_hashtag);
 
     view! {
-        <Suspense>
+        <Transition fallback=LoadingSpinner>
             {move || Suspend::new(async move {
                 match hashtag_resource.get() {
                     Some(Ok(Some(hashtag))) => {
@@ -48,6 +48,6 @@ pub fn ShowHashtagPage() -> impl IntoView {
                     _ => EitherOf3::C(()),
                 }
             })}
-        </Suspense>
+        </Transition>
     }
 }

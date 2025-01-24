@@ -129,7 +129,9 @@ pub fn GoToMango3() -> impl IntoView {
 pub fn WebsiteIcon(#[prop(into)] website: WebsitePreviewResp, #[prop(default = 32)] size: u16) -> impl IntoView {
     view! {
         <div class="avatar">
-            <img alt=website.initials.clone() class="rounded" width=size height=size src=website.icon_image_url(size) />
+            <div class="rounded" style:width=format!("{size}px") style:height=format!("{size}px")>
+                <img alt=website.initials.clone() src=website.icon_image_url(size) />
+            </div>
         </div>
     }
 }

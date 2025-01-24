@@ -4,7 +4,6 @@ use leptos::prelude::*;
 use leptos::text_prop::TextProp;
 use leptos_meta::Meta;
 
-use mango3_leptos_utils::components::LoadingSpinner;
 use mango3_leptos_utils::models::WebsiteResp;
 
 use crate::context::use_current_website_resource;
@@ -29,14 +28,14 @@ where
     let children_store = StoredValue::new(children);
 
     view! {
-        <Suspense fallback=LoadingSpinner>
+        <Transition>
             {move || Suspend::new(async move {
                 match current_website_resource.get() {
                     Some(Ok(website_opt)) => Either::Left(children_store.with_value(|store| store(website_opt))),
                     _ => Either::Right(()),
                 }
             })}
-        </Suspense>
+        </Transition>
     }
 }
 

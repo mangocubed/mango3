@@ -69,6 +69,9 @@ pub fn TopBar(
                                                     tabindex="1"
                                                     class="dropdown-content menu bg-base-200 rounded-box z-[1] p-2 shadow w-48"
                                                 >
+                                                    <li>
+                                                        <a href=user.url>{t!(i18n, shared.profile)}</a>
+                                                    </li>
 
                                                     <Show when=move || {
                                                         can_insert_website
