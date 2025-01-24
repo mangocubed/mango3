@@ -28,3 +28,4 @@
 - Features to insert and show post comments.
 - Post reactions.
 - User profile page.
+- Show source code link with current version and commit hash in the bottom bar.
