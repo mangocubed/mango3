@@ -107,6 +107,7 @@ pub fn EditPage() -> impl IntoView {
                         id="icon_image_blob_id"
                         name="icon_image_blob_id"
                         value=value_icon_image_blob
+                        website_id=website.id.clone()
                     />
 
                     <ImageUploadField

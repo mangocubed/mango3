@@ -7,12 +7,12 @@ use multer::bytes::Bytes;
 use multer::Multipart;
 
 use crate::config::MISC_CONFIG;
-use crate::models::{Blob, User};
+use crate::models::{Blob, User, Website};
 use crate::CoreContext;
 
 use super::insert_test_user;
 
-pub async fn insert_test_blob(core_context: &CoreContext, user: Option<&User>) -> Blob {
+pub async fn insert_test_blob(core_context: &CoreContext, user: Option<&User>, website: Option<&Website>) -> Blob {
     let user = if let Some(user) = user {
         user
     } else {
@@ -40,5 +40,8 @@ pub async fn insert_test_blob(core_context: &CoreContext, user: Option<&User>) -
 
     fs::create_dir_all(MISC_CONFIG.storage_tmp_path()).unwrap();
 
-    Blob::insert(core_context, &user, &mut field).await.ok().unwrap()
+    Blob::insert(core_context, &user, website, &mut field)
+        .await
+        .ok()
+        .unwrap()
 }

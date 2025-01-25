@@ -12,14 +12,15 @@ use url::Url;
 use crate::config::{BASIC_CONFIG, MISC_CONFIG};
 use crate::CoreContext;
 
-use super::User;
+use super::{User, Website};
 
 mod blob_insert;
 
 #[derive(Clone)]
 pub struct Blob {
     pub id: Uuid,
-    pub user_id: Option<Uuid>,
+    pub user_id: Uuid,
+    pub website_id: Option<Uuid>,
     pub file_name: String,
     pub content_type: String,
     pub byte_size: i64,
@@ -29,18 +30,26 @@ pub struct Blob {
 }
 
 impl Blob {
-    pub async fn all_by_ids(core_context: &CoreContext, ids: &Vec<Uuid>, user: Option<&User>) -> Vec<Self> {
+    pub async fn all_by_ids(
+        core_context: &CoreContext,
+        ids: &Vec<Uuid>,
+        user: Option<&User>,
+        website: Option<&Website>,
+    ) -> Vec<Self> {
         if ids.is_empty() {
             return vec![];
         }
 
         let user_id = user.map(|u| u.id);
+        let website_id = website.map(|w| w.id);
 
         query_as!(
             Self,
-            "SELECT * FROM blobs WHERE id = ANY($1) AND ($2::uuid IS NULL OR user_id = $2)",
-            &ids,    // $1
-            user_id  // $2
+            "SELECT * FROM blobs
+            WHERE id = ANY($1) AND ($2::uuid IS NULL OR user_id = $2) AND ($3::uuid IS NULL OR website_id = $3)",
+            &ids,       // $1
+            user_id,    // $2
+            website_id, // $3
         )
         .fetch_all(&core_context.db_pool)
         .await

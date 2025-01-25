@@ -41,7 +41,7 @@ pub struct Post {
 
 impl Post {
     pub async fn blobs(&self, core_context: &CoreContext) -> Vec<Blob> {
-        Blob::all_by_ids(core_context, &self.blob_ids, None).await
+        Blob::all_by_ids(core_context, &self.blob_ids, None, None).await
     }
 
     pub fn content_preview(&self) -> String {

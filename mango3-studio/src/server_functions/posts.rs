@@ -6,7 +6,7 @@ use uuid::Uuid;
 use mango3_leptos_utils::models::{ActionFormResp, CursorPageResp, PostPreviewResp};
 
 #[cfg(feature = "ssr")]
-use mango3_core::models::{Blob, Post, User};
+use mango3_core::models::{Blob, Post, User, Website};
 #[cfg(feature = "ssr")]
 use mango3_core::pagination::CursorPageParams;
 #[cfg(feature = "ssr")]
@@ -22,7 +22,7 @@ use crate::models::EditPostResp;
 use super::my_website;
 
 #[cfg(feature = "ssr")]
-async fn get_blobs(core_context: &CoreContext, user: &User, ids: Option<Vec<String>>) -> Vec<Blob> {
+async fn get_blobs(core_context: &CoreContext, user: &User, website: &Website, ids: Option<Vec<String>>) -> Vec<Blob> {
     let Some(ids) = ids else {
         return vec![];
     };
@@ -31,6 +31,7 @@ async fn get_blobs(core_context: &CoreContext, user: &User, ids: Option<Vec<Stri
         &core_context,
         &ids.iter().map(|id| Uuid::try_parse(id).unwrap()).collect(),
         Some(&user),
+        Some(&website),
     )
     .await
 }
@@ -54,7 +55,7 @@ pub async fn attempt_to_create_post(
 
     let core_context = expect_core_context();
     let user = extract_user().await?.unwrap();
-    let blobs = get_blobs(&core_context, &user, blob_ids).await;
+    let blobs = get_blobs(&core_context, &user, &website, blob_ids).await;
     let cover_image_blob = if let Some(id) = cover_image_blob_id.as_ref().and_then(|id| Uuid::try_parse(id).ok()) {
         Blob::get_by_id(&core_context, id, Some(&user)).await.ok()
     } else {
@@ -113,7 +114,8 @@ pub async fn attempt_to_update_post(
 
     let core_context = expect_core_context();
     let user = extract_user().await?.unwrap();
-    let blobs = get_blobs(&core_context, &user, blob_ids).await;
+    let website = post.website(&core_context).await?;
+    let blobs = get_blobs(&core_context, &user, &website, blob_ids).await;
     let cover_image_blob = if let Some(id) = cover_image_blob_id.as_ref().and_then(|id| Uuid::try_parse(id).ok()) {
         Blob::get_by_id(&core_context, id, Some(&user)).await.ok()
     } else {

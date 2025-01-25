@@ -17,7 +17,7 @@ pub async fn insert_test_post(core_context: &CoreContext, website: Option<&Websi
     let title = fake_sentence();
     let slug = fake_slug();
     let content = fake_paragraph();
-    let blob = insert_test_blob(&core_context, Some(&user)).await;
+    let blob = insert_test_blob(&core_context, Some(&user), Some(&website)).await;
 
     Post::insert(
         core_context,

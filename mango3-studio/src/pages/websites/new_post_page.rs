@@ -27,9 +27,11 @@ pub fn NewPostPage() -> impl IntoView {
                 success_message=move || { t_string!(i18n, studio.post_created_successfully) }
             />
 
-            <input type="hidden" name="website_id" value=move || param_website_id(params_map) />
-
-            <PostFormFields action_value=action_value is_loading=server_action.pending() />
+            <PostFormFields
+                action_value=action_value
+                is_loading=server_action.pending()
+                website_id=move || param_website_id(params_map).unwrap_or_default()
+            />
         </ActionForm>
     }
 }
