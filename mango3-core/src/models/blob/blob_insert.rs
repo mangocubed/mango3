@@ -9,7 +9,7 @@ use sqlx::query_as;
 use sqlx::types::Uuid;
 
 use crate::config::MISC_CONFIG;
-use crate::models::User;
+use crate::models::{User, Website};
 use crate::validator::ValidationErrors;
 use crate::CoreContext;
 
@@ -29,8 +29,10 @@ impl Blob {
     pub async fn insert(
         core_context: &CoreContext,
         user: &User,
+        website: Option<&Website>,
         field: &mut Field<'_>,
     ) -> Result<Blob, ValidationErrors> {
+        let website_id = website.map(|w| w.id);
         let tmp_file_path = MISC_CONFIG.storage_tmp_path().join(Uuid::new_v4().to_string());
         let mut tmp_file = fs::File::create(&tmp_file_path).map_err(|_| ValidationErrors::default())?;
         let mut byte_size = 0i64;
@@ -47,11 +49,13 @@ impl Blob {
 
         let result = query_as!(
             Self,
-            "SELECT * FROM blobs WHERE user_id = $1 AND content_type = $2 AND byte_size = $3 AND md5_checksum = $4",
+            "SELECT * FROM blobs
+            WHERE user_id = $1 AND website_id = $2 AND content_type = $3 AND byte_size = $4 AND md5_checksum = $5",
             user.id,      // $1
-            content_type, // $2
-            byte_size,    // $3
-            md5_checksum, // $4
+            website_id,   // $2
+            content_type, // $3
+            byte_size,    // $4
+            md5_checksum, // $5
         )
         .fetch_one(&core_context.db_pool)
         .await;
@@ -70,13 +74,15 @@ impl Blob {
 
         let result = query_as!(
             Self,
-            "INSERT INTO blobs (user_id, file_name, content_type, byte_size, md5_checksum) VALUES ($1, $2, $3, $4, $5)
+            "INSERT INTO blobs (user_id, website_id, file_name, content_type, byte_size, md5_checksum)
+            VALUES ($1, $2, $3, $4, $5, $6)
             RETURNING *",
             user.id,      // $1
-            file_name,    // $2
-            content_type, // $3
-            byte_size,    // $4
-            md5_checksum, // $5
+            website_id,   // $2
+            file_name,    // $3
+            content_type, // $4
+            byte_size,    // $5
+            md5_checksum, // $6
         )
         .fetch_one(&core_context.db_pool)
         .await;

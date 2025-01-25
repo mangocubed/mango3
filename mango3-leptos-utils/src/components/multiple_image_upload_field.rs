@@ -11,6 +11,7 @@ pub fn MultipleImageUploadField(
     #[prop(into, optional)] label: TextProp,
     #[prop(into)] name: &'static str,
     #[prop(into, optional)] value: RwSignal<Vec<BlobResp>>,
+    #[prop(into, optional)] website_id: TextProp,
 ) -> impl IntoView {
     let uploaded_blob = RwSignal::new(None);
 
@@ -24,7 +25,7 @@ pub fn MultipleImageUploadField(
     });
 
     view! {
-        <ImageUploadField id=id label=label name=format!("{name}[]") value=uploaded_blob />
+        <ImageUploadField id=id label=label name=format!("{name}[]") website_id=website_id value=uploaded_blob />
 
         <div class="form-control">
             <ForEnumerate

@@ -1,5 +1,6 @@
 use leptos::ev::Event;
 use leptos::prelude::*;
+use leptos::text_prop::TextProp;
 use server_fn::error::NoCustomError;
 
 use mango3_leptos_utils::components::{
@@ -14,6 +15,7 @@ use crate::models::EditPostResp;
 pub fn PostFormFields(
     action_value: RwSignal<Option<Result<ActionFormResp, ServerFnError<NoCustomError>>>>,
     #[prop(into)] is_loading: Signal<bool>,
+    #[prop(into)] website_id: TextProp,
     #[prop(optional)] post: Option<EditPostResp>,
 ) -> impl IntoView {
     let i18n = use_i18n();
@@ -48,6 +50,15 @@ pub fn PostFormFields(
     };
 
     view! {
+        <input
+            type="hidden"
+            name="website_id"
+            value={
+                let website_id = website_id.clone();
+                move || website_id.get()
+            }
+        />
+
         <TextField
             label=move || t_string!(i18n, studio.title)
             name="title"
@@ -85,9 +96,10 @@ pub fn PostFormFields(
 
         <MultipleImageUploadField
             id="blob_ids"
-            label=t_string!(i18n, studio.attached_images)
+            label=move || t_string!(i18n, studio.attached_images)
             name="blob_ids"
             value=value_blobs
+            website_id=website_id.clone()
         />
 
         <ImageUploadField
@@ -96,6 +108,7 @@ pub fn PostFormFields(
             name="cover_image_blob_id"
             width=288
             value=value_cover_image_blob
+            website_id=website_id
         />
 
         <SwitchField

@@ -51,13 +51,12 @@ pub fn EditPostPage() -> impl IntoView {
                                         success_message=move || { t_string!(i18n, studio.post_updated_successfully) }
                                     />
 
-                                    <input type="hidden" name="website_id" value=move || param_website_id(params_map) />
-
                                     <input type="hidden" name="id" value=post.id.clone() />
 
                                     <PostFormFields
                                         action_value=action_value
                                         is_loading=server_action.pending()
+                                        website_id=move || param_website_id(params_map).unwrap_or_default()
                                         post=post
                                     />
                                 </ActionForm>

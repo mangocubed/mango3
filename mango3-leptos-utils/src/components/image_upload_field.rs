@@ -19,9 +19,11 @@ pub fn ImageUploadField(
     #[prop(into, optional)] value: RwSignal<Option<BlobResp>>,
     #[prop(default = 48)] width: u16,
     #[prop(into)] name: String,
+    #[prop(into, optional)] website_id: TextProp,
 ) -> impl IntoView {
     let upload_action = Action::new_local(|data: &FormData| attempt_to_upload_file(data.clone().into()));
     let upload_action_value = upload_action.value();
+    let website_id_store = StoredValue::new(website_id);
 
     Effect::new(move || {
         if let Some(Ok(blob_resp)) = upload_action_value.get() {
@@ -46,6 +48,10 @@ pub fn ImageUploadField(
         let Ok(form_data) = FormData::new() else {
             return;
         };
+
+        let website_id = website_id_store.read_value().get();
+
+        let _ = form_data.append_with_str("website_id", &website_id);
 
         let _ = form_data.append_with_blob_and_filename("file", &file, &file.name());
 
