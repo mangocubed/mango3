@@ -8,7 +8,7 @@ use mango3_leptos_utils::components::{
 };
 use mango3_leptos_utils::constants::KEY_PARAM_NAME;
 use mango3_leptos_utils::context::use_basic_config;
-use mango3_leptos_utils::i18n::{t, t_string, use_i18n};
+use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::pages::NotFoundPage;
 
 use crate::constants::KEY_PARAM_USERNAME;
