@@ -35,7 +35,7 @@ pub use blob_resp::BlobResp;
 pub use hashtag_resp::HashtagResp;
 pub use navigation_item_resp::NavigationItemResp;
 pub use post_comment_resp::PostCommentResp;
-pub use post_resp::{PostAttachmentResp, PostPreviewResp, PostResp};
+pub use post_resp::{PostPreviewResp, PostResp};
 pub use user_profile_resp::UserProfileResp;
 pub use user_resp::{UserPreviewResp, UserResp};
 pub use website_resp::{WebsitePreviewResp, WebsiteResp};

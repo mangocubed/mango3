@@ -29,7 +29,7 @@ pub struct Blob {
 }
 
 impl Blob {
-    pub async fn all_by_ids(core_context: &CoreContext, ids: Vec<Uuid>, user: Option<&User>) -> Vec<Self> {
+    pub async fn all_by_ids(core_context: &CoreContext, ids: &Vec<Uuid>, user: Option<&User>) -> Vec<Self> {
         if ids.is_empty() {
             return vec![];
         }

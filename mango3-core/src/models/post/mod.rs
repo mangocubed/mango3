@@ -9,7 +9,7 @@ use crate::enums::{Input, InputError};
 use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
 use crate::CoreContext;
 
-use super::{Blob, Hashtag, PostAttachment, User, Website};
+use super::{Blob, Hashtag, User, Website};
 
 mod post_insert;
 mod post_paginate;
@@ -28,6 +28,7 @@ pub struct Post {
     pub variables: JsonValue,
     pub hashtag_ids: Vec<Uuid>,
     pub cover_image_blob_id: Option<Uuid>,
+    pub blob_ids: Vec<Uuid>,
     pub views_count: i64,
     pub comments_count: i64,
     pub reactions_count: i64,
@@ -39,8 +40,8 @@ pub struct Post {
 }
 
 impl Post {
-    pub async fn attachments(&self, core_context: &CoreContext) -> Vec<PostAttachment> {
-        PostAttachment::all(core_context, Some(self)).await
+    pub async fn blobs(&self, core_context: &CoreContext) -> Vec<Blob> {
+        Blob::all_by_ids(core_context, &self.blob_ids, None).await
     }
 
     pub fn content_preview(&self) -> String {
@@ -92,6 +93,7 @@ impl Post {
                 variables,
                 hashtag_ids,
                 cover_image_blob_id,
+                blob_ids,
                 (SELECT COUNT(*) FROM post_views WHERE post_id = posts.id LIMIT 1) AS "views_count!",
                 (SELECT COUNT(*) FROM post_comments WHERE post_id = posts.id LIMIT 1) AS "comments_count!",
                 (SELECT COUNT(*) FROM post_reactions WHERE post_id = posts.id LIMIT 1) AS "reactions_count!",
@@ -132,6 +134,7 @@ impl Post {
                 variables,
                 hashtag_ids,
                 cover_image_blob_id,
+                blob_ids,
                 (SELECT COUNT(*) FROM post_views WHERE post_id = posts.id LIMIT 1) AS "views_count!",
                 (SELECT COUNT(*) FROM post_comments WHERE post_id = posts.id LIMIT 1) AS "comments_count!",
                 (SELECT COUNT(*) FROM post_reactions WHERE post_id = posts.id LIMIT 1) AS "reactions_count!",

@@ -3,11 +3,9 @@ use serde::{Deserialize, Serialize};
 #[cfg(feature = "ssr")]
 use async_trait::async_trait;
 #[cfg(feature = "ssr")]
-use futures::future;
-#[cfg(feature = "ssr")]
 use serde_json::to_string_pretty;
 
-use mango3_leptos_utils::models::{BlobResp, PostAttachmentResp};
+use mango3_leptos_utils::models::BlobResp;
 
 #[cfg(feature = "ssr")]
 use mango3_core::models::Post;
@@ -23,8 +21,8 @@ pub struct EditPostResp {
     pub slug: String,
     pub content: String,
     pub variables: String,
-    pub attachments: Vec<PostAttachmentResp>,
     pub cover_image_blob: Option<BlobResp>,
+    pub blobs: Vec<BlobResp>,
     pub is_published: bool,
     pub url: String,
 }
@@ -39,19 +37,13 @@ impl FromCore<Post> for EditPostResp {
             slug: post.slug.clone(),
             content: post.content.clone(),
             variables: to_string_pretty(&post.variables).unwrap_or_else(|_| "{}".to_owned()),
-            attachments: future::join_all(
-                post.attachments(core_context)
-                    .await
-                    .iter()
-                    .map(|attachment| PostAttachmentResp::from_core(core_context, attachment)),
-            )
-            .await,
             cover_image_blob: post
                 .cover_image_blob(&core_context)
                 .await
                 .and_then(|result| result.ok())
                 .map(|blob| blob.into()),
             is_published: post.is_published(core_context).await,
+            blobs: post.blobs(&core_context).await.iter().map(|blob| blob.into()).collect(),
             url: post.url(&core_context).await.to_string(),
         }
     }

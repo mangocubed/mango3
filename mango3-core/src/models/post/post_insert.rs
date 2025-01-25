@@ -2,7 +2,7 @@ use sqlx::query_as;
 use sqlx::types::uuid::Uuid;
 use sqlx::types::JsonValue;
 
-use crate::models::{Blob, Hashtag, PostAttachment, User, Website};
+use crate::models::{Blob, Hashtag, User, Website};
 use crate::validator::{ValidationErrors, Validator};
 use crate::CoreContext;
 
@@ -31,6 +31,7 @@ impl Post {
 
         let hashtags = Hashtag::get_or_insert_all(core_context, content).await?;
         let hashtag_ids = hashtags.iter().map(|hashtag| hashtag.id).collect::<Vec<Uuid>>();
+        let blob_ids = blobs.iter().map(|blob| blob.id).collect::<Vec<Uuid>>();
 
         validator.validate_post_title(title);
         validator.validate_post_slug(core_context, None, website, &slug).await;
@@ -41,11 +42,20 @@ impl Post {
             return Err(validator.errors);
         }
 
-        let result = query_as!(
+        query_as!(
             Self,
             r#"INSERT INTO posts (
-                website_id, user_id, title, slug, content, variables, hashtag_ids, cover_image_blob_id, published_at
-                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CASE WHEN $9 IS TRUE THEN current_timestamp ELSE NULL END)
+                website_id,
+                user_id,
+                title,
+                slug,
+                content,
+                variables,
+                hashtag_ids,
+                cover_image_blob_id,
+                blob_ids,
+                published_at
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, CASE WHEN $10 IS TRUE THEN current_timestamp ELSE NULL END)
             RETURNING
                 id,
                 website_id,
@@ -57,6 +67,7 @@ impl Post {
                 variables,
                 hashtag_ids,
                 cover_image_blob_id,
+                blob_ids,
                 (SELECT COUNT(*) FROM post_views WHERE post_id = posts.id LIMIT 1) AS "views_count!",
                 (SELECT COUNT(*) FROM post_comments WHERE post_id = posts.id LIMIT 1) AS "comments_count!",
                 (SELECT COUNT(*) FROM post_reactions WHERE post_id = posts.id LIMIT 1) AS "reactions_count!",
@@ -73,18 +84,11 @@ impl Post {
             variables.unwrap(),  // $6
             &hashtag_ids,        // $7
             cover_image_blob_id, // $8
-            publish,             // $9
+            &blob_ids,           // $9
+            publish,             // $10
         )
         .fetch_one(&core_context.db_pool)
-        .await;
-
-        match result {
-            Ok(post) => {
-                let _ = PostAttachment::save_all(core_context, &post, blobs).await;
-
-                Ok(post)
-            }
-            Err(_) => Err(ValidationErrors::default()),
-        }
+        .await
+        .map_err(|_| ValidationErrors::default())
     }
 }

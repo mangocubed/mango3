@@ -2,9 +2,11 @@ use leptos::ev::Event;
 use leptos::prelude::*;
 use server_fn::error::NoCustomError;
 
-use mango3_leptos_utils::components::*;
+use mango3_leptos_utils::components::{
+    ImageUploadField, MultipleImageUploadField, SubmitButton, SwitchField, TextField, TextareaField,
+};
 use mango3_leptos_utils::i18n::{t, t_string, use_i18n};
-use mango3_leptos_utils::models::{ActionFormResp, BlobResp};
+use mango3_leptos_utils::models::ActionFormResp;
 
 use crate::models::EditPostResp;
 
@@ -27,12 +29,7 @@ pub fn PostFormFields(
         .as_ref()
         .map(|p| p.variables.clone())
         .unwrap_or_else(|| "{}".to_owned());
-    let value_blobs = RwSignal::new(
-        post.as_ref()
-            .map(|p| p.attachments.clone())
-            .map(|attachments| attachments.iter().map(|a| a.blob.clone()).collect::<Vec<BlobResp>>())
-            .unwrap_or_default(),
-    );
+    let value_blobs = RwSignal::new(post.as_ref().map(|p| p.blobs.clone()).unwrap_or_default());
     let value_cover_image_blob = RwSignal::new(post.as_ref().and_then(|p| p.cover_image_blob.clone()));
     let value_publish = post.map(|p| p.is_published).unwrap_or_default();
     let show_variables = RwSignal::new(false);
