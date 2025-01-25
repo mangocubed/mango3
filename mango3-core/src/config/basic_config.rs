@@ -8,6 +8,7 @@ use super::extract_from_env;
 pub struct BasicConfig {
     pub about_url: String,
     pub copyright: String,
+    pub description: String,
     pub domain: String,
     pub enable_register: bool,
     pub privacy_policy_url: String,
@@ -20,6 +21,7 @@ impl Default for BasicConfig {
     fn default() -> Self {
         Self {
             about_url: String::new(),
+            description: "An open source content management system platform.".to_owned(),
             copyright: "© 2025, Mango³ Team".to_owned(),
             domain: "mango3.local".to_owned(),
             enable_register: true,
