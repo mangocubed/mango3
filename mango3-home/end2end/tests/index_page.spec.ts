@@ -6,5 +6,6 @@ test("has a heading text", async ({ page }) => {
 
     await expectLoadToComplete(page);
 
-    await expect(page.locator("h1")).toHaveText("Welcome to Mango³ Dev!");
+    await expect(page.locator("h2", { hasText: "Recent posts" })).toBeVisible();
+    await expect(page.locator("h2", { hasText: "Recent websites" })).toBeVisible();
 });
