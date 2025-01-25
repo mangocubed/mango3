@@ -1,7 +1,80 @@
-CREATE TYPE IF NOT EXISTS user_role AS ENUM ('user', 'creator', 'admin', 'superuser');
+DELETE FROM _sqlx_migrations;
+
+CREATE EXTENSION IF NOT EXISTS citext;
+
+CREATE OR REPLACE FUNCTION set_updated_at() RETURNS trigger AS $$
+BEGIN
+    IF (
+        NEW IS DISTINCT FROM OLD AND
+        NEW.updated_at IS NOT DISTINCT FROM OLD.updated_at
+    ) THEN
+        NEW.updated_at := current_timestamp;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION manage_updated_at(_tbl regclass) RETURNS void AS $$
+BEGIN
+    EXECUTE format(
+        'CREATE OR REPLACE TRIGGER set_updated_at BEFORE UPDATE ON %s FOR EACH ROW EXECUTE PROCEDURE set_updated_at()', _tbl
+    );
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TABLE IF NOT EXISTS versions (
+    id uuid NOT NULL DEFAULT gen_random_uuid(),
+    action varchar NOT NULL,
+    record_type varchar NOT NULL,
+    record_id uuid NOT NULL,
+    data jsonb,
+    created_at timestamptz NOT NULL DEFAULT current_timestamp,
+    updated_at timestamptz NULL,
+    CONSTRAINT pkey_versions PRIMARY KEY (id)
+);
+
+SELECT manage_updated_at('versions');
+
+CREATE OR REPLACE FUNCTION insert_into_versions() RETURNS trigger AS $$
+DECLARE
+    record_id uuid;
+    data jsonb;
+BEGIN
+    IF (NEW IS DISTINCT FROM OLD) THEN
+        IF (TG_OP IS DISTINCT FROM 'DELETE') THEN
+            SELECT NEW.id INTO record_id;
+            SELECT to_jsonb(NEW) INTO data;
+        ELSE
+            SELECT OLD.id INTO record_id;
+        END IF;
+
+        INSERT INTO versions (action, record_type, record_id, data)
+            VALUES (LOWER(TG_OP), TG_TABLE_NAME, record_id, data);
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION manage_versions(_tbl regclass) RETURNS void AS $$
+BEGIN
+    EXECUTE format(
+        'CREATE OR REPLACE TRIGGER insert_into_versions AFTER INSERT OR UPDATE OR DELETE ON %s FOR EACH ROW
+            EXECUTE FUNCTION insert_into_versions()',
+        _tbl
+   );
+END;
+$$ LANGUAGE plpgsql;
+
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'user_role') THEN
+        CREATE TYPE user_role AS ENUM ('user', 'creator', 'admin', 'superuser');
+    END IF;
+END $$;
 
 CREATE TABLE IF NOT EXISTS blobs (
     id uuid NOT NULL DEFAULT gen_random_uuid(),
+    website_id uuid NULL,
     user_id uuid NOT NULL,
     file_name varchar NOT NULL,
     content_type varchar NOT NULL,
@@ -9,12 +82,11 @@ CREATE TABLE IF NOT EXISTS blobs (
     md5_checksum varchar NOT NULL,
     created_at timestamptz NOT NULL DEFAULT current_timestamp,
     updated_at timestamptz NULL,
-    CONSTRAINT pkey_blobs PRIMARY KEY (id),
-    CONSTRAINT fkey_blobs_to_users FOREIGN KEY (user_id) REFERENCES users (id)
+    CONSTRAINT pkey_blobs PRIMARY KEY (id)
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS index_blobs_on_user_id_content_type_byte_size_md5_checksum ON blobs
-USING btree (user_id, content_type, byte_size, md5_checksum);
+CREATE UNIQUE INDEX IF NOT EXISTS index_blobs_on_user_id_website_id_content_type_byte_size_md5_checksum ON blobs
+USING btree (user_id, website_id, content_type, byte_size, md5_checksum);
 
 SELECT manage_updated_at('blobs');
 SELECT manage_versions('blobs');
@@ -59,18 +131,6 @@ CREATE UNIQUE INDEX IF NOT EXISTS index_invitation_codes_on_code ON invitation_c
 SELECT manage_updated_at('invitation_codes');
 SELECT manage_versions('invitation_codes');
 
-CREATE TABLE IF NOT EXISTS user_sessions (
-    id uuid NOT NULL DEFAULT gen_random_uuid(),
-    user_id uuid NOT NULL,
-    created_at timestamptz NOT NULL DEFAULT current_timestamp,
-    updated_at timestamptz NULL,
-    CONSTRAINT pkey_user_sessions PRIMARY KEY (id),
-    CONSTRAINT fkey_user_sessions_to_users FOREIGN KEY (user_id) REFERENCES users (id)
-);
-
-SELECT manage_updated_at('user_sessions');
-SELECT manage_versions('user_sessions');
-
 CREATE TABLE IF NOT EXISTS users (
     id uuid NOT NULL DEFAULT gen_random_uuid(),
     username citext NOT NULL,
@@ -105,7 +165,17 @@ CREATE INDEX IF NOT EXISTS index_users_on_hashtag_ids ON users USING gin (hashta
 SELECT manage_updated_at('users');
 SELECT manage_versions('users');
 
+CREATE TABLE IF NOT EXISTS user_sessions (
+    id uuid NOT NULL DEFAULT gen_random_uuid(),
+    user_id uuid NOT NULL,
+    created_at timestamptz NOT NULL DEFAULT current_timestamp,
+    updated_at timestamptz NULL,
+    CONSTRAINT pkey_user_sessions PRIMARY KEY (id),
+    CONSTRAINT fkey_user_sessions_to_users FOREIGN KEY (user_id) REFERENCES users (id)
+);
 
+SELECT manage_updated_at('user_sessions');
+SELECT manage_versions('user_sessions');
 
 CREATE TABLE IF NOT EXISTS websites (
     id uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -116,6 +186,10 @@ CREATE TABLE IF NOT EXISTS websites (
     hashtag_ids uuid [] NOT NULL DEFAULT ARRAY[]::uuid [],
     icon_image_blob_id uuid NULL,
     cover_image_blob_id uuid NULL,
+    light_theme varchar NOT NULL DEFAULT 'light',
+    dark_theme varchar NOT NULL DEFAULT 'dark',
+    language regconfig NOT NULL DEFAULT 'english',
+    search tsvector GENERATED ALWAYS AS (to_tsvector(language, name || ' ' || description)) STORED,
     published_at timestamptz NULL,
     created_at timestamptz NOT NULL DEFAULT current_timestamp,
     updated_at timestamptz NULL,
@@ -128,6 +202,7 @@ CREATE TABLE IF NOT EXISTS websites (
 CREATE UNIQUE INDEX IF NOT EXISTS index_websites_on_name ON websites USING btree (name);
 CREATE UNIQUE INDEX IF NOT EXISTS index_websites_on_subdomain ON websites USING btree (subdomain);
 CREATE INDEX IF NOT EXISTS index_websites_on_hashtag_ids ON websites USING gin (hashtag_ids);
+CREATE INDEX IF NOT EXISTS index_websites_on_search ON websites USING gin (search);
 
 SELECT manage_updated_at('websites');
 SELECT manage_versions('websites');
@@ -157,6 +232,9 @@ CREATE TABLE IF NOT EXISTS posts (
     hashtag_ids uuid [] NOT NULL DEFAULT ARRAY[]::uuid [],
     variables jsonb NOT NULL DEFAULT '{}'::jsonb,
     cover_image_blob_id uuid NULL,
+    blob_ids uuid [] NOT NULL DEFAULT ARRAY[]::uuid [],
+    language regconfig NOT NULL DEFAULT 'english',
+    search tsvector GENERATED ALWAYS AS (to_tsvector(language, title || ' ' || content)) STORED,
     published_at timestamptz NULL,
     modified_at timestamptz NULL,
     created_at timestamptz NOT NULL DEFAULT current_timestamp,
@@ -169,6 +247,8 @@ CREATE TABLE IF NOT EXISTS posts (
 
 CREATE UNIQUE INDEX IF NOT EXISTS index_posts_on_website_id_slug ON posts USING btree (website_id, slug);
 CREATE INDEX IF NOT EXISTS index_posts_on_hashtag_ids ON posts USING gin (hashtag_ids);
+CREATE INDEX IF NOT EXISTS index_posts_on_blob_ids ON posts USING gin (blob_ids);
+CREATE INDEX IF NOT EXISTS index_posts_on_search ON posts USING gin (search);
 
 SELECT manage_updated_at('posts');
 SELECT manage_versions('posts');
@@ -210,3 +290,29 @@ CREATE INDEX IF NOT EXISTS index_post_reactions_on_emoji ON post_reactions USING
 
 SELECT manage_updated_at('post_reactions');
 SELECT manage_versions('post_reactions');
+
+CREATE TABLE IF NOT EXISTS post_views (
+    id uuid NOT NULL DEFAULT gen_random_uuid(),
+    post_id uuid NOT NULL,
+    user_id uuid NULL,
+    ip_address cidr NOT NULL,
+    created_at timestamptz NOT NULL DEFAULT current_timestamp,
+    updated_at timestamptz NULL,
+    CONSTRAINT pkey_post_views PRIMARY KEY (id),
+    CONSTRAINT fkey_post_views_to_posts FOREIGN KEY (post_id) REFERENCES posts (id),
+    CONSTRAINT fkey_post_views_to_users FOREIGN KEY (user_id) REFERENCES users (id)
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS index_post_views_on_post_id_user_id ON post_views USING btree (post_id, user_id)
+WHERE user_id IS NOT NULL;
+
+CREATE UNIQUE INDEX IF NOT EXISTS index_post_views_on_post_id_ip_address ON post_views USING btree (post_id, ip_address)
+WHERE user_id IS NULL;
+
+SELECT manage_updated_at('post_views');
+SELECT manage_versions('post_views');
+
+ALTER TABLE blobs DROP CONSTRAINT IF EXISTS fkey_blobs_to_websites, DROP CONSTRAINT IF EXISTS fkey_blobs_to_users;
+
+ALTER TABLE blobs ADD CONSTRAINT fkey_blobs_to_websites FOREIGN KEY (website_id) REFERENCES websites (id),
+ADD CONSTRAINT fkey_blobs_to_users FOREIGN KEY (user_id) REFERENCES users (id);
