@@ -17,7 +17,8 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION manage_updated_at(_tbl regclass) RETURNS void AS $$
 BEGIN
     EXECUTE format(
-        'CREATE OR REPLACE TRIGGER set_updated_at BEFORE UPDATE ON %s FOR EACH ROW EXECUTE PROCEDURE set_updated_at()', _tbl
+        'CREATE OR REPLACE TRIGGER set_updated_at BEFORE UPDATE ON %s FOR EACH ROW EXECUTE PROCEDURE set_updated_at()',
+        _tbl
     );
 END;
 $$ LANGUAGE plpgsql;
