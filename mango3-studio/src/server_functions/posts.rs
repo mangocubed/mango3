@@ -29,7 +29,7 @@ async fn get_blobs(core_context: &CoreContext, user: &User, ids: Option<Vec<Stri
 
     Blob::all_by_ids(
         &core_context,
-        ids.iter().map(|id| Uuid::try_parse(id).unwrap()).collect(),
+        &ids.iter().map(|id| Uuid::try_parse(id).unwrap()).collect(),
         Some(&user),
     )
     .await

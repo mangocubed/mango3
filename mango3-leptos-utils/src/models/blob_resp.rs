@@ -10,12 +10,19 @@ pub struct BlobResp {
 }
 
 #[cfg(feature = "ssr")]
-impl From<Blob> for BlobResp {
-    fn from(blob: Blob) -> Self {
+impl From<&Blob> for BlobResp {
+    fn from(blob: &Blob) -> Self {
         Self {
             id: blob.id.to_string(),
             url: blob.url().to_string(),
         }
+    }
+}
+
+#[cfg(feature = "ssr")]
+impl From<Blob> for BlobResp {
+    fn from(blob: Blob) -> Self {
+        Self::from(&blob)
     }
 }
 

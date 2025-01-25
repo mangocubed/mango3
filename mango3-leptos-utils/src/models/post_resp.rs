@@ -3,11 +3,9 @@ use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "ssr")]
 use async_trait::async_trait;
-#[cfg(feature = "ssr")]
-use futures::future;
 
 #[cfg(feature = "ssr")]
-use mango3_core::models::{Post, PostAttachment};
+use mango3_core::models::Post;
 #[cfg(feature = "ssr")]
 use mango3_core::CoreContext;
 
@@ -20,31 +18,6 @@ use super::{BlobResp, HashtagResp, UserPreviewResp, WebsitePreviewResp};
 use super::{parse_html, FromCore};
 
 #[derive(Clone, Deserialize, Serialize)]
-pub struct PostAttachmentResp {
-    pub id: String,
-    pub blob: BlobResp,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: Option<DateTime<Utc>>,
-}
-
-#[cfg(feature = "ssr")]
-#[async_trait]
-impl FromCore<PostAttachment> for PostAttachmentResp {
-    async fn from_core(core_context: &CoreContext, post_attachment: &PostAttachment) -> Self {
-        Self {
-            id: post_attachment.id.to_string(),
-            blob: post_attachment
-                .blob(&core_context)
-                .await
-                .expect("Could not get blob")
-                .into(),
-            created_at: post_attachment.created_at,
-            updated_at: post_attachment.updated_at,
-        }
-    }
-}
-
-#[derive(Clone, Deserialize, Serialize)]
 pub struct PostResp {
     pub id: String,
     pub user: UserPreviewResp,
@@ -52,8 +25,8 @@ pub struct PostResp {
     pub slug: String,
     pub content_html: String,
     pub hashtags: Vec<HashtagResp>,
-    pub attachments: Vec<PostAttachmentResp>,
     pub cover_image_blob: Option<BlobResp>,
+    pub blobs: Vec<BlobResp>,
     pub is_published: bool,
     pub url: String,
     pub views_count: i64,
@@ -88,18 +61,12 @@ impl FromCore<Post> for PostResp {
                 .iter()
                 .map(|hashtag| hashtag.into())
                 .collect(),
-            attachments: future::join_all(
-                post.attachments(core_context)
-                    .await
-                    .iter()
-                    .map(|attachment| PostAttachmentResp::from_core(core_context, attachment)),
-            )
-            .await,
             cover_image_blob: post
                 .cover_image_blob(&core_context)
                 .await
                 .and_then(|result| result.ok())
                 .map(|blob| blob.into()),
+            blobs: post.blobs(&core_context).await.iter().map(|blob| blob.into()).collect(),
             is_published: post.is_published(core_context).await,
             url: post.url(&core_context).await.to_string(),
             views_count: post.views_count,
