@@ -1,10 +1,8 @@
-use std::sync::LazyLock;
-
 use leptos::either::Either;
 use leptos::prelude::*;
 
 use mango3_leptos_utils::components::{CurrentUser, LoadingSpinner};
-use mango3_leptos_utils::context::use_current_user_resource;
+use mango3_leptos_utils::context::{use_current_user_resource, use_info};
 use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::icons::PlusOutlined;
 
@@ -12,12 +10,6 @@ use crate::server_functions::{
     attempt_to_delete_post_reaction, attempt_to_insert_or_update_post_reaction, get_my_post_reaction_emoji,
     get_post_reaction_emojis_count,
 };
-
-pub static REACTION_EMOJIS: LazyLock<[&str; 16]> = LazyLock::new(|| {
-    [
-        "😀", "😂", "🥹", "🙂", "🙃", "🙁", "😢", "😡", "🤯", "🤔", "😦", "🤡", "💩", "🖕", "👍", "👎",
-    ]
-});
 
 #[component]
 pub fn PostReactions(post_id: String) -> impl IntoView {
@@ -54,6 +46,7 @@ pub fn PostReactions(post_id: String) -> impl IntoView {
                                             .get()
                                             .and_then(|result| result.ok())
                                             .map(|emojis_count| {
+                                                let info = use_info();
                                                 let insert_reaction_action = Action::new(move |emoji: &String| {
                                                     let post_id = post_id_store.read_value().clone();
                                                     let emoji = emoji.clone();
@@ -79,7 +72,10 @@ pub fn PostReactions(post_id: String) -> impl IntoView {
 
                                                             <div class="dropdown-content bg-base-100 rounded-box z-[1] p-2 shadow flex flex-wrap w-[296px]">
                                                                 <For
-                                                                    each=move || REACTION_EMOJIS.to_vec()
+                                                                    each={
+                                                                        let reaction_emojis = info.reaction_emojis.clone();
+                                                                        move || reaction_emojis.clone()
+                                                                    }
                                                                     key=|emoji| emoji.to_owned()
                                                                     let:emoji
                                                                 >
@@ -89,7 +85,7 @@ pub fn PostReactions(post_id: String) -> impl IntoView {
                                                                             insert_reaction_action.dispatch(emoji.to_owned());
                                                                         }
                                                                     >
-                                                                        {emoji}
+                                                                        {emoji.clone()}
                                                                     </button>
                                                                 </For>
                                                             </div>
