@@ -1,7 +1,7 @@
 use leptos::prelude::*;
 use leptos_use::{ColorMode, UseColorModeReturn};
 
-use crate::context::{use_basic_config, use_color_mode_with_options, UseColorModeOptions};
+use crate::context::{use_basic_config, use_color_mode_with_options, use_info, UseColorModeOptions};
 use crate::i18n::{t, t_string, use_i18n, Locale};
 use crate::icons::{ChevronUpMini, ComputerOutlined, MoonOutlined, SunOutlined};
 
@@ -14,6 +14,7 @@ pub fn BottomBar(
     #[prop(default = "dark".to_owned(), into)] dark_theme: String,
 ) -> impl IntoView {
     let basic_config = use_basic_config();
+    let info = use_info();
     let UseColorModeReturn { mode, set_mode, .. } = use_color_mode_with_options(
         UseColorModeOptions::default()
             .light_theme(light_theme)
@@ -70,14 +71,14 @@ pub fn BottomBar(
                 </Show>
 
                 <a
-                    href=format!("https://github.com/mangocubed/mango3/tree/{}", env!("GIT_COMMIT_HASH"))
+                    href=format!("https://github.com/mangocubed/mango3/tree/{}", info.git_commit_hash)
                     target="_blank"
                     title=move || t_string!(i18n, shared.view_source_code)
                 >
                     "v"
-                    {env!("CARGO_PKG_VERSION")}
+                    {info.version}
                     " ("
-                    {env!("GIT_COMMIT_SHORT_HASH")}
+                    {info.git_commit_short_hash}
                     ")"
                 </a>
             </nav>

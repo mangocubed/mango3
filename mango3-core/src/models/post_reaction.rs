@@ -4,7 +4,7 @@ use sqlx::{query, query_as};
 
 use super::{Post, User};
 
-use crate::constants::ALLOWED_POST_REACTION_EMOJIS;
+use crate::constants::REACTION_EMOJIS;
 use crate::enums::{Input, InputError};
 use crate::validator::{ValidationErrors, Validator};
 use crate::CoreContext;
@@ -72,7 +72,7 @@ impl PostReaction {
         let mut validator = Validator::default();
 
         validator.custom_validation(Input::Emoji, InputError::IsInvalid, &|| {
-            ALLOWED_POST_REACTION_EMOJIS.contains(&emoji)
+            REACTION_EMOJIS.contains(&emoji)
         });
 
         if let Ok(reaction) = query_as!(

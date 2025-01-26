@@ -130,7 +130,7 @@ lazy_static! {
     pub(crate) static ref REGEX_USERNAME: Regex = Regex::new(r"\A[-_.]?([[:alnum:]]+[-_.]?)+\z").unwrap();
 }
 
-pub static ALLOWED_POST_REACTION_EMOJIS: LazyLock<[&str; 16]> = LazyLock::new(|| {
+pub static REACTION_EMOJIS: LazyLock<[&str; 16]> = LazyLock::new(|| {
     [
         "😀", "😂", "🥹", "🙂", "🙃", "🙁", "😢", "😡", "🤯", "🤔", "😦", "🤡", "💩", "🖕", "👍", "👎",
     ]

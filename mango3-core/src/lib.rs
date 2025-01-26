@@ -14,6 +14,7 @@ mod test_utils;
 pub mod config;
 pub mod constants;
 pub mod enums;
+pub mod info;
 pub mod jobs;
 pub mod locales;
 pub mod models;

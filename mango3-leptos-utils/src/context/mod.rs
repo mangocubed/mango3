@@ -2,7 +2,7 @@ use leptos::prelude::*;
 use leptos_router::params::ParamsMap;
 
 use crate::constants::KEY_PARAM_NAME;
-use crate::models::{BasicConfigResp, UserResp};
+use crate::models::{BasicConfigResp, InfoResp, UserResp};
 use crate::server_functions::get_current_user;
 
 mod use_color_mode;
@@ -37,6 +37,24 @@ pub fn provide_basic_config() {
     provide_context(basic_config.into_inner());
 }
 
+pub fn provide_info() {
+    let info = SharedValue::<InfoResp>::new(move || {
+        #[cfg(feature = "ssr")]
+        {
+            use mango3_core::info::INFO;
+
+            INFO.clone().into()
+        }
+
+        #[cfg(not(feature = "ssr"))]
+        {
+            InfoResp::default()
+        }
+    });
+
+    provide_context(info.into_inner());
+}
+
 pub fn provide_current_user_resource() {
     provide_context(Resource::new_blocking(|| (), |_| get_current_user()))
 }
@@ -57,4 +75,18 @@ pub fn use_basic_config() -> BasicConfigResp {
 
 pub fn use_current_user_resource() -> Resource<Result<Option<UserResp>, ServerFnError>> {
     use_context::<Resource<Result<Option<UserResp>, ServerFnError>>>().unwrap()
+}
+
+pub fn use_info() -> InfoResp {
+    #[cfg(feature = "ssr")]
+    {
+        use mango3_core::info::INFO;
+
+        INFO.clone().into()
+    }
+
+    #[cfg(not(feature = "ssr"))]
+    {
+        use_context::<InfoResp>().unwrap()
+    }
 }
