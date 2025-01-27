@@ -196,7 +196,7 @@ impl Validator {
             && self.validate_length(Input::Slug, slug, Some(1), Some(256))
             && self.custom_validation(Input::Slug, InputError::IsInvalid, &|| Uuid::try_parse(slug).is_err())
             && self.custom_validation(Input::Slug, InputError::IsInvalid, &|| {
-                !BLACKLISTED_SLUGS.contains(&slug.to_owned())
+                !BLACKLISTED_SLUGS.contains(&slug)
             })
         {
             let id = post.map(|p| p.id);

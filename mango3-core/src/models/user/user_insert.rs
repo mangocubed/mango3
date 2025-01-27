@@ -2,7 +2,7 @@ use sqlx::types::Uuid;
 use sqlx::{query, query_as};
 
 use crate::config::MISC_CONFIG;
-use crate::constants::{BLACKLISTED_USERNAMES, REGEX_EMAIL, REGEX_USERNAME};
+use crate::constants::{BLACKLISTED_SLUGS, REGEX_EMAIL, REGEX_USERNAME};
 use crate::enums::{Input, InputError, MailerJobCommand, UserRole};
 use crate::models::{encrypt_password, find_country, parse_date};
 use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
@@ -36,7 +36,7 @@ impl User {
                 Uuid::try_parse(username).is_err()
             })
             && validator.custom_validation(Input::Username, InputError::IsInvalid, &|| {
-                !BLACKLISTED_USERNAMES.contains(&username.to_lowercase())
+                !BLACKLISTED_SLUGS.contains(&username.to_lowercase().as_str())
             })
         {
             let username_exists = query!(

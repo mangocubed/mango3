@@ -1,29 +1,19 @@
 use std::fs;
 use std::io::Write;
 
-use lazy_static::lazy_static;
 use md5::{Digest, Md5};
-use mime::{APPLICATION_OCTET_STREAM, IMAGE_BMP, IMAGE_GIF, IMAGE_JPEG, IMAGE_PNG};
+use mime::APPLICATION_OCTET_STREAM;
 use multer::Field;
 use sqlx::query_as;
 use sqlx::types::Uuid;
 
 use crate::config::MISC_CONFIG;
+use crate::constants::ALLOWED_FILE_TYPES;
 use crate::models::{User, Website};
 use crate::validator::ValidationErrors;
 use crate::CoreContext;
 
 use super::Blob;
-
-lazy_static! {
-    static ref ALLOWED_TYPES: Vec<String> = vec![
-        IMAGE_BMP.to_string(),
-        IMAGE_GIF.to_string(),
-        IMAGE_JPEG.to_string(),
-        IMAGE_PNG.to_string(),
-        "image/webp".to_owned(),
-    ];
-}
 
 impl Blob {
     pub async fn insert(
@@ -65,7 +55,7 @@ impl Blob {
             return Ok(blob);
         }
 
-        if !ALLOWED_TYPES.contains(&content_type.to_owned()) {
+        if !ALLOWED_FILE_TYPES.contains(&content_type.as_str()) {
             let _ = fs::remove_file(tmp_file_path);
             return Err(ValidationErrors::default());
         }
