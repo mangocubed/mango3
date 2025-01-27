@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [0.0.0-alpha.1] - 2015-01-27
 
 ### Added
 
