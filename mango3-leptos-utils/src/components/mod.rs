@@ -48,7 +48,7 @@ pub use country_field::CountryField;
 pub use current_user::{CurrentUser, CurrentUserOpt};
 pub use hashtags::Hashtags;
 pub use image_upload_field::ImageUploadField;
-pub use infinite_scroll::InfiniteScroll;
+pub use infinite_scroll::{InfiniteScroll, InfiniteScrollController};
 pub use loading_overlay::LoadingOverlay;
 pub use loading_spinner::LoadingSpinner;
 pub use multiple_image_upload_field::MultipleImageUploadField;

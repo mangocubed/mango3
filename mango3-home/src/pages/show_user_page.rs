@@ -2,7 +2,7 @@ use leptos::either::EitherOf3;
 use leptos::prelude::*;
 use leptos_router::hooks::use_params_map;
 
-use mango3_leptos_utils::components::{Hashtags, InfiniteScroll, PostCard};
+use mango3_leptos_utils::components::{Hashtags, InfiniteScroll, InfiniteScrollController, LoadingSpinner, PostCard};
 use mango3_leptos_utils::models::{CursorPageResp, PostPreviewResp};
 use mango3_leptos_utils::pages::{NotFoundPage, Page};
 
@@ -13,24 +13,25 @@ use crate::server_functions::{get_user, get_user_posts};
 pub fn ShowUserPage() -> impl IntoView {
     let params_map = use_params_map();
     let user_resource = Resource::new_blocking(move || param_username(params_map), get_user);
-    let after = RwSignal::new(None);
-    let user_posts_resource = Resource::new_blocking(
-        move || after.get(),
-        move |after| async move {
-            let user_id = user_resource.await.ok().flatten().map(|u| u.id);
-            if let Some(user_id) = user_id {
-                get_user_posts(user_id, after).await
-            } else {
-                Ok(CursorPageResp::default())
-            }
-        },
-    );
 
     view! {
-        <Transition>
+        <Transition fallback=LoadingSpinner>
             {move || Suspend::new(async move {
                 match user_resource.get() {
                     Some(Ok(Some(user))) => {
+                        let controller = InfiniteScrollController::new(move |after| {
+                            Resource::new_blocking(
+                                move || after.get(),
+                                move |after| async move {
+                                    let user_id = user_resource.await.ok().flatten().map(|u| u.id);
+                                    if let Some(user_id) = user_id {
+                                        get_user_posts(user_id, after).await
+                                    } else {
+                                        Ok(CursorPageResp::default())
+                                    }
+                                },
+                            )
+                        });
                         let avatar_image_url = user.avatar_image_url(256);
                         EitherOf3::A(
                             view! {
@@ -67,9 +68,8 @@ pub fn ShowUserPage() -> impl IntoView {
 
                                         <div class="shrink-0 max-w-[640px] w-full">
                                             <InfiniteScroll
-                                                after=after
+                                                controller=controller
                                                 key=|post: &PostPreviewResp| post.id.clone()
-                                                resource=user_posts_resource
                                                 let:post
                                             >
                                                 <PostCard post=post show_host=true />

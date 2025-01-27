@@ -32,6 +32,16 @@ impl Hashtag {
         .unwrap_or_default()
     }
 
+    pub async fn get_by_id(core_context: &CoreContext, id: Uuid) -> sqlx::Result<Self> {
+        query_as!(
+            Self,
+            "SELECT * FROM hashtags WHERE id = $1 LIMIT 1",
+            id, // $1
+        )
+        .fetch_one(&core_context.db_pool)
+        .await
+    }
+
     pub async fn get_by_name(core_context: &CoreContext, name: &str) -> sqlx::Result<Self> {
         query_as!(
             Self,

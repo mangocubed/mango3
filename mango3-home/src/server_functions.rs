@@ -26,7 +26,7 @@ pub async fn get_hashtag(name: String) -> Result<Option<HashtagResp>, ServerFnEr
 
 #[server]
 pub async fn get_hashtag_posts(
-    name: String,
+    id: String,
     after: Option<String>,
 ) -> Result<CursorPageResp<PostPreviewResp>, ServerFnError> {
     let core_context = expect_core_context();
@@ -36,7 +36,7 @@ pub async fn get_hashtag_posts(
         first: 10,
     };
 
-    let hashtag = Hashtag::get_by_name(&core_context, &name).await?;
+    let hashtag = Hashtag::get_by_id(&core_context, Uuid::try_parse(&id)?).await?;
 
     let page =
         Post::paginate_by_created_at_desc(&core_context, &page_params, None, None, Some(&hashtag), Some(true)).await;
