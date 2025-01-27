@@ -2,7 +2,7 @@ use leptos::either::Either;
 use leptos::prelude::*;
 use leptos_i18n::t_string;
 
-use mango3_leptos_utils::components::{Hashtags, InfiniteScroll, PostCard};
+use mango3_leptos_utils::components::{Hashtags, InfiniteScroll, InfiniteScrollController, PostCard};
 use mango3_leptos_utils::i18n::use_i18n;
 use mango3_leptos_utils::models::PostPreviewResp;
 use mango3_leptos_utils::pages::{NotFoundPage, Page};
@@ -13,14 +13,15 @@ use crate::server_functions::get_posts;
 #[component]
 pub fn IndexPage() -> impl IntoView {
     let i18n = use_i18n();
-    let after = RwSignal::new(None);
-    let posts_resource =
-        Resource::new_blocking(move || after.get(), |after| async move { get_posts(None, after).await });
+    let controller = InfiniteScrollController::new(|after| {
+        Resource::new_blocking(move || after.get(), |after| async move { get_posts(None, after).await })
+    });
 
     view! {
         <CurrentWebsiteOpt children=move |website| {
             match website {
                 Some(website) => {
+                    let controller = controller.clone();
                     Either::Left(
                         view! {
                             <Page title=move || t_string!(i18n, shared.home)>
@@ -51,9 +52,8 @@ pub fn IndexPage() -> impl IntoView {
 
                                     <div class="shrink-0 max-w-[640px] w-full">
                                         <InfiniteScroll
-                                            after=after
+                                            controller=controller
                                             key=|post: &PostPreviewResp| post.id.clone()
-                                            resource=posts_resource
                                             let:post
                                         >
                                             <PostCard post=post />

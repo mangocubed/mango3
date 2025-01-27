@@ -2,7 +2,7 @@ use leptos::either::EitherOf3;
 use leptos::prelude::*;
 use leptos_router::hooks::use_params_map;
 
-use mango3_leptos_utils::components::{InfiniteScroll, LoadingSpinner, PostCard};
+use mango3_leptos_utils::components::{InfiniteScroll, InfiniteScrollController, LoadingSpinner, PostCard};
 use mango3_leptos_utils::context::param_name;
 use mango3_leptos_utils::models::PostPreviewResp;
 use mango3_leptos_utils::pages::{NotFoundPage, Page};
@@ -19,11 +19,15 @@ pub fn ShowHashtagPage() -> impl IntoView {
             {move || Suspend::new(async move {
                 match hashtag_resource.get() {
                     Some(Ok(Some(hashtag))) => {
-                        let after = RwSignal::new(None);
-                        let posts_resource = Resource::new_blocking(
-                            move || (param_name(params_map), after.get()),
-                            |(name, after)| async move { get_hashtag_posts(name, after).await },
-                        );
+                        let controller = InfiniteScrollController::new(|after| {
+                            Resource::new_blocking(
+                                {
+                                    let hashtag_id = hashtag.id.clone();
+                                    move || (hashtag_id.clone(), after.get())
+                                },
+                                move |(hashtag_id, after)| async move { get_hashtag_posts(hashtag_id, after).await },
+                            )
+                        });
                         let title = move || format!("#{}", hashtag.name);
                         EitherOf3::A(
                             view! {
@@ -32,9 +36,8 @@ pub fn ShowHashtagPage() -> impl IntoView {
 
                                     <section class="max-w-[640px] w-full mx-auto">
                                         <InfiniteScroll
-                                            after=after
+                                            controller=controller
                                             key=|post: &PostPreviewResp| post.id.clone()
-                                            resource=posts_resource
                                             let:post
                                         >
                                             <PostCard post=post />
