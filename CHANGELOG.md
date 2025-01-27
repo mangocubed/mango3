@@ -4,7 +4,8 @@
 
 ### Added
 
-- Add FUNDING.yml. (#153)
+- FUNDING.yml file. (#153)
+- Controller for InfiniteScroll. (#157)
 
 ### Changed
 
