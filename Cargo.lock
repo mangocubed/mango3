@@ -2915,7 +2915,6 @@ dependencies = [
  "futures-util",
  "image",
  "imageproc",
- "lazy_static",
  "md-5",
  "mime",
  "multer",

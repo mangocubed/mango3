@@ -1,9 +1,9 @@
 use std::fs;
+use std::sync::LazyLock;
 
 use dotenvy::dotenv;
 use figment::providers::{Env, Serialized};
 use figment::Figment;
-use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
 
 mod basic_config;
@@ -14,14 +14,12 @@ pub use basic_config::BasicConfig;
 pub use mailer_config::MailerConfig;
 pub use misc_config::MiscConfig;
 
-lazy_static! {
-    pub static ref BASIC_CONFIG: BasicConfig = BasicConfig::load();
-    pub(crate) static ref DATABASE_CONFIG: DatabaseConfig = DatabaseConfig::load();
-    pub(crate) static ref JOBS_CONFIG: JobsConfig = JobsConfig::load();
-    pub static ref MAILER_CONFIG: MailerConfig = MailerConfig::load();
-    pub static ref MISC_CONFIG: MiscConfig = MiscConfig::load();
-    pub static ref SESSIONS_CONFIG: SessionsConfig = SessionsConfig::load();
-}
+pub static BASIC_CONFIG: LazyLock<BasicConfig> = LazyLock::new(BasicConfig::load);
+pub(crate) static DATABASE_CONFIG: LazyLock<DatabaseConfig> = LazyLock::new(DatabaseConfig::load);
+pub(crate) static JOBS_CONFIG: LazyLock<JobsConfig> = LazyLock::new(JobsConfig::load);
+pub static MAILER_CONFIG: LazyLock<MailerConfig> = LazyLock::new(MailerConfig::load);
+pub static MISC_CONFIG: LazyLock<MiscConfig> = LazyLock::new(MiscConfig::load);
+pub static SESSIONS_CONFIG: LazyLock<SessionsConfig> = LazyLock::new(SessionsConfig::load);
 
 pub fn load_config() {
     let _ = dotenv();

@@ -33,10 +33,10 @@ impl Website {
         validator.validate_name(core_context, Some(self), name).await;
         validator.validate_description(description);
         validator.custom_validation(Input::LightTheme, InputError::IsInvalid, &|| {
-            LIGHT_THEMES.contains(&light_theme.to_owned())
+            LIGHT_THEMES.contains(&light_theme)
         });
         validator.custom_validation(Input::DarkTheme, InputError::IsInvalid, &|| {
-            DARK_THEMES.contains(&dark_theme.to_owned())
+            DARK_THEMES.contains(&dark_theme)
         });
 
         if !validator.is_valid {

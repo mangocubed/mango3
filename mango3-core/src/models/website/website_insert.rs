@@ -1,7 +1,7 @@
 use sqlx::types::Uuid;
 use sqlx::{query, query_as};
 
-use crate::constants::{BLACKLISTED_SUBDOMAINS, REGEX_SUBDOMAIN};
+use crate::constants::{BLACKLISTED_SLUGS, REGEX_SUBDOMAIN};
 use crate::enums::{Input, InputError};
 use crate::models::{Hashtag, User};
 use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
@@ -32,7 +32,7 @@ impl Website {
                 Uuid::try_parse(&subdomain).is_err()
             })
             && validator.custom_validation(Input::Subdomain, InputError::IsInvalid, &|| {
-                !BLACKLISTED_SUBDOMAINS.contains(&subdomain)
+                !BLACKLISTED_SLUGS.contains(&subdomain.as_str())
             })
         {
             let subdomain_exists = query!(
