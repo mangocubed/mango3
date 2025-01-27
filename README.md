@@ -1,6 +1,6 @@
 # Mango³
 
-An open source content management system platform written in Rust.
+A free and open source website builder and content management system platform written in Rust.
 
 ## Requirements
 
