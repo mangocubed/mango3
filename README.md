@@ -6,7 +6,7 @@
 
 A free and open source website builder and content management system platform written in Rust.
 
-[![release](https://img.shields.io/github/v/release/mangocubed/mango3.svg?include_prereleases)](https://github.com/mastodon/mastodon/releases/latest)
+[![release](https://img.shields.io/github/v/release/mangocubed/mango3.svg?include_prereleases)](https://github.com/mangocubed/mango3/releases/latest)
 [![ci](https://github.com/mangocubed/mango3/actions/workflows/ci.yaml/badge.svg)](https://github.com/mangocubed/mango3/actions/workflows/ci.yaml)
 
 [Website](https://mango3.app) | [Source code](https://gitgub.com/mangocubed/mango3)
