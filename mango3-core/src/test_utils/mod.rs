@@ -5,7 +5,7 @@ use fake::faker::internet::en::{IPv4, Password, SafeEmail, Username};
 use fake::faker::lorem::en::{Paragraph, Sentence};
 use fake::faker::name::en::Name;
 use fake::{Fake, Faker};
-use rand::{thread_rng, Rng};
+use rand::{rng, Rng};
 use regex::Regex;
 use url::Url;
 use uuid::Uuid;
@@ -22,7 +22,7 @@ pub use test_post::insert_test_post;
 pub use test_post_comment::insert_test_post_comment;
 
 fn random_number() -> i32 {
-    thread_rng().gen_range(0..999)
+    rng().random_range(0..999)
 }
 
 fn fake_birthdate() -> String {
