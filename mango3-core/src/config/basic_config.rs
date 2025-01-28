@@ -21,7 +21,7 @@ impl Default for BasicConfig {
     fn default() -> Self {
         Self {
             about_url: String::new(),
-            description: "An open source content management system platform.".to_owned(),
+            description: "A free and open source website builder and content management system platform.".to_owned(),
             copyright: "© 2025, Mango³ Team".to_owned(),
             domain: "mango3.local".to_owned(),
             enable_register: true,

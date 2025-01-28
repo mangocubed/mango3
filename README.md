@@ -1,15 +1,28 @@
 # Mango³
 
+![logo](https://raw.githubusercontent.com/mangocubed/mango3/refs/heads/main/assets/icon.svg)
+
 A free and open source website builder and content management system platform written in Rust.
 
-## Requirements
+[![release](https://img.shields.io/github/v/release/mangocubed/mango3.svg?include_prereleases)](https://github.com/mastodon/mastodon/releases/latest)
+[![ci](https://github.com/mangocubed/mango3/actions/workflows/ci.yaml/badge.svg)](https://github.com/mangocubed/mango3/actions/workflows/ci.yaml)
 
-- Rust
-- PostgreSQL
-- Node.js
-- Nginx (or any reverse proxy)
+[Website](https://mango3.app) | [Source code](https://gitgub.com/mangocubed/mango3)
 
-## Environment variables
+## Deployment
+
+> [!WARNING]
+> This platform is still in an early stage, so I wouldn't recommend it for production use yet.
+
+### Requirements
+
+- **Rust** 1.82+
+- **PostgreSQL** 16+
+- **Node.js** 20+
+- **Nginx** 1.26+ (or any reverse proxy)
+- **Dnsmasq** 2.91+ (or any domain name server)
+
+### Environment variables
 
 | Name                            | Type    | Default                                                          |
 | ------------------------------- | ------- | ---------------------------------------------------------------- |
@@ -42,7 +55,7 @@ A free and open source website builder and content management system platform wr
 | SESSIONS_KEY                    | String  | abcdefghijklmnopqrestuvvwxyz0123456789ABCDEFGHIJKLMNOPQRESTUVVWX |
 | SESSIONS_REDIS_URL              | String  | redis://127.0.0.1:6379/1                                         |
 
-## Installation
+### Installation and setup
 
 Install dependencies:
 
@@ -64,7 +77,10 @@ Run database migrations:
 sqlx migrate run
 ```
 
-## Deployment
+> [!TIP]
+> You should also use the files located in `config/` to configure Nginx and Dnsmasq.
+
+### Running the services
 
 Run monitor:
 
