@@ -1,8 +1,8 @@
 use argon2::password_hash::rand_core::OsRng;
 use argon2::password_hash::SaltString;
 use argon2::{Argon2, PasswordHash, PasswordHasher, PasswordVerifier};
-use rand::distributions::Alphanumeric;
-use rand::{thread_rng, Rng};
+use rand::distr::Alphanumeric;
+use rand::{rng, Rng};
 use rust_iso3166::CountryCode;
 use sqlx::types::chrono::NaiveDate;
 
@@ -43,7 +43,7 @@ fn find_country(query: &str) -> Option<&CountryCode> {
 }
 
 fn generate_random_string(length: u8) -> String {
-    thread_rng()
+    rng()
         .sample_iter(&Alphanumeric)
         .take(length as usize)
         .map(char::from)
