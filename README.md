@@ -1,6 +1,6 @@
 # Mango³
 
-![logo](https://raw.githubusercontent.com/mangocubed/mango3/refs/heads/main/assets/icon.svg)
+![logo](https://raw.githubusercontent.com/mangocubed/mango3/refs/heads/main/assets/icon.svg){ style="margin: auto" }
 
 A free and open source website builder and content management system platform written in Rust.
 
