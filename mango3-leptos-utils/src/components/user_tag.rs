@@ -24,3 +24,12 @@ pub fn UserTag(
         </div>
     }
 }
+
+#[component]
+pub fn UserTagLink(#[prop(into)] user: UserPreviewResp) -> impl IntoView {
+    view! {
+        <a href=user.url title=format!("@{}", user.username)>
+            <UserTag user=user.clone() />
+        </a>
+    }
+}

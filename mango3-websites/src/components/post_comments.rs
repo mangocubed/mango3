@@ -2,7 +2,7 @@ use leptos::prelude::*;
 
 use mango3_leptos_utils::components::{
     ActionFormAlert, CurrentUser, InfiniteScroll, InfiniteScrollController, SubmitButton, TextareaField, TimeAgo,
-    UserTag,
+    UserTag, UserTagLink,
 };
 use mango3_leptos_utils::i18n::{t, t_string, use_i18n};
 use mango3_leptos_utils::models::{ActionFormResp, PostCommentResp};
@@ -107,7 +107,7 @@ pub fn PostComments(post_id: String) -> impl IntoView {
                                                 <div class="card card-compact card-bordered border-neutral-500 mt-4">
                                                     <div class="card-body">
                                                         <div class="flex gap-4 items-start">
-                                                            <UserTag user=post_comment.user />
+                                                            <UserTagLink user=post_comment.user />
 
                                                             <div class="flex-1">
                                                                 <div class="text-right opacity-70">

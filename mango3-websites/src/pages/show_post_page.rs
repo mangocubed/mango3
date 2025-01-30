@@ -3,7 +3,7 @@ use leptos::prelude::*;
 use leptos_meta::Meta;
 use leptos_router::hooks::use_params_map;
 
-use mango3_leptos_utils::components::{Hashtags, LoadingSpinner, PostBottomBar, TimeAgo, UserTag};
+use mango3_leptos_utils::components::{Hashtags, LoadingSpinner, PostBottomBar, TimeAgo, UserTagLink};
 use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::pages::NotFoundPage;
 use mango3_leptos_utils::pages::Page;
@@ -75,15 +75,7 @@ pub fn ShowPostPage() -> impl IntoView {
                                             <h1 class="card-title h1 mb-6">{post.title}</h1>
 
                                             <div class="flex justify-between my-4">
-                                                <a
-                                                    href=post.user.url
-                                                    title={
-                                                        let username = post.user.username;
-                                                        move || format!("@{}", username)
-                                                    }
-                                                >
-                                                    <UserTag user=post.user.clone() />
-                                                </a>
+                                                <UserTagLink user=post.user />
 
                                                 <div class="text-right opacity-70">
                                                     <TimeAgo value=post.created_at />
