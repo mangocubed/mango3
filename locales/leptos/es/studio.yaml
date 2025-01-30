@@ -1,12 +1,13 @@
 add_item: Agregar item
 are_you_sure_you_want_to_delete_this_post: ¿Seguro deseas eliminar este post?
 attached_images: Imágenes adjuntas
+close_preview: Cerrar previsualización
 content: Contenido
 cover_image: Imagen de portada
 dark_theme: Tema oscuro
 delete: Eliminar
 edit: Editar
-edit_post: Editat post
+edit_post: Editar post
 failed_to_create_post: Error al crear post
 failed_to_create_website: Error al crear website
 failed_to_save_navigation: Error al guardar navegación
@@ -22,6 +23,7 @@ navigation_saved_successfully: Navegación guardada exitosamente
 new_post: Nuevo post
 post_created_successfully: Post creado exitosamente
 post_updated_successfully: Post actualizado exitosamente
+preview_content: Previsualizar contenido
 publish: Publicar
 select: Seleccionar
 slug: Slug

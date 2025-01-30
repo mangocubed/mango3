@@ -9,10 +9,13 @@ use mango3_core::models::PostComment;
 #[cfg(feature = "ssr")]
 use mango3_core::CoreContext;
 
+#[cfg(feature = "ssr")]
+use crate::ssr::parse_html;
+
 use super::UserPreviewResp;
 
 #[cfg(feature = "ssr")]
-use super::{parse_html, FromCore};
+use super::FromCore;
 
 #[derive(Clone, Deserialize, Serialize)]
 pub struct PostCommentResp {

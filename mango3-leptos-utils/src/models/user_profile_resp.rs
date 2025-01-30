@@ -11,7 +11,10 @@ use mango3_core::CoreContext;
 use super::{BlobResp, HashtagResp};
 
 #[cfg(feature = "ssr")]
-use super::{parse_html, FromCore};
+use crate::ssr::parse_html;
+
+#[cfg(feature = "ssr")]
+use super::FromCore;
 
 #[derive(Clone, Deserialize, Serialize)]
 pub struct UserProfileResp {

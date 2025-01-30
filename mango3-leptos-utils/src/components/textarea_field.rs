@@ -8,7 +8,7 @@ pub fn TextareaField(
     #[prop(into, optional)] id: Option<&'static str>,
     #[prop(into, optional)] label: TextProp,
     #[prop(default = 4, into)] rows: i8,
-    #[prop(optional, into)] value: Signal<String>,
+    #[prop(optional, into)] value: RwSignal<String>,
     name: &'static str,
 ) -> impl IntoView {
     let node_ref = NodeRef::new();

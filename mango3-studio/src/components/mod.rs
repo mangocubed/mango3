@@ -6,11 +6,13 @@ use mango3_leptos_utils::models::WebsiteResp;
 
 use crate::context::use_my_website_resource;
 
+mod highlight_code;
 mod my_websites_infinite_scroll;
 mod post_form_fields;
 mod selected_website_dropdown;
 mod theme_selector_field;
 
+pub use highlight_code::HighLightCode;
 pub use my_websites_infinite_scroll::MyWebsitesInfiniteScroll;
 pub use post_form_fields::PostFormFields;
 pub use selected_website_dropdown::SelectedWebsiteDropdown;

@@ -1,6 +1,8 @@
 use leptos::prelude::*;
 
 #[cfg(feature = "ssr")]
+use serde_json::Value;
+#[cfg(feature = "ssr")]
 use uuid::Uuid;
 
 use mango3_leptos_utils::models::{ActionFormResp, CursorPageResp, PostPreviewResp};
@@ -14,7 +16,7 @@ use mango3_core::CoreContext;
 #[cfg(feature = "ssr")]
 use mango3_leptos_utils::models::FromCore;
 #[cfg(feature = "ssr")]
-use mango3_leptos_utils::ssr::{expect_core_context, extract_i18n, extract_user};
+use mango3_leptos_utils::ssr::{expect_core_context, extract_i18n, extract_user, parse_html, render_handlebars};
 
 use crate::models::EditPostResp;
 
@@ -34,6 +36,16 @@ async fn get_blobs(core_context: &CoreContext, user: &User, website: &Website, i
         Some(&website),
     )
     .await
+}
+
+#[server]
+pub async fn preview_post_content(content: String, variables: String) -> Result<String, ServerFnError> {
+    let content = content.trim();
+    let variables = variables.parse::<Value>().unwrap_or_default();
+
+    let content_html = parse_html(&render_handlebars(content, &variables)?, true);
+
+    Ok(content_html)
 }
 
 #[server]

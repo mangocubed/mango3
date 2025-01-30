@@ -3034,6 +3034,7 @@ dependencies = [
  "console_error_panic_hook",
  "futures",
  "leptos",
+ "leptos-use",
  "leptos_i18n",
  "leptos_meta",
  "leptos_router",
