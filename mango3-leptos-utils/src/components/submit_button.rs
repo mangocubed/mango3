@@ -18,7 +18,7 @@ pub fn SubmitButton(
     };
 
     view! {
-        <div class="pt-2 pb-2">
+        <div class="py-2 w-full">
             <button class="btn btn-block btn-primary" on:click=on_click type="submit">
                 {move || {
                     if is_loading.get() {

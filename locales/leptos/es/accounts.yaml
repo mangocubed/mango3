@@ -8,7 +8,7 @@ failed_to_get_invitation: Error al obtener invitación
 i_dont_have_an_account: No tengo una cuenta
 i_forgot_my_password: Olvidé mi contraseña
 invitation_code: Código de invitación
-password_reset_code_sent_successfully: Código de reinicio de contraseña enviardo exitosamente
+password_reset_code_sent_successfully: Código de reinicio de contraseña enviado exitosamente
 reset_password: Reiniciar contraseña
 user_authenticated_successfully: Usuario autenticado exitosamente
 user_created_successfully: Usuario creado exitosamente

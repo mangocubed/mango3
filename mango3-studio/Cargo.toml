@@ -9,11 +9,13 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 async-trait = { workspace = true, optional = true }
 console_error_panic_hook = { workspace = true }
+chrono = { workspace = true, optional = true }
 futures = { workspace = true, optional = true }
 leptos = { workspace = true }
 leptos_i18n = { workspace = true }
 leptos_meta = { workspace = true }
 leptos_router = { workspace = true }
+leptos-use = { workspace = true, features = ["use_color_mode"] }
 serde = { workspace = true }
 serde_json = { workspace = true, optional = true }
 slug = "0.1.6"
@@ -27,6 +29,7 @@ mango3-leptos-utils = { workspace = true }
 hydrate = ["leptos/hydrate", "leptos_i18n/hydrate", "mango3-leptos-utils/hydrate"]
 ssr = [
     "dep:async-trait",
+    "dep:chrono",
     "dep:futures",
     "dep:serde_json",
     "dep:tokio",

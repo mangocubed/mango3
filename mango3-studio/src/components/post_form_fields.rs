@@ -1,4 +1,5 @@
-use leptos::ev::Event;
+use leptos::either::Either;
+use leptos::ev::{Event, MouseEvent};
 use leptos::prelude::*;
 use leptos::text_prop::TextProp;
 use server_fn::error::NoCustomError;
@@ -9,6 +10,7 @@ use mango3_leptos_utils::components::{
 use mango3_leptos_utils::i18n::{t, t_string, use_i18n};
 use mango3_leptos_utils::models::ActionFormResp;
 
+use crate::components::PostPreviewModal;
 use crate::models::EditPostResp;
 
 #[component]
@@ -24,17 +26,19 @@ pub fn PostFormFields(
     let error_content = RwSignal::new(None);
     let error_variables = RwSignal::new(None);
     let error_publish = RwSignal::new(None);
-    let value_title = post.as_ref().map(|p| p.title.clone()).unwrap_or_default();
+    let value_title = RwSignal::new(post.as_ref().map(|p| p.title.clone()).unwrap_or_default());
     let value_slug = RwSignal::new(post.as_ref().map(|p| p.slug.clone()).unwrap_or_default());
-    let value_content = post.as_ref().map(|p| p.content.clone()).unwrap_or_default();
-    let value_variables = post
-        .as_ref()
-        .map(|p| p.variables.clone())
-        .unwrap_or_else(|| "{}".to_owned());
+    let value_content = RwSignal::new(post.as_ref().map(|p| p.content.clone()).unwrap_or_default());
+    let value_variables = RwSignal::new(
+        post.as_ref()
+            .map(|p| p.variables.clone())
+            .unwrap_or_else(|| "{}".to_owned()),
+    );
     let value_blobs = RwSignal::new(post.as_ref().map(|p| p.blobs.clone()).unwrap_or_default());
     let value_cover_image_blob = RwSignal::new(post.as_ref().and_then(|p| p.cover_image_blob.clone()));
     let value_publish = post.map(|p| p.is_published).unwrap_or_default();
     let show_variables = RwSignal::new(false);
+    let show_preview = RwSignal::new(false);
 
     Effect::new(move || {
         let response = ActionFormResp::from(action_value);
@@ -47,6 +51,12 @@ pub fn PostFormFields(
 
     let title_on_input = move |event: Event| {
         value_slug.set(slug::slugify(event_target_value(&event)));
+    };
+
+    let on_click_preview = move |event: MouseEvent| {
+        event.prevent_default();
+
+        show_preview.set(true);
     };
 
     view! {
@@ -118,6 +128,28 @@ pub fn PostFormFields(
             is_checked=value_publish
         />
 
-        <SubmitButton is_loading=is_loading />
+        <div class="flex gap-2">
+            <div class="py-2 w-full">
+                <button class="btn btn-block btn-secondary btn-outline" on:click=on_click_preview>
+                    {move || {
+                        if is_loading.get() {
+                            Either::Left(view! { <span class="loading loading-spinner" /> })
+                        } else {
+                            Either::Right(t!(i18n, studio.preview))
+                        }
+                    }}
+                </button>
+            </div>
+
+            <SubmitButton is_loading=is_loading />
+        </div>
+
+        <PostPreviewModal
+            is_active=show_preview
+            title=value_title
+            content=value_content
+            variables=value_variables
+            cover_image_blob=value_cover_image_blob
+        />
     }
 }

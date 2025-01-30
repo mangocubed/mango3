@@ -1,6 +1,7 @@
 add_item: Add item
 are_you_sure_you_want_to_delete_this_post: Are you sure you want to delete this post?
 attached_images: Attached images
+close_preview: Close preview
 content: Content
 cover_image: Cover image
 dark_theme: Dark theme
@@ -22,6 +23,7 @@ navigation_saved_successfully: Navigation saved successfully
 new_post: New post
 post_created_successfully: Post created successfully
 post_updated_successfully: Post updated successfully
+preview: Preview
 publish: Publish
 select: Select
 slug: Slug

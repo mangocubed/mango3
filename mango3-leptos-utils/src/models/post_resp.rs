@@ -10,12 +10,12 @@ use mango3_core::models::Post;
 use mango3_core::CoreContext;
 
 #[cfg(feature = "ssr")]
-use crate::ssr::render_handlebars;
+use crate::ssr::{parse_html, render_handlebars};
 
 use super::{BlobResp, HashtagResp, UserPreviewResp, WebsitePreviewResp};
 
 #[cfg(feature = "ssr")]
-use super::{parse_html, FromCore};
+use super::FromCore;
 
 #[derive(Clone, Deserialize, Serialize)]
 pub struct PostResp {

@@ -11,7 +11,7 @@ pub fn TextField(
     #[prop(into)] label: TextProp,
     name: &'static str,
     #[prop(into, optional)] on_input: Option<EventFn>,
-    #[prop(optional, into)] value: Signal<String>,
+    #[prop(optional, into)] value: RwSignal<String>,
 ) -> impl IntoView {
     let field_id = move || {
         if let Some(id) = id {
@@ -39,7 +39,7 @@ pub fn TextField(
                     }
                 }
                 type=input_type
-                value=value
+                bind:value=value
             />
             <div class="label">
                 <span class="label-text-alt text-error">{move || error.get()}</span>
