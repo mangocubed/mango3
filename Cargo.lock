@@ -3031,6 +3031,7 @@ name = "mango3-studio"
 version = "0.0.0-alpha.1"
 dependencies = [
  "async-trait",
+ "chrono",
  "console_error_panic_hook",
  "futures",
  "leptos",

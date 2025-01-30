@@ -5,14 +5,13 @@ use leptos::text_prop::TextProp;
 use server_fn::error::NoCustomError;
 
 use mango3_leptos_utils::components::{
-    ImageUploadField, LoadingSpinner, MultipleImageUploadField, SubmitButton, SwitchField, TextField, TextareaField,
+    ImageUploadField, MultipleImageUploadField, SubmitButton, SwitchField, TextField, TextareaField,
 };
 use mango3_leptos_utils::i18n::{t, t_string, use_i18n};
 use mango3_leptos_utils::models::ActionFormResp;
 
-use crate::components::HighLightCode;
+use crate::components::PostPreviewModal;
 use crate::models::EditPostResp;
-use crate::server_functions::preview_post_content;
 
 #[component]
 pub fn PostFormFields(
@@ -27,7 +26,7 @@ pub fn PostFormFields(
     let error_content = RwSignal::new(None);
     let error_variables = RwSignal::new(None);
     let error_publish = RwSignal::new(None);
-    let value_title = post.as_ref().map(|p| p.title.clone()).unwrap_or_default();
+    let value_title = RwSignal::new(post.as_ref().map(|p| p.title.clone()).unwrap_or_default());
     let value_slug = RwSignal::new(post.as_ref().map(|p| p.slug.clone()).unwrap_or_default());
     let value_content = RwSignal::new(post.as_ref().map(|p| p.content.clone()).unwrap_or_default());
     let value_variables = RwSignal::new(
@@ -40,12 +39,6 @@ pub fn PostFormFields(
     let value_publish = post.map(|p| p.is_published).unwrap_or_default();
     let show_variables = RwSignal::new(false);
     let show_preview = RwSignal::new(false);
-    let preview_action = Action::new(move |(content, variables): &(String, String)| {
-        let content = content.to_owned();
-        let variables = variables.to_owned();
-        async move { preview_post_content(content, variables).await }
-    });
-    let preview_action_value = preview_action.value();
 
     Effect::new(move || {
         let response = ActionFormResp::from(action_value);
@@ -63,12 +56,7 @@ pub fn PostFormFields(
     let on_click_preview = move |event: MouseEvent| {
         event.prevent_default();
 
-        if preview_action.pending().get() {
-            return;
-        }
-
         show_preview.set(true);
-        preview_action.dispatch((value_content.get(), value_variables.get()));
     };
 
     view! {
@@ -147,7 +135,7 @@ pub fn PostFormFields(
                         if is_loading.get() {
                             Either::Left(view! { <span class="loading loading-spinner" /> })
                         } else {
-                            Either::Right(t!(i18n, studio.preview_content))
+                            Either::Right(t!(i18n, studio.preview))
                         }
                     }}
                 </button>
@@ -156,51 +144,12 @@ pub fn PostFormFields(
             <SubmitButton is_loading=is_loading />
         </div>
 
-        <Show when=move || {
-            show_preview.get()
-        }>
-            {move || {
-                view! {
-                    <div class="modal modal-open p-8 overflow-y-auto">
-                        <div class="modal-box max-w-[1200px] w-full max-h-[unset] overflow-y-visible">
-                            <button
-                                on:click=move |_| show_preview.set(false)
-                                class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-                            >
-                                "✕"
-                            </button>
-
-                            {move || {
-                                if let Some(Ok(preview)) = preview_action_value.get() {
-                                    Either::Left(
-                                        view! {
-                                            <div
-                                                class="prose prose-pre:bg-transparent max-w-none break-words"
-                                                inner_html=preview.clone()
-                                            />
-
-                                            <HighLightCode content=preview />
-
-                                            <div class="flex justify-end mt-4">
-                                                <button
-                                                    on:click=move |_| show_preview.set(false)
-                                                    class="btn btn-outline"
-                                                >
-                                                    {t!(i18n, studio.close_preview)}
-                                                </button>
-                                            </div>
-                                        },
-                                    )
-                                } else {
-                                    Either::Right(LoadingSpinner)
-                                }
-                            }}
-                        </div>
-
-                        <div class="modal-backdrop" on:click=move |_| show_preview.set(false) />
-                    </div>
-                }
-            }}
-        </Show>
+        <PostPreviewModal
+            is_active=show_preview
+            title=value_title
+            content=value_content
+            variables=value_variables
+            cover_image_blob=value_cover_image_blob
+        />
     }
 }

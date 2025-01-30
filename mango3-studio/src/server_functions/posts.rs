@@ -1,12 +1,18 @@
 use leptos::prelude::*;
 
 #[cfg(feature = "ssr")]
+use chrono::Utc;
+#[cfg(feature = "ssr")]
 use serde_json::Value;
 #[cfg(feature = "ssr")]
 use uuid::Uuid;
 
-use mango3_leptos_utils::models::{ActionFormResp, CursorPageResp, PostPreviewResp};
+use mango3_leptos_utils::models::{ActionFormResp, CursorPageResp, PostPreviewResp, PostResp};
 
+#[cfg(feature = "ssr")]
+use mango3_core::constants::{BLACKLISTED_HASHTAGS, REGEX_FIND_HASHTAGS};
+#[cfg(feature = "ssr")]
+use mango3_core::hashtag_has_lookaround;
 #[cfg(feature = "ssr")]
 use mango3_core::models::{Blob, Post, User, Website};
 #[cfg(feature = "ssr")]
@@ -14,7 +20,7 @@ use mango3_core::pagination::CursorPageParams;
 #[cfg(feature = "ssr")]
 use mango3_core::CoreContext;
 #[cfg(feature = "ssr")]
-use mango3_leptos_utils::models::FromCore;
+use mango3_leptos_utils::models::{FromCore, HashtagResp, UserPreviewResp};
 #[cfg(feature = "ssr")]
 use mango3_leptos_utils::ssr::{expect_core_context, extract_i18n, extract_user, parse_html, render_handlebars};
 
@@ -39,13 +45,72 @@ async fn get_blobs(core_context: &CoreContext, user: &User, website: &Website, i
 }
 
 #[server]
-pub async fn preview_post_content(content: String, variables: String) -> Result<String, ServerFnError> {
+pub async fn preview_post(
+    title: String,
+    content: String,
+    variables: String,
+    cover_image_blob_id: Option<String>,
+) -> Result<PostResp, ServerFnError> {
+    let title = title.trim().to_owned();
     let content = content.trim();
     let variables = variables.parse::<Value>().unwrap_or_default();
 
+    let core_context = expect_context();
+    let user = extract_user().await?.unwrap();
     let content_html = parse_html(&render_handlebars(content, &variables)?, true);
 
-    Ok(content_html)
+    let mut hashtag_names = REGEX_FIND_HASHTAGS
+        .captures_iter(content)
+        .filter_map(|captures| {
+            captures.name("name").and_then(|match_| {
+                let name = match_.as_str();
+                if !BLACKLISTED_HASHTAGS.contains(&name) && hashtag_has_lookaround(content, match_) {
+                    Some(name)
+                } else {
+                    None
+                }
+            })
+        })
+        .collect::<Vec<&str>>();
+
+    hashtag_names.dedup();
+
+    let hashtags = hashtag_names
+        .iter()
+        .map(|name| HashtagResp {
+            id: String::new(),
+            name: (*name).to_owned(),
+        })
+        .collect::<Vec<HashtagResp>>();
+
+    let cover_image_blob = if let Some(id) = cover_image_blob_id.as_ref().and_then(|id| Uuid::try_parse(id).ok()) {
+        Blob::get_by_id(&core_context, id, Some(&user))
+            .await
+            .map(|blob| blob.into())
+            .ok()
+    } else {
+        None
+    };
+
+    Ok(PostResp {
+        id: String::new(),
+        user: UserPreviewResp::from_core(&core_context, &user).await,
+        title,
+        slug: String::new(),
+        content_html,
+        hashtags,
+        cover_image_blob,
+        blobs: vec![],
+        is_published: true,
+        url: String::new(),
+        views_count: 0,
+        comments_count: 0,
+        reactions_count: 0,
+        published_at: None,
+        modified_at: None,
+        created_at: Utc::now(),
+        updated_at: None,
+    })
 }
 
 #[server]
