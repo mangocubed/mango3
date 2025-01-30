@@ -4,7 +4,7 @@ use crate::components::Hashtags;
 use crate::i18n::{t, use_i18n};
 use crate::models::PostPreviewResp;
 
-use super::{PostBottomBar, TimeAgo, UserTag};
+use super::{PostBottomBar, TimeAgo, UserTagLink};
 
 #[component]
 pub fn PostCard(
@@ -47,15 +47,7 @@ pub fn PostCard(
                 </h3>
 
                 <div class="flex justify-between my-1">
-                    <a
-                        href=post.user.url
-                        title={
-                            let username = post.user.username;
-                            move || format!("@{}", username)
-                        }
-                    >
-                        <UserTag user=post.user.clone() />
-                    </a>
+                    <UserTagLink user=post.user />
 
                     <div class="text-right opacity-70">
                         <TimeAgo value=post.created_at />

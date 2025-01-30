@@ -1,7 +1,7 @@
 use leptos::either::Either;
 use leptos::prelude::*;
 
-use mango3_leptos_utils::components::{Hashtags, LoadingSpinner, TimeAgo, UserTag};
+use mango3_leptos_utils::components::{Hashtags, LoadingSpinner, TimeAgo, UserTagLink};
 use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::models::BlobResp;
 
@@ -74,15 +74,7 @@ pub fn PostPreviewModal(
                                                     <h1 class="card-title h1 mb-6">{post.title}</h1>
 
                                                     <div class="flex justify-between my-4">
-                                                        <a
-                                                            href=post.user.url
-                                                            title={
-                                                                let username = post.user.username;
-                                                                move || format!("@{}", username)
-                                                            }
-                                                        >
-                                                            <UserTag user=post.user.clone() />
-                                                        </a>
+                                                        <UserTagLink user=post.user />
 
                                                         <div class="text-right opacity-70">
                                                             <TimeAgo value=post.created_at />
