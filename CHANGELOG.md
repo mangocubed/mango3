@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.0.0-alpha.2] - 2025-01-30
+
+### Added
+
+- Optionally show post preview before submit. (https://github.com/mangocubed/mango3/pull/165)
+
+### Changed
+
+- Bump rand from from 0.8.5 to 0.9.0. (https://gi(thub.com/mangocubed/mango3/pull/161)
+- Improve README.md a little bit. (https://github.com/mangocubed/mango3/pull/162)
+- Bump @types/node from 22.10.10 to 22.12.0. (https://github.com/mangocubed/mango3/pull/164)
+- Bump serde_json from 1.0.137 to 1.0.138. (https://github.com/mangocubed/mango3/pull/163)
+
 ## [0.0.0-alpha.1] - 2015-01-27
 
 ### Added
