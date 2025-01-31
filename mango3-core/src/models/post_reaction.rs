@@ -27,6 +27,14 @@ impl PostReaction {
             .map_err(|_| ValidationErrors::default())
     }
 
+    pub async fn delete_all(core_context: &CoreContext, user: &User) -> Result<(), ValidationErrors> {
+        query!("DELETE FROM post_reactions WHERE user_id = $1", user.id)
+            .execute(&core_context.db_pool)
+            .await
+            .map(|_| ())
+            .map_err(|_| ValidationErrors::default())
+    }
+
     pub async fn get_emojis_count(core_context: &CoreContext, post: &Post) -> sqlx::Result<Vec<(String, i64)>> {
         query!(
             "SELECT emoji, COUNT(*) as count FROM post_reactions WHERE post_id = $1 GROUP BY emoji ORDER BY count DESC",

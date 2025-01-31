@@ -30,6 +30,14 @@ impl PostView {
         .map(|record| record.count.unwrap_or_default())
     }
 
+    pub async fn delete_all(core_context: &CoreContext, user: &User) -> Result<(), ValidationErrors> {
+        query!("DELETE FROM post_views WHERE user_id = $1", user.id)
+            .execute(&core_context.db_pool)
+            .await
+            .map(|_| ())
+            .map_err(|_| ValidationErrors::default())
+    }
+
     pub async fn insert(
         core_context: &CoreContext,
         post: &Post,

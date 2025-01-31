@@ -30,7 +30,8 @@ impl User {
 
         query_as!(
             Self,
-            r#"UPDATE users SET password_reset_confirmation_code_id = $2 WHERE id = $1 RETURNING
+            r#"UPDATE users SET password_reset_confirmation_code_id = $2 WHERE locked_at IS NULL AND id = $1
+            RETURNING
                 id,
                 username,
                 email,
@@ -85,7 +86,7 @@ impl User {
 
         query_as!(
             Self,
-            r#"UPDATE users SET encrypted_password = $2 WHERE id = $1 RETURNING
+            r#"UPDATE users SET encrypted_password = $2 WHERE locked_at IS NULL AND id = $1 RETURNING
                 id,
                 username,
                 email,
@@ -141,7 +142,8 @@ impl User {
 
         query_as!(
             Self,
-            r#"UPDATE users SET encrypted_password = $2, password_reset_confirmation_code_id = NULL WHERE id = $1
+            r#"UPDATE users SET encrypted_password = $2, password_reset_confirmation_code_id = NULL
+            WHERE locked_at IS NULL AND id = $1
             RETURNING
                 id,
                 username,

@@ -15,6 +15,7 @@ use super::{Blob, Hashtag, Website};
 mod user_email;
 mod user_get;
 mod user_insert;
+mod user_lock;
 mod user_password;
 mod user_profile;
 

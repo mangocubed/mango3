@@ -5,11 +5,12 @@ use url::Url;
 
 use crate::config::BASIC_CONFIG;
 use crate::enums::{Input, InputError};
-use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
+use crate::validator::{Validator, ValidatorTrait};
 use crate::CoreContext;
 
 use super::{Blob, Hashtag, User};
 
+mod website_delete;
 mod website_insert;
 mod website_paginate;
 mod website_search;
@@ -55,14 +56,6 @@ impl Website {
         }
     }
 
-    pub async fn delete(&self, core_context: &CoreContext) -> Result<(), ValidationErrors> {
-        query!("DELETE FROM websites WHERE id = $1", self.id)
-            .execute(&core_context.db_pool)
-            .await
-            .map(|_| ())
-            .map_err(|_| ValidationErrors::default())
-    }
-
     pub fn description_preview(&self) -> &str {
         self.description
             .lines()
@@ -93,14 +86,15 @@ impl Website {
                 dark_theme,
                 language::varchar AS "language!",
                 published_at,
-                CASE WHEN $3::varchar IS NOT NULL THEN ts_rank(search, websearch_to_tsquery($3)) ELSE NULL END AS search_rank,
+                CASE
+                    WHEN $3::varchar IS NOT NULL THEN ts_rank(search, websearch_to_tsquery($3)) ELSE NULL
+                END AS search_rank,
                 created_at,
                 updated_at
             FROM websites WHERE id = $1 AND ($2::uuid IS NULL OR user_id = $2) LIMIT 1"#,
             id,      // $1
             user_id, // $2
             query,   // $3
-
         )
         .fetch_one(&core_context.db_pool)
         .await
