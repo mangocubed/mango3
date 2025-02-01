@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.0.0-alpha.3] - 2025-02-01
+
+### Added
+
+- UserTagLink component. (https://github.com/mangocubed/mango3/pull/168)
+- CLI command to lock users and delete their information. (https://github.com/mangocubed/mango3/pull/169)
+
+### Changed
+
+- Bump leptos from 0.7.4 to 0.7.5. (https://github.com/mangocubed/mango3/pull/170)
+
+### Fixed
+
+- Make the website on PostCard more visible. (https://github.com/mangocubed/mango3/pull/171)
+
 ## [0.0.0-alpha.2] - 2025-01-30
 
 ### Added
@@ -8,7 +23,7 @@
 
 ### Changed
 
-- Bump rand from from 0.8.5 to 0.9.0. (https://gi(thub.com/mangocubed/mango3/pull/161)
+- Bump rand from 0.8.5 to 0.9.0. (https://github.com/mangocubed/mango3/pull/161)
 - Improve README.md a little bit. (https://github.com/mangocubed/mango3/pull/162)
 - Bump @types/node from 22.10.10 to 22.12.0. (https://github.com/mangocubed/mango3/pull/164)
 - Bump serde_json from 1.0.137 to 1.0.138. (https://github.com/mangocubed/mango3/pull/163)
