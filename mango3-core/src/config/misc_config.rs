@@ -1,5 +1,6 @@
 use std::path::{Path, PathBuf};
 
+use image::imageops::FilterType;
 use serde::{Deserialize, Serialize};
 
 use crate::enums::UserRole;
@@ -12,6 +13,7 @@ pub struct MiscConfig {
     default_user_role: String,
     pub(crate) confirmation_code_length: u8,
     pub(crate) font_path: String,
+    image_ops_filter_type: String,
     pub(crate) invitation_code_length: u8,
     pub(crate) max_comment_content_length: u32,
     pub(crate) max_post_content_length: u32,
@@ -25,6 +27,7 @@ impl Default for MiscConfig {
             confirmation_code_length: 6,
             default_user_role: "user".to_owned(),
             font_path: "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf".to_owned(),
+            image_ops_filter_type: "CatmullRom".to_owned(),
             invitation_code_length: 6,
             max_comment_content_length: 8192,
             max_post_content_length: 16384,
@@ -43,6 +46,16 @@ impl MiscConfig {
 
     pub(crate) fn default_user_role(&self) -> UserRole {
         (&self.default_user_role).into()
+    }
+
+    pub(crate) fn image_ops_filter_type(&self) -> FilterType {
+        match self.image_ops_filter_type.as_str() {
+            "CatmullRom" => FilterType::CatmullRom,
+            "Gaussian" => FilterType::Gaussian,
+            "Triangle" => FilterType::Triangle,
+            "Lanczos3" => FilterType::Lanczos3,
+            _ => FilterType::Nearest,
+        }
     }
 
     pub fn storage_tmp_path(&self) -> PathBuf {

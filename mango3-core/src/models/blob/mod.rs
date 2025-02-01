@@ -2,7 +2,6 @@ use std::fs;
 use std::path::Path;
 use std::str::FromStr;
 
-use image::imageops::FilterType;
 use mime::{Mime, IMAGE, JPEG};
 use sqlx::query_as;
 use sqlx::types::chrono::{DateTime, Utc};
@@ -146,9 +145,9 @@ impl Blob {
             if !Path::new(&variant_path).exists() {
                 let mut image = image::open(self.default_path()).unwrap();
                 image = if fill {
-                    image.resize_to_fill(width as u32, height as u32, FilterType::Triangle)
+                    image.resize_to_fill(width as u32, height as u32, MISC_CONFIG.image_ops_filter_type())
                 } else {
-                    image.resize(width as u32, height as u32, FilterType::Triangle)
+                    image.resize(width as u32, height as u32, MISC_CONFIG.image_ops_filter_type())
                 };
                 image.save(variant_path.clone()).unwrap();
             }
