@@ -5,4 +5,6 @@ hello = Hola
 reset-your-password = Reiniciar tu contraseña
 use-this-code-to-action = Use este código para {$action}
 use-this-code-to-create-your-account = Use este código para crear tu cuenta
+we-regret-to-inform-you-that-we-have-locked-your-user-account-due-to-non-compliance-of-our-terms = Lamentamos informarle que hemos bloqueado su cuenta de usuario debido al incumplimiento de nuestros términos
 welcome-to-title = ¡Bienvenido a {$title}!
+your-user-account-has-been-locked = Tu cuenta de usuario ha sido bloqueada

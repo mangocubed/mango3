@@ -23,6 +23,14 @@ impl UserSession {
             .map_err(|_| ValidationErrors::default())
     }
 
+    pub async fn delete_all(core_context: &CoreContext, user: &User) -> Result<(), ValidationErrors> {
+        query!("DELETE FROM user_sessions WHERE user_id = $1", user.id)
+            .execute(&core_context.db_pool)
+            .await
+            .map(|_| ())
+            .map_err(|_| ValidationErrors::default())
+    }
+
     pub async fn exists(core_context: &CoreContext, id: Uuid) -> bool {
         query!("SELECT id FROM user_sessions WHERE id = $1 LIMIT 1", id)
             .fetch_one(&core_context.db_pool)

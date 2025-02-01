@@ -58,7 +58,7 @@ impl User {
                 bio = $6,
                 hashtag_ids = $7,
                 avatar_image_blob_id = $8
-            WHERE id = $1 RETURNING
+            WHERE locked_at IS NULL AND id = $1 RETURNING
                 id,
                 username,
                 email,

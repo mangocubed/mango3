@@ -5,7 +5,7 @@ pub enum GuestMailerJobCommand {
     InvitationCode(String),
 }
 
-#[derive(strum::Display, Clone, Eq, Hash, PartialEq)]
+#[derive(strum::Display, Clone, Debug, Eq, Hash, PartialEq)]
 #[strum(serialize_all = "kebab-case")]
 pub enum Input {
     Bio,
@@ -33,7 +33,7 @@ pub enum Input {
     Variables,
 }
 
-#[derive(strum::Display)]
+#[derive(strum::Display, Debug)]
 #[strum(serialize_all = "kebab-case")]
 pub enum InputError {
     AlreadyInUse,
@@ -47,6 +47,7 @@ pub enum InputError {
 #[derive(Debug, Deserialize, Serialize)]
 pub enum MailerJobCommand {
     ConfirmationCode { action: String, code: String },
+    Locked,
     Welcome,
 }
 

@@ -32,6 +32,14 @@ impl PostComment {
         .map(|record| record.count.unwrap_or_default())
     }
 
+    pub async fn delete_all(core_context: &CoreContext, user: &User) -> Result<(), ValidationErrors> {
+        query!("DELETE FROM post_comments WHERE user_id = $1", user.id)
+            .execute(&core_context.db_pool)
+            .await
+            .map(|_| ())
+            .map_err(|_| ValidationErrors::default())
+    }
+
     pub async fn get_by_id(core_context: &CoreContext, id: Uuid, user: Option<&User>) -> sqlx::Result<Self> {
         let user_id = user.map(|user| user.id);
         query_as!(

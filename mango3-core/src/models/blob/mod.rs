@@ -14,6 +14,7 @@ use crate::CoreContext;
 
 use super::{User, Website};
 
+mod blob_delete;
 mod blob_insert;
 
 #[derive(Clone)]
@@ -50,6 +51,17 @@ impl Blob {
             &ids,       // $1
             user_id,    // $2
             website_id, // $3
+        )
+        .fetch_all(&core_context.db_pool)
+        .await
+        .unwrap_or_default()
+    }
+
+    pub async fn all_by_user(core_context: &CoreContext, user: &User) -> Vec<Self> {
+        query_as!(
+            Self,
+            "SELECT * FROM blobs WHERE user_id = $1",
+            user.id, // $1
         )
         .fetch_all(&core_context.db_pool)
         .await

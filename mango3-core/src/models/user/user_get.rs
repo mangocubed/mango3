@@ -29,7 +29,7 @@ impl User {
                     role as "role!: UserRole",
                     created_at,
                     updated_at
-                FROM users WHERE id = $1 LIMIT 1"#,
+                FROM users WHERE locked_at IS NULL AND id = $1 LIMIT 1"#,
             id
         )
         .fetch_one(&core_context.db_pool)
@@ -62,7 +62,7 @@ impl User {
                     role as "role!: UserRole",
                     created_at,
                     updated_at
-                FROM users WHERE LOWER(username) = $1 LIMIT 1"#,
+                FROM users WHERE locked_at IS NULL AND LOWER(username) = $1 LIMIT 1"#,
             username.to_lowercase()
         )
         .fetch_one(&core_context.db_pool)
@@ -95,7 +95,10 @@ impl User {
                     role as "role!: UserRole",
                     created_at,
                     updated_at
-                FROM users WHERE LOWER(username) = $1 OR (email_confirmed_at IS NOT NULL AND LOWER(email) = $1)
+                FROM users
+                WHERE
+                    locked_at IS NULL
+                    AND (LOWER(username) = $1 OR (email_confirmed_at IS NOT NULL AND LOWER(email) = $1))
                 LIMIT 1"#,
             username_or_email.to_lowercase()
         )

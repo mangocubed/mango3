@@ -6,11 +6,12 @@ use url::Url;
 use crate::config::MISC_CONFIG;
 use crate::constants::{BLACKLISTED_SLUGS, REGEX_HANDLEBARS, REGEX_SLUG};
 use crate::enums::{Input, InputError};
-use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
+use crate::validator::{Validator, ValidatorTrait};
 use crate::CoreContext;
 
 use super::{Blob, Hashtag, User, Website};
 
+mod post_delete;
 mod post_insert;
 mod post_paginate;
 mod post_search;
@@ -62,14 +63,6 @@ impl Post {
         }
     }
 
-    pub async fn delete(&self, core_context: &CoreContext) -> Result<(), ValidationErrors> {
-        query!("DELETE FROM posts WHERE id = $1", self.id)
-            .execute(&core_context.db_pool)
-            .await
-            .map(|_| ())
-            .map_err(|_| ValidationErrors::default())
-    }
-
     pub async fn get_by_id(
         core_context: &CoreContext,
         id: Uuid,
@@ -99,7 +92,9 @@ impl Post {
                 (SELECT COUNT(*) FROM post_reactions WHERE post_id = posts.id LIMIT 1) AS "reactions_count!",
                 published_at,
                 modified_at,
-                CASE WHEN $5::varchar IS NOT NULL THEN ts_rank(search, websearch_to_tsquery($5)) ELSE NULL END AS search_rank,
+                CASE
+                    WHEN $5::varchar IS NOT NULL THEN ts_rank(search, websearch_to_tsquery($5)) ELSE NULL
+                END AS search_rank,
                 created_at,
                 updated_at
             FROM posts
@@ -110,11 +105,11 @@ impl Post {
                     OR ($4 IS FALSE AND published_at IS NULL)
                 )
             LIMIT 1"#,
-            id,         // $1
-            website_id, // $2
-            user_id,    // $3
+            id,           // $1
+            website_id,   // $2
+            user_id,      // $3
             is_published, // $4
-            query,      // $5
+            query,        // $5
         )
         .fetch_one(&core_context.db_pool)
         .await
@@ -180,7 +175,7 @@ impl Post {
 impl Validator {
     fn validate_post_title(&mut self, value: &str) -> bool {
         self.validate_presence(Input::Title, value)
-            && self.validate_length(Input::Title, value, Some(3), Some(256))
+            && self.validate_length(Input::Title, value, None, Some(256))
             && self.custom_validation(Input::Title, InputError::IsInvalid, &|| Uuid::try_parse(value).is_err())
     }
 
@@ -193,7 +188,7 @@ impl Validator {
     ) -> bool {
         if self.validate_presence(Input::Slug, slug)
             && self.validate_format(Input::Slug, slug, &REGEX_SLUG)
-            && self.validate_length(Input::Slug, slug, Some(1), Some(256))
+            && self.validate_length(Input::Slug, slug, None, Some(256))
             && self.custom_validation(Input::Slug, InputError::IsInvalid, &|| Uuid::try_parse(slug).is_err())
             && self.custom_validation(Input::Slug, InputError::IsInvalid, &|| {
                 !BLACKLISTED_SLUGS.contains(&slug)

@@ -30,7 +30,7 @@ impl User {
         query_as!(
             Self,
             r#"UPDATE users SET email_confirmation_code_id = NULL, email_confirmed_at = current_timestamp
-            WHERE email_confirmed_at IS NULL AND id = $1 RETURNING
+            WHERE locked_at IS NULL AND email_confirmed_at IS NULL AND id = $1 RETURNING
                 id,
                 username,
                 email,
@@ -79,7 +79,7 @@ impl User {
 
         query_as!(
             Self,
-            r#"UPDATE users SET email_confirmation_code_id = $2 WHERE id = $1 RETURNING
+            r#"UPDATE users SET email_confirmation_code_id = $2 WHERE locked_at IS NULL AND id = $1 RETURNING
                 id,
                 username,
                 email,
@@ -148,7 +148,7 @@ impl User {
         query_as!(
             Self,
             r#"UPDATE users SET email = $2::text, email_confirmed_at = NULL, email_confirmation_code_id = NULL
-            WHERE id = $1 RETURNING
+            WHERE locked_at IS NULL AND id = $1 RETURNING
                 id,
                 username,
                 email,
