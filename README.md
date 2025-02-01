@@ -50,6 +50,7 @@ A free and open source website builder and content management system platform wr
 | MISC_CONFIRMATION_CODE_LENGTH   | Integer | 6                                                                |
 | MISC_FONT_PATH                  | String  | /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf                  |
 | MISC_DEFAULT_USER_ROLE          | String  | user                                                             |
+| MISC_IMAGE_OPS_FILTER_TYPE      | String  | CatmullRom                                                       |
 | MISC_INVITATION_CODE_LENGTH     | Integer | 6                                                                |
 | MISC_MAX_COMMENT_CONTENT_LENGTH | Integer | 8192                                                             |
 | MISC_MAX_POST_CONTENT_LENGTH    | Integer | 16384                                                            |
