@@ -3,8 +3,7 @@ use leptos::prelude::*;
 use leptos_meta::Meta;
 use leptos_router::hooks::use_params_map;
 
-use mango3_leptos_utils::components::{Hashtags, LoadingSpinner, PostBottomBar, TimeAgo, UserTagLink};
-use mango3_leptos_utils::i18n::{t, use_i18n};
+use mango3_leptos_utils::components::{Hashtags, LoadingSpinner, PostBottomBar, UserTagLink};
 use mango3_leptos_utils::pages::NotFoundPage;
 use mango3_leptos_utils::pages::Page;
 
@@ -14,7 +13,6 @@ use crate::server_functions::get_post;
 
 #[component]
 pub fn ShowPostPage() -> impl IntoView {
-    let i18n = use_i18n();
     let params_map = use_params_map();
     let post_resource = Resource::new_blocking(move || param_slug(params_map), get_post);
 
@@ -74,25 +72,8 @@ pub fn ShowPostPage() -> impl IntoView {
                                         } <div class="card-body">
                                             <h1 class="card-title h1 mb-6">{post.title}</h1>
 
-                                            <div class="flex justify-between my-4">
+                                            <div class="my-4">
                                                 <UserTagLink user=post.user />
-
-                                                <div class="text-right opacity-70">
-                                                    <TimeAgo value=post.created_at />
-
-                                                    {move || {
-                                                        post.modified_at
-                                                            .map(|modified_ad| {
-                                                                view! {
-                                                                    " ("
-                                                                    {t!(i18n, shared.edited)}
-                                                                    " "
-                                                                    <TimeAgo value=modified_ad />
-                                                                    ")"
-                                                                }
-                                                            })
-                                                    }}
-                                                </div>
                                             </div>
 
                                             <div
@@ -108,6 +89,8 @@ pub fn ShowPostPage() -> impl IntoView {
                                                 comments_count=post.comments_count
                                                 reactions_count=post.reactions_count
                                                 views_count=post.views_count
+                                                created_at=post.created_at
+                                                modified_at=post.modified_at
                                             />
 
                                             <PostReactions post_id=post.id.clone() />

@@ -66,7 +66,7 @@ pub fn ShowUserPage() -> impl IntoView {
                                             </div>
                                         </div>
 
-                                        <div class="shrink-0 max-w-[640px] w-full">
+                                        <div class="shrink-0 max-w-[720px] w-full">
                                             <InfiniteScroll
                                                 controller=controller
                                                 key=|post: &PostPreviewResp| post.id.clone()

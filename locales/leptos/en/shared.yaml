@@ -32,6 +32,7 @@ my_account: My account
 new_password: New password
 new_website: New website
 no_results_found: No results found.
+on_subdomain: on {{subdomain}}
 one_comment: 1 comment
 one_day_ago: one day ago
 one_hour_ago: one hour ago

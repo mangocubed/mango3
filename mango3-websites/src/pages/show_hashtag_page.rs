@@ -59,7 +59,7 @@ pub fn ShowHashtagPage() -> impl IntoView {
                                     <Page title=title.clone()>
                                         <h1 class="h2">{title}</h1>
 
-                                        <section class="max-w-[640px] w-full mx-auto">
+                                        <section class="max-w-[720px] w-full mx-auto">
                                             <InfiniteScroll
                                                 controller=controller
                                                 key=|post: &PostPreviewResp| post.id.clone()
