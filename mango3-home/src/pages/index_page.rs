@@ -14,8 +14,8 @@ pub fn IndexPage() -> impl IntoView {
 
     view! {
         <Page title=move || t_string!(i18n, shared.home)>
-            <div class="flex flex-wrap gap-6 justify-center w-full">
-                <section class="flex-1 sm:min-w-[480px] max-w-[640px] w-full">
+            <div class="flex flex-wrap gap-6 justify-center max-w-[1200px] mx-auto">
+                <section class="shrink-0 sm:min-w-[480px] max-w-[720px] w-full">
                     <h2 class="h2">{t!(i18n, home.recent_posts)}</h2>
 
                     <Suspense>
@@ -38,7 +38,7 @@ pub fn IndexPage() -> impl IntoView {
                     </a>
                 </section>
 
-                <section class="flex-1 sm:min-w-[480px] max-w-[640px] w-full">
+                <section class="flex-1 sm:min-w-[320px] max-w-[640px] w-full">
                     <h2 class="h2">{t!(i18n, home.recent_websites)}</h2>
 
                     <Suspense>

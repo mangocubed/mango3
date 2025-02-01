@@ -49,7 +49,7 @@ pub fn PostsPage() -> impl IntoView {
 
         <h2 class="h2">{t!(i18n, shared.posts)}</h2>
 
-        <section class="flex justify-end max-w-[640px] w-full mb-5 mx-auto">
+        <section class="flex justify-end max-w-[720px] w-full mb-5 mx-auto">
             <a
                 class="btn btn-outline"
                 href=move || format!("/websites/{}/posts/new", param_website_id(params_map).unwrap_or_default())
@@ -59,7 +59,7 @@ pub fn PostsPage() -> impl IntoView {
             </a>
         </section>
 
-        <section class="max-w-[640px] w-full mx-auto">
+        <section class="max-w-[720px] w-full mx-auto">
             <InfiniteScroll
                 controller=controller
                 key=|post: &PostPreviewResp| post.id.clone()

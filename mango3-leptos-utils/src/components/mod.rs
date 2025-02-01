@@ -119,16 +119,31 @@ pub fn GoToMango3() -> impl IntoView {
     let i18n = use_i18n();
 
     view! {
-        <a class="btn btn-ghost btn-block px-2" href=basic_config.home_url.clone()>
-            {t!(i18n, shared.go_to_title, title = basic_config.title.clone())}
+        <a class="btn btn-ghost btn-block px-2 font-normal" href=basic_config.home_url.clone()>
+            {t!(
+                i18n,
+                shared.go_to_title,
+                title = {
+                    let icon_url = basic_config.asset_url("icon.svg");
+                    let title = basic_config.title.clone();
+                    move || view! {
+                        <img alt=title.clone() class="h-[16px]" src=icon_url.clone() />
+                        <span class="font-bold">{title.clone()}</span>
+                    }
+                }
+            )}
         </a>
     }
 }
 
 #[component]
-pub fn WebsiteIcon(#[prop(into)] website: WebsitePreviewResp, #[prop(default = 32)] size: u16) -> impl IntoView {
+pub fn WebsiteIcon(
+    #[prop(into, optional)] class: &'static str,
+    #[prop(into)] website: WebsitePreviewResp,
+    #[prop(default = 32)] size: u16,
+) -> impl IntoView {
     view! {
-        <div class="avatar">
+        <div class=format!("avatar {class}")>
             <div class="rounded" style:width=format!("{size}px") style:height=format!("{size}px")>
                 <img alt=website.initials.clone() src=website.icon_image_url(size) />
             </div>

@@ -1,10 +1,10 @@
 use leptos::prelude::*;
 
-use crate::components::Hashtags;
+use crate::components::{Hashtags, WebsiteIcon};
 use crate::i18n::{t, use_i18n};
 use crate::models::PostPreviewResp;
 
-use super::{PostBottomBar, TimeAgo, UserTagLink};
+use super::{PostBottomBar, UserTagLink};
 
 #[component]
 pub fn PostCard(
@@ -49,26 +49,23 @@ pub fn PostCard(
                 <div class="flex justify-between my-1">
                     <UserTagLink user=post.user />
 
-                    <div class="text-right opacity-70">
-                        <TimeAgo value=post.created_at />
-
-                        {move || {
-                            post.modified_at
-                                .map(|modified_at| {
-                                    view! {
-                                        " ("
-                                        {t!(i18n, shared.edited)}
-                                        " "
-                                        <TimeAgo value=modified_at />
-                                        ")"
+                    <Show when=move || show_host>
+                        <div class="text-right">
+                            {t!(
+                                i18n,
+                                shared.on_subdomain,
+                                subdomain = {
+                                    let website = post.website.clone();
+                                    move || view! {
+                                        <a class="font-bold ml-2" href=website.url.clone() title=website.name.clone()>
+                                            <WebsiteIcon class="align-middle mr-2" size=16 website=website.clone() />
+                                            {website.host.clone()}
+                                        </a>
                                     }
-                                })
-                        }}
-
-                        <Show when=move || show_host>
-                            <div class="text-right opacity-70">{post.website.host.clone()}</div>
-                        </Show>
-                    </div>
+                                }
+                            )}
+                        </div>
+                    </Show>
                 </div>
 
                 <a href=href class="card-text-preview">
@@ -88,6 +85,8 @@ pub fn PostCard(
                     comments_count=post.comments_count
                     reactions_count=post.reactions_count
                     views_count=post.views_count
+                    created_at=post.created_at
+                    modified_at=post.modified_at
                 />
 
                 {actions.map(|a| view! { <div class="card-actions justify-end">{a.run()}</div> })}
