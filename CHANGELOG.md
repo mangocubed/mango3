@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.0.0-alpha.4] - 2025-02-03
+
+### Added
+
+- Environment variable to choose filter for image resizing. (https://github.com/mangocubed/mango3/pull/173)
+- Notify user by email when a new session has started with their account. (https://github.com/mangocubed/mango3/pull/178)
+- Show message with support email address when asking for an invitation code. (https://github.com/mangocubed/mango3/pull/179)
+
+### Changed
+
+- Bump @playwright/test from 1.50.0 to 1.50.1. (https://github.com/mangocubed/mango3/pull/177)
+- Bump async-trait from 0.1.85 to 0.1.86. (https://github.com/mangocubed/mango3/pull/174)
+- Bump @types/node from 22.12.0 to 22.13.0 (https://github.com/mangocubed/mango3/pull/176)
+
 ## [0.0.0-alpha.3] - 2025-02-01
 
 ### Added
