@@ -18,6 +18,7 @@ pub struct MiscConfig {
     pub(crate) max_comment_content_length: u32,
     pub(crate) max_post_content_length: u32,
     pub(crate) storage_path: String,
+    pub support_email_address: String,
 }
 
 impl Default for MiscConfig {
@@ -35,6 +36,7 @@ impl Default for MiscConfig {
             storage_path: "./storage".to_owned(),
             #[cfg(test)]
             storage_path: "./storage/tests".to_owned(),
+            support_email_address: "support@mango3.local".to_owned(),
         }
     }
 }

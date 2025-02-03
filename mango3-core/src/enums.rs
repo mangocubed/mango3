@@ -47,6 +47,7 @@ pub enum InputError {
 #[derive(Debug, Deserialize, Serialize)]
 pub enum MailerJobCommand {
     ConfirmationCode { action: String, code: String },
+    NewUserSession,
     Locked,
     Welcome,
 }

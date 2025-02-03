@@ -1,8 +1,12 @@
 confirm-your-email = Confirmar tu correo electrónico
+if-not-please-contact-us-at-the-following-email-address = Si no, por favor contáctenos a la siguiente dirección de correo electrónico
+if-you-recognize-this-action-you-can-ignore-this-message = Si reconoces esta acción, puedes ignorar este mensaje
 invitation-code = Código de invitación
 confirmation-code = Código de confirmación
 hello = Hola
+new-user-session-started = Nueva sesión de usuario iniciada
 reset-your-password = Reiniciar tu contraseña
+someone-has-started-a-user-session-with-your-account = Alguien ha iniciado una sesión de usuario con tu cuenta
 use-this-code-to-action = Use este código para {$action}
 use-this-code-to-create-your-account = Use este código para crear tu cuenta
 we-regret-to-inform-you-that-we-have-locked-your-user-account-due-to-non-compliance-of-our-terms = Lamentamos informarle que hemos bloqueado su cuenta de usuario debido al incumplimiento de nuestros términos

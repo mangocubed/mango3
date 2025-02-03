@@ -55,6 +55,7 @@ A free and open source website builder and content management system platform wr
 | MISC_MAX_COMMENT_CONTENT_LENGTH | Integer | 8192                                                             |
 | MISC_MAX_POST_CONTENT_LENGTH    | Integer | 16384                                                            |
 | MISC_STORAGE_PATH               | String  | ./storage                                                        |
+| MISC_SUPPORT_EMAIL_ADDRESS      | String  | support@mango3.local                                             |
 | SESSIONS_KEY                    | String  | abcdefghijklmnopqrestuvvwxyz0123456789ABCDEFGHIJKLMNOPQRESTUVVWX |
 | SESSIONS_REDIS_URL              | String  | redis://127.0.0.1:6379/1                                         |
 

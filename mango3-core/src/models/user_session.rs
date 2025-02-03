@@ -2,6 +2,7 @@ use sqlx::types::chrono::{DateTime, Utc};
 use sqlx::types::Uuid;
 use sqlx::{query, query_as};
 
+use crate::enums::MailerJobCommand;
 use crate::validator::ValidationErrors;
 use crate::CoreContext;
 
@@ -45,14 +46,22 @@ impl UserSession {
     }
 
     pub async fn insert(core_context: &CoreContext, user: &User) -> Result<Self, ValidationErrors> {
-        query_as!(
+        let result = query_as!(
             Self,
             "INSERT INTO user_sessions (user_id) VALUES ($1) RETURNING *",
             user.id,
         )
         .fetch_one(&core_context.db_pool)
-        .await
-        .map_err(|_| ValidationErrors::default())
+        .await;
+
+        match result {
+            Ok(user_session) => {
+                core_context.jobs.mailer(user, MailerJobCommand::NewUserSession).await;
+
+                Ok(user_session)
+            }
+            Err(_) => Err(ValidationErrors::default()),
+        }
     }
 
     pub async fn user(&self, core_context: &CoreContext) -> Result<User, sqlx::Error> {

@@ -23,6 +23,10 @@ impl User {
         &self,
         core_context: &CoreContext,
     ) -> Result<Self, ValidationErrors> {
+        if !self.email_is_confirmed() {
+            return Err(ValidationErrors::default());
+        }
+
         let i18n = self.i18n();
         let action = i18n.text(KEY_TEXT_RESET_YOUR_PASSWORD);
 
