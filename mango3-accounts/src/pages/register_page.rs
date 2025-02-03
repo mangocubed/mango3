@@ -97,7 +97,7 @@ pub fn RegisterPage() -> impl IntoView {
                             let privacy_policy_url = privacy_policy_url.clone();
                             let terms_of_service_url = terms_of_service_url.clone();
                             view! {
-                                <div role="alert" class="alert my-2">
+                                <div role="alert" class="alert mt-2 mb-5">
                                     <InformationCircleOutlined class="self-start my-2" />
                                     <div>
                                         <div class="font-bold">
@@ -105,14 +105,22 @@ pub fn RegisterPage() -> impl IntoView {
                                         </div>
                                         <Show when=move || { has_privacy_policy }>
                                             <div class="text-sm mt-1">
-                                                <a href=privacy_policy_url.clone() target="_blank">
+                                                <a
+                                                    class="link link-info"
+                                                    href=privacy_policy_url.clone()
+                                                    target="_blank"
+                                                >
                                                     {t!(i18n, shared.privacy_policy)}
                                                 </a>
                                             </div>
                                         </Show>
                                         <Show when=move || has_terms_of_service>
                                             <div class="text-sm mt-1">
-                                                <a href=terms_of_service_url.clone() target="_blank">
+                                                <a
+                                                    class="link link-info"
+                                                    href=terms_of_service_url.clone()
+                                                    target="_blank"
+                                                >
                                                     {t!(i18n, shared.terms_of_service)}
                                                 </a>
                                             </div>

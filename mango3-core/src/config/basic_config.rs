@@ -13,6 +13,7 @@ pub struct BasicConfig {
     pub enable_register: bool,
     pub privacy_policy_url: String,
     pub secure: bool,
+    pub support_email_address: String,
     pub terms_of_service_url: String,
     pub title: String,
 }
@@ -27,6 +28,7 @@ impl Default for BasicConfig {
             enable_register: true,
             privacy_policy_url: String::new(),
             secure: false,
+            support_email_address: "support@mango3.local".to_owned(),
             terms_of_service_url: String::new(),
             title: "Mango³ Dev".to_owned(),
         }
