@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use apalis::prelude::Error;
 
-use mango3_core::config::{BASIC_CONFIG, MISC_CONFIG};
+use mango3_core::config::BASIC_CONFIG;
 use mango3_core::enums::MailerJobCommand;
 use mango3_core::jobs::MailerJob;
 use mango3_core::locales::I18n;
@@ -81,7 +81,7 @@ async fn send_new_user_session_email(i18n: &I18n, user: &User) {
         i18n.text(KEY_TEXT_SOMEONE_HAS_STARTED_A_USER_SESSION_WITH_YOUR_ACCOUNT),
         i18n.text(KEY_TEXT_IF_YOU_RECOGNIZE_THIS_ACTION_YOU_CAN_IGNORE_THIS_MESSAGE),
         i18n.text(KEY_TEXT_IF_NOT_PLEASE_CONTACT_US_AT_THE_FOLLOWING_EMAIL_ADDRESS),
-        MISC_CONFIG.support_email_address
+        BASIC_CONFIG.support_email_address
     );
 
     let _ = send_email(&user.email, &title, &message).await;

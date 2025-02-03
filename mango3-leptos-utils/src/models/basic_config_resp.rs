@@ -18,6 +18,7 @@ pub struct BasicConfigResp {
     pub privacy_policy_url: String,
     pub register_url: String,
     pub studio_url: String,
+    pub support_email_address: String,
     pub terms_of_service_url: String,
     pub title: String,
 }
@@ -39,6 +40,7 @@ impl From<BasicConfig> for BasicConfigResp {
             privacy_policy_url: basic_config.privacy_policy_url.clone(),
             register_url: basic_config.register_url().to_string(),
             studio_url: basic_config.studio_url().to_string(),
+            support_email_address: basic_config.support_email_address,
             terms_of_service_url: basic_config.terms_of_service_url.clone(),
             title: basic_config.title,
         }
