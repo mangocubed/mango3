@@ -2,6 +2,8 @@ use std::fs;
 use std::path::Path;
 use std::str::FromStr;
 
+use image::metadata::Orientation;
+use image::{DynamicImage, ImageDecoder, ImageReader};
 use mime::{Mime, IMAGE, JPEG};
 use sqlx::query_as;
 use sqlx::types::chrono::{DateTime, Utc};
@@ -143,13 +145,22 @@ impl Blob {
             let variant_path = self.image_variant_path(width, height, fill);
 
             if !Path::new(&variant_path).exists() {
-                let mut image = image::open(self.default_path()).unwrap();
-                image = if fill {
-                    image.resize_to_fill(width as u32, height as u32, MISC_CONFIG.image_ops_filter_type())
+                let mut image_decoder = ImageReader::open(self.default_path())
+                    .expect("Could not get image")
+                    .into_decoder()
+                    .expect("Could not convert image into decoder");
+                let orientation = image_decoder.orientation().unwrap_or(Orientation::NoTransforms);
+                let mut dynamic_image = DynamicImage::from_decoder(image_decoder).expect("Could not get dynamic image");
+
+                dynamic_image.apply_orientation(orientation);
+
+                dynamic_image = if fill {
+                    dynamic_image.resize_to_fill(width as u32, height as u32, MISC_CONFIG.image_ops_filter_type())
                 } else {
-                    image.resize(width as u32, height as u32, MISC_CONFIG.image_ops_filter_type())
+                    dynamic_image.resize(width as u32, height as u32, MISC_CONFIG.image_ops_filter_type())
                 };
-                image.save(variant_path.clone()).unwrap();
+
+                dynamic_image.save(variant_path.clone()).unwrap();
             }
 
             return fs::read(variant_path).ok();

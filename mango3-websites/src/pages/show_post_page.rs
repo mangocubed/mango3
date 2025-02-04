@@ -77,7 +77,7 @@ pub fn ShowPostPage() -> impl IntoView {
                                             </div>
 
                                             <div
-                                                class="prose prose-pre:bg-transparent max-w-none break-words"
+                                                class="prose prose-pre:bg-transparent prose-img:mx-auto max-w-none break-words"
                                                 inner_html=post.content_html.clone()
                                             />
 

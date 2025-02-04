@@ -1,7 +1,7 @@
 use leptos::either::Either;
 use leptos::prelude::*;
 
-use mango3_leptos_utils::components::{Hashtags, LoadingSpinner, TimeAgo, UserTagLink};
+use mango3_leptos_utils::components::{Hashtags, LoadingSpinner, UserTagLink};
 use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::models::BlobResp;
 
@@ -73,29 +73,12 @@ pub fn PostPreviewModal(
                                                 <div class="card-body">
                                                     <h1 class="card-title h1 mb-6">{post.title}</h1>
 
-                                                    <div class="flex justify-between my-4">
+                                                    <div class="my-4">
                                                         <UserTagLink user=post.user />
-
-                                                        <div class="text-right opacity-70">
-                                                            <TimeAgo value=post.created_at />
-
-                                                            {move || {
-                                                                post.updated_at
-                                                                    .map(|update_at| {
-                                                                        view! {
-                                                                            " ("
-                                                                            {t!(i18n, shared.edited)}
-                                                                            " "
-                                                                            <TimeAgo value=update_at />
-                                                                            ")"
-                                                                        }
-                                                                    })
-                                                            }}
-                                                        </div>
                                                     </div>
 
                                                     <div
-                                                        class="prose prose-pre:bg-transparent max-w-none break-words"
+                                                        class="prose prose-pre:bg-transparent prose-img:mx-auto max-w-none break-words"
                                                         inner_html=post.content_html.clone()
                                                     />
 
