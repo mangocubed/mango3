@@ -149,9 +149,7 @@ impl Blob {
                     .expect("Could not get image")
                     .into_decoder()
                     .expect("Could not convert image into decoder");
-                let orientation = image_decoder
-                    .orientation()
-                    .unwrap_or_else(|_| Orientation::NoTransforms);
+                let orientation = image_decoder.orientation().unwrap_or(Orientation::NoTransforms);
                 let mut dynamic_image = DynamicImage::from_decoder(image_decoder).expect("Could not get dynamic image");
 
                 dynamic_image.apply_orientation(orientation);
