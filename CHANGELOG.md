@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.0.0-alpha.5] - 2025-02-04
+
+### Added
+
+- Dependencies badge and screenshot to README.md. (https://github.com/mangocubed/mango3/pull/185)
+
+### Changed
+
+- Bump openssl from 0.10.68 to 0.10.70 in the cargo group. (https://github.com/mangocubed/mango3/pull/181)
+- Bump @types/node from 22.13.0 to 22.13.1. (https://github.com/mangocubed/mango3/pull/183)
+- Bump clap from 4.5.27 to 4.5.28. (https://github.com/mangocubed/mango3/pull/184)
+- Only delete user sessions when a user is locked. (https://github.com/mangocubed/mango3/pull/186)
+
+### Fixed
+
+- Apply correct orientation on a resized image. (https://github.com/mangocubed/mango3/pull/182)
+
 ## [0.0.0-alpha.4] - 2025-02-03
 
 ### Added
