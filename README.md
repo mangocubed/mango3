@@ -8,8 +8,13 @@ A free and open source website builder and content management system platform wr
 
 [![release](https://img.shields.io/github/v/release/mangocubed/mango3.svg?include_prereleases)](https://github.com/mangocubed/mango3/releases/latest)
 [![ci](https://github.com/mangocubed/mango3/actions/workflows/ci.yaml/badge.svg)](https://github.com/mangocubed/mango3/actions/workflows/ci.yaml)
+[![dependencies](https://deps.rs/repo/github/mangocubed/mango3/status.svg)](https://deps.rs/repo/github/mangocubed/mango3)
 
-[Website](https://mango3.app) | [Source code](https://gitgub.com/mangocubed/mango3)
+[Website](https://mango3.app) | [Source code](https://github.com/mangocubed/mango3)
+
+<p align="center">
+  <img alt="screenshot" src="https://raw.githubusercontent.com/mangocubed/mango3/refs/heads/main/assets/screenshot.png"/>
+</p>
 
 ## Deployment
 
