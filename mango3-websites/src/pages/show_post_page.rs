@@ -21,7 +21,9 @@ pub fn ShowPostPage() -> impl IntoView {
             {move || Suspend::new(async move {
                 match post_resource.get() {
                     Some(Ok(Some(post))) => {
+                        let modal_image_url = RwSignal::new(None);
                         EitherOf3::A(
+
                             view! {
                                 <Page class="max-w-[1200px] w-full ml-auto mr-auto" title=post.title.clone()>
                                     <Meta name="description" content=post.title.clone() />
@@ -81,6 +83,41 @@ pub fn ShowPostPage() -> impl IntoView {
                                                 inner_html=post.content_html.clone()
                                             />
 
+                                            <div class="empty:hidden flex flex-wrap gap-3 my-4">
+                                                <For
+                                                    each=move || post.blobs.clone()
+                                                    key=|blob| blob.id.clone()
+                                                    let:blob
+                                                >
+                                                    <figure
+                                                        class="rounded"
+                                                        on:click=move |_| {
+                                                            modal_image_url.set(Some(blob.url.clone()))
+                                                        }
+                                                    >
+                                                        <img src=blob.variant_url(128, 128, true) />
+                                                    </figure>
+                                                </For>
+                                            </div>
+
+                                            <Show when=move || modal_image_url.get().is_some()>
+                                                <div class="modal modal-open overflow-y-visible">
+                                                    <div class="modal-box overflow-y-visible max-w-[max-content]">
+                                                        <figure class="max-w-full">
+                                                            <img
+                                                                class="max-w-[calc(100vw-120px)] max-h-[calc(100vh-120px)]"
+                                                                src=modal_image_url
+                                                            />
+                                                        </figure>
+                                                    </div>
+
+                                                    <div
+                                                        class="modal-backdrop"
+                                                        on:click=move |_| modal_image_url.set(None)
+                                                    />
+                                                </div>
+                                            </Show>
+
                                             <div class="empty:hidden my-4 flex flex-wrap gap-2">
                                                 <Hashtags hashtags=post.hashtags />
                                             </div>
@@ -105,7 +142,12 @@ pub fn ShowPostPage() -> impl IntoView {
                         )
                     }
                     Some(Ok(None)) => EitherOf3::B(NotFoundPage),
-                    _ => EitherOf3::C(view! { <div /> }),
+                    _ => {
+                        EitherOf3::C(
+
+                            view! { <div /> },
+                        )
+                    }
                 }
             })}
         </Suspense>
