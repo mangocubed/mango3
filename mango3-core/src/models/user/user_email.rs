@@ -27,7 +27,7 @@ impl User {
             return Err(validator.errors);
         }
 
-        query_as!(
+        let result = query_as!(
             Self,
             r#"UPDATE users SET email_confirmation_code_id = NULL, email_confirmed_at = current_timestamp
             WHERE locked_at IS NULL AND email_confirmed_at IS NULL AND id = $1 RETURNING
@@ -52,8 +52,16 @@ impl User {
             self.id, // $1
         )
         .fetch_one(&core_context.db_pool)
-        .await
-        .map_err(|_| ValidationErrors::default())
+        .await;
+
+        match result {
+            Ok(user) => {
+                user.cache_remove();
+
+                Ok(user)
+            }
+            Err(_) => Err(ValidationErrors::default()),
+        }
     }
 
     async fn email_confirmation_code(&self, core_context: &CoreContext) -> Option<sqlx::Result<ConfirmationCode>> {
@@ -77,7 +85,7 @@ impl User {
 
         let confirmation_code = ConfirmationCode::insert(core_context, self, &action).await?;
 
-        query_as!(
+        let result = query_as!(
             Self,
             r#"UPDATE users SET email_confirmation_code_id = $2 WHERE locked_at IS NULL AND id = $1 RETURNING
                 id,
@@ -102,8 +110,16 @@ impl User {
             confirmation_code.id, // $2
         )
         .fetch_one(&core_context.db_pool)
-        .await
-        .map_err(|_| ValidationErrors::default())
+        .await;
+
+        match result {
+            Ok(user) => {
+                user.cache_remove();
+
+                Ok(user)
+            }
+            Err(_) => Err(ValidationErrors::default()),
+        }
     }
 
     pub async fn update_email(
@@ -145,7 +161,7 @@ impl User {
             return Ok(self.clone());
         }
 
-        query_as!(
+        let result = query_as!(
             Self,
             r#"UPDATE users SET email = $2::text, email_confirmed_at = NULL, email_confirmation_code_id = NULL
             WHERE locked_at IS NULL AND id = $1 RETURNING
@@ -171,7 +187,15 @@ impl User {
             email,   // $2
         )
         .fetch_one(&core_context.db_pool)
-        .await
-        .map_err(|_| ValidationErrors::default())
+        .await;
+
+        match result {
+            Ok(user) => {
+                user.cache_remove();
+
+                Ok(user)
+            }
+            Err(_) => Err(ValidationErrors::default()),
+        }
     }
 }

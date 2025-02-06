@@ -10,12 +10,8 @@ use mango3_core::CoreContext;
 
 use crate::context::use_language_cookie;
 
-mod handlebars_utils;
-mod markdown;
 mod user_sessions;
 
-pub use handlebars_utils::render_handlebars;
-pub use markdown::parse_html;
 pub use user_sessions::*;
 
 pub async fn extract_client_ip() -> Result<String, ServerFnError> {

@@ -11,9 +11,6 @@ use mango3_core::CoreContext;
 use super::{BlobResp, HashtagResp};
 
 #[cfg(feature = "ssr")]
-use crate::ssr::parse_html;
-
-#[cfg(feature = "ssr")]
 use super::FromCore;
 
 #[derive(Clone, Deserialize, Serialize)]
@@ -56,7 +53,7 @@ impl FromCore<User> for UserProfileResp {
             country_alpha2: user.country_alpha2.clone(),
             country_name: user.country().name.to_owned(),
             bio: user.bio.clone(),
-            bio_html: parse_html(&user.bio, true),
+            bio_html: user.bio_html().await,
             hashtags: user
                 .hashtags(&core_context)
                 .await

@@ -1,10 +1,13 @@
 use attohttpc::header::{HeaderName, HeaderValue};
 use attohttpc::RequestBuilder;
-use handlebars::*;
+use handlebars::{
+    BlockContext, Context, Handlebars, Helper, HelperResult, Output, PathAndJson, RenderContext, RenderError,
+    RenderErrorReason, Renderable, ScopedJson,
+};
 use handlebars_misc_helpers::{assign_helpers, json_helpers};
 use serde_json::Value;
 
-use mango3_core::constants::REGEX_HANDLEBARS;
+use crate::constants::REGEX_HANDLEBARS;
 
 fn create_block<'rc>(param: &PathAndJson<'rc>) -> BlockContext<'rc> {
     let mut block = BlockContext::new();
@@ -26,11 +29,11 @@ fn param_url<'rc>(helper: &'rc Helper<'rc>) -> Result<&'rc str, RenderErrorReaso
         .ok_or_else(|| RenderErrorReason::ParamNotFoundForIndex("fetch", 0))
 }
 
-fn append_headers<'rc, T>(helper: &Helper<'rc>, mut request_builder: RequestBuilder<T>) -> RequestBuilder<T>
+fn append_headers<T>(helper: &Helper<'_>, mut request_builder: RequestBuilder<T>) -> RequestBuilder<T>
 where
     T: attohttpc::body::Body,
 {
-    if let Some(headers) = helper.hash_get("headers").and_then(|h| h.value().as_array().clone()) {
+    if let Some(headers) = helper.hash_get("headers").and_then(|h| h.value().as_array()) {
         for header in headers {
             if let Some(header_str) = header.as_str() {
                 if let Some((key, value)) = header_str.split_once(':') {

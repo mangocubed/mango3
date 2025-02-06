@@ -29,6 +29,7 @@ on:
                 type: boolean
 
 env:
+    CACHE_REDIS_URL: redis://127.0.0.1:6379/12
     CARGO_TERM_COLOR: always
     DATABASE_URL: postgres://mango3:mango3@localhost:5432/mango3_test
     JOBS_REDIS_URL: redis://127.0.0.1:6379/10

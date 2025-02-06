@@ -32,7 +32,7 @@ impl User {
 
         let confirmation_code = ConfirmationCode::insert(core_context, self, &action).await?;
 
-        query_as!(
+        let result = query_as!(
             Self,
             r#"UPDATE users SET password_reset_confirmation_code_id = $2 WHERE locked_at IS NULL AND id = $1
             RETURNING
@@ -58,8 +58,16 @@ impl User {
             confirmation_code.id, // $2
         )
         .fetch_one(&core_context.db_pool)
-        .await
-        .map_err(|_| ValidationErrors::default())
+        .await;
+
+        match result {
+            Ok(user) => {
+                user.cache_remove();
+
+                Ok(user)
+            }
+            Err(_) => Err(ValidationErrors::default()),
+        }
     }
 
     pub async fn update_password(
@@ -88,7 +96,7 @@ impl User {
 
         let encrypted_password = encrypt_password(new_password);
 
-        query_as!(
+        let result = query_as!(
             Self,
             r#"UPDATE users SET encrypted_password = $2 WHERE locked_at IS NULL AND id = $1 RETURNING
                 id,
@@ -113,8 +121,16 @@ impl User {
             encrypted_password, // $2
         )
         .fetch_one(&core_context.db_pool)
-        .await
-        .map_err(|_| ValidationErrors::default())
+        .await;
+
+        match result {
+            Ok(user) => {
+                user.cache_remove();
+
+                Ok(user)
+            }
+            Err(_) => Err(ValidationErrors::default()),
+        }
     }
 
     pub async fn update_password_with_code(
@@ -144,7 +160,7 @@ impl User {
 
         let encrypted_password = encrypt_password(new_password);
 
-        query_as!(
+        let result = query_as!(
             Self,
             r#"UPDATE users SET encrypted_password = $2, password_reset_confirmation_code_id = NULL
             WHERE locked_at IS NULL AND id = $1
@@ -171,8 +187,16 @@ impl User {
             encrypted_password, // $2
         )
         .fetch_one(&core_context.db_pool)
-        .await
-        .map_err(|_| ValidationErrors::default())
+        .await;
+
+        match result {
+            Ok(user) => {
+                user.cache_remove();
+
+                Ok(user)
+            }
+            Err(_) => Err(ValidationErrors::default()),
+        }
     }
 
     pub fn verify_password(&self, password: &str) -> bool {

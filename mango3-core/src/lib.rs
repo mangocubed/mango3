@@ -1,10 +1,14 @@
+use std::fmt::Display;
 use std::{fs, io};
 
 use ab_glyph::{FontRef, PxScale};
+use cached::stores::AsyncRedisCache;
 use image::{Rgb, RgbImage};
 use imageproc::drawing::{draw_filled_rect_mut, draw_text_mut, text_size};
 use imageproc::rect::Rect;
 use regex::Match;
+use serde::de::DeserializeOwned;
+use serde::Serialize;
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
 
@@ -19,9 +23,10 @@ pub mod jobs;
 pub mod locales;
 pub mod models;
 pub mod pagination;
+pub mod utils;
 pub mod validator;
 
-use config::{DATABASE_CONFIG, MISC_CONFIG};
+use config::{CACHE_CONFIG, DATABASE_CONFIG, MISC_CONFIG};
 use constants::HASHTAG_LOOKAROUND;
 use jobs::Jobs;
 
@@ -48,6 +53,19 @@ impl CoreContext {
             jobs: Jobs::setup().await,
         }
     }
+}
+
+async fn async_redis_cache<K, V>() -> AsyncRedisCache<K, V>
+where
+    K: Display + Send + Sync,
+    V: DeserializeOwned + Display + Send + Serialize + Sync,
+{
+    AsyncRedisCache::new("cached", CACHE_CONFIG.ttl)
+        .set_connection_string(&CACHE_CONFIG.redis_url)
+        .set_refresh(true)
+        .build()
+        .await
+        .expect("Could not get redis cache")
 }
 
 pub fn hashtag_has_lookaround(content: &str, match_: Match) -> bool {

@@ -7,14 +7,17 @@ use figment::Figment;
 use serde::{Deserialize, Serialize};
 
 mod basic_config;
+mod cache_config;
 mod mailer_config;
 mod misc_config;
 
 pub use basic_config::BasicConfig;
+pub(crate) use cache_config::CacheConfig;
 pub use mailer_config::MailerConfig;
 pub use misc_config::MiscConfig;
 
 pub static BASIC_CONFIG: LazyLock<BasicConfig> = LazyLock::new(BasicConfig::load);
+pub(crate) static CACHE_CONFIG: LazyLock<CacheConfig> = LazyLock::new(CacheConfig::load);
 pub(crate) static DATABASE_CONFIG: LazyLock<DatabaseConfig> = LazyLock::new(DatabaseConfig::load);
 pub(crate) static JOBS_CONFIG: LazyLock<JobsConfig> = LazyLock::new(JobsConfig::load);
 pub static MAILER_CONFIG: LazyLock<MailerConfig> = LazyLock::new(MailerConfig::load);

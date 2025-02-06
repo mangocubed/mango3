@@ -2,8 +2,8 @@ use pulldown_cmark::html::push_html;
 use pulldown_cmark::{Event, HeadingLevel, Options, Parser, Tag, TagEnd};
 use regex::Captures;
 
-use mango3_core::constants::{BLACKLISTED_HASHTAGS, REGEX_FIND_HASHTAGS};
-use mango3_core::hashtag_has_lookaround;
+use crate::constants::{BLACKLISTED_HASHTAGS, REGEX_FIND_HASHTAGS};
+use crate::hashtag_has_lookaround;
 
 pub fn parse_html(input: &str, enable_links: bool) -> String {
     let mut options = Options::empty();

@@ -61,7 +61,11 @@ pub fn PostComments(post_id: String) -> impl IntoView {
                                                     });
                                                     view! {
                                                         <div class="flex gap-4 items-start">
-                                                            <UserTag class="my-4" user=user />
+                                                            <UserTag
+                                                                class="my-4"
+                                                                text_class="hidden md:block"
+                                                                user=user
+                                                            />
 
                                                             <ActionForm
                                                                 action=server_action

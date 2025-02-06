@@ -1,3 +1,4 @@
+use cached::IOCachedAsync;
 use rust_iso3166::CountryCode;
 use serde::{Deserialize, Serialize};
 use sqlx::types::chrono::{DateTime, NaiveDate, Utc};
@@ -12,12 +13,15 @@ use crate::CoreContext;
 
 use super::{Blob, Hashtag, Website};
 
+mod user_bio;
 mod user_email;
 mod user_get;
 mod user_insert;
 mod user_lock;
 mod user_password;
 mod user_profile;
+
+use user_bio::USER_BIO_HTML;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct User {
@@ -74,6 +78,10 @@ impl User {
         } else {
             None
         }
+    }
+
+    fn cache_remove(&self) {
+        USER_BIO_HTML.get().map(|cache| cache.cache_remove(&self.id));
     }
 
     pub async fn can_insert_website(&self, core_context: &CoreContext) -> bool {

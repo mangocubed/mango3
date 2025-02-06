@@ -11,9 +11,6 @@ use mango3_core::CoreContext;
 use super::{BlobResp, HashtagResp};
 
 #[cfg(feature = "ssr")]
-use crate::ssr::parse_html;
-
-#[cfg(feature = "ssr")]
 use super::FromCore;
 
 #[derive(Clone, Deserialize, Serialize)]
@@ -52,8 +49,8 @@ impl FromCore<Website> for WebsiteResp {
             id: website.id.to_string(),
             name: website.name.clone(),
             description: website.description.clone(),
-            description_html: parse_html(&website.description, true),
-            description_preview_html: parse_html(&website.description_preview(), false),
+            description_html: website.description_html().await,
+            description_preview_html: website.description_preview_html().await,
             hashtags: website
                 .hashtags(&core_context)
                 .await
@@ -111,7 +108,7 @@ impl FromCore<Website> for WebsitePreviewResp {
         Self {
             id: website.id.to_string(),
             name: website.name.clone(),
-            description_preview_html: parse_html(&website.description_preview(), false),
+            description_preview_html: website.description_preview_html().await,
             hashtags: website
                 .hashtags(&core_context)
                 .await

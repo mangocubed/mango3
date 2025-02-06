@@ -24,6 +24,8 @@ impl User {
 
                 core_context.jobs.mailer(self, MailerJobCommand::Locked).await;
 
+                self.cache_remove();
+
                 Ok(())
             }
             Err(_) => Err(ValidationErrors::default()),

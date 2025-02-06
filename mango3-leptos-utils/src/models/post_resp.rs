@@ -9,9 +9,6 @@ use mango3_core::models::Post;
 #[cfg(feature = "ssr")]
 use mango3_core::CoreContext;
 
-#[cfg(feature = "ssr")]
-use crate::ssr::{parse_html, render_handlebars};
-
 use super::{BlobResp, HashtagResp, UserPreviewResp, WebsitePreviewResp};
 
 #[cfg(feature = "ssr")]
@@ -51,10 +48,7 @@ impl FromCore<Post> for PostResp {
             .await,
             title: post.title.clone(),
             slug: post.slug.clone(),
-            content_html: parse_html(
-                &render_handlebars(&post.content, &post.variables).unwrap_or_default(),
-                true,
-            ),
+            content_html: post.content_html().await,
             hashtags: post
                 .hashtags(&core_context)
                 .await
@@ -118,7 +112,7 @@ impl FromCore<Post> for PostPreviewResp {
             .await,
             title: post.title.clone(),
             slug: post.slug.clone(),
-            content_preview_html: parse_html(&post.content_preview(), false),
+            content_preview_html: post.content_preview_html().await,
             hashtags: post
                 .hashtags(&core_context)
                 .await
