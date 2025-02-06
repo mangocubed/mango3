@@ -60,7 +60,7 @@ where
     K: Display + Send + Sync,
     V: DeserializeOwned + Display + Send + Serialize + Sync,
 {
-    AsyncRedisCache::new(prefix, CACHE_CONFIG.ttl)
+    AsyncRedisCache::new(format!("{prefix}:"), CACHE_CONFIG.ttl)
         .set_connection_string(&CACHE_CONFIG.redis_url)
         .set_refresh(true)
         .build()
