@@ -1,24 +1,26 @@
+use std::fmt::Display;
 use std::fs;
 use std::path::Path;
 use std::str::FromStr;
 
+use futures::future;
 use image::metadata::Orientation;
 use image::{DynamicImage, ImageDecoder, ImageReader};
 use mime::{Mime, IMAGE, JPEG};
-use sqlx::query_as;
+use serde::{Deserialize, Serialize};
 use sqlx::types::chrono::{DateTime, Utc};
 use sqlx::types::Uuid;
 use url::Url;
 
 use crate::config::{BASIC_CONFIG, MISC_CONFIG};
+use crate::models::{User, Website};
 use crate::CoreContext;
 
-use super::{User, Website};
-
 mod blob_delete;
+mod blob_get;
 mod blob_insert;
 
-#[derive(Clone)]
+#[derive(Clone, Deserialize, Serialize)]
 pub struct Blob {
     pub id: Uuid,
     pub user_id: Uuid,
@@ -31,10 +33,16 @@ pub struct Blob {
     pub updated_at: Option<DateTime<Utc>>,
 }
 
+impl Display for Blob {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.id)
+    }
+}
+
 impl Blob {
     pub async fn all_by_ids(
         core_context: &CoreContext,
-        ids: &Vec<Uuid>,
+        ids: Vec<Uuid>,
         user: Option<&User>,
         website: Option<&Website>,
     ) -> Vec<Self> {
@@ -42,31 +50,12 @@ impl Blob {
             return vec![];
         }
 
-        let user_id = user.map(|u| u.id);
-        let website_id = website.map(|w| w.id);
-
-        query_as!(
-            Self,
-            "SELECT * FROM blobs
-            WHERE id = ANY($1) AND ($2::uuid IS NULL OR user_id = $2) AND ($3::uuid IS NULL OR website_id = $3)",
-            &ids,       // $1
-            user_id,    // $2
-            website_id, // $3
-        )
-        .fetch_all(&core_context.db_pool)
-        .await
-        .unwrap_or_default()
-    }
-
-    pub async fn all_by_user(core_context: &CoreContext, user: &User) -> Vec<Self> {
-        query_as!(
-            Self,
-            "SELECT * FROM blobs WHERE user_id = $1",
-            user.id, // $1
-        )
-        .fetch_all(&core_context.db_pool)
-        .await
-        .unwrap_or_default()
+        future::join_all(ids.iter().map(|id| Self::get_by_id(core_context, *id, user, website)))
+            .await
+            .iter()
+            .filter_map(|result| result.as_ref().ok())
+            .cloned()
+            .collect()
     }
 
     pub fn default_path(&self) -> String {
@@ -87,19 +76,6 @@ impl Blob {
 
     pub fn filename_without_extension(&self) -> String {
         self.file_name.split('.').collect::<Vec<&str>>()[0].to_string()
-    }
-
-    pub async fn get_by_id(core_context: &CoreContext, id: Uuid, user: Option<&User>) -> sqlx::Result<Self> {
-        let user_id = user.map(|u| u.id);
-
-        query_as!(
-            Self,
-            "SELECT * FROM blobs WHERE id = $1 AND ($2::uuid IS NULL OR user_id = $2) LIMIT 1",
-            id,      // $1
-            user_id  // $2
-        )
-        .fetch_one(&core_context.db_pool)
-        .await
     }
 
     pub fn mime(&self) -> Mime {

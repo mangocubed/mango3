@@ -71,7 +71,7 @@ impl Website {
 
     pub async fn cover_image_blob(&self, core_context: &CoreContext) -> Option<sqlx::Result<Blob>> {
         if let Some(id) = self.cover_image_blob_id {
-            Some(Blob::get_by_id(core_context, id, None).await)
+            Some(Blob::get_by_id(core_context, id, None, None).await)
         } else {
             None
         }
@@ -149,7 +149,7 @@ impl Website {
 
     pub async fn icon_image_blob(&self, core_context: &CoreContext) -> Option<sqlx::Result<Blob>> {
         if let Some(id) = self.icon_image_blob_id {
-            Some(Blob::get_by_id(core_context, id, None).await)
+            Some(Blob::get_by_id(core_context, id, None, None).await)
         } else {
             None
         }

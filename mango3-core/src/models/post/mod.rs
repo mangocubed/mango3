@@ -47,7 +47,7 @@ pub struct Post {
 
 impl Post {
     pub async fn blobs(&self, core_context: &CoreContext) -> Vec<Blob> {
-        Blob::all_by_ids(core_context, &self.blob_ids, None, None).await
+        Blob::all_by_ids(core_context, self.blob_ids.clone(), None, None).await
     }
 
     async fn cache_remove(&self) {
@@ -68,7 +68,7 @@ impl Post {
 
     pub async fn cover_image_blob(&self, core_context: &CoreContext) -> Option<sqlx::Result<Blob>> {
         if let Some(id) = self.cover_image_blob_id {
-            Some(Blob::get_by_id(core_context, id, None).await)
+            Some(Blob::get_by_id(core_context, id, None, None).await)
         } else {
             None
         }
