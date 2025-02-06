@@ -55,12 +55,12 @@ impl CoreContext {
     }
 }
 
-async fn async_redis_cache<K, V>() -> AsyncRedisCache<K, V>
+async fn async_redis_cache<K, V>(prefix: &str) -> AsyncRedisCache<K, V>
 where
     K: Display + Send + Sync,
     V: DeserializeOwned + Display + Send + Serialize + Sync,
 {
-    AsyncRedisCache::new("cached", CACHE_CONFIG.ttl)
+    AsyncRedisCache::new(format!("{prefix}:"), CACHE_CONFIG.ttl)
         .set_connection_string(&CACHE_CONFIG.redis_url)
         .set_refresh(true)
         .build()
