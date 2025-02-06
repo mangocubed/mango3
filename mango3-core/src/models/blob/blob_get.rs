@@ -48,3 +48,42 @@ pub(crate) async fn get_blob_by_id(core_context: &CoreContext, id: Uuid) -> sqlx
     .fetch_one(&core_context.db_pool)
     .await
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::test_utils::{insert_test_blob, insert_test_user, setup_core_context};
+
+    use super::Blob;
+
+    #[tokio::test]
+    async fn should_get_blob_by_id() {
+        let core_context = setup_core_context().await;
+        let blob = insert_test_blob(&core_context, None, None).await;
+
+        let result = Blob::get_by_id(&core_context, blob.id, None, None).await;
+
+        assert!(result.is_ok());
+    }
+
+    #[tokio::test]
+    async fn should_get_blob_by_id_with_user() {
+        let core_context = setup_core_context().await;
+        let user = insert_test_user(&core_context).await;
+        let blob = insert_test_blob(&core_context, Some(&user), None).await;
+
+        let result = Blob::get_by_id(&core_context, blob.id, Some(&user), None).await;
+
+        assert!(result.is_ok());
+    }
+
+    #[tokio::test]
+    async fn should_not_get_blob_by_id_when_user_is_invalid() {
+        let core_context = setup_core_context().await;
+        let user = insert_test_user(&core_context).await;
+        let blob = insert_test_blob(&core_context, None, None).await;
+
+        let result = Blob::get_by_id(&core_context, blob.id, Some(&user), None).await;
+
+        assert!(result.is_err());
+    }
+}
