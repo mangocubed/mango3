@@ -100,7 +100,7 @@ impl Post {
 
         match result {
             Ok(post) => {
-                post.cache_remove();
+                post.cache_remove().await;
 
                 Ok(post)
             }
