@@ -80,8 +80,10 @@ impl User {
         }
     }
 
-    fn cache_remove(&self) {
-        USER_BIO_HTML.get().map(|cache| cache.cache_remove(&self.id));
+    async fn cache_remove(&self) {
+        if let Some(cache) = USER_BIO_HTML.get() {
+            let _ = cache.cache_remove(&self.id).await;
+        }
     }
 
     pub async fn can_insert_website(&self, core_context: &CoreContext) -> bool {

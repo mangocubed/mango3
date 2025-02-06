@@ -24,7 +24,7 @@ impl User {
 
                 core_context.jobs.mailer(self, MailerJobCommand::Locked).await;
 
-                self.cache_remove();
+                self.cache_remove().await;
 
                 Ok(())
             }

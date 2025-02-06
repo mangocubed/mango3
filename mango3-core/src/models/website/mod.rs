@@ -1,4 +1,5 @@
 use cached::IOCachedAsync;
+use futures::future;
 use sqlx::types::chrono::{DateTime, Utc};
 use sqlx::types::Uuid;
 use sqlx::{query, query_as};
@@ -40,11 +41,20 @@ pub struct Website {
 }
 
 impl Website {
-    fn cache_remove(&self) {
-        WEBSITE_DESCRIPTION_HTML.get().map(|cache| cache.cache_remove(&self.id));
-        WEBSITE_DESCRIPTION_PREVIEW_HTML
-            .get()
-            .map(|cache| cache.cache_remove(&self.id));
+    async fn cache_remove(&self) {
+        future::join(
+            async {
+                if let Some(cache) = WEBSITE_DESCRIPTION_HTML.get() {
+                    let _ = cache.cache_remove(&self.id).await;
+                }
+            },
+            async {
+                if let Some(cache) = WEBSITE_DESCRIPTION_PREVIEW_HTML.get() {
+                    let _ = cache.cache_remove(&self.id).await;
+                }
+            },
+        )
+        .await;
     }
 
     pub async fn count(core_context: &CoreContext, user: Option<&User>) -> sqlx::Result<i64> {

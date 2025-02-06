@@ -92,7 +92,7 @@ impl Website {
 
         match result {
             Ok(website) => {
-                website.cache_remove();
+                website.cache_remove().await;
 
                 Ok(website)
             }

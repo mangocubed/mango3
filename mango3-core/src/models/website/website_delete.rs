@@ -13,7 +13,7 @@ impl Website {
             .map(|_| ())
             .map_err(|_| ValidationErrors::default())?;
 
-        self.cache_remove();
+        self.cache_remove().await;
 
         Ok(())
     }
