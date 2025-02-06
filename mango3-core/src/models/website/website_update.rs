@@ -46,7 +46,7 @@ impl Website {
         let hashtags = Hashtag::get_or_insert_all(core_context, description).await?;
         let hashtag_ids = hashtags.iter().map(|hashtag| hashtag.id).collect::<Vec<Uuid>>();
 
-        query_as!(
+        let result = query_as!(
             Self,
             r#"UPDATE websites SET
                 name = $2,
@@ -88,8 +88,16 @@ impl Website {
             publish,             // $9
         )
         .fetch_one(&core_context.db_pool)
-        .await
-        .map_err(|_| ValidationErrors::default())
+        .await;
+
+        match result {
+            Ok(website) => {
+                website.cache_remove();
+
+                Ok(website)
+            }
+            Err(_) => Err(ValidationErrors::default()),
+        }
     }
 }
 
