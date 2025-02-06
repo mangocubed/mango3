@@ -1,4 +1,5 @@
 use cached::IOCachedAsync;
+use futures::future;
 use sqlx::types::chrono::{DateTime, Utc};
 use sqlx::types::{JsonValue, Uuid};
 use sqlx::{query, query_as};
@@ -49,11 +50,20 @@ impl Post {
         Blob::all_by_ids(core_context, &self.blob_ids, None, None).await
     }
 
-    fn cache_remove(&self) {
-        POST_CONTENT_HTML.get().map(|cache| cache.cache_remove(&self.id));
-        POST_CONTENT_PREVIEW_HTML
-            .get()
-            .map(|cache| cache.cache_remove(&self.id));
+    async fn cache_remove(&self) {
+        future::join(
+            async {
+                if let Some(cache) = POST_CONTENT_HTML.get() {
+                    let _ = cache.cache_remove(&self.id).await;
+                }
+            },
+            async {
+                if let Some(cache) = POST_CONTENT_PREVIEW_HTML.get() {
+                    let _ = cache.cache_remove(&self.id).await;
+                }
+            },
+        )
+        .await;
     }
 
     pub async fn cover_image_blob(&self, core_context: &CoreContext) -> Option<sqlx::Result<Blob>> {

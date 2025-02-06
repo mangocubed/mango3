@@ -91,7 +91,7 @@ impl User {
 
         match result {
             Ok(user) => {
-                user.cache_remove();
+                user.cache_remove().await;
 
                 Ok(user)
             }
