@@ -23,7 +23,7 @@ impl Post {
     map_error = r##"|err| err"##,
     convert = r#"{ post.id }"#,
     ty = "AsyncRedisCache<Uuid, String>",
-    create = r##" { async_redis_cache().await } "##
+    create = r##" { async_redis_cache("post_content_html").await } "##
 )]
 pub(crate) async fn post_content_html(post: &Post) -> Result<String, RedisCacheError> {
     Ok(parse_html(
@@ -36,7 +36,7 @@ pub(crate) async fn post_content_html(post: &Post) -> Result<String, RedisCacheE
     map_error = r##"|err| err"##,
     convert = r#"{ post.id }"#,
     ty = "AsyncRedisCache<Uuid, String>",
-    create = r##" { async_redis_cache().await } "##
+    create = r##" { async_redis_cache("post_content_preview_html").await } "##
 )]
 pub(crate) async fn post_content_preview_html(post: &Post) -> Result<String, RedisCacheError> {
     Ok(parse_html(

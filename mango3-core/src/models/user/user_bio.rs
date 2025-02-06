@@ -18,7 +18,7 @@ impl User {
     map_error = r##"|err| err"##,
     convert = r#"{ user.id }"#,
     ty = "AsyncRedisCache<Uuid, String>",
-    create = r##" { async_redis_cache().await } "##
+    create = r##" { async_redis_cache("user_bio_html").await } "##
 )]
 pub(crate) async fn user_bio_html(user: &User) -> Result<String, RedisCacheError> {
     Ok(parse_html(&user.bio, true))

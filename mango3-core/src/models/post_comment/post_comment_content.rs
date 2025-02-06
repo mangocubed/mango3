@@ -18,7 +18,7 @@ impl PostComment {
     map_error = r##"|err| err"##,
     convert = r#"{ comment.id }"#,
     ty = "AsyncRedisCache<Uuid, String>",
-    create = r##" { async_redis_cache().await } "##
+    create = r##" { async_redis_cache("post_comment_content_html").await } "##
 )]
 pub(crate) async fn post_comment_content_html(comment: &PostComment) -> Result<String, RedisCacheError> {
     Ok(parse_html(&comment.content, true))

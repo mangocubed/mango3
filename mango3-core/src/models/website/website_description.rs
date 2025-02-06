@@ -22,7 +22,7 @@ impl Website {
     map_error = r##"|err| err"##,
     convert = r#"{ website.id }"#,
     ty = "AsyncRedisCache<Uuid, String>",
-    create = r##" { async_redis_cache().await } "##
+    create = r##" { async_redis_cache("website_description_html").await } "##
 )]
 pub(crate) async fn website_description_html(website: &Website) -> Result<String, RedisCacheError> {
     Ok(parse_html(&website.description, true))
@@ -32,7 +32,7 @@ pub(crate) async fn website_description_html(website: &Website) -> Result<String
     map_error = r##"|err| err"##,
     convert = r#"{ website.id }"#,
     ty = "AsyncRedisCache<Uuid, String>",
-    create = r##" { async_redis_cache().await } "##
+    create = r##" { async_redis_cache("website_description_preview_html").await } "##
 )]
 pub(crate) async fn website_description_preview_html(website: &Website) -> Result<String, RedisCacheError> {
     Ok(parse_html(
