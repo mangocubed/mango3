@@ -1,21 +1,25 @@
+use cached::IOCachedAsync;
 use sqlx::types::chrono::{DateTime, Utc};
 use sqlx::types::{JsonValue, Uuid};
 use sqlx::{query, query_as};
 use url::Url;
 
 use crate::config::MISC_CONFIG;
-use crate::constants::{BLACKLISTED_SLUGS, REGEX_HANDLEBARS, REGEX_SLUG};
+use crate::constants::{BLACKLISTED_SLUGS, REGEX_SLUG};
 use crate::enums::{Input, InputError};
 use crate::validator::{Validator, ValidatorTrait};
 use crate::CoreContext;
 
 use super::{Blob, Hashtag, User, Website};
 
+mod post_content;
 mod post_delete;
 mod post_insert;
 mod post_paginate;
 mod post_search;
 mod post_update;
+
+use post_content::{POST_CONTENT_HTML, POST_CONTENT_PREVIEW_HTML};
 
 #[derive(Clone)]
 pub struct Post {
@@ -45,14 +49,11 @@ impl Post {
         Blob::all_by_ids(core_context, &self.blob_ids, None, None).await
     }
 
-    pub fn content_preview(&self) -> String {
-        REGEX_HANDLEBARS
-            .replace_all(&self.content, "")
-            .trim()
-            .lines()
-            .next()
-            .map(|line| line.get(..256).unwrap_or(line).trim().to_owned())
-            .unwrap_or_default()
+    fn cache_remove(&self) {
+        POST_CONTENT_HTML.get().map(|cache| cache.cache_remove(&self.id));
+        POST_CONTENT_PREVIEW_HTML
+            .get()
+            .map(|cache| cache.cache_remove(&self.id));
     }
 
     pub async fn cover_image_blob(&self, core_context: &CoreContext) -> Option<sqlx::Result<Blob>> {

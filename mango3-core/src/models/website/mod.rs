@@ -1,3 +1,4 @@
+use cached::IOCachedAsync;
 use sqlx::types::chrono::{DateTime, Utc};
 use sqlx::types::Uuid;
 use sqlx::{query, query_as};
@@ -11,10 +12,13 @@ use crate::CoreContext;
 use super::{Blob, Hashtag, User};
 
 mod website_delete;
+mod website_description;
 mod website_insert;
 mod website_paginate;
 mod website_search;
 mod website_update;
+
+use website_description::{WEBSITE_DESCRIPTION_HTML, WEBSITE_DESCRIPTION_PREVIEW_HTML};
 
 #[derive(Clone)]
 pub struct Website {
@@ -36,6 +40,13 @@ pub struct Website {
 }
 
 impl Website {
+    fn cache_remove(&self) {
+        WEBSITE_DESCRIPTION_HTML.get().map(|cache| cache.cache_remove(&self.id));
+        WEBSITE_DESCRIPTION_PREVIEW_HTML
+            .get()
+            .map(|cache| cache.cache_remove(&self.id));
+    }
+
     pub async fn count(core_context: &CoreContext, user: Option<&User>) -> sqlx::Result<i64> {
         let user_id = user.map(|u| u.id);
 
@@ -54,14 +65,6 @@ impl Website {
         } else {
             None
         }
-    }
-
-    pub fn description_preview(&self) -> &str {
-        self.description
-            .lines()
-            .next()
-            .map(|line| line.get(..256).unwrap_or(line).trim())
-            .unwrap_or_default()
     }
 
     pub async fn get_by_id(

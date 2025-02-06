@@ -9,9 +9,6 @@ use mango3_core::models::PostComment;
 #[cfg(feature = "ssr")]
 use mango3_core::CoreContext;
 
-#[cfg(feature = "ssr")]
-use crate::ssr::parse_html;
-
 use super::UserPreviewResp;
 
 #[cfg(feature = "ssr")]
@@ -37,7 +34,7 @@ impl FromCore<PostComment> for PostCommentResp {
                 &comment.user(&core_context).await.expect("Could not get user"),
             )
             .await,
-            content_html: parse_html(&comment.content, true),
+            content_html: comment.content_html().await,
             created_at: comment.created_at,
             updated_at: comment.updated_at,
         }

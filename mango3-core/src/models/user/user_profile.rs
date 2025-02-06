@@ -47,7 +47,7 @@ impl User {
         let hashtags = Hashtag::get_or_insert_all(core_context, bio).await?;
         let hashtag_ids = hashtags.iter().map(|hashtag| hashtag.id).collect::<Vec<Uuid>>();
 
-        query_as!(
+        let result = query_as!(
             User,
             r#"UPDATE users
             SET
@@ -87,7 +87,15 @@ impl User {
             avatar_image_blob_id,    // $8
         )
         .fetch_one(&core_context.db_pool)
-        .await
-        .map_err(|_| ValidationErrors::default())
+        .await;
+
+        match result {
+            Ok(user) => {
+                user.cache_remove();
+
+                Ok(user)
+            }
+            Err(_) => Err(ValidationErrors::default()),
+        }
     }
 }

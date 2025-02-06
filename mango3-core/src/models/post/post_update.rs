@@ -48,7 +48,7 @@ impl Post {
             return Err(validator.errors);
         }
 
-        query_as!(
+        let result = query_as!(
             Self,
             r#"UPDATE posts SET
                 title = $2,
@@ -96,7 +96,15 @@ impl Post {
             publish,             // $9
         )
         .fetch_one(&core_context.db_pool)
-        .await
-        .map_err(|_| ValidationErrors::default())
+        .await;
+
+        match result {
+            Ok(post) => {
+                post.cache_remove();
+
+                Ok(post)
+            }
+            Err(_) => Err(ValidationErrors::default()),
+        }
     }
 }

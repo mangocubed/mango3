@@ -5,7 +5,6 @@ edition.workspace = true
 
 [dependencies]
 accept-language = { version = "3.1.0", optional = true }
-attohttpc = { version = "0.28.2", optional = true, features = ["json"] }
 async-trait = { workspace = true, optional = true }
 axum = { workspace = true, optional = true }
 axum-client-ip = { version = "0.6.1", optional = true }
@@ -15,10 +14,6 @@ cookie = { version = "0.18.1", optional = true, features = ["private"] }
 default-struct-builder = "0.5"
 fred = { version = "10.0.4", optional = true }
 futures = { workspace = true, optional = true }
-handlebars = { version = "6.3.0", optional = true, features = ["no_logging"] }
-handlebars_misc_helpers = { version = "0.17.0", default-features = false, features = [
-    "json", "jsontype"
-], optional = true }
 http = { version = "1.2.0", optional = true }
 leptos = { workspace = true }
 leptos_axum = { workspace = true, optional = true }
@@ -32,11 +27,9 @@ leptos-use = { workspace = true, features = [
     "use_interval_fn",
     "use_textarea_autosize",
 ] }
-pulldown-cmark = { version = "0.12.2", optional = true }
 regex = { workspace = true, optional = true }
 rust_iso3166 = { workspace = true, optional = true }
 serde = { workspace = true }
-serde_json = { workspace = true, optional = true }
 server_fn = { workspace = true, features = ["multipart"] }
 time = { version = "0.3.37", optional = true }
 tower-sessions =  { version = "0.13.0", optional = true,  features = ["private"] }
@@ -52,20 +45,15 @@ hydrate = ["leptos/hydrate", "leptos_i18n/hydrate"]
 ssr = [
     "dep:accept-language",
     "dep:async-trait",
-    "dep:attohttpc",
     "dep:axum",
     "dep:axum-client-ip",
     "dep:cookie",
     "dep:fred",
     "dep:futures",
-    "dep:handlebars",
-    "dep:handlebars_misc_helpers",
     "dep:http",
     "dep:leptos_axum",
-    "dep:pulldown-cmark",
     "dep:regex",
     "dep:rust_iso3166",
-    "dep:serde_json",
     "dep:time",
     "dep:tokio",
     "dep:tower-sessions",

@@ -1,3 +1,4 @@
+use cached::IOCachedAsync;
 use sqlx::types::chrono::{DateTime, Utc};
 use sqlx::types::Uuid;
 use sqlx::{query, query_as};
@@ -9,7 +10,10 @@ use crate::enums::Input;
 use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
 use crate::CoreContext;
 
+mod post_comment_content;
 mod post_comment_paginate;
+
+use post_comment_content::POST_COMMENT_CONTENT_HTML;
 
 #[derive(Clone)]
 pub struct PostComment {
@@ -22,6 +26,12 @@ pub struct PostComment {
 }
 
 impl PostComment {
+    fn cache_remove(&self) {
+        POST_COMMENT_CONTENT_HTML
+            .get()
+            .map(|cache| cache.cache_remove(&self.id));
+    }
+
     pub async fn count(core_context: &CoreContext, post: &Post) -> sqlx::Result<i64> {
         query!(
             "SELECT COUNT(*) FROM post_comments WHERE post_id = $1 LIMIT 1",
@@ -32,12 +42,16 @@ impl PostComment {
         .map(|record| record.count.unwrap_or_default())
     }
 
-    pub async fn delete_all(core_context: &CoreContext, user: &User) -> Result<(), ValidationErrors> {
-        query!("DELETE FROM post_comments WHERE user_id = $1", user.id)
+    pub async fn delete(&self, core_context: &CoreContext) -> Result<(), ValidationErrors> {
+        query!("DELETE FROM post_comments WHERE id = $1", self.id)
             .execute(&core_context.db_pool)
             .await
             .map(|_| ())
-            .map_err(|_| ValidationErrors::default())
+            .map_err(|_| ValidationErrors::default())?;
+
+        self.cache_remove();
+
+        Ok(())
     }
 
     pub async fn get_by_id(core_context: &CoreContext, id: Uuid, user: Option<&User>) -> sqlx::Result<Self> {

@@ -18,11 +18,13 @@ use mango3_core::models::{Blob, Post, User, Website};
 #[cfg(feature = "ssr")]
 use mango3_core::pagination::CursorPageParams;
 #[cfg(feature = "ssr")]
+use mango3_core::utils::{parse_html, render_handlebars};
+#[cfg(feature = "ssr")]
 use mango3_core::CoreContext;
 #[cfg(feature = "ssr")]
 use mango3_leptos_utils::models::{FromCore, HashtagResp, UserPreviewResp};
 #[cfg(feature = "ssr")]
-use mango3_leptos_utils::ssr::{expect_core_context, extract_i18n, extract_user, parse_html, render_handlebars};
+use mango3_leptos_utils::ssr::{expect_core_context, extract_i18n, extract_user};
 
 use crate::models::EditPostResp;
 
