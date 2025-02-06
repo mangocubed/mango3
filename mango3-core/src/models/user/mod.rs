@@ -74,7 +74,7 @@ impl User {
 
     pub async fn avatar_image_blob(&self, core_context: &CoreContext) -> Option<sqlx::Result<Blob>> {
         if let Some(id) = self.avatar_image_blob_id {
-            Some(Blob::get_by_id(core_context, id, Some(self)).await)
+            Some(Blob::get_by_id(core_context, id, Some(self), None).await)
         } else {
             None
         }

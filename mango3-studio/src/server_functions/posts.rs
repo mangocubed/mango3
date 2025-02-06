@@ -39,7 +39,7 @@ async fn get_blobs(core_context: &CoreContext, user: &User, website: &Website, i
 
     Blob::all_by_ids(
         &core_context,
-        &ids.iter().map(|id| Uuid::try_parse(id).unwrap()).collect(),
+        ids.iter().map(|id| Uuid::try_parse(id).unwrap()).collect(),
         Some(&user),
         Some(&website),
     )
@@ -86,7 +86,7 @@ pub async fn preview_post(
         .collect::<Vec<HashtagResp>>();
 
     let cover_image_blob = if let Some(id) = cover_image_blob_id.as_ref().and_then(|id| Uuid::try_parse(id).ok()) {
-        Blob::get_by_id(&core_context, id, Some(&user))
+        Blob::get_by_id(&core_context, id, Some(&user), None)
             .await
             .map(|blob| blob.into())
             .ok()
@@ -136,7 +136,7 @@ pub async fn attempt_to_create_post(
     let user = extract_user().await?.unwrap();
     let blobs = get_blobs(&core_context, &user, &website, blob_ids).await;
     let cover_image_blob = if let Some(id) = cover_image_blob_id.as_ref().and_then(|id| Uuid::try_parse(id).ok()) {
-        Blob::get_by_id(&core_context, id, Some(&user)).await.ok()
+        Blob::get_by_id(&core_context, id, Some(&user), None).await.ok()
     } else {
         None
     };
@@ -196,7 +196,7 @@ pub async fn attempt_to_update_post(
     let website = post.website(&core_context).await?;
     let blobs = get_blobs(&core_context, &user, &website, blob_ids).await;
     let cover_image_blob = if let Some(id) = cover_image_blob_id.as_ref().and_then(|id| Uuid::try_parse(id).ok()) {
-        Blob::get_by_id(&core_context, id, Some(&user)).await.ok()
+        Blob::get_by_id(&core_context, id, Some(&user), None).await.ok()
     } else {
         None
     };

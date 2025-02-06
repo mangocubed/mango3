@@ -59,13 +59,13 @@ pub async fn attempt_to_update_website(
     let user = extract_user().await?.unwrap();
 
     let icon_image_blob = if let Some(id) = icon_image_blob_id.as_ref().and_then(|id| Uuid::try_parse(id).ok()) {
-        Blob::get_by_id(&core_context, id, Some(&user)).await.ok()
+        Blob::get_by_id(&core_context, id, Some(&user), None).await.ok()
     } else {
         None
     };
 
     let cover_image_blob = if let Some(id) = cover_image_blob_id.as_ref().and_then(|id| Uuid::try_parse(id).ok()) {
-        Blob::get_by_id(&core_context, id, Some(&user)).await.ok()
+        Blob::get_by_id(&core_context, id, Some(&user), None).await.ok()
     } else {
         None
     };

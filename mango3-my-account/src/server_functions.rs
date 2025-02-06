@@ -113,7 +113,7 @@ pub async fn attempt_to_update_profile(
     let user = extract_user().await?;
 
     let avatar_image_blob = if let Some(id) = avatar_image_blob_id.as_ref().and_then(|id| Uuid::try_parse(id).ok()) {
-        Blob::get_by_id(&core_context, id, user.as_ref()).await.ok()
+        Blob::get_by_id(&core_context, id, user.as_ref(), None).await.ok()
     } else {
         None
     };

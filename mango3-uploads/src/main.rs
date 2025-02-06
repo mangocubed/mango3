@@ -30,7 +30,7 @@ async fn get_blob(
     Path(id): Path<Uuid>,
     Query(params): Query<BlobQueryParams>,
 ) -> impl IntoResponse {
-    let blob = Blob::get_by_id(&core_context, id, None)
+    let blob = Blob::get_by_id(&core_context, id, None, None)
         .await
         .map_err(|_| (StatusCode::NOT_FOUND, "FILE NOT FOUND"))?;
 
