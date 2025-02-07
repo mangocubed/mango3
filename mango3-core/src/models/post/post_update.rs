@@ -77,9 +77,6 @@ impl Post {
                 hashtag_ids,
                 cover_image_blob_id,
                 blob_ids,
-                (SELECT COUNT(*) FROM post_views WHERE post_id = posts.id LIMIT 1) AS "views_count!",
-                (SELECT COUNT(*) FROM post_comments WHERE post_id = posts.id LIMIT 1) AS "comments_count!",
-                (SELECT COUNT(*) FROM post_reactions WHERE post_id = posts.id LIMIT 1) AS "reactions_count!",
                 published_at,
                 modified_at,
                 NULL::real AS search_rank,
@@ -100,7 +97,7 @@ impl Post {
 
         match result {
             Ok(post) => {
-                post.cache_remove().await;
+                post.cache_remove(core_context).await;
 
                 Ok(post)
             }

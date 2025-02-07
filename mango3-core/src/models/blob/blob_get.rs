@@ -24,7 +24,7 @@ impl Blob {
         }
 
         if let Some(website) = website {
-            if website.id != blob.user_id {
+            if Some(website.id) != blob.website_id {
                 return Err(sqlx::Error::RowNotFound);
             }
         }

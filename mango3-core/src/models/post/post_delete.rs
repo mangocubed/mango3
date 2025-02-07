@@ -13,7 +13,7 @@ impl Post {
             .map(|_| ())
             .map_err(|_| ValidationErrors::default())?;
 
-        self.cache_remove().await;
+        self.cache_remove(core_context).await;
 
         Ok(())
     }

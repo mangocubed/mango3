@@ -25,15 +25,7 @@ pub async fn current_post(id: String) -> Result<Post, ServerFnError> {
 
     let core_context = expect_core_context();
 
-    Ok(Post::get_by_id(
-        &core_context,
-        Uuid::try_parse(&id)?,
-        Some(&website),
-        None,
-        Some(true),
-        None,
-    )
-    .await?)
+    Ok(Post::get_by_id(&core_context, Uuid::try_parse(&id)?, Some(&website), None, Some(true)).await?)
 }
 
 #[server]
