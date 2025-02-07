@@ -19,7 +19,7 @@ impl Website {
             cursor_page_params,
             |node: Self| node.id,
             move |core_context, after| async move {
-                Self::get_by_id(core_context, after, user, Some(query))
+                Self::get_by_id_with_search_rank(core_context, after, user, query)
                     .await
                     .ok()
             },
