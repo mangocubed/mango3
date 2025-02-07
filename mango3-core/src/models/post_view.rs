@@ -20,7 +20,7 @@ pub struct PostView {
 }
 
 impl PostView {
-    pub async fn count(core_context: &CoreContext, post: &Post) -> sqlx::Result<i64> {
+    pub async fn count(core_context: &CoreContext, post: &Post) -> i64 {
         query!(
             "SELECT COUNT(*) FROM post_views WHERE post_id = $1 LIMIT 1",
             post.id, // $1
@@ -28,6 +28,7 @@ impl PostView {
         .fetch_one(&core_context.db_pool)
         .await
         .map(|record| record.count.unwrap_or_default())
+        .unwrap_or_default()
     }
 
     pub async fn delete_all(core_context: &CoreContext, user: &User) -> Result<(), ValidationErrors> {
@@ -87,7 +88,7 @@ mod tests {
         let core_context = setup_core_context().await;
         let post = insert_test_post(&core_context, None, None).await;
 
-        let count = PostView::count(&core_context, &post).await.unwrap();
+        let count = PostView::count(&core_context, &post).await;
 
         assert_eq!(count, 0);
     }
