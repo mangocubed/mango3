@@ -1,9 +1,15 @@
+use std::fmt::Display;
+
 use argon2::password_hash::rand_core::OsRng;
 use argon2::password_hash::SaltString;
 use argon2::{Argon2, PasswordHash, PasswordHasher, PasswordVerifier};
+use cached::async_sync::OnceCell;
+use cached::{AsyncRedisCache, IOCachedAsync};
 use rand::distr::Alphanumeric;
 use rand::{rng, Rng};
 use rust_iso3166::CountryCode;
+use serde::de::DeserializeOwned;
+use serde::Serialize;
 use sqlx::types::chrono::NaiveDate;
 
 mod blob;
@@ -16,6 +22,7 @@ mod post_comment;
 mod post_reaction;
 mod post_view;
 mod user;
+mod user_password_reset;
 mod user_session;
 mod website;
 
@@ -29,8 +36,25 @@ pub use post_comment::PostComment;
 pub use post_reaction::PostReaction;
 pub use post_view::PostView;
 pub use user::User;
+pub use user_password_reset::UserPasswordReset;
 pub use user_session::UserSession;
 pub use website::Website;
+
+trait AsyncRedisCacheTrait<K> {
+    async fn cache_remove(&self, key: &K);
+}
+
+impl<K, V> AsyncRedisCacheTrait<K> for OnceCell<AsyncRedisCache<K, V>>
+where
+    K: Display + Send + Sync,
+    V: DeserializeOwned + Send + Serialize + Sync,
+{
+    async fn cache_remove(&self, key: &K) {
+        if let Some(cache) = self.get() {
+            let _ = cache.cache_remove(key).await;
+        }
+    }
+}
 
 fn encrypt_password(password: &str) -> String {
     let salt = SaltString::generate(&mut OsRng);
