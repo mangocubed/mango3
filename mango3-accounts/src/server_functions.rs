@@ -8,7 +8,7 @@ use mango3_leptos_utils::models::ActionFormResp;
 #[cfg(feature = "ssr")]
 use mango3_core::config::BASIC_CONFIG;
 #[cfg(feature = "ssr")]
-use mango3_core::models::{InvitationCode, User};
+use mango3_core::models::{InvitationCode, User, UserPasswordReset};
 #[cfg(feature = "ssr")]
 use mango3_leptos_utils::ssr::{expect_core_context, extract_i18n, require_no_authentication};
 
@@ -81,7 +81,7 @@ pub async fn attempt_to_send_password_reset_code(username_or_email: String) -> R
         return ActionFormResp::new_with_error(&i18n);
     };
 
-    let result = user.send_password_reset_confirmation_code(&core_context).await;
+    let result = UserPasswordReset::delete_and_insert(&core_context, &user).await;
 
     ActionFormResp::new(&i18n, result)
 }

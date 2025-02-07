@@ -65,7 +65,6 @@ impl User {
                 email_confirmation_code_id,
                 email_confirmed_at,
                 encrypted_password,
-                password_reset_confirmation_code_id,
                 display_name,
                 full_name,
                 birthdate,

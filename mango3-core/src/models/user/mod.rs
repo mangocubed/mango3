@@ -1,4 +1,6 @@
-use cached::IOCachedAsync;
+use std::fmt::Display;
+
+use futures::future;
 use rust_iso3166::CountryCode;
 use serde::{Deserialize, Serialize};
 use sqlx::types::chrono::{DateTime, NaiveDate, Utc};
@@ -11,7 +13,7 @@ use crate::locales::I18n;
 use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
 use crate::CoreContext;
 
-use super::{Blob, Hashtag, Website};
+use super::{AsyncRedisCacheTrait, Blob, Hashtag, Website};
 
 mod user_bio;
 mod user_email;
@@ -22,6 +24,7 @@ mod user_password;
 mod user_profile;
 
 use user_bio::USER_BIO_HTML;
+use user_get::{GET_USER_BY_ID, GET_USER_BY_USERNAME, GET_USER_BY_USERNAME_OR_EMAIL};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct User {
@@ -30,9 +33,7 @@ pub struct User {
     pub email: String,
     email_confirmation_code_id: Option<Uuid>,
     pub email_confirmed_at: Option<DateTime<Utc>>,
-    #[serde(skip_deserializing, skip_serializing)]
     encrypted_password: String,
-    password_reset_confirmation_code_id: Option<Uuid>,
     pub display_name: String,
     pub full_name: String,
     pub birthdate: NaiveDate,
@@ -44,6 +45,12 @@ pub struct User {
     pub role: UserRole,
     pub created_at: DateTime<Utc>,
     pub updated_at: Option<DateTime<Utc>>,
+}
+
+impl Display for User {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.id)
+    }
 }
 
 impl User {
@@ -81,9 +88,14 @@ impl User {
     }
 
     async fn cache_remove(&self) {
-        if let Some(cache) = USER_BIO_HTML.get() {
-            let _ = cache.cache_remove(&self.id).await;
-        }
+        future::join5(
+            USER_BIO_HTML.cache_remove(&self.id),
+            GET_USER_BY_ID.cache_remove(&self.id),
+            GET_USER_BY_USERNAME.cache_remove(&self.username.to_lowercase()),
+            GET_USER_BY_USERNAME_OR_EMAIL.cache_remove(&self.username.to_lowercase()),
+            GET_USER_BY_USERNAME_OR_EMAIL.cache_remove(&self.email.to_lowercase()),
+        )
+        .await;
     }
 
     pub async fn can_insert_website(&self, core_context: &CoreContext) -> bool {
