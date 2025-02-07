@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.0.0-alpha.6] - 2025-02-07
+
+### Added
+
+- Show attached images at the bottom of the post. (https://github.com/mangocubed/mango3/pull/189)
+- Store rendered content in a cache. (https://github.com/mangocubed/mango3/pull/191, https://github.com/mangocubed/mango3/pull/192, https://github.com/mangocubed/mango3/pull/193)
+- Store blob queries in a cache. (https://github.com/mangocubed/mango3/pull/194)
+- Store user queries in a cache. (https://github.com/mangocubed/mango3/pull/196)
+- Store website queries in a cache. (https://github.com/mangocubed/mango3/pull/197)
+- Store post queries in a cache. (https://github.com/mangocubed/mango3/pull/198)
+- Store user session queries in a cache. (https://github.com/mangocubed/mango3/pull/199)
+
+### Changed
+
+- Bump lettre from 0.11.11 to 0.11.12. (https://github.com/mangocubed/mango3/pull/188)
+- Bump uuid from 1.12.1 to 1.13.1. (https://github.com/mangocubed/mango3/pull/190)
+- Set env var LEPTOS_WASM_OPT_VERSION=version_122 in GitHub Actions. (https://github.com/mangocubed/mango3/pull/200)
+
 ## [0.0.0-alpha.5] - 2025-02-04
 
 ### Added
