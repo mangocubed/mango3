@@ -46,9 +46,7 @@ pub async fn attempt_to_upload_file(data: MultipartData) -> Result<Option<BlobRe
     let user = extract_user().await?.unwrap();
 
     let website = if let Some(website_id) = website_id {
-        Website::get_by_id(&core_context, website_id, Some(&user), None)
-            .await
-            .ok()
+        Website::get_by_id(&core_context, website_id, Some(&user)).await.ok()
     } else {
         None
     };

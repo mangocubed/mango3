@@ -123,9 +123,7 @@ pub async fn my_website(id: &str) -> Result<Option<Website>, ServerFnError> {
     let core_context = expect_core_context();
     let user = extract_user().await?.unwrap();
 
-    Ok(
-        Website::get_by_id(&core_context, Uuid::try_parse(id)?, Some(&user), None)
-            .await
-            .ok(),
-    )
+    Ok(Website::get_by_id(&core_context, Uuid::try_parse(id)?, Some(&user))
+        .await
+        .ok())
 }

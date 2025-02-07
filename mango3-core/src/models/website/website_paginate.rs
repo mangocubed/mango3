@@ -17,7 +17,7 @@ impl Website {
             core_context,
             page_params,
             |node: Self| node.id,
-            move |core_context, after| async move { Self::get_by_id(core_context, after, user, None).await.ok() },
+            move |core_context, after| async move { Self::get_by_id(core_context, after, user).await.ok() },
             move |core_context, cursor_resource, limit| async move {
                 let user_id = user.map(|u| u.id);
                 let cursor_name = cursor_resource.map(|c| c.name.clone());
@@ -69,7 +69,7 @@ impl Website {
             core_context,
             page_params,
             |node: Self| node.id,
-            move |core_context, after| async move { Self::get_by_id(core_context, after, user, None).await.ok() },
+            move |core_context, after| async move { Self::get_by_id(core_context, after, user).await.ok() },
             move |core_context, cursor_resource, limit| async move {
                 let user_id = user.map(|u| u.id);
                 let (cursor_id, cursor_created_at) = cursor_resource
