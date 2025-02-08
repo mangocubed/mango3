@@ -3,7 +3,8 @@ use cached::stores::AsyncRedisCache;
 use cached::RedisCacheError;
 use sqlx::types::uuid::Uuid;
 
-use crate::async_redis_cache;
+use crate::constants::PREFIX_USER_BIO_HTML;
+use crate::models::async_redis_cache;
 use crate::utils::parse_html;
 
 use super::User;
@@ -18,7 +19,7 @@ impl User {
     map_error = r##"|err| err"##,
     convert = r#"{ user.id }"#,
     ty = "AsyncRedisCache<Uuid, String>",
-    create = r##" { async_redis_cache("user_bio_html").await } "##
+    create = r##" { async_redis_cache(PREFIX_USER_BIO_HTML).await } "##
 )]
 pub(crate) async fn user_bio_html(user: &User) -> Result<String, RedisCacheError> {
     Ok(parse_html(&user.bio, true))

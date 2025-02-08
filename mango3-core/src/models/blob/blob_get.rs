@@ -3,8 +3,9 @@ use cached::AsyncRedisCache;
 use sqlx::query_as;
 use sqlx::types::Uuid;
 
-use crate::models::{User, Website};
-use crate::{async_redis_cache, CoreContext};
+use crate::constants::PREFIX_GET_BLOB_BY_ID;
+use crate::models::{async_redis_cache, User, Website};
+use crate::CoreContext;
 
 use super::Blob;
 
@@ -37,7 +38,7 @@ impl Blob {
     map_error = r##"|_| sqlx::Error::RowNotFound"##,
     convert = r#"{ id }"#,
     ty = "AsyncRedisCache<Uuid, Blob>",
-    create = r##" { async_redis_cache("get_blob_by_id").await } "##
+    create = r##" { async_redis_cache(PREFIX_GET_BLOB_BY_ID).await } "##
 )]
 pub(crate) async fn get_blob_by_id(core_context: &CoreContext, id: Uuid) -> sqlx::Result<Blob> {
     query_as!(

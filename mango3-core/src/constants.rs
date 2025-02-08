@@ -155,3 +155,20 @@ pub(crate) const HASHTAG_LOOKAROUND: [Option<&str>; 3] = [Some(" "), Some("\n"),
 
 pub(crate) const KEY_TEXT_CONFIRM_YOUR_EMAIL: &str = "confirm-your-email";
 pub(crate) const KEY_TEXT_RESET_YOUR_PASSWORD: &str = "reset-your-password";
+
+pub(crate) const PREFIX_GET_BLOB_BY_ID: &str = "get_blob_by_id";
+pub(crate) const PREFIX_GET_POST_BY_ID: &str = "get_post_by_id";
+pub(crate) const PREFIX_GET_POST_BY_SLUG: &str = "get_post_by_slug";
+pub(crate) const PREFIX_GET_USER_BY_ID: &str = "get_user_by_id";
+pub(crate) const PREFIX_GET_USER_BY_USERNAME: &str = "get_user_by_username";
+pub(crate) const PREFIX_GET_USER_BY_USERNAME_OR_EMAIL: &str = "get_user_by_username_or_email";
+pub(crate) const PREFIX_GET_USER_PASSWORD_RESET_GET_BY_USER: &str = "get_user_password_reset_get_by_user";
+pub(crate) const PREFIX_GET_USER_SESSION_BY_ID: &str = "get_user_session_by_id";
+pub(crate) const PREFIX_GET_WEBSITE_BY_ID: &str = "get_website_by_id";
+pub(crate) const PREFIX_GET_WEBSITE_BY_SUBDOMAIN: &str = "get_website_by_subdomain";
+pub(crate) const PREFIX_POST_COMMENT_CONTENT_HTML: &str = "post_comment_content_html";
+pub(crate) const PREFIX_POST_CONTENT_HTML: &str = "post_content_html";
+pub(crate) const PREFIX_POST_CONTENT_PREVIEW_HTML: &str = "post_content_preview_html";
+pub(crate) const PREFIX_USER_BIO_HTML: &str = "user_bio_html";
+pub(crate) const PREFIX_WEBSITE_DESCRIPTION_HTML: &str = "website_description_html";
+pub(crate) const PREFIX_WEBSITE_DESCRIPTION_PREVIEW_HTML: &str = "website_description_preview_html";

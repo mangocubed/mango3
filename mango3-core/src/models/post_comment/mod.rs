@@ -1,11 +1,11 @@
-use cached::IOCachedAsync;
 use sqlx::types::chrono::{DateTime, Utc};
 use sqlx::types::Uuid;
 use sqlx::{query, query_as};
 
-use super::{Post, User};
+use super::{AsyncRedisCacheTrait, Post, User};
 
 use crate::config::MISC_CONFIG;
+use crate::constants::PREFIX_POST_COMMENT_CONTENT_HTML;
 use crate::enums::Input;
 use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
 use crate::CoreContext;
@@ -26,10 +26,10 @@ pub struct PostComment {
 }
 
 impl PostComment {
-    fn cache_remove(&self) {
+    async fn cache_remove(&self) {
         POST_COMMENT_CONTENT_HTML
-            .get()
-            .map(|cache| cache.cache_remove(&self.id));
+            .cache_remove(PREFIX_POST_COMMENT_CONTENT_HTML, &self.id)
+            .await;
     }
 
     pub async fn count(core_context: &CoreContext, post: &Post) -> i64 {
@@ -50,7 +50,7 @@ impl PostComment {
             .map(|_| ())
             .map_err(|_| ValidationErrors::default())?;
 
-        self.cache_remove();
+        self.cache_remove().await;
 
         Ok(())
     }
