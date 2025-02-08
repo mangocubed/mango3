@@ -65,13 +65,14 @@ fn push_response<'reg, 'rc, T>(
 where
     T: attohttpc::body::Body,
 {
-    if let Ok(response) = request_builder
+    if let Ok(text) = request_builder
         .send()
         .map_err(|err| RenderErrorReason::Other(err.to_string()))?
-        .json::<Value>()
+        .text()
     {
         if let Some(template) = helper.template() {
-            let block_context = create_block(&PathAndJson::new(None, ScopedJson::from(response)));
+            let value = serde_json::from_str::<Value>(&text).unwrap_or_else(|_| Value::String(text));
+            let block_context = create_block(&PathAndJson::new(None, ScopedJson::from(value)));
 
             render_context.push_block(block_context);
 
