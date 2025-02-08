@@ -7,10 +7,10 @@ use sqlx::types::chrono::{DateTime, Utc};
 use sqlx::types::Uuid;
 use sqlx::{query, query_as};
 
-use crate::constants::KEY_TEXT_RESET_YOUR_PASSWORD;
-use crate::models::{ConfirmationCode, User};
+use crate::constants::{KEY_TEXT_RESET_YOUR_PASSWORD, PREFIX_GET_USER_PASSWORD_RESET_GET_BY_USER};
+use crate::models::{async_redis_cache, ConfirmationCode, User};
 use crate::validator::ValidationErrors;
-use crate::{async_redis_cache, CoreContext};
+use crate::CoreContext;
 
 use super::AsyncRedisCacheTrait;
 
@@ -37,7 +37,9 @@ impl UserPasswordReset {
             .map(|_| ())
             .map_err(|_| ValidationErrors::default())?;
 
-        GET_USER_PASSWORD_RESET_GET_BY_USER.cache_remove(&self.user_id).await;
+        GET_USER_PASSWORD_RESET_GET_BY_USER
+            .cache_remove(PREFIX_GET_USER_PASSWORD_RESET_GET_BY_USER, &self.user_id)
+            .await;
 
         Ok(())
     }
@@ -80,7 +82,7 @@ impl UserPasswordReset {
     map_error = r##"|_| sqlx::Error::RowNotFound"##,
     convert = r#"{ user.id }"#,
     ty = "AsyncRedisCache<Uuid, UserPasswordReset>",
-    create = r##" { async_redis_cache("get_user_password_reset_get_by_user").await } "##
+    create = r##" { async_redis_cache(PREFIX_GET_USER_PASSWORD_RESET_GET_BY_USER).await } "##
 )]
 pub async fn get_user_password_reset_get_by_user(
     core_context: &CoreContext,

@@ -8,6 +8,10 @@ use sqlx::types::Uuid;
 use url::Url;
 
 use crate::config::BASIC_CONFIG;
+use crate::constants::{
+    PREFIX_GET_WEBSITE_BY_ID, PREFIX_GET_WEBSITE_BY_SUBDOMAIN, PREFIX_WEBSITE_DESCRIPTION_HTML,
+    PREFIX_WEBSITE_DESCRIPTION_PREVIEW_HTML,
+};
 use crate::enums::{Input, InputError};
 use crate::validator::{Validator, ValidatorTrait};
 use crate::CoreContext;
@@ -53,10 +57,10 @@ impl Display for Website {
 impl Website {
     async fn cache_remove(&self) {
         future::join4(
-            WEBSITE_DESCRIPTION_HTML.cache_remove(&self.id),
-            WEBSITE_DESCRIPTION_PREVIEW_HTML.cache_remove(&self.id),
-            GET_WEBSITE_BY_ID.cache_remove(&self.id),
-            GET_WEBSITE_BY_SUBDOMAIN.cache_remove(&self.subdomain.to_lowercase()),
+            WEBSITE_DESCRIPTION_HTML.cache_remove(PREFIX_WEBSITE_DESCRIPTION_HTML, &self.id),
+            WEBSITE_DESCRIPTION_PREVIEW_HTML.cache_remove(PREFIX_WEBSITE_DESCRIPTION_PREVIEW_HTML, &self.id),
+            GET_WEBSITE_BY_ID.cache_remove(PREFIX_GET_WEBSITE_BY_ID, &self.id),
+            GET_WEBSITE_BY_SUBDOMAIN.cache_remove(PREFIX_GET_WEBSITE_BY_SUBDOMAIN, &self.subdomain.to_lowercase()),
         )
         .await;
     }

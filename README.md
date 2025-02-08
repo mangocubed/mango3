@@ -44,8 +44,8 @@ A free and open source website builder and content management system platform wr
 | BASIC_SUPPORT_EMAIL_ADDRESS     | String  | support@mango3.local                                             |
 | BASIC_TERMS_OF_SERVICE_URL      | String  |                                                                  |
 | BASIC_TITLE                     | String  | Mango³ Dev                                                       |
-| CACHE_TTL                       | String  | 3600                                                             |
 | CACHE_REDIS_URL                 | String  | redis://127.0.0.1:6379/2                                         |
+| CACHE_TTL                       | String  | 3600                                                             |
 | DATABASE_MAX_CONNECTIONS        | Integer | 5                                                                |
 | DATABASE_URL                    | String  | postgres://mango3:mango3@127.0.0.1:5432/mango3_dev               |
 | JOBS_REDIS_URL                  | String  | redis://127.0.0.1:6379/0                                         |

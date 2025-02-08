@@ -8,11 +8,12 @@ use sqlx::types::chrono::{DateTime, Utc};
 use sqlx::types::Uuid;
 use sqlx::{query, query_as};
 
+use crate::constants::PREFIX_GET_USER_SESSION_BY_ID;
 use crate::enums::MailerJobCommand;
+use crate::models::async_redis_cache;
 use crate::validator::ValidationErrors;
-use crate::{async_redis_cache, CoreContext};
+use crate::CoreContext;
 
-use super::user_password_reset::GET_USER_PASSWORD_RESET_GET_BY_USER;
 use super::{AsyncRedisCacheTrait, User};
 
 #[derive(Clone, Deserialize, Serialize)]
@@ -44,7 +45,9 @@ impl UserSession {
             .map(|_| ())
             .map_err(|_| ValidationErrors::default())?;
 
-        GET_USER_PASSWORD_RESET_GET_BY_USER.cache_remove(&self.id).await;
+        GET_USER_SESSION_BY_ID
+            .cache_remove(PREFIX_GET_USER_SESSION_BY_ID, &self.id)
+            .await;
 
         Ok(())
     }
@@ -100,7 +103,7 @@ impl UserSession {
     map_error = r##"|_| sqlx::Error::RowNotFound"##,
     convert = r#"{ id }"#,
     ty = "AsyncRedisCache<Uuid, UserSession>",
-    create = r##" { async_redis_cache("get_user_session_by_id").await } "##
+    create = r##" { async_redis_cache(PREFIX_GET_USER_SESSION_BY_ID).await } "##
 )]
 pub(crate) async fn get_user_session_by_id(core_context: &CoreContext, id: Uuid) -> Result<UserSession, sqlx::Error> {
     query_as!(UserSession, "SELECT * FROM user_sessions WHERE id = $1 LIMIT 1", id)

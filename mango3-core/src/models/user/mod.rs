@@ -8,6 +8,9 @@ use sqlx::types::Uuid;
 use url::Url;
 
 use crate::config::BASIC_CONFIG;
+use crate::constants::{
+    PREFIX_GET_USER_BY_ID, PREFIX_GET_USER_BY_USERNAME, PREFIX_GET_USER_BY_USERNAME_OR_EMAIL, PREFIX_USER_BIO_HTML,
+};
 use crate::enums::{Input, InputError, UserRole};
 use crate::locales::I18n;
 use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
@@ -89,11 +92,13 @@ impl User {
 
     async fn cache_remove(&self) {
         future::join5(
-            USER_BIO_HTML.cache_remove(&self.id),
-            GET_USER_BY_ID.cache_remove(&self.id),
-            GET_USER_BY_USERNAME.cache_remove(&self.username.to_lowercase()),
-            GET_USER_BY_USERNAME_OR_EMAIL.cache_remove(&self.username.to_lowercase()),
-            GET_USER_BY_USERNAME_OR_EMAIL.cache_remove(&self.email.to_lowercase()),
+            USER_BIO_HTML.cache_remove(PREFIX_USER_BIO_HTML, &self.id),
+            GET_USER_BY_ID.cache_remove(PREFIX_GET_USER_BY_ID, &self.id),
+            GET_USER_BY_USERNAME.cache_remove(PREFIX_GET_USER_BY_USERNAME, &self.username.to_lowercase()),
+            GET_USER_BY_USERNAME_OR_EMAIL
+                .cache_remove(PREFIX_GET_USER_BY_USERNAME_OR_EMAIL, &self.username.to_lowercase()),
+            GET_USER_BY_USERNAME_OR_EMAIL
+                .cache_remove(PREFIX_GET_USER_BY_USERNAME_OR_EMAIL, &self.email.to_lowercase()),
         )
         .await;
     }

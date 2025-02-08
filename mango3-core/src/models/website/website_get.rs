@@ -3,8 +3,9 @@ use cached::AsyncRedisCache;
 use sqlx::query_as;
 use sqlx::types::Uuid;
 
-use crate::models::User;
-use crate::{async_redis_cache, CoreContext};
+use crate::constants::{PREFIX_GET_WEBSITE_BY_ID, PREFIX_GET_WEBSITE_BY_SUBDOMAIN};
+use crate::models::{async_redis_cache, User};
+use crate::CoreContext;
 
 use super::Website;
 
@@ -65,7 +66,7 @@ impl Website {
     map_error = r##"|_| sqlx::Error::RowNotFound"##,
     convert = r#"{ id }"#,
     ty = "AsyncRedisCache<Uuid, Website>",
-    create = r##" { async_redis_cache("get_website_by_id").await } "##
+    create = r##" { async_redis_cache(PREFIX_GET_WEBSITE_BY_ID).await } "##
 )]
 pub(crate) async fn get_website_by_id(core_context: &CoreContext, id: Uuid) -> sqlx::Result<Website> {
     query_as!(
@@ -97,7 +98,7 @@ pub(crate) async fn get_website_by_id(core_context: &CoreContext, id: Uuid) -> s
     map_error = r##"|_| sqlx::Error::RowNotFound"##,
     convert = r#"{ subdomain.to_lowercase() }"#,
     ty = "AsyncRedisCache<String, Website>",
-    create = r##" { async_redis_cache("get_website_by_subdomain").await } "##
+    create = r##" { async_redis_cache(PREFIX_GET_WEBSITE_BY_SUBDOMAIN).await } "##
 )]
 pub(crate) async fn get_website_by_subdomain(core_context: &CoreContext, subdomain: &str) -> sqlx::Result<Website> {
     if subdomain.is_empty() {

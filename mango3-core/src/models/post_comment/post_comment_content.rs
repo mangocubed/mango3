@@ -3,7 +3,8 @@ use cached::stores::AsyncRedisCache;
 use cached::RedisCacheError;
 use sqlx::types::uuid::Uuid;
 
-use crate::async_redis_cache;
+use crate::constants::PREFIX_POST_COMMENT_CONTENT_HTML;
+use crate::models::async_redis_cache;
 use crate::utils::parse_html;
 
 use super::PostComment;
@@ -18,7 +19,7 @@ impl PostComment {
     map_error = r##"|err| err"##,
     convert = r#"{ comment.id }"#,
     ty = "AsyncRedisCache<Uuid, String>",
-    create = r##" { async_redis_cache("post_comment_content_html").await } "##
+    create = r##" { async_redis_cache(PREFIX_POST_COMMENT_CONTENT_HTML).await } "##
 )]
 pub(crate) async fn post_comment_content_html(comment: &PostComment) -> Result<String, RedisCacheError> {
     Ok(parse_html(&comment.content, true))

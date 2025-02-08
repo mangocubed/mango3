@@ -3,8 +3,9 @@ use cached::AsyncRedisCache;
 use sqlx::query_as;
 use sqlx::types::uuid::Uuid;
 
-use crate::models::{User, Website};
-use crate::{async_redis_cache, CoreContext};
+use crate::constants::{PREFIX_GET_POST_BY_ID, PREFIX_GET_POST_BY_SLUG};
+use crate::models::{async_redis_cache, User, Website};
+use crate::CoreContext;
 
 use super::Post;
 
@@ -99,7 +100,7 @@ impl Post {
     map_error = r##"|_| sqlx::Error::RowNotFound"##,
     convert = r#"{ id }"#,
     ty = "AsyncRedisCache<Uuid, Post>",
-    create = r##" { async_redis_cache("get_post_by_id").await } "##
+    create = r##" { async_redis_cache(PREFIX_GET_POST_BY_ID).await } "##
 )]
 pub(crate) async fn get_post_by_id(core_context: &CoreContext, id: Uuid) -> sqlx::Result<Post> {
     query_as!(
@@ -132,7 +133,7 @@ pub(crate) async fn get_post_by_id(core_context: &CoreContext, id: Uuid) -> sqlx
     map_error = r##"|_| sqlx::Error::RowNotFound"##,
     convert = r#"{ Post::cache_key_get_by_slug(slug, website) }"#,
     ty = "AsyncRedisCache<String, Post>",
-    create = r##" { async_redis_cache("get_post_by_slug").await } "##
+    create = r##" { async_redis_cache(PREFIX_GET_POST_BY_SLUG).await } "##
 )]
 pub(crate) async fn get_post_by_slug(core_context: &CoreContext, slug: &str, website: &Website) -> sqlx::Result<Post> {
     if slug.is_empty() {

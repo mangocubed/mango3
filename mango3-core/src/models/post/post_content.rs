@@ -3,8 +3,8 @@ use cached::stores::AsyncRedisCache;
 use cached::RedisCacheError;
 use sqlx::types::uuid::Uuid;
 
-use crate::async_redis_cache;
-use crate::constants::REGEX_HANDLEBARS;
+use crate::constants::{PREFIX_POST_CONTENT_HTML, PREFIX_POST_CONTENT_PREVIEW_HTML, REGEX_HANDLEBARS};
+use crate::models::async_redis_cache;
 use crate::utils::{parse_html, render_handlebars};
 
 use super::Post;
@@ -23,7 +23,7 @@ impl Post {
     map_error = r##"|err| err"##,
     convert = r#"{ post.id }"#,
     ty = "AsyncRedisCache<Uuid, String>",
-    create = r##" { async_redis_cache("post_content_html").await } "##
+    create = r##" { async_redis_cache(PREFIX_POST_CONTENT_HTML).await } "##
 )]
 pub(crate) async fn post_content_html(post: &Post) -> Result<String, RedisCacheError> {
     Ok(parse_html(
@@ -36,7 +36,7 @@ pub(crate) async fn post_content_html(post: &Post) -> Result<String, RedisCacheE
     map_error = r##"|err| err"##,
     convert = r#"{ post.id }"#,
     ty = "AsyncRedisCache<Uuid, String>",
-    create = r##" { async_redis_cache("post_content_preview_html").await } "##
+    create = r##" { async_redis_cache(PREFIX_POST_CONTENT_PREVIEW_HTML).await } "##
 )]
 pub(crate) async fn post_content_preview_html(post: &Post) -> Result<String, RedisCacheError> {
     Ok(parse_html(

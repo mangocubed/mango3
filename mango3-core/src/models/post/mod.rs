@@ -8,7 +8,10 @@ use sqlx::types::{JsonValue, Uuid};
 use url::Url;
 
 use crate::config::MISC_CONFIG;
-use crate::constants::{BLACKLISTED_SLUGS, REGEX_SLUG};
+use crate::constants::{
+    BLACKLISTED_SLUGS, PREFIX_GET_POST_BY_ID, PREFIX_GET_POST_BY_SLUG, PREFIX_POST_CONTENT_HTML,
+    PREFIX_POST_CONTENT_PREVIEW_HTML, REGEX_SLUG,
+};
 use crate::enums::{Input, InputError};
 use crate::validator::{Validator, ValidatorTrait};
 use crate::CoreContext;
@@ -59,14 +62,17 @@ impl Post {
 
     async fn cache_remove(&self, core_context: &CoreContext) {
         future::join4(
-            POST_CONTENT_HTML.cache_remove(&self.id),
-            POST_CONTENT_PREVIEW_HTML.cache_remove(&self.id),
-            GET_POST_BY_ID.cache_remove(&self.id),
+            POST_CONTENT_HTML.cache_remove(PREFIX_POST_CONTENT_HTML, &self.id),
+            POST_CONTENT_PREVIEW_HTML.cache_remove(PREFIX_POST_CONTENT_PREVIEW_HTML, &self.id),
+            GET_POST_BY_ID.cache_remove(PREFIX_GET_POST_BY_ID, &self.id),
             async {
                 let website = self.website(core_context).await.expect("Could not get website");
 
                 GET_POST_BY_SLUG
-                    .cache_remove(&Self::cache_key_get_by_slug(&self.slug, &website))
+                    .cache_remove(
+                        PREFIX_GET_POST_BY_SLUG,
+                        &Self::cache_key_get_by_slug(&self.slug, &website),
+                    )
                     .await
             },
         )

@@ -3,8 +3,10 @@ use cached::AsyncRedisCache;
 use sqlx::query_as;
 use sqlx::types::Uuid;
 
+use crate::constants::{PREFIX_GET_USER_BY_ID, PREFIX_GET_USER_BY_USERNAME, PREFIX_GET_USER_BY_USERNAME_OR_EMAIL};
 use crate::enums::UserRole;
-use crate::{async_redis_cache, CoreContext};
+use crate::models::async_redis_cache;
+use crate::CoreContext;
 
 use super::User;
 
@@ -26,7 +28,7 @@ impl User {
     map_error = r##"|_| sqlx::Error::RowNotFound"##,
     convert = r#"{ id }"#,
     ty = "AsyncRedisCache<Uuid, User>",
-    create = r##" { async_redis_cache("get_user_by_id").await } "##
+    create = r##" { async_redis_cache(PREFIX_GET_USER_BY_ID).await } "##
 )]
 pub(crate) async fn get_user_by_id(core_context: &CoreContext, id: Uuid) -> sqlx::Result<User> {
     query_as!(
@@ -60,7 +62,7 @@ pub(crate) async fn get_user_by_id(core_context: &CoreContext, id: Uuid) -> sqlx
     map_error = r##"|_| sqlx::Error::RowNotFound"##,
     convert = r#"{ username.to_lowercase() }"#,
     ty = "AsyncRedisCache<String, User>",
-    create = r##" { async_redis_cache("get_user_by_username").await } "##
+    create = r##" { async_redis_cache(PREFIX_GET_USER_BY_USERNAME).await } "##
 )]
 pub(crate) async fn get_user_by_username(core_context: &CoreContext, username: &str) -> sqlx::Result<User> {
     if username.is_empty() {
@@ -98,7 +100,7 @@ pub(crate) async fn get_user_by_username(core_context: &CoreContext, username: &
     map_error = r##"|_| sqlx::Error::RowNotFound"##,
     convert = r#"{ username_or_email.to_lowercase() }"#,
     ty = "AsyncRedisCache<String, User>",
-    create = r##" { async_redis_cache("get_user_by_username_or_email").await } "##
+    create = r##" { async_redis_cache(PREFIX_GET_USER_BY_USERNAME_OR_EMAIL).await } "##
 )]
 pub(crate) async fn get_user_by_username_or_email(
     core_context: &CoreContext,
