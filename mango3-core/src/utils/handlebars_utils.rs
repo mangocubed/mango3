@@ -71,7 +71,7 @@ where
         .text()
     {
         if let Some(template) = helper.template() {
-            let value = serde_json::from_str::<Value>(&text).unwrap_or_else(|_| Value::String(text));
+            let value = serde_json::from_str::<Value>(&text).unwrap_or(Value::String(text));
             let block_context = create_block(&PathAndJson::new(None, ScopedJson::from(value)));
 
             render_context.push_block(block_context);
