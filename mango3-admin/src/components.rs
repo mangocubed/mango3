@@ -3,7 +3,7 @@ use leptos::text_prop::TextProp;
 use leptos_router::components::Redirect;
 
 use mango3_leptos_utils::context::use_basic_config;
-use mango3_leptos_utils::pages::AuthenticatedPage;
+use mango3_leptos_utils::pages::Page;
 
 use crate::server_functions::is_admin;
 
@@ -16,7 +16,7 @@ pub fn AdminPageContainer(
     let is_admin_resource = Resource::new_blocking(|| (), |_| is_admin());
 
     view! {
-        <AuthenticatedPage class=class title=title>
+        <Page class=class title=title>
             <Suspense>
                 {move || Suspend::new(async move {
                     if let Some(Ok(false)) = is_admin_resource.get() {
@@ -29,6 +29,6 @@ pub fn AdminPageContainer(
             </Suspense>
 
             {children()}
-        </AuthenticatedPage>
+        </Page>
     }
 }
