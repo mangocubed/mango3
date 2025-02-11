@@ -97,7 +97,7 @@ impl Post {
 
         match result {
             Ok(post) => {
-                post.cache_remove(core_context).await;
+                self.cache_remove(core_context).await;
 
                 Ok(post)
             }

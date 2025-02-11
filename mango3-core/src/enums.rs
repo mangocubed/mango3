@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -62,13 +64,25 @@ pub enum UserRole {
     Superuser,
 }
 
+#[derive(Debug)]
+pub struct FromStrError;
+
+impl FromStr for UserRole {
+    type Err = FromStrError;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        match value {
+            "superuser" => Ok(Self::Superuser),
+            "admin" => Ok(Self::Admin),
+            "creator" => Ok(Self::Creator),
+            "user" => Ok(Self::User),
+            _ => Err(FromStrError),
+        }
+    }
+}
+
 impl From<&String> for UserRole {
     fn from(value: &String) -> Self {
-        match value.as_str() {
-            "superuser" => Self::Superuser,
-            "admin" => Self::Admin,
-            "creator" => Self::Creator,
-            _ => Self::User,
-        }
+        Self::from_str(value).expect("User role is invalid")
     }
 }

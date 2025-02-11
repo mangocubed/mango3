@@ -4,7 +4,7 @@ use handlebars::{
     BlockContext, Context, Handlebars, Helper, HelperResult, Output, PathAndJson, RenderContext, RenderError,
     RenderErrorReason, Renderable, ScopedJson,
 };
-use handlebars_misc_helpers::{assign_helpers, json_helpers};
+use handlebars_misc_helpers::{assign_helpers, json_helpers, string_helpers};
 use serde_json::Value;
 
 use crate::constants::REGEX_HANDLEBARS;
@@ -135,6 +135,7 @@ pub fn render_handlebars(input: &str, data: &Value) -> Result<String, RenderErro
 
     assign_helpers::register(&mut registry);
     json_helpers::register(&mut registry);
+    string_helpers::register(&mut registry);
 
     registry.register_helper("http_get", Box::new(helper_http_get));
     registry.register_helper("http_post", Box::new(helper_http_post));

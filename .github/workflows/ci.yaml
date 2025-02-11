@@ -66,6 +66,15 @@ jobs:
                           - *accounts
                           - *css_js
                           - 'mango3-accounts/end2end/**'
+                      admin: &admin
+                          - *workspace
+                          - 'mango3-leptos-utils/**'
+                          - 'mango3-admin/src/**'
+                          - 'mango3-admin/Cargo.toml'
+                      admin_e2e:
+                          - *admin
+                          - *css_js
+                          - 'mango3-admin/end2end/**'
                       cli:
                           - *workspace
                           - 'mango3-cli/**'
@@ -116,6 +125,8 @@ jobs:
             sql: ${{ steps.filter.outputs.sql }}
             accounts: ${{ steps.filter.outputs.accounts }}
             accounts_e2e: ${{ steps.filter.outputs.accounts_e2e }}
+            admin: ${{ steps.filter.outputs.admin }}
+            admin_e2e: ${{ steps.filter.outputs.admin_e2e }}
             cli: ${{ steps.filter.outputs.cli }}
             home: ${{ steps.filter.outputs.home }}
             home_e2e: ${{ steps.filter.outputs.home_e2e }}
@@ -141,6 +152,7 @@ jobs:
         uses: ./.github/workflows/builds.yaml
         with:
             skip_accounts: ${{ needs.changes.outputs.accounts == 'false' }}
+            skip_admin: ${{ needs.changes.outputs.admin == 'false' }}
             skip_cli: ${{ needs.changes.outputs.cli == 'false' }}
             skip_home: ${{ needs.changes.outputs.home == 'false' }}
             skip_monitor: ${{ needs.changes.outputs.monitor == 'false' }}
@@ -156,6 +168,7 @@ jobs:
         with:
             skip_unit: ${{ needs.changes.outputs.rust == 'false' }}
             skip_accounts_e2e: ${{ needs.changes.outputs.accounts_e2e == 'false' }}
+            skip_admin_e2e: ${{ needs.changes.outputs.admin_e2e == 'false' }}
             skip_home_e2e: ${{ needs.changes.outputs.home_e2e == 'false' }}
             skip_my_account_e2e: ${{ needs.changes.outputs.my_account_e2e == 'false' }}
             skip_studio_e2e: ${{ needs.changes.outputs.studio_e2e == 'false' }}

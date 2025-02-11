@@ -7,6 +7,10 @@ on:
                 default: false
                 required: false
                 type: boolean
+            skip_admin_e2e:
+                default: false
+                required: false
+                type: boolean
             skip_accounts_e2e:
                 default: false
                 required: false
@@ -82,6 +86,9 @@ jobs:
               # TODO: Make this step skippable
               # if: ${{ !inputs.skip_accounts_e2e }}
               run: cargo leptos end-to-end --release --project mango3-accounts
+            - name: Test Admin
+              if: ${{ !inputs.skip_admin_e2e }}
+              run: cargo leptos end-to-end --release --project mango3-admin
             - name: Test Home
               if: ${{ !inputs.skip_home_e2e }}
               run: cargo leptos end-to-end --release --project mango3-home
