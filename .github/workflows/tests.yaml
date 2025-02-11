@@ -77,7 +77,7 @@ jobs:
                   sudo sed -i 's/user www-data/user root/' /etc/nginx/nginx.conf
                   sudo sed -i 's|root /mango3|root ${{ github.workspace }}|g' /etc/nginx/sites-enabled/mango3.local
                   sudo sed -i \
-                      's/127.0.0.1 localhost/127.0.0.1 localhost mango3.local accounts.mango3.local my-account.mango3.local studio.mango3.local my-website.mango3.local/' \
+                      's/127.0.0.1 localhost/127.0.0.1 localhost mango3.local accounts.mango3.local admin.mango3.local my-account.mango3.local studio.mango3.local my-website.mango3.local/' \
                       /etc/hosts
                   sudo systemctl restart nginx.service
             - name: Install Playwright
