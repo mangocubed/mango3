@@ -7,6 +7,10 @@ on:
                 default: false
                 required: false
                 type: boolean
+            skip_admin:
+                default: false
+                required: false
+                type: boolean
             skip_cli:
                 default: false
                 required: false
@@ -61,13 +65,23 @@ jobs:
 
     leptos_builds:
         runs-on: ubuntu-24.04
-        if: ${{ !inputs.skip_accounts || !inputs.skip_home || !inputs.skip_my_account || !inputs.skip_studio || !inputs.skip_websites }}
+        if: ${{
+            !inputs.skip_accounts
+            || !inputs.skip_admin
+            || !inputs.skip_home
+            || !inputs.skip_my_account
+            || !inputs.skip_studio
+            || !inputs.skip_websites
+            }}
         steps:
             - uses: actions/checkout@v4
             - uses: ./.github/actions/setup-leptos
             - name: Build Accounts
               if: ${{ !inputs.skip_accounts }}
               run: cargo leptos build --release --project mango3-accounts
+            - name: Build Admin
+              if: ${{ !inputs.skip_admin }}
+              run: cargo leptos build --release --project mango3-admin
             - name: Build Home
               if: ${{ !inputs.skip_home }}
               run: cargo leptos build --release --project mango3-home

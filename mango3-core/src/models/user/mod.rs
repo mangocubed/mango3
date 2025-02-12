@@ -25,6 +25,7 @@ mod user_insert;
 mod user_lock;
 mod user_password;
 mod user_profile;
+mod user_role;
 
 use user_bio::USER_BIO_HTML;
 use user_get::{GET_USER_BY_ID, GET_USER_BY_USERNAME, GET_USER_BY_USERNAME_OR_EMAIL};
