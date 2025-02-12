@@ -4,6 +4,6 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
-clap = "4.5.28"
+clap = "4.5.29"
 tokio = { workspace = true }
 mango3-core = { workspace = true }
