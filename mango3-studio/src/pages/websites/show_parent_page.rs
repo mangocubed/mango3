@@ -45,18 +45,12 @@ pub fn ShowParentPage() -> impl IntoView {
             let selected_website = use_selected_website();
             selected_website.set(website.as_ref().map(|w| w.into()));
             if let Some(website) = website {
-                let website_name = website.name.clone();
                 let home_path = format!("/websites/{}", website.id);
                 let posts_path = format!("{home_path}/posts");
                 let navigation_path = format!("{home_path}/navigation");
                 let edit_path = format!("{home_path}/edit");
-                let text_title = Signal::derive(move || {
-                    format!(
-                        "{} > {}",
-                        async_t_string!(i18n, studio.my_websites).with(|value| value.unwrap_or("My websites")),
-                        website_name,
-                    )
-                });
+                let text_my_websites = async_t_string!(i18n, studio.my_websites).to_signal();
+                let text_title = Signal::derive(move || { format!("{} > {}", text_my_websites.get(), website.name) });
                 Either::Left(
                     view! {
                         <AuthenticatedPage class="flex grow gap-4" title=text_title>

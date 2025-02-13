@@ -1,10 +1,8 @@
 use leptos::prelude::*;
 
-use mango3_leptos_utils::async_t_string;
 use mango3_leptos_utils::components::*;
 use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::models::ActionFormResp;
-use mango3_leptos_utils::utils::ToSignalTrait;
 
 use crate::components::{MyWebsite, ThemeSelectorField};
 use crate::server_functions::AttemptToUpdateWebsite;
@@ -83,29 +81,24 @@ pub fn EditPage() -> impl IntoView {
                 <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
                     <ActionFormAlert
                         action_value=action_value
-                        error_message=async_t_string!(i18n, studio.failed_to_update_website).to_signal()
+                        error_message=move || t!(i18n, studio.failed_to_update_website)
                         redirect_to="/"
-                        success_message=async_t_string!(i18n, studio.website_updated_successfully).to_signal()
+                        success_message=move || t!(i18n, studio.website_updated_successfully)
                     />
 
                     <input type="hidden" name="id" value=website.id.clone() />
 
-                    <TextField
-                        label=async_t_string!(i18n, studio.name).to_signal()
-                        name="name"
-                        error=error_name
-                        value=value_name
-                    />
+                    <TextField label=move || t!(i18n, studio.name) name="name" error=error_name value=value_name />
 
                     <TextareaField
-                        label=async_t_string!(i18n, studio.description).to_signal()
+                        label=move || t!(i18n, studio.description)
                         name="description"
                         error=error_description
                         value=value_description
                     />
 
                     <ImageUploadField
-                        label=async_t_string!(i18n, studio.icon_image).to_signal()
+                        label=move || t!(i18n, studio.icon_image)
                         id="icon_image_blob_id"
                         name="icon_image_blob_id"
                         value=value_icon_image_blob
@@ -113,7 +106,7 @@ pub fn EditPage() -> impl IntoView {
                     />
 
                     <ImageUploadField
-                        label=async_t_string!(i18n, studio.cover_image).to_signal()
+                        label=move || t!(i18n, studio.cover_image)
                         id="cover_image_blob_id"
                         name="cover_image_blob_id"
                         width=288
@@ -121,7 +114,7 @@ pub fn EditPage() -> impl IntoView {
                     />
 
                     <ThemeSelectorField
-                        label=async_t_string!(i18n, studio.light_theme).to_signal()
+                        label=move || t!(i18n, studio.light_theme)
                         name="light_theme"
                         options=LIGHT_THEMES.to_vec()
                         value=value_light_theme
@@ -130,7 +123,7 @@ pub fn EditPage() -> impl IntoView {
                     />
 
                     <ThemeSelectorField
-                        label=async_t_string!(i18n, studio.dark_theme).to_signal()
+                        label=move || t!(i18n, studio.dark_theme)
                         name="dark_theme"
                         options=DARK_THEMES.to_vec()
                         value=value_dark_theme
@@ -139,7 +132,7 @@ pub fn EditPage() -> impl IntoView {
                     />
 
                     <SwitchField
-                        label=async_t_string!(i18n, studio.publish).to_signal()
+                        label=t!(i18n, studio.publish)
                         name="publish"
                         error=error_publish
                         is_checked=value_publish

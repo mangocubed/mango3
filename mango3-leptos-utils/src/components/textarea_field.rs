@@ -5,7 +5,7 @@ use leptos_use::{use_textarea_autosize_with_options, UseTextareaAutosizeOptions,
 pub fn TextareaField(
     #[prop(into, optional)] error: MaybeProp<String>,
     #[prop(into, optional)] id: Option<&'static str>,
-    #[prop(into, optional)] label: Signal<&'static str>,
+    #[prop(into, optional)] label: ViewFn,
     #[prop(default = 4, into)] rows: i8,
     #[prop(optional, into)] value: RwSignal<String>,
     name: &'static str,
@@ -33,18 +33,9 @@ pub fn TextareaField(
 
     view! {
         <div class="form-control w-full">
-            <Show when={
-                let label_is_present = !label.get().is_empty();
-                move || label_is_present
-            }>
-                {move || {
-                    view! {
-                        <label class="label" for=field_id>
-                            <span class="label-text">{move || label.get()}</span>
-                        </label>
-                    }
-                }}
-            </Show>
+            <label class="label has-[span:empty]:hidden" for=field_id>
+                <span class="label-text">{label.run()}</span>
+            </label>
 
             <textarea
                 node_ref=node_ref

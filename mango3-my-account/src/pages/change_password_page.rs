@@ -2,7 +2,7 @@ use leptos::prelude::*;
 
 use mango3_leptos_utils::async_t_string;
 use mango3_leptos_utils::components::{ActionFormAlert, PasswordField, SubmitButton};
-use mango3_leptos_utils::i18n::use_i18n;
+use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::models::ActionFormResp;
 use mango3_leptos_utils::pages::AuthenticatedPage;
 use mango3_leptos_utils::utils::ToSignalTrait;
@@ -32,19 +32,19 @@ pub fn ChangePasswordPage() -> impl IntoView {
             <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
                 <ActionFormAlert
                     action_value=action_value
-                    error_message=async_t_string!(i18n, shared.failed_to_update_password).to_signal()
+                    error_message=move || t!(i18n, shared.failed_to_update_password)
                     redirect_to="/"
-                    success_message=async_t_string!(i18n, shared.password_updated_successfully).to_signal()
+                    success_message=move || t!(i18n, shared.password_updated_successfully)
                 />
 
                 <PasswordField
-                    label=async_t_string!(i18n, my_account.current_password).to_signal()
+                    label=move || t!(i18n, my_account.current_password)
                     name="current_password"
                     error=error_current_password
                 />
 
                 <PasswordField
-                    label=async_t_string!(i18n, shared.new_password).to_signal()
+                    label=move || t!(i18n, shared.new_password)
                     name="new_password"
                     error=error_new_password
                 />

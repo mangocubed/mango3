@@ -8,7 +8,7 @@ use crate::icons::{EyeOutlined, EyeSlashOutlined};
 pub fn PasswordField(
     #[prop(into, optional)] error: MaybeProp<String>,
     #[prop(into, optional)] id: Option<&'static str>,
-    #[prop(into)] label: Signal<&'static str>,
+    #[prop(into)] label: ViewFn,
     name: &'static str,
 ) -> impl IntoView {
     let input_type = RwSignal::new("password".to_owned());
@@ -37,7 +37,7 @@ pub fn PasswordField(
     view! {
         <div class="form-control w-full">
             <label class="label" for=field_id>
-                <span class="label-text">{move || label.get()}</span>
+                <span class="label-text">{label.run()}</span>
             </label>
             <div class="input input-bordered flex items-center gap-2 pr-0" class:input-error=has_error>
                 <input class="grow" id=field_id name=name type=input_type />

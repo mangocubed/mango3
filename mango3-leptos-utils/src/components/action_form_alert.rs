@@ -1,5 +1,6 @@
 use leptos::either::EitherOf3;
 use leptos::prelude::*;
+use leptos::text_prop::TextProp;
 use leptos_router::hooks::use_navigate;
 use server_fn::error::NoCustomError;
 
@@ -10,10 +11,10 @@ use super::BoxedFn;
 #[component]
 pub fn ActionFormAlert(
     action_value: RwSignal<Option<Result<ActionFormResp, ServerFnError<NoCustomError>>>>,
-    #[prop(into, optional)] error_message: Signal<Option<&'static str>>,
+    #[prop(into, optional)] error_message: ViewFn,
     #[prop(into, optional)] on_success: Option<BoxedFn>,
-    #[prop(into, optional)] redirect_to: Option<String>,
-    #[prop(into)] success_message: Signal<&'static str>,
+    #[prop(into, optional)] redirect_to: Option<TextProp>,
+    #[prop(into)] success_message: ViewFn,
 ) -> impl IntoView {
     let navigate = use_navigate();
     let is_done = RwSignal::new(false);
@@ -27,8 +28,8 @@ pub fn ActionFormAlert(
             on_success.0();
         }
 
-        if let Some(to) = redirect_to.clone() {
-            navigate(&to, Default::default())
+        if let Some(to) = &redirect_to {
+            navigate(&to.get(), Default::default())
         }
     });
 
@@ -36,7 +37,7 @@ pub fn ActionFormAlert(
         Some(true) => EitherOf3::A(view! {
             <dialog class="modal" class:modal-open=move || !is_done.get()>
                 <div class="modal-box">
-                    <div>{move || success_message.get()}</div>
+                    <div>{success_message.run()}</div>
                     <div class="modal-action">
                         <button
                             class="btn btn-primary"
@@ -53,11 +54,7 @@ pub fn ActionFormAlert(
         }),
         Some(false) => {
             is_done.set(false);
-            EitherOf3::B(
-                error_message
-                    .get()
-                    .map(|error_msg| view! { <ActionFormError message=error_msg /> }),
-            )
+            EitherOf3::B(view! { <ActionFormError message=error_message.clone() /> })
         }
         _ => {
             is_done.set(false);
@@ -67,11 +64,11 @@ pub fn ActionFormAlert(
 }
 
 #[component]
-pub fn ActionFormError(#[prop(into)] message: Signal<&'static str>) -> impl IntoView {
+pub fn ActionFormError(#[prop(into)] message: ViewFn) -> impl IntoView {
     view! {
-        <div class="pt-2 pb-2">
+        <div class="pt-2 pb-2 has-[div:empty]:hidden">
             <div role="alert" class="alert alert-error">
-                {move || message.get()}
+                {message.run()}
             </div>
         </div>
     }

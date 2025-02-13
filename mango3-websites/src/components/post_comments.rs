@@ -1,13 +1,11 @@
 use leptos::prelude::*;
 
-use mango3_leptos_utils::async_t_string;
 use mango3_leptos_utils::components::{
     ActionFormAlert, CurrentUser, InfiniteScroll, InfiniteScrollController, SubmitButton, TextareaField, TimeAgo,
     UserTag, UserTagLink,
 };
 use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::models::{ActionFormResp, PostCommentResp};
-use mango3_leptos_utils::utils::ToSignalTrait;
 
 use crate::server_functions::{get_post_comments, AttemptToCreatePostComment};
 
@@ -77,20 +75,17 @@ pub fn PostComments(post_id: String) -> impl IntoView {
                                                             >
                                                                 <ActionFormAlert
                                                                     action_value=action_value
-                                                                    error_message=async_t_string!(
-                                                                        i18n, websites.failed_to_submit_comment
-                                                                    )
-                                                                        .to_signal()
-
+                                                                    error_message=move || {
+                                                                        t!(i18n, websites.failed_to_submit_comment)
+                                                                    }
                                                                     on_success=move || {
                                                                         action_value.set(None);
                                                                         value_content.set(String::new());
                                                                         controller.clear_and_refetch();
                                                                     }
-                                                                    success_message=async_t_string!(
-                                                                        i18n, websites.comment_submitted_successfully
-                                                                    )
-                                                                        .to_signal()
+                                                                    success_message=move || {
+                                                                        t!(i18n, websites.comment_submitted_successfully)
+                                                                    }
                                                                 />
                                                                 <input type="hidden" name="post_id" value=post_id />
 

@@ -1,13 +1,16 @@
 use leptos::prelude::*;
 
 #[component]
-pub fn SwitchField(
+pub fn SwitchField<L>(
     #[prop(into, optional)] error: MaybeProp<String>,
     #[prop(into, optional)] id: Option<&'static str>,
-    #[prop(into)] label: Signal<&'static str>,
+    label: L,
     name: &'static str,
     #[prop(optional, into)] is_checked: Signal<bool>,
-) -> impl IntoView {
+) -> impl IntoView
+where
+    L: IntoView,
+{
     let field_id = move || {
         if let Some(id) = id {
             id.to_owned()
@@ -21,7 +24,7 @@ pub fn SwitchField(
     view! {
         <div class="form-control w-full">
             <label class="label" for=field_id>
-                <span class="label-text">{move || label.get()}</span>
+                <span class="label-text">{label}</span>
                 <input
                     class="toggle"
                     class:toggle-error=has_error

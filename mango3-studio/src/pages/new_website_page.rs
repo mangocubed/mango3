@@ -2,7 +2,7 @@ use leptos::prelude::*;
 
 use mango3_leptos_utils::async_t_string;
 use mango3_leptos_utils::components::{ActionFormAlert, SubmitButton, TextField, TextareaField};
-use mango3_leptos_utils::i18n::use_i18n;
+use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::models::ActionFormResp;
 use mango3_leptos_utils::pages::AuthenticatedPage;
 use mango3_leptos_utils::utils::ToSignalTrait;
@@ -44,30 +44,21 @@ pub fn NewWebsitePage() -> impl IntoView {
             <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
                 <ActionFormAlert
                     action_value=action_value
-                    error_message=async_t_string!(i18n, studio.failed_to_create_website).to_signal()
+                    error_message=move || t!(i18n, studio.failed_to_create_website)
                     redirect_to="/"
-                    success_message=async_t_string!(i18n, studio.website_created_successfully).to_signal()
+                    success_message=move || t!(i18n, studio.website_created_successfully)
                 />
 
-                <TextField
-                    label=async_t_string!(i18n, studio.name).to_signal()
-                    name="name"
-                    error=error_name
-                    on_input=name_on_input
-                />
+                <TextField label=move || t!(i18n, studio.name) name="name" error=error_name on_input=name_on_input />
 
                 <TextField
-                    label=async_t_string!(i18n, studio.subdomain).to_signal()
+                    label=move || t!(i18n, studio.subdomain)
                     name="subdomain"
                     value=value_subdomain
                     error=error_subdomain
                 />
 
-                <TextareaField
-                    label=async_t_string!(i18n, studio.description).to_signal()
-                    name="description"
-                    error=error_description
-                />
+                <TextareaField label=move || t!(i18n, studio.description) name="description" error=error_description />
 
                 <SubmitButton is_loading=server_action.pending() />
             </ActionForm>

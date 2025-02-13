@@ -54,22 +54,18 @@ pub fn LoginPage() -> impl IntoView {
             <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
                 <ActionFormAlert
                     action_value=action_value
-                    error_message=async_t_string!(i18n, accounts.failed_to_authenticate_user).to_signal()
+                    error_message=move || t!(i18n, accounts.failed_to_authenticate_user)
                     redirect_to=basic_config.home_url.clone()
-                    success_message=async_t_string!(i18n, accounts.user_authenticated_successfully).to_signal()
+                    success_message=move || t!(i18n, accounts.user_authenticated_successfully)
                 />
 
                 <TextField
-                    label=async_t_string!(i18n, accounts.username_or_email).to_signal()
+                    label=move || t!(i18n, accounts.username_or_email)
                     name="username_or_email"
                     error=error_username_or_email
                 />
 
-                <PasswordField
-                    label=async_t_string!(i18n, shared.password).to_signal()
-                    name="password"
-                    error=error_password
-                />
+                <PasswordField label=move || t!(i18n, shared.password) name="password" error=error_password />
 
                 <SubmitButton is_loading=server_action.pending() />
             </ActionForm>

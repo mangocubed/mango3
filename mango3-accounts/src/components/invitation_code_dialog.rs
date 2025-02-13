@@ -1,12 +1,10 @@
 use leptos::either::Either;
 use leptos::prelude::*;
 
-use mango3_leptos_utils::async_t_string;
 use mango3_leptos_utils::components::{ActionFormError, SubmitButton, TextField};
 use mango3_leptos_utils::context::use_basic_config;
 use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::icons::InformationCircleOutlined;
-use mango3_leptos_utils::utils::ToSignalTrait;
 
 use crate::server_functions::GetInvitationCodeId;
 
@@ -48,10 +46,7 @@ pub fn InvitationCodeDialog(value: RwSignal<Option<String>>) -> impl IntoView {
                             if let Some(Ok(None)) = action_value.get() {
                                 Either::Left(
                                     view! {
-                                        <ActionFormError message=async_t_string!(
-                                            i18n, accounts.failed_to_get_invitation
-                                        )
-                                            .to_signal() />
+                                        <ActionFormError message=move || t!(i18n, accounts.failed_to_get_invitation) />
                                     },
                                 )
                             } else {
@@ -59,7 +54,7 @@ pub fn InvitationCodeDialog(value: RwSignal<Option<String>>) -> impl IntoView {
                             }
                         }}
 
-                        <TextField label=async_t_string!(i18n, shared.code).to_signal() name="code" />
+                        <TextField label=move || t!(i18n, shared.code) name="code" />
 
                         <SubmitButton is_loading=server_action.pending() />
                     </ActionForm>
