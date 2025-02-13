@@ -8,7 +8,7 @@ use mango3_leptos_utils::async_t_string;
 use mango3_leptos_utils::components::{AppProvider, AppTitle, BottomBar, FaviconLink, LoadingOverlay};
 use mango3_leptos_utils::constants::KEY_PARAM_NAME;
 use mango3_leptos_utils::context::use_basic_config;
-use mango3_leptos_utils::i18n::use_i18n;
+use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::pages::NotFoundPage;
 
 use crate::components::{CurrentWebsiteOpt, WebsiteTopBar};
@@ -27,6 +27,10 @@ pub fn App() -> impl IntoView {
         <AppProvider>
             {move || {
                 let i18n = use_i18n();
+                let basic_config = use_basic_config();
+                let text_powered_by_mango3 = async_t_string!(
+                    i18n, websites.powered_by_title, title = basic_config.title.clone()
+                );
                 view! {
                     <CurrentWebsiteOpt children=move |website| {
                         match website {
@@ -35,7 +39,6 @@ pub fn App() -> impl IntoView {
                                 Either::Left(
                                     view! {
                                         <Title formatter=move |page_title: String| {
-                                            let basic_config = use_basic_config();
                                             (if page_title.is_empty() {
                                                 String::new()
                                             } else {
@@ -44,12 +47,10 @@ pub fn App() -> impl IntoView {
                                                 + &format!(
                                                     "{} ({})",
                                                     website_name.clone(),
-                                                    async_t_string!(
-                                                        i18n,
-                                                        websites.powered_by_title,
-                                                        title = basic_config.title.clone()
-                                                    )
-                                                        .with(|value| value.clone().unwrap_or("Mango³".to_owned())),
+                                                    text_powered_by_mango3
+                                                        .with(|value| {
+                                                            value.clone().unwrap_or("Powered by Mango³".to_owned())
+                                                        }),
                                                 )
                                         } />
 
@@ -87,12 +88,11 @@ pub fn App() -> impl IntoView {
                                                 dark_theme=website.dark_theme.clone()
                                                 aside_items=move || {
                                                     let basic_config = use_basic_config();
-                                                    async_t_string!(
+                                                    t!(
                                                         i18n,
                                                         websites.this_website_is_part_of_title_ecosystem,
                                                         title = basic_config.title.clone()
                                                     )
-                                                        .get()
                                                 }
                                             />
                                         },
