@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.0.0-alpha.7] - 2025-02-13
+
+### Added
+
+- Admin panel. (https://github.com/mangocubed/mango3/pull/208)
+- Enable feature dynamic_load in leptos_i18n. (https://github.com/mangocubed/mango3/pull/211, https://github.com/mangocubed/mango3/pull/214)
+
+### Changed
+
+- Bump leptos-use from 0.15.5 to 0.15.6. (https://github.com/mangocubed/mango3/pull/205)
+- Bump strum from 0.26.3 to 0.27.0. (https://github.com/mangocubed/mango3/pull/207)
+- Bump clap from 4.5.28 to 4.5.29. (https://github.com/mangocubed/mango3/pull/209)
+- Bump leptos from 0.7.5 to 0.7.7. (https://github.com/mangocubed/mango3/pull/210)
+- Bump @faker-js/faker from 9.4.0 to 9.5.0. (https://github.com/mangocubed/mango3/pull/212)
+- Bump pulldown-cmark from 0.12.2 to 0.13.0. (https://github.com/mangocubed/mango3/pull/213)
+
+### Fixed
+
+- Get or initialize AsyncRedisCache before remove. (https://github.com/mangocubed/mango3/pull/202)
+- Make request helpers return text when there is not json. (https://github.com/mangocubed/mango3/pull/203)
+
 ## [0.0.0-alpha.6] - 2025-02-07
 
 ### Added
