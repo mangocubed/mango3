@@ -39,6 +39,7 @@ pub fn ShowParentPage() -> impl IntoView {
     provide_my_website_resource();
 
     let i18n = use_i18n();
+    let text_my_websites = async_t_string!(i18n, studio.my_websites);
 
     view! {
         <MyWebsiteOpt children=move |website| {
@@ -49,8 +50,9 @@ pub fn ShowParentPage() -> impl IntoView {
                 let posts_path = format!("{home_path}/posts");
                 let navigation_path = format!("{home_path}/navigation");
                 let edit_path = format!("{home_path}/edit");
-                let text_my_websites = async_t_string!(i18n, studio.my_websites).to_signal();
-                let text_title = Signal::derive(move || { format!("{} > {}", text_my_websites.get(), website.name) });
+                let text_title = Signal::derive(move || {
+                    format!("{} > {}", text_my_websites.with(|value| value.unwrap_or("My websites")), website.name)
+                });
                 Either::Left(
                     view! {
                         <AuthenticatedPage class="flex grow gap-4" title=text_title>
