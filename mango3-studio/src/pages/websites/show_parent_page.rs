@@ -1,18 +1,23 @@
 use leptos::either::Either;
 use leptos::prelude::*;
-use leptos::text_prop::TextProp;
 use leptos_router::components::Outlet;
 use leptos_router::hooks::use_location;
 
-use mango3_leptos_utils::i18n::{t_string, use_i18n};
+use mango3_leptos_utils::async_t_string;
+use mango3_leptos_utils::i18n::use_i18n;
 use mango3_leptos_utils::icons::*;
 use mango3_leptos_utils::pages::{AuthenticatedPage, NotFoundPage};
+use mango3_leptos_utils::utils::ToSignalTrait;
 
 use crate::components::MyWebsiteOpt;
 use crate::context::{provide_my_website_resource, use_selected_website};
 
 #[component]
-pub fn MenuItem(href: String, #[prop(into)] icon: ViewFnOnce, #[prop(into)] label: TextProp) -> impl IntoView {
+pub fn MenuItem(
+    href: String,
+    #[prop(into)] icon: ViewFnOnce,
+    #[prop(into)] label: Signal<&'static str>,
+) -> impl IntoView {
     let location = use_location();
     let href_clone = href.clone();
 
@@ -21,9 +26,9 @@ pub fn MenuItem(href: String, #[prop(into)] icon: ViewFnOnce, #[prop(into)] labe
 
     view! {
         <li>
-            <a class:active=is_active href=href title=label_text.clone()>
+            <a class:active=is_active href=href title=label_text>
                 {icon.run()}
-                <span class="md:inline hidden">{label_text.clone()}</span>
+                <span class="md:inline hidden">{label_text}</span>
             </a>
         </li>
     }
@@ -45,35 +50,39 @@ pub fn ShowParentPage() -> impl IntoView {
                 let posts_path = format!("{home_path}/posts");
                 let navigation_path = format!("{home_path}/navigation");
                 let edit_path = format!("{home_path}/edit");
+                let text_title = Signal::derive(move || {
+                    format!(
+                        "{} > {}",
+                        async_t_string!(i18n, studio.my_websites).with(|value| value.unwrap_or("My websites")),
+                        website_name,
+                    )
+                });
                 Either::Left(
                     view! {
-                        <AuthenticatedPage
-                            class="flex grow gap-4"
-                            title=move || { format!("{} > {}", t_string!(i18n, studio.my_websites), website_name) }
-                        >
+                        <AuthenticatedPage class="flex grow gap-4" title=text_title>
                             <ul class="menu bg-base-200 rounded-box md:w-56">
                                 <MenuItem
                                     href=home_path
                                     icon=move || view! { <HomeOutlined /> }
-                                    label=move || t_string!(i18n, shared.home)
+                                    label=async_t_string!(i18n, shared.home).to_signal()
                                 />
 
                                 <MenuItem
                                     href=posts_path
                                     icon=move || view! { <DocumentTextOutlined /> }
-                                    label=move || t_string!(i18n, shared.posts)
+                                    label=async_t_string!(i18n, shared.posts).to_signal()
                                 />
 
                                 <MenuItem
                                     href=navigation_path
                                     icon=move || view! { <Bars3Outlined /> }
-                                    label=move || t_string!(i18n, studio.navigation)
+                                    label=async_t_string!(i18n, studio.navigation).to_signal()
                                 />
 
                                 <MenuItem
                                     href=edit_path
                                     icon=move || view! { <PencilSquareOutlined /> }
-                                    label=move || t_string!(i18n, studio.edit)
+                                    label=async_t_string!(i18n, studio.edit).to_signal()
                                 />
                             </ul>
 

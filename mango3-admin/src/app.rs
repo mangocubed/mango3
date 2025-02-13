@@ -3,11 +3,13 @@ use leptos_meta::{provide_meta_context, Meta};
 use leptos_router::components::{Route, Router, Routes};
 use leptos_router::StaticSegment;
 
+use mango3_leptos_utils::async_t_string;
 use mango3_leptos_utils::components::{
     AppProvider, AppTitle, BottomBar, Brand, FaviconLink, GoToMango3, LoadingOverlay, TopBar,
 };
-use mango3_leptos_utils::i18n::{t_string, use_i18n};
+use mango3_leptos_utils::i18n::use_i18n;
 use mango3_leptos_utils::pages::NotFoundPage;
+use mango3_leptos_utils::utils::ToSignalTrait;
 
 use crate::pages::IndexPage;
 
@@ -22,16 +24,16 @@ pub fn App() -> impl IntoView {
         <AppProvider>
             {move || {
                 let i18n = use_i18n();
-                let suffix = move || t_string!(i18n, admin.admin);
+                let text_suffix = async_t_string!(i18n, admin.admin).to_signal();
 
                 view! {
                     <FaviconLink />
 
-                    <AppTitle suffix=suffix />
+                    <AppTitle suffix=text_suffix />
 
                     <Router>
                         <TopBar
-                            brand=move || view! { <Brand href="/" suffix=suffix /> }
+                            brand=move || view! { <Brand href="/" suffix=text_suffix /> }
                             right_items=move || view! { <GoToMango3 /> }
                         />
 

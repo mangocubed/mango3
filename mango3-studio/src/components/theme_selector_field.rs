@@ -1,5 +1,4 @@
 use leptos::prelude::*;
-use leptos::text_prop::TextProp;
 
 use mango3_leptos_utils::components::{TopBar, WebsiteIcon};
 use mango3_leptos_utils::models::WebsitePreviewResp;
@@ -7,7 +6,7 @@ use mango3_leptos_utils::models::WebsitePreviewResp;
 #[component]
 pub fn ThemeSelectorField(
     #[prop(into, optional)] error: MaybeProp<String>,
-    #[prop(into)] label: TextProp,
+    #[prop(into)] label: Signal<&'static str>,
     name: &'static str,
     options: Vec<&'static str>,
     value: RwSignal<String>,

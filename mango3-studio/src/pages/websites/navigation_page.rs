@@ -2,10 +2,12 @@ use leptos::ev::MouseEvent;
 use leptos::prelude::*;
 use leptos_router::hooks::use_params_map;
 
+use mango3_leptos_utils::async_t_string;
 use mango3_leptos_utils::components::{ActionFormAlert, SubmitButton};
-use mango3_leptos_utils::i18n::{t, t_string, use_i18n};
+use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::icons::{PlusOutlined, TrashOutlined};
 use mango3_leptos_utils::models::NavigationItemResp;
+use mango3_leptos_utils::utils::ToSignalTrait;
 
 use crate::context::param_website_id;
 use crate::server_functions::{get_all_my_navigation_items, AttemptToSaveNavigation};
@@ -50,9 +52,9 @@ pub fn NavigationPage() -> impl IntoView {
         <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
             <ActionFormAlert
                 action_value=action_value
-                error_message=move || { t_string!(i18n, studio.failed_to_save_navigation) }
+                error_message=async_t_string!(i18n, studio.failed_to_save_navigation).to_signal()
                 redirect_to=format!("/websites/{}", param_website_id(params_map).unwrap_or_default())
-                success_message=move || { t_string!(i18n, studio.navigation_saved_successfully) }
+                success_message=async_t_string!(i18n, studio.navigation_saved_successfully).to_signal()
             />
 
             <input type="hidden" name="website_id" value=move || param_website_id(params_map) />

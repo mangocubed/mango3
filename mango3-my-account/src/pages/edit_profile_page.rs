@@ -1,10 +1,11 @@
 use leptos::prelude::*;
-use leptos_i18n::t_string;
 
+use mango3_leptos_utils::async_t_string;
 use mango3_leptos_utils::components::*;
 use mango3_leptos_utils::i18n::use_i18n;
 use mango3_leptos_utils::models::ActionFormResp;
 use mango3_leptos_utils::pages::AuthenticatedPage;
+use mango3_leptos_utils::utils::ToSignalTrait;
 
 use crate::server_functions::{get_user_profile, AttemptToUpdateProfile};
 
@@ -19,6 +20,7 @@ pub fn EditProfilePage() -> impl IntoView {
     let error_birthdate = RwSignal::new(None);
     let error_country_alpha2 = RwSignal::new(None);
     let error_bio = RwSignal::new(None);
+    let title = async_t_string!(i18n, my_account.edit_profile).to_signal();
 
     Effect::new(move || {
         let response = ActionFormResp::from(action_value);
@@ -30,11 +32,9 @@ pub fn EditProfilePage() -> impl IntoView {
         error_bio.set(response.error("bio"));
     });
 
-    let title = move || t_string!(i18n, my_account.edit_profile);
-
     view! {
         <AuthenticatedPage title=title>
-            <h2 class="h2">{title}</h2>
+            <h2 class="h2">{move || title.get()}</h2>
 
             <Suspense>
                 {move || Suspend::new(async move {
@@ -57,29 +57,29 @@ pub fn EditProfilePage() -> impl IntoView {
                                 >
                                     <ActionFormAlert
                                         action_value=action_value
-                                        error_message=move || { t_string!(i18n, my_account.failed_to_update_profile) }
+                                        error_message=async_t_string!(i18n, my_account.failed_to_update_profile)
+                                            .to_signal()
                                         redirect_to="/"
-                                        success_message=move || {
-                                            t_string!(i18n, my_account.profile_updated_successfully)
-                                        }
+                                        success_message=async_t_string!(i18n, my_account.profile_updated_successfully)
+                                            .to_signal()
                                     />
 
                                     <TextField
-                                        label=move || t_string!(i18n, my_account.display_name)
+                                        label=async_t_string!(i18n, my_account.display_name).to_signal()
                                         name="display_name"
                                         error=error_display_name
                                         value=value_display_name
                                     />
 
                                     <TextField
-                                        label=move || t_string!(i18n, shared.full_name)
+                                        label=async_t_string!(i18n, shared.full_name).to_signal()
                                         name="full_name"
                                         error=error_full_name
                                         value=value_full_name
                                     />
 
                                     <TextField
-                                        label=move || t_string!(i18n, shared.birthdate)
+                                        label=async_t_string!(i18n, shared.birthdate).to_signal()
                                         name="birthdate"
                                         input_type="date"
                                         error=error_birthdate
@@ -87,21 +87,21 @@ pub fn EditProfilePage() -> impl IntoView {
                                     />
 
                                     <CountryField
-                                        label=move || t_string!(i18n, shared.country)
+                                        label=async_t_string!(i18n, shared.country).to_signal()
                                         name="country_alpha2"
                                         error=error_country_alpha2
                                         value=value_country_alpha2
                                     />
 
                                     <TextareaField
-                                        label=move || t_string!(i18n, my_account.bio)
+                                        label=async_t_string!(i18n, my_account.bio).to_signal()
                                         name="bio"
                                         error=error_bio
                                         value=value_bio
                                     />
 
                                     <ImageUploadField
-                                        label=move || t_string!(i18n, my_account.avatar_image)
+                                        label=async_t_string!(i18n, my_account.avatar_image).to_signal()
                                         id="avatar_image_blob_id"
                                         name="avatar_image_blob_id"
                                         value=value_avatar_image_blob

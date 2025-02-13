@@ -1,12 +1,13 @@
 use leptos::either::Either;
 use leptos::ev::MouseEvent;
 use leptos::prelude::*;
-use leptos_i18n::t_string;
 
+use mango3_leptos_utils::async_t_string;
 use mango3_leptos_utils::components::{ActionFormAlert, ActionFormError, SubmitButton, TextField};
 use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::icons::CheckMini;
 use mango3_leptos_utils::models::ActionFormResp;
+use mango3_leptos_utils::utils::ToSignalTrait;
 
 use crate::server_functions::{AttemptToConfirmEmail, AttemptToSendEmailConfirmationCode};
 
@@ -54,7 +55,7 @@ pub fn EmailConfirmationBadge(#[prop(into)] is_confirmed: RwSignal<bool>) -> imp
             <ActionFormAlert
                 action_value=action_value_confirm
                 redirect_to="/"
-                success_message=move || { t_string!(i18n, my_account.email_confirmed_successfully) }
+                success_message=async_t_string!(i18n, my_account.email_confirmed_successfully).to_signal()
             />
 
             <div class="modal" class:modal-open=show_dialog>
@@ -78,9 +79,10 @@ pub fn EmailConfirmationBadge(#[prop(into)] is_confirmed: RwSignal<bool>) -> imp
                             if let Some(false) = ActionFormResp::from(action_value_confirm).success {
                                 Either::Left(
                                     view! {
-                                        <ActionFormError message=move || {
-                                            t_string!(i18n, my_account.failed_to_confirm_email)
-                                        } />
+                                        <ActionFormError message=async_t_string!(
+                                            i18n, my_account.failed_to_confirm_email
+                                        )
+                                            .to_signal() />
                                     },
                                 )
                             } else {
@@ -88,7 +90,7 @@ pub fn EmailConfirmationBadge(#[prop(into)] is_confirmed: RwSignal<bool>) -> imp
                             }
                         }}
 
-                        <TextField label=move || t_string!(i18n, shared.code) name="code" error=error_code />
+                        <TextField label=async_t_string!(i18n, shared.code).to_signal() name="code" error=error_code />
 
                         <SubmitButton is_loading=server_action_confirm.pending() />
                     </ActionForm>

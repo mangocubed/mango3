@@ -1,10 +1,11 @@
 use leptos::prelude::*;
-use leptos_i18n::t_string;
 
+use mango3_leptos_utils::async_t_string;
 use mango3_leptos_utils::components::{ActionFormAlert, SubmitButton, TextField, TextareaField};
 use mango3_leptos_utils::i18n::use_i18n;
 use mango3_leptos_utils::models::ActionFormResp;
 use mango3_leptos_utils::pages::AuthenticatedPage;
+use mango3_leptos_utils::utils::ToSignalTrait;
 
 use crate::context::use_selected_website;
 use crate::server_functions::AttemptToCreateWebsite;
@@ -18,6 +19,7 @@ pub fn NewWebsitePage() -> impl IntoView {
     let error_subdomain = RwSignal::new(None);
     let error_description = RwSignal::new(None);
     let value_subdomain = RwSignal::new("".to_owned());
+    let title = async_t_string!(i18n, shared.new_website).to_signal();
 
     let selected_website = use_selected_website();
 
@@ -35,8 +37,6 @@ pub fn NewWebsitePage() -> impl IntoView {
         value_subdomain.set(slug::slugify(event_target_value(&event)));
     };
 
-    let title = move || t_string!(i18n, shared.new_website);
-
     view! {
         <AuthenticatedPage title=title>
             <h2 class="text-xl font-bold mb-4">{title}</h2>
@@ -44,27 +44,27 @@ pub fn NewWebsitePage() -> impl IntoView {
             <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
                 <ActionFormAlert
                     action_value=action_value
-                    error_message=move || t_string!(i18n, studio.failed_to_create_website)
+                    error_message=async_t_string!(i18n, studio.failed_to_create_website).to_signal()
                     redirect_to="/"
-                    success_message=move || t_string!(i18n, studio.website_created_successfully)
+                    success_message=async_t_string!(i18n, studio.website_created_successfully).to_signal()
                 />
 
                 <TextField
-                    label=move || t_string!(i18n, studio.name)
+                    label=async_t_string!(i18n, studio.name).to_signal()
                     name="name"
                     error=error_name
                     on_input=name_on_input
                 />
 
                 <TextField
-                    label=move || t_string!(i18n, studio.subdomain)
+                    label=async_t_string!(i18n, studio.subdomain).to_signal()
                     name="subdomain"
                     value=value_subdomain
                     error=error_subdomain
                 />
 
                 <TextareaField
-                    label=move || t_string!(i18n, studio.description)
+                    label=async_t_string!(i18n, studio.description).to_signal()
                     name="description"
                     error=error_description
                 />

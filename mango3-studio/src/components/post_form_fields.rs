@@ -2,12 +2,14 @@ use leptos::either::Either;
 use leptos::ev::{Event, MouseEvent};
 use leptos::prelude::*;
 use leptos::text_prop::TextProp;
+use mango3_leptos_utils::utils::ToSignalTrait;
 use server_fn::error::NoCustomError;
 
+use mango3_leptos_utils::async_t_string;
 use mango3_leptos_utils::components::{
     ImageUploadField, MultipleImageUploadField, SubmitButton, SwitchField, TextField, TextareaField,
 };
-use mango3_leptos_utils::i18n::{t, t_string, use_i18n};
+use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::models::ActionFormResp;
 
 use crate::components::PostPreviewModal;
@@ -70,17 +72,17 @@ pub fn PostFormFields(
         />
 
         <TextField
-            label=move || t_string!(i18n, studio.title)
+            label=async_t_string!(i18n, studio.title).to_signal()
             name="title"
             error=error_title
             on_input=title_on_input
             value=value_title
         />
 
-        <TextField label=move || t_string!(i18n, studio.slug) name="slug" value=value_slug error=error_slug />
+        <TextField label=async_t_string!(i18n, studio.slug).to_signal() name="slug" value=value_slug error=error_slug />
 
         <TextareaField
-            label=move || t_string!(i18n, studio.content)
+            label=async_t_string!(i18n, studio.content).to_signal()
             name="content"
             rows=8
             value=value_content
@@ -106,14 +108,14 @@ pub fn PostFormFields(
 
         <MultipleImageUploadField
             id="blob_ids"
-            label=move || t_string!(i18n, studio.attached_images)
+            label=async_t_string!(i18n, studio.attached_images).to_signal()
             name="blob_ids"
             value=value_blobs
             website_id=website_id.clone()
         />
 
         <ImageUploadField
-            label=move || t_string!(i18n, studio.cover_image)
+            label=async_t_string!(i18n, studio.cover_image).to_signal()
             id="cover_image_blob_id"
             name="cover_image_blob_id"
             width=288
@@ -122,7 +124,7 @@ pub fn PostFormFields(
         />
 
         <SwitchField
-            label=move || t_string!(i18n, studio.publish)
+            label=async_t_string!(i18n, studio.publish).to_signal()
             name="publish"
             error=error_publish
             is_checked=value_publish

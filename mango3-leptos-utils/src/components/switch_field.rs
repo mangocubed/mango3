@@ -1,11 +1,10 @@
 use leptos::prelude::*;
-use leptos::text_prop::TextProp;
 
 #[component]
 pub fn SwitchField(
     #[prop(into, optional)] error: MaybeProp<String>,
     #[prop(into, optional)] id: Option<&'static str>,
-    #[prop(into)] label: TextProp,
+    #[prop(into)] label: Signal<&'static str>,
     name: &'static str,
     #[prop(optional, into)] is_checked: Signal<bool>,
 ) -> impl IntoView {

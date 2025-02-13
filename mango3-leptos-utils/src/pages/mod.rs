@@ -1,5 +1,4 @@
 use leptos::prelude::*;
-use leptos::text_prop::TextProp;
 use leptos_meta::Title;
 
 use crate::components::{RequireAuthentication, RequireNoAuthentication};
@@ -13,7 +12,7 @@ pub use not_found_page::NotFoundPage;
 pub fn AuthenticatedPage(
     children: Children,
     #[prop(into, optional)] class: String,
-    #[prop(into)] title: TextProp,
+    #[prop(into)] title: Signal<String>,
 ) -> impl IntoView {
     view! {
         <RequireAuthentication />
@@ -25,7 +24,7 @@ pub fn AuthenticatedPage(
 }
 
 #[component]
-pub fn GuestPage(children: Children, #[prop(into)] title: TextProp) -> impl IntoView {
+pub fn GuestPage(children: Children, #[prop(into)] title: Signal<&'static str>) -> impl IntoView {
     view! {
         <RequireNoAuthentication />
 
@@ -37,7 +36,7 @@ pub fn GuestPage(children: Children, #[prop(into)] title: TextProp) -> impl Into
 pub fn Page(
     children: Children,
     #[prop(into, optional)] id: Option<String>,
-    #[prop(into)] title: TextProp,
+    #[prop(into)] title: Signal<String>,
     #[prop(into, optional)] class: String,
 ) -> impl IntoView {
     let current_user_resource = use_current_user_resource();
@@ -47,7 +46,7 @@ pub fn Page(
     });
 
     view! {
-        <Title text=title />
+        <Title text=move || title.get() />
 
         <div id=id class=class>
             {children()}

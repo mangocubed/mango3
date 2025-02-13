@@ -1,6 +1,5 @@
 use leptos::ev::Event;
 use leptos::prelude::*;
-use leptos::text_prop::TextProp;
 use leptos_meta::{Link, Title};
 
 use crate::context::use_basic_config;
@@ -88,14 +87,14 @@ where
 }
 
 #[component]
-pub fn AppTitle(#[prop(optional, into)] suffix: Option<TextProp>) -> impl IntoView {
+pub fn AppTitle(#[prop(optional, into)] suffix: Signal<Option<String>>) -> impl IntoView {
     let basic_config = use_basic_config();
 
     view! {
         <Title formatter=move |page_title: String| {
             let mut text = (if page_title.is_empty() { String::new() } else { format!("{page_title} | ") })
                 + &basic_config.title;
-            if let Some(suffix) = &suffix { text + &format!(" {}", suffix.get()) } else { text }
+            if let Some(suffix) = &suffix.get() { text + &format!(" {suffix}") } else { text }
         } />
     }
 }

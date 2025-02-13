@@ -50,7 +50,7 @@ privacy_policy: Privacy policy
 profile: Profile
 register: Register
 remove: Remove
-search_results_for: Search results for "{{query}}"
+search_results_for: Search results for “{{query}}”
 studio: Studio
 submit: Submit
 terms_of_service: Terms of service

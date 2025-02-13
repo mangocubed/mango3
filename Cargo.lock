@@ -300,6 +300,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "async-once-cell"
+version = "0.5.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4288f83726785267c6f2ef073a3d83dc3f9b81464e9f99898240cced85fce35a"
+
+[[package]]
 name = "async-trait"
 version = "0.1.86"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2691,12 +2697,14 @@ dependencies = [
 
 [[package]]
 name = "leptos_i18n"
-version = "0.5.5"
+version = "0.5.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "83f700fc997fb1b12d22d412b8d33156438f8c6a2c4277da82099f4c6e75a89f"
+checksum = "50cc82c91c69a9d610db59510d91837682fc01f5be510e6dae8450ce2faf22ae"
 dependencies = [
+ "async-once-cell",
  "codee 0.2.0",
  "default-struct-builder",
+ "futures",
  "icu_locid",
  "js-sys",
  "leptos",
@@ -2712,9 +2720,9 @@ dependencies = [
 
 [[package]]
 name = "leptos_i18n_macro"
-version = "0.5.5"
+version = "0.5.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a78cfbc78ce4b217f6bde9539a613d11ca05e99039b56c83380deb57014464a5"
+checksum = "5fcc4f781e18e312ad48e52604289e26833af93bd7f789d5c85c0ad9da6fb946"
 dependencies = [
  "fixed_decimal",
  "icu_locid",
@@ -2726,14 +2734,15 @@ dependencies = [
  "serde_json",
  "serde_yaml",
  "syn",
+ "tinystr",
  "toml",
 ]
 
 [[package]]
 name = "leptos_i18n_parser"
-version = "0.5.5"
+version = "0.5.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "856d9027220f0b690b6c2893014a863b43f28fc580abc3bee77b6dcd6251389c"
+checksum = "6c4d4e26dce2c19c372793e55296c956f23b7e9bdbcbe791925eafee4337f930"
 dependencies = [
  "fixed_decimal",
  "icu_locid",
@@ -2745,6 +2754,7 @@ dependencies = [
  "serde_json",
  "serde_yaml",
  "syn",
+ "tinystr",
  "toml",
 ]
 

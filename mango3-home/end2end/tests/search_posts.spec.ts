@@ -12,6 +12,6 @@ test("should display no results when there is no match", async ({ page }) => {
     await searchInput.press("Enter");
 
     await expect(page).toHaveURL(/\/search\?q=Some%20unexistent%20post$/);
-    await expect(page.locator("h1")).toHaveText('Search results for "Some unexistent post"');
+    await expect(page.locator("h1")).toHaveText("Search results for “Some unexistent post”");
     await expect(page.getByText("No results found.")).toBeVisible();
 });

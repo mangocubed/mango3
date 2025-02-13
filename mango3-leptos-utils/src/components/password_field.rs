@@ -1,7 +1,6 @@
 use leptos::either::Either;
 use leptos::ev::MouseEvent;
 use leptos::prelude::*;
-use leptos::text_prop::TextProp;
 
 use crate::icons::{EyeOutlined, EyeSlashOutlined};
 
@@ -9,7 +8,7 @@ use crate::icons::{EyeOutlined, EyeSlashOutlined};
 pub fn PasswordField(
     #[prop(into, optional)] error: MaybeProp<String>,
     #[prop(into, optional)] id: Option<&'static str>,
-    #[prop(into)] label: TextProp,
+    #[prop(into)] label: Signal<&'static str>,
     name: &'static str,
 ) -> impl IntoView {
     let input_type = RwSignal::new("password".to_owned());

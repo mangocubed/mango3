@@ -3,10 +3,15 @@ use leptos::prelude::*;
 #[cfg(feature = "ssr")]
 use leptos_meta::HashedStylesheet;
 
+#[macro_use]
+pub mod macros;
+
 pub mod components;
 pub mod constants;
 pub mod context;
 pub mod icons;
+pub mod utils;
+
 pub mod models;
 pub mod pages;
 pub mod server_functions;

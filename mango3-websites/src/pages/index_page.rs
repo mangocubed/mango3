@@ -1,11 +1,12 @@
 use leptos::either::Either;
 use leptos::prelude::*;
-use leptos_i18n::t_string;
 
+use mango3_leptos_utils::async_t_string;
 use mango3_leptos_utils::components::{Hashtags, InfiniteScroll, InfiniteScrollController, PostCard};
 use mango3_leptos_utils::i18n::use_i18n;
 use mango3_leptos_utils::models::PostPreviewResp;
 use mango3_leptos_utils::pages::{NotFoundPage, Page};
+use mango3_leptos_utils::utils::ToSignalTrait;
 
 use crate::components::CurrentWebsiteOpt;
 use crate::server_functions::get_posts;
@@ -16,6 +17,7 @@ pub fn IndexPage() -> impl IntoView {
     let controller = InfiniteScrollController::new(|after| {
         Resource::new_blocking(move || after.get(), |after| async move { get_posts(None, after).await })
     });
+    let text_title = async_t_string!(i18n, shared.home).to_signal();
 
     view! {
         <CurrentWebsiteOpt children=move |website| {
@@ -24,7 +26,7 @@ pub fn IndexPage() -> impl IntoView {
                     let controller = controller.clone();
                     Either::Left(
                         view! {
-                            <Page title=move || t_string!(i18n, shared.home)>
+                            <Page title=text_title>
                                 <section class="max-w-[1200px] w-full mx-auto">
                                     {move || {
                                         website

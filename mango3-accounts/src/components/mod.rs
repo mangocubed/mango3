@@ -1,10 +1,11 @@
 use leptos::either::Either;
 use leptos::prelude::*;
-use leptos_i18n::t_string;
 
+use mango3_leptos_utils::async_t_string;
 use mango3_leptos_utils::components::{ActionFormAlert, ActionFormError, PasswordField, SubmitButton, TextField};
 use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::models::ActionFormResp;
+use mango3_leptos_utils::utils::ToSignalTrait;
 
 use crate::server_functions::AttemptToUpdatePasswordWithCode;
 
@@ -22,6 +23,8 @@ pub fn ResetPasswordDialog(
     let action_value = server_action.value();
     let error_code = RwSignal::new(None);
     let error_new_password = RwSignal::new(None);
+    let text_failed_to_update_password = async_t_string!(i18n, shared.failed_to_update_password).to_signal();
+    let text_password_updated_successfully = async_t_string!(i18n, shared.password_updated_successfully).to_signal();
 
     Effect::new(move || {
         let response = ActionFormResp::from(action_value);
@@ -38,7 +41,7 @@ pub fn ResetPasswordDialog(
         <ActionFormAlert
             action_value=action_value
             redirect_to="/login"
-            success_message=move || { t_string!(i18n, shared.password_updated_successfully) }
+            success_message=text_password_updated_successfully
         />
 
         <div class="modal" class:modal-open=is_open>
@@ -55,13 +58,7 @@ pub fn ResetPasswordDialog(
                 <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
                     {move || {
                         if let Some(false) = ActionFormResp::from(action_value).success {
-                            Either::Left(
-                                view! {
-                                    <ActionFormError message=move || {
-                                        t_string!(i18n, shared.failed_to_update_password)
-                                    } />
-                                },
-                            )
+                            Either::Left(view! { <ActionFormError message=text_failed_to_update_password /> })
                         } else {
                             Either::Right(())
                         }
@@ -69,10 +66,10 @@ pub fn ResetPasswordDialog(
 
                     <input type="hidden" name="username_or_email" value=username_or_email />
 
-                    <TextField label=move || t_string!(i18n, shared.code) name="code" error=error_code />
+                    <TextField label=async_t_string!(i18n, shared.code).to_signal() name="code" error=error_code />
 
                     <PasswordField
-                        label=move || t_string!(i18n, shared.new_password)
+                        label=async_t_string!(i18n, shared.new_password).to_signal()
                         name="new_password"
                         error=error_new_password
                     />

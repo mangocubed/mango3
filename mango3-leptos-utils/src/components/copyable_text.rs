@@ -1,7 +1,7 @@
 use leptos::prelude::*;
 use leptos_use::{use_clipboard, UseClipboardReturn};
 
-use crate::i18n::{t_string, use_i18n};
+use crate::i18n::use_i18n;
 use crate::icons::LinkOutlined;
 
 #[component]
@@ -16,7 +16,7 @@ pub fn CopyableText(#[prop(into)] value: String) -> impl IntoView {
             <Show when=move || is_supported.get()>
                 <button
                     class="btn btn-ghost"
-                    title=t_string!(i18n, shared.copy_url)
+                    title=move || async_t_string!(i18n, shared.copy_url).get()
                     on:click={
                         let copy = copy.clone();
                         let value = value.clone();

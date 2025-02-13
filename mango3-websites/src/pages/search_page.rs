@@ -2,8 +2,9 @@ use leptos::either::Either;
 use leptos::prelude::*;
 
 use leptos_router::hooks::use_query_map;
+use mango3_leptos_utils::async_t_string;
 use mango3_leptos_utils::components::{InfiniteScroll, InfiniteScrollController, PostCard};
-use mango3_leptos_utils::i18n::{t_string, use_i18n};
+use mango3_leptos_utils::i18n::use_i18n;
 use mango3_leptos_utils::models::PostPreviewResp;
 use mango3_leptos_utils::pages::{NotFoundPage, Page};
 
@@ -30,11 +31,14 @@ pub fn SearchPage() -> impl IntoView {
                             controller.clear_and_refetch();
                         }
                     });
-                    let title = move || t_string!(i18n, shared.search_results_for, query = param_query(query_map));
+                    let text_title = Signal::derive(move || {
+                        async_t_string!(i18n, shared.search_results_for, query = param_query(query_map))
+                            .with(|value| value.clone().unwrap_or("Search results".to_owned()))
+                    });
                     Either::Left(
                         view! {
-                            <Page title=title>
-                                <h1 class="h2">{title}</h1>
+                            <Page title=text_title>
+                                <h1 class="h2">{move || text_title.get()}</h1>
 
                                 <section class="max-w-[720px] w-full mx-auto">
                                     <InfiniteScroll
