@@ -28,7 +28,9 @@ pub fn App() -> impl IntoView {
             {move || {
                 let i18n = use_i18n();
                 let basic_config = use_basic_config();
-                let text_mango3 = async_t_string!(i18n, websites.powered_by_title, title = basic_config.title.clone());
+                let text_powered_by_mango3 = async_t_string!(
+                    i18n, websites.powered_by_title, title = basic_config.title.clone()
+                );
                 view! {
                     <CurrentWebsiteOpt children=move |website| {
                         match website {
@@ -45,8 +47,10 @@ pub fn App() -> impl IntoView {
                                                 + &format!(
                                                     "{} ({})",
                                                     website_name.clone(),
-                                                    text_mango3
-                                                        .with(|value| value.clone().unwrap_or("Mango³".to_owned())),
+                                                    text_powered_by_mango3
+                                                        .with(|value| {
+                                                            value.clone().unwrap_or("Powered by Mango³".to_owned())
+                                                        }),
                                                 )
                                         } />
 
