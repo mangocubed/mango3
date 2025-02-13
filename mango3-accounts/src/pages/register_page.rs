@@ -1,12 +1,13 @@
 use leptos::prelude::*;
-use leptos_i18n::t_string;
 
+use mango3_leptos_utils::async_t_string;
 use mango3_leptos_utils::components::*;
 use mango3_leptos_utils::context::use_basic_config;
 use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::icons::InformationCircleOutlined;
 use mango3_leptos_utils::models::ActionFormResp;
 use mango3_leptos_utils::pages::GuestPage;
+use mango3_leptos_utils::utils::ToSignalTrait;
 
 use crate::components::InvitationCodeDialog;
 use crate::server_functions::AttemptToRegister;
@@ -24,6 +25,7 @@ pub fn RegisterPage() -> impl IntoView {
     let error_birthdate = RwSignal::new(None);
     let error_country_alpha2 = RwSignal::new(None);
     let value_invitation_code_id = RwSignal::new(None);
+    let text_title = async_t_string!(i18n, shared.register).to_signal();
 
     Effect::new(move || {
         let response = ActionFormResp::from(action_value);
@@ -36,53 +38,63 @@ pub fn RegisterPage() -> impl IntoView {
         error_country_alpha2.set(response.error("country-alpha2"));
     });
 
-    let title = move || t_string!(i18n, shared.register);
-
     let privacy_policy_url = basic_config.privacy_policy_url.clone();
     let terms_of_service_url = basic_config.terms_of_service_url.clone();
     let has_privacy_policy = !privacy_policy_url.is_empty();
     let has_terms_of_service = !terms_of_service_url.is_empty();
 
     view! {
-        <GuestPage title=title>
-            <h2 class="h2">{title}</h2>
+        <GuestPage title=text_title>
+            <h2 class="h2">{move || text_title.get()}</h2>
 
             <InvitationCodeDialog value=value_invitation_code_id />
 
             <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
                 <ActionFormAlert
                     action_value=action_value
-                    error_message=move || t_string!(i18n, accounts.failed_to_create_user)
+                    error_message=async_t_string!(i18n, accounts.failed_to_create_user).to_signal()
                     redirect_to=basic_config.home_url.clone()
-                    success_message=move || t_string!(i18n, accounts.user_created_successfully)
+                    success_message=async_t_string!(i18n, accounts.user_created_successfully).to_signal()
                 />
 
                 <Show when=move || !basic_config.enable_register>
                     <input type="hidden" name="invitation_code_id" value=value_invitation_code_id />
                 </Show>
 
-                <TextField label=move || t_string!(i18n, accounts.username) name="username" error=error_username />
+                <TextField
+                    label=async_t_string!(i18n, accounts.username).to_signal()
+                    name="username"
+                    error=error_username
+                />
 
                 <TextField
-                    label=move || t_string!(i18n, shared.email)
+                    label=async_t_string!(i18n, shared.email).to_signal()
                     name="email"
                     input_type="email"
                     error=error_email
                 />
 
-                <PasswordField label=move || t_string!(i18n, shared.password) name="password" error=error_password />
+                <PasswordField
+                    label=async_t_string!(i18n, shared.password).to_signal()
+                    name="password"
+                    error=error_password
+                />
 
-                <TextField label=move || t_string!(i18n, shared.full_name) name="full_name" error=error_full_name />
+                <TextField
+                    label=async_t_string!(i18n, shared.full_name).to_signal()
+                    name="full_name"
+                    error=error_full_name
+                />
 
                 <TextField
                     input_type="date"
-                    label=move || t_string!(i18n, shared.birthdate)
+                    label=async_t_string!(i18n, shared.birthdate).to_signal()
                     name="birthdate"
                     error=error_birthdate
                 />
 
                 <CountryField
-                    label=move || t_string!(i18n, shared.country)
+                    label=async_t_string!(i18n, shared.country).to_signal()
                     name="country_alpha2"
                     error=error_country_alpha2
                 />

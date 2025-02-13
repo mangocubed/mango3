@@ -1,8 +1,9 @@
 use chrono::{DateTime, Utc};
+use leptos::either::Either;
 use leptos::prelude::*;
 
 use crate::components::TimeAgo;
-use crate::i18n::{t, t_string, use_i18n};
+use crate::i18n::{t, use_i18n};
 
 #[component]
 pub fn PostBottomBar(
@@ -19,9 +20,9 @@ pub fn PostBottomBar(
             <div>
                 {move || {
                     if views_count == 1 {
-                        t_string!(i18n, shared.one_view).to_owned()
+                        Either::Left(t!(i18n, shared.one_view))
                     } else {
-                        t_string!(i18n, shared.count_views, count = views_count)
+                        Either::Right(t!(i18n, shared.count_views, count = views_count))
                     }
                 }}
             </div>
@@ -29,9 +30,9 @@ pub fn PostBottomBar(
             <div>
                 {move || {
                     if reactions_count == 1 {
-                        t_string!(i18n, shared.one_reaction).to_owned()
+                        Either::Left(t!(i18n, shared.one_reaction))
                     } else {
-                        t_string!(i18n, shared.count_reactions, count = reactions_count)
+                        Either::Right(t!(i18n, shared.count_reactions, count = reactions_count))
                     }
                 }}
             </div>
@@ -39,9 +40,9 @@ pub fn PostBottomBar(
             <div>
                 {move || {
                     if comments_count == 1 {
-                        t_string!(i18n, shared.one_comment).to_owned()
+                        Either::Left(t!(i18n, shared.one_comment))
                     } else {
-                        t_string!(i18n, shared.count_comments, count = comments_count)
+                        Either::Right(t!(i18n, shared.count_comments, count = comments_count))
                     }
                 }}
             </div>

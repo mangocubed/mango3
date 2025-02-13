@@ -1,11 +1,12 @@
 use leptos::prelude::*;
-use leptos_i18n::t_string;
 
+use mango3_leptos_utils::async_t_string;
 use mango3_leptos_utils::components::{ActionFormAlert, CurrentUser, PasswordField, SubmitButton, TextField};
 use mango3_leptos_utils::context::use_current_user_resource;
 use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::models::ActionFormResp;
 use mango3_leptos_utils::pages::AuthenticatedPage;
+use mango3_leptos_utils::utils::ToSignalTrait;
 
 use crate::components::EmailConfirmationBadge;
 use crate::server_functions::AttemptToUpdateEmail;
@@ -18,6 +19,7 @@ pub fn EditEmailPage() -> impl IntoView {
     let action_value = server_action.value();
     let error_email = RwSignal::new(None);
     let error_password = RwSignal::new(None);
+    let text_title = async_t_string!(i18n, my_account.edit_email).to_signal();
 
     Effect::new(move || {
         let response = ActionFormResp::from(action_value);
@@ -26,11 +28,9 @@ pub fn EditEmailPage() -> impl IntoView {
         error_password.set(response.error("password"));
     });
 
-    let title = move || t_string!(i18n, my_account.edit_email);
-
     view! {
-        <AuthenticatedPage title=title>
-            <h2 class="h2">{title}</h2>
+        <AuthenticatedPage title=text_title>
+            <h2 class="h2">{move || text_title.get()}</h2>
 
             <section class="max-w-[640px] w-full ml-auto mr-auto">
                 <h3 class="h3">{t!(i18n, my_account.current_email)}</h3>
@@ -53,15 +53,15 @@ pub fn EditEmailPage() -> impl IntoView {
                 <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
                     <ActionFormAlert
                         action_value=action_value
-                        error_message=move || t_string!(i18n, my_account.failed_to_update_email)
+                        error_message=async_t_string!(i18n, my_account.failed_to_update_email).to_signal()
                         on_success=move || current_user_resource.refetch()
-                        success_message=move || { t_string!(i18n, my_account.email_updated_successfully) }
+                        success_message=async_t_string!(i18n, my_account.email_updated_successfully).to_signal()
                     />
 
-                    <TextField label=move || t_string!(i18n, shared.email) name="email" error=error_email />
+                    <TextField label=async_t_string!(i18n, shared.email).to_signal() name="email" error=error_email />
 
                     <PasswordField
-                        label=move || t_string!(i18n, shared.password)
+                        label=async_t_string!(i18n, shared.password).to_signal()
                         name="password"
                         error=error_password
                     />

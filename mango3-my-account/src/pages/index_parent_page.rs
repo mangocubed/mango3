@@ -1,8 +1,8 @@
 use leptos::prelude::*;
-use leptos_i18n::t_string;
 use leptos_router::components::Outlet;
 use leptos_router::hooks::{use_location, use_navigate};
 
+use mango3_leptos_utils::async_t_string;
 use mango3_leptos_utils::components::ConfirmationDialog;
 use mango3_leptos_utils::context::use_basic_config;
 use mango3_leptos_utils::i18n::{t, use_i18n};
@@ -27,10 +27,10 @@ pub fn IndexParentPage() -> impl IntoView {
 
     let menu_items = move || {
         [
-            ("/", t_string!(i18n, shared.home)),
-            ("/edit-profile", t_string!(i18n, my_account.edit_profile)),
-            ("/edit-email", t_string!(i18n, my_account.edit_email)),
-            ("/change-password", t_string!(i18n, shared.change_password)),
+            ("/", async_t_string!(i18n, shared.home)),
+            ("/edit-profile", async_t_string!(i18n, my_account.edit_profile)),
+            ("/edit-email", async_t_string!(i18n, my_account.edit_email)),
+            ("/change-password", async_t_string!(i18n, shared.change_password)),
         ]
     };
 
@@ -40,7 +40,7 @@ pub fn IndexParentPage() -> impl IntoView {
                 <For each=menu_items key=|(href, _)| href.to_owned() let:data>
                     <li>
                         <a class:active=move || location.pathname.get() == data.0 href=data.0>
-                            {data.1}
+                            {move || data.1.get()}
                         </a>
                     </li>
                 </For>

@@ -1,12 +1,11 @@
 use leptos::prelude::*;
-use leptos::text_prop::TextProp;
 use leptos_use::{use_textarea_autosize_with_options, UseTextareaAutosizeOptions, UseTextareaAutosizeReturn};
 
 #[component]
 pub fn TextareaField(
     #[prop(into, optional)] error: MaybeProp<String>,
     #[prop(into, optional)] id: Option<&'static str>,
-    #[prop(into, optional)] label: TextProp,
+    #[prop(into, optional)] label: Signal<&'static str>,
     #[prop(default = 4, into)] rows: i8,
     #[prop(optional, into)] value: RwSignal<String>,
     name: &'static str,
@@ -38,17 +37,13 @@ pub fn TextareaField(
                 let label_is_present = !label.get().is_empty();
                 move || label_is_present
             }>
-                {
-                    let label = label.clone();
-                    move || {
-                        let label = label.clone();
-                        view! {
-                            <label class="label" for=field_id>
-                                <span class="label-text">{move || label.get()}</span>
-                            </label>
-                        }
+                {move || {
+                    view! {
+                        <label class="label" for=field_id>
+                            <span class="label-text">{move || label.get()}</span>
+                        </label>
                     }
-                }
+                }}
             </Show>
 
             <textarea

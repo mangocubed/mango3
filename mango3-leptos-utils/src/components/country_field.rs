@@ -1,5 +1,4 @@
 use leptos::prelude::*;
-use leptos::text_prop::TextProp;
 
 #[server]
 pub async fn get_country_options() -> Result<Vec<(String, String)>, ServerFnError> {
@@ -17,7 +16,7 @@ pub async fn get_country_options() -> Result<Vec<(String, String)>, ServerFnErro
 pub fn CountryField(
     #[prop(optional, into)] error: MaybeProp<String>,
     #[prop(into, optional)] id: Option<&'static str>,
-    #[prop(into)] label: TextProp,
+    #[prop(into)] label: Signal<&'static str>,
     name: &'static str,
     #[prop(optional, into)] value: Signal<String>,
 ) -> impl IntoView {

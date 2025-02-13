@@ -15,7 +15,7 @@ pub fn ImageUploadField(
     #[prop(optional, into)] error: MaybeProp<String>,
     #[prop(default = 48)] height: u16,
     #[prop(into)] id: String,
-    #[prop(into, optional)] label: TextProp,
+    #[prop(into, optional)] label: Signal<&'static str>,
     #[prop(into, optional)] value: RwSignal<Option<BlobResp>>,
     #[prop(default = 48)] width: u16,
     #[prop(into)] name: String,

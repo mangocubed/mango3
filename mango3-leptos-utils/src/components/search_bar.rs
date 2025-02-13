@@ -2,7 +2,7 @@ use leptos::prelude::*;
 use leptos_router::hooks::{use_location, use_navigate, use_query_map};
 
 use crate::context::param_query;
-use crate::i18n::{t_string, use_i18n};
+use crate::i18n::use_i18n;
 use crate::icons::MagnifyingGlassMini;
 
 #[component]
@@ -12,11 +12,11 @@ pub fn SearchBar() -> impl IntoView {
     let navigate = use_navigate();
     let query_map = use_query_map();
     let query = RwSignal::new(String::new());
-    let action = Action::new(move |()| {
+    let action = Action::new(move |query: &String| {
         let navigate = navigate.clone();
+        let query = query.clone();
         async move {
-            let q = query.get();
-            let q = q.trim();
+            let q = query.trim();
 
             if q.is_empty() {
                 return;
@@ -37,11 +37,16 @@ pub fn SearchBar() -> impl IntoView {
             class="p-0"
             on:submit=move |event| {
                 event.prevent_default();
-                action.dispatch(());
+                action.dispatch(query.get());
             }
         >
             <label class="input input-bordered flex items-center gap-2 h-9 pr-2">
-                <input class="grow" type="search" placeholder=move || t_string!(i18n, home.search) bind:value=query />
+                <input
+                    class="grow"
+                    type="search"
+                    placeholder=move || async_t_string!(i18n, home.search).get()
+                    bind:value=query
+                />
                 <button class="btn btn-ghost p-0 min-h-7 h-7 w-7" type="submit">
                     <MagnifyingGlassMini />
                 </button>

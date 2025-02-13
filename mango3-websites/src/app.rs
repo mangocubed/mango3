@@ -4,10 +4,11 @@ use leptos_meta::{provide_meta_context, Title};
 use leptos_router::components::{Route, Router, Routes};
 use leptos_router::{ParamSegment, StaticSegment};
 
+use mango3_leptos_utils::async_t_string;
 use mango3_leptos_utils::components::{AppProvider, AppTitle, BottomBar, FaviconLink, LoadingOverlay};
 use mango3_leptos_utils::constants::KEY_PARAM_NAME;
 use mango3_leptos_utils::context::use_basic_config;
-use mango3_leptos_utils::i18n::{t, t_string, use_i18n};
+use mango3_leptos_utils::i18n::use_i18n;
 use mango3_leptos_utils::pages::NotFoundPage;
 
 use crate::components::{CurrentWebsiteOpt, WebsiteTopBar};
@@ -26,39 +27,37 @@ pub fn App() -> impl IntoView {
         <AppProvider>
             {move || {
                 let i18n = use_i18n();
-                let basic_config = use_basic_config();
-                let title = basic_config.title.clone();
                 view! {
-                    <CurrentWebsiteOpt children={
-                        let title = title.clone();
-                        move |website| {
-                            match website {
-                                Some(website) => {
-                                    let website_name = website.name.clone();
-                                    let title = title.clone();
-                                    Either::Left(
-                                        view! {
-                                            <Title formatter=move |page_title: String| {
-                                                (if page_title.is_empty() {
-                                                    String::new()
-                                                } else {
-                                                    format!("{page_title} | ")
-                                                })
-                                                    + &format!(
-                                                        "{} ({})",
-                                                        website_name.clone(),
-                                                        t_string!(
-                                                            i18n, websites.powered_by_title, title = title.clone()
-                                                        ),
+                    <CurrentWebsiteOpt children=move |website| {
+                        match website {
+                            Some(website) => {
+                                let website_name = website.name.clone();
+                                Either::Left(
+                                    view! {
+                                        <Title formatter=move |page_title: String| {
+                                            let basic_config = use_basic_config();
+                                            (if page_title.is_empty() {
+                                                String::new()
+                                            } else {
+                                                format!("{page_title} | ")
+                                            })
+                                                + &format!(
+                                                    "{} ({})",
+                                                    website_name.clone(),
+                                                    async_t_string!(
+                                                        i18n,
+                                                        websites.powered_by_title,
+                                                        title = basic_config.title.clone()
                                                     )
-                                            } />
+                                                        .with(|value| value.clone().unwrap_or("Mango³".to_owned())),
+                                                )
+                                        } />
 
-                                            <FaviconLink href=website.icon_image_url(32) />
-                                        },
-                                    )
-                                }
-                                None => Either::Right(view! { <AppTitle /> }),
+                                        <FaviconLink href=website.icon_image_url(32) />
+                                    },
+                                )
                             }
+                            None => Either::Right(view! { <AppTitle /> }),
                         }
                     } />
 
@@ -81,24 +80,30 @@ pub fn App() -> impl IntoView {
                         <CurrentWebsiteOpt children=move |website| {
                             match website {
                                 Some(website) => {
-                                    let title = title.clone();
                                     Either::Left(
                                         view! {
                                             <BottomBar
                                                 light_theme=website.light_theme.clone()
                                                 dark_theme=website.dark_theme.clone()
                                                 aside_items=move || {
-                                                    view! {
-                                                        {t!(
-                                                            i18n, websites.this_website_is_part_of_title_ecosystem, title = title.clone()
-                                                        )}
-                                                    }
+                                                    let basic_config = use_basic_config();
+                                                    async_t_string!(
+                                                        i18n,
+                                                        websites.this_website_is_part_of_title_ecosystem,
+                                                        title = basic_config.title.clone()
+                                                    )
+                                                        .get()
                                                 }
                                             />
                                         },
                                     )
                                 }
-                                None => Either::Right(view! { <BottomBar /> }),
+                                None => {
+                                    Either::Right(
+
+                                        view! { <BottomBar /> },
+                                    )
+                                }
                             }
                         } />
                     </Router>

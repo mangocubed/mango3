@@ -1,5 +1,4 @@
 use leptos::prelude::*;
-use leptos::text_prop::TextProp;
 use leptos_router::components::Redirect;
 
 use mango3_leptos_utils::context::use_basic_config;
@@ -11,7 +10,7 @@ use crate::server_functions::is_admin;
 pub fn AdminPageContainer(
     children: Children,
     #[prop(into, optional)] class: String,
-    #[prop(into)] title: TextProp,
+    #[prop(into)] title: Signal<&'static str>,
 ) -> impl IntoView {
     let is_admin_resource = Resource::new_blocking(|| (), |_| is_admin());
 

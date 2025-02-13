@@ -53,11 +53,10 @@ pub fn ShowHashtagPage() -> impl IntoView {
                 async move {
                     match hashtag_resource.get() {
                         Some(Ok(Some(hashtag))) => {
-                            let title = move || format!("#{}", hashtag.name);
                             EitherOf3::A(
                                 view! {
-                                    <Page title=title.clone()>
-                                        <h1 class="h2">{title}</h1>
+                                    <Page title=format!("#{}", hashtag.name)>
+                                        <h1 class="h2">"#"{hashtag.name}</h1>
 
                                         <section class="max-w-[720px] w-full mx-auto">
                                             <InfiniteScroll

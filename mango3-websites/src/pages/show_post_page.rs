@@ -23,7 +23,6 @@ pub fn ShowPostPage() -> impl IntoView {
                     Some(Ok(Some(post))) => {
                         let modal_image_url = RwSignal::new(None);
                         EitherOf3::A(
-
                             view! {
                                 <Page class="max-w-[1200px] w-full ml-auto mr-auto" title=post.title.clone()>
                                     <Meta name="description" content=post.title.clone() />

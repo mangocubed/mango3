@@ -1,10 +1,9 @@
 use leptos::prelude::*;
-use leptos::text_prop::TextProp;
 
 use crate::context::use_basic_config;
 
 #[component]
-pub fn Brand(#[prop(into)] href: String, #[prop(optional, into)] suffix: Option<TextProp>) -> impl IntoView {
+pub fn Brand(#[prop(into)] href: String, #[prop(optional, into)] suffix: Signal<Option<String>>) -> impl IntoView {
     let basic_config = use_basic_config();
 
     view! {
@@ -14,7 +13,7 @@ pub fn Brand(#[prop(into)] href: String, #[prop(optional, into)] suffix: Option<
                 <img alt=basic_config.title.clone() class="h-[36px]" src=basic_config.asset_url("icon.svg") />
             </picture>
 
-            {move || suffix.as_ref().map(|suffix| suffix.get())}
+            {move || suffix.get()}
         </a>
     }
 }

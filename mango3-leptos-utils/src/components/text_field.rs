@@ -1,5 +1,4 @@
 use leptos::prelude::*;
-use leptos::text_prop::TextProp;
 
 use super::EventFn;
 
@@ -8,7 +7,7 @@ pub fn TextField(
     #[prop(into, optional)] error: MaybeProp<String>,
     #[prop(into, optional)] id: Option<&'static str>,
     #[prop(default = "text", into)] input_type: &'static str,
-    #[prop(into)] label: TextProp,
+    #[prop(into)] label: Signal<&'static str>,
     name: &'static str,
     #[prop(into, optional)] on_input: Option<EventFn>,
     #[prop(optional, into)] value: RwSignal<String>,
@@ -26,7 +25,7 @@ pub fn TextField(
     view! {
         <div class="form-control w-full">
             <label class="label" for=field_id>
-                <span class="label-text">{move || label.get()}</span>
+                <span class="label-text">{label}</span>
             </label>
             <input
                 class="input input-bordered"

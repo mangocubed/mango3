@@ -2,9 +2,11 @@ use leptos::either::Either;
 use leptos::prelude::*;
 use leptos_router::hooks::use_query_map;
 
+use mango3_leptos_utils::async_t_string;
 use mango3_leptos_utils::context::param_query;
-use mango3_leptos_utils::i18n::{t, t_string, use_i18n};
+use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::pages::Page;
+use mango3_leptos_utils::utils::ToSignalTrait;
 
 use crate::components::{SearchPostsTab, SearchWebsitesTab};
 
@@ -13,12 +15,11 @@ pub fn SearchPage() -> impl IntoView {
     let query_map = use_query_map();
     let i18n = use_i18n();
     let active_tab = Memo::new(move |_| query_map.with(|params| params.get("tab")).unwrap_or_default());
-
-    let title = move || t_string!(i18n, shared.search_results_for, query = param_query(query_map));
+    let text_title = async_t_string!(i18n, shared.search_results_for, query = param_query(query_map)).to_signal();
 
     view! {
-        <Page title=title>
-            <h1 class="h2">{title}</h1>
+        <Page title=text_title>
+            <h1 class="h2">{move || text_title.get()}</h1>
 
             <section class="max-w-[720px] w-full mx-auto">
                 <div role="tablist" class="tabs tabs-bordered mb-5">

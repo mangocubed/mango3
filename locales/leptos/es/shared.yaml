@@ -50,7 +50,7 @@ privacy_policy: Política de privacidad
 profile: Profile
 register: Registrate
 remove: Removera
-search_results_for: Resultados de busqueda para "{{query}}"
+search_results_for: Resultados de busqueda para “{{query}}”
 studio: Estudio
 submit: Enviar
 terms_of_service: Términos de servicio
