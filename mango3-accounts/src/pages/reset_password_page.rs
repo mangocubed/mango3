@@ -40,13 +40,13 @@ pub fn ResetPasswordPage() -> impl IntoView {
             <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
                 <ActionFormAlert
                     action_value=action_value
-                    error_message=async_t_string!(i18n, accounts.failed_to_send_password_reset_code).to_signal()
+                    error_message=move || t!(i18n, accounts.failed_to_send_password_reset_code)
                     on_success=move || show_reset_password_dialog.set(true)
-                    success_message=async_t_string!(i18n, accounts.password_reset_code_sent_successfully).to_signal()
+                    success_message=move || t!(i18n, accounts.password_reset_code_sent_successfully)
                 />
 
                 <TextField
-                    label=async_t_string!(i18n, accounts.username_or_email).to_signal()
+                    label=move || t!(i18n, accounts.username_or_email)
                     name="username_or_email"
                     error=error_username_or_email
                     on_input=on_input

@@ -15,7 +15,7 @@ pub fn ImageUploadField(
     #[prop(optional, into)] error: MaybeProp<String>,
     #[prop(default = 48)] height: u16,
     #[prop(into)] id: String,
-    #[prop(into, optional)] label: Signal<&'static str>,
+    #[prop(into, optional)] label: ViewFn,
     #[prop(into, optional)] value: RwSignal<Option<BlobResp>>,
     #[prop(default = 48)] width: u16,
     #[prop(into)] name: String,
@@ -67,7 +67,7 @@ pub fn ImageUploadField(
     view! {
         <div class="form-control w-full">
             <label class="label" for=id.clone()>
-                <span class="label-text">{move || label.get()}</span>
+                <span class="label-text">{label.run()}</span>
             </label>
             {move || {
                 if upload_action.pending().get() {

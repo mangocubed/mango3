@@ -52,52 +52,31 @@ pub fn RegisterPage() -> impl IntoView {
             <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
                 <ActionFormAlert
                     action_value=action_value
-                    error_message=async_t_string!(i18n, accounts.failed_to_create_user).to_signal()
+                    error_message=move || t!(i18n, accounts.failed_to_create_user)
                     redirect_to=basic_config.home_url.clone()
-                    success_message=async_t_string!(i18n, accounts.user_created_successfully).to_signal()
+                    success_message=move || t!(i18n, accounts.user_created_successfully)
                 />
 
                 <Show when=move || !basic_config.enable_register>
                     <input type="hidden" name="invitation_code_id" value=value_invitation_code_id />
                 </Show>
 
-                <TextField
-                    label=async_t_string!(i18n, accounts.username).to_signal()
-                    name="username"
-                    error=error_username
-                />
+                <TextField label=move || t!(i18n, accounts.username) name="username" error=error_username />
 
-                <TextField
-                    label=async_t_string!(i18n, shared.email).to_signal()
-                    name="email"
-                    input_type="email"
-                    error=error_email
-                />
+                <TextField label=move || t!(i18n, shared.email) name="email" input_type="email" error=error_email />
 
-                <PasswordField
-                    label=async_t_string!(i18n, shared.password).to_signal()
-                    name="password"
-                    error=error_password
-                />
+                <PasswordField label=move || t!(i18n, shared.password) name="password" error=error_password />
 
-                <TextField
-                    label=async_t_string!(i18n, shared.full_name).to_signal()
-                    name="full_name"
-                    error=error_full_name
-                />
+                <TextField label=move || t!(i18n, shared.full_name) name="full_name" error=error_full_name />
 
                 <TextField
                     input_type="date"
-                    label=async_t_string!(i18n, shared.birthdate).to_signal()
+                    label=move || t!(i18n, shared.birthdate)
                     name="birthdate"
                     error=error_birthdate
                 />
 
-                <CountryField
-                    label=async_t_string!(i18n, shared.country).to_signal()
-                    name="country_alpha2"
-                    error=error_country_alpha2
-                />
+                <CountryField label=move || t!(i18n, shared.country) name="country_alpha2" error=error_country_alpha2 />
 
                 <Show when=move || {
                     has_privacy_policy || has_terms_of_service

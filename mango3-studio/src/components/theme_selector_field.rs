@@ -4,14 +4,17 @@ use mango3_leptos_utils::components::{TopBar, WebsiteIcon};
 use mango3_leptos_utils::models::WebsitePreviewResp;
 
 #[component]
-pub fn ThemeSelectorField(
+pub fn ThemeSelectorField<L>(
     #[prop(into, optional)] error: MaybeProp<String>,
-    #[prop(into)] label: Signal<&'static str>,
+    label: L,
     name: &'static str,
     options: Vec<&'static str>,
     value: RwSignal<String>,
     #[prop(into)] website: WebsitePreviewResp,
-) -> impl IntoView {
+) -> impl IntoView
+where
+    L: IntoView,
+{
     let website_name = website.name.clone();
     let options_store = StoredValue::new(options);
 
@@ -20,7 +23,7 @@ pub fn ThemeSelectorField(
             <input type="hidden" name=name value=value />
 
             <label class="label">
-                <span class="label-text">{move || label.get()}</span>
+                <span class="label-text">{label}</span>
             </label>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2">

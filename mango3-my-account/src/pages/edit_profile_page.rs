@@ -2,7 +2,7 @@ use leptos::prelude::*;
 
 use mango3_leptos_utils::async_t_string;
 use mango3_leptos_utils::components::*;
-use mango3_leptos_utils::i18n::use_i18n;
+use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::models::ActionFormResp;
 use mango3_leptos_utils::pages::AuthenticatedPage;
 use mango3_leptos_utils::utils::ToSignalTrait;
@@ -57,29 +57,27 @@ pub fn EditProfilePage() -> impl IntoView {
                                 >
                                     <ActionFormAlert
                                         action_value=action_value
-                                        error_message=async_t_string!(i18n, my_account.failed_to_update_profile)
-                                            .to_signal()
+                                        error_message=move || t!(i18n, my_account.failed_to_update_profile)
                                         redirect_to="/"
-                                        success_message=async_t_string!(i18n, my_account.profile_updated_successfully)
-                                            .to_signal()
+                                        success_message=move || t!(i18n, my_account.profile_updated_successfully)
                                     />
 
                                     <TextField
-                                        label=async_t_string!(i18n, my_account.display_name).to_signal()
+                                        label=move || t!(i18n, my_account.display_name)
                                         name="display_name"
                                         error=error_display_name
                                         value=value_display_name
                                     />
 
                                     <TextField
-                                        label=async_t_string!(i18n, shared.full_name).to_signal()
+                                        label=move || t!(i18n, shared.full_name)
                                         name="full_name"
                                         error=error_full_name
                                         value=value_full_name
                                     />
 
                                     <TextField
-                                        label=async_t_string!(i18n, shared.birthdate).to_signal()
+                                        label=move || t!(i18n, shared.birthdate)
                                         name="birthdate"
                                         input_type="date"
                                         error=error_birthdate
@@ -87,21 +85,21 @@ pub fn EditProfilePage() -> impl IntoView {
                                     />
 
                                     <CountryField
-                                        label=async_t_string!(i18n, shared.country).to_signal()
+                                        label=move || t!(i18n, shared.country)
                                         name="country_alpha2"
                                         error=error_country_alpha2
                                         value=value_country_alpha2
                                     />
 
                                     <TextareaField
-                                        label=async_t_string!(i18n, my_account.bio).to_signal()
+                                        label=move || t!(i18n, my_account.bio)
                                         name="bio"
                                         error=error_bio
                                         value=value_bio
                                     />
 
                                     <ImageUploadField
-                                        label=async_t_string!(i18n, my_account.avatar_image).to_signal()
+                                        label=move || t!(i18n, my_account.avatar_image)
                                         id="avatar_image_blob_id"
                                         name="avatar_image_blob_id"
                                         value=value_avatar_image_blob

@@ -16,7 +16,7 @@ pub async fn get_country_options() -> Result<Vec<(String, String)>, ServerFnErro
 pub fn CountryField(
     #[prop(optional, into)] error: MaybeProp<String>,
     #[prop(into, optional)] id: Option<&'static str>,
-    #[prop(into)] label: Signal<&'static str>,
+    #[prop(into)] label: ViewFn,
     name: &'static str,
     #[prop(optional, into)] value: Signal<String>,
 ) -> impl IntoView {
@@ -35,7 +35,7 @@ pub fn CountryField(
     view! {
         <div class="form-control w-full">
             <label class="label" for=field_id>
-                <span class="label-text">{move || label.get()}</span>
+                <span class="label-text">{label.run()}</span>
             </label>
             <select class="select select-bordered" class:select-error=has_error id=field_id name=name>
                 <Suspense>

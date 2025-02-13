@@ -53,18 +53,14 @@ pub fn EditEmailPage() -> impl IntoView {
                 <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
                     <ActionFormAlert
                         action_value=action_value
-                        error_message=async_t_string!(i18n, my_account.failed_to_update_email).to_signal()
+                        error_message=move || t!(i18n, my_account.failed_to_update_email)
                         on_success=move || current_user_resource.refetch()
-                        success_message=async_t_string!(i18n, my_account.email_updated_successfully).to_signal()
+                        success_message=move || t!(i18n, my_account.email_updated_successfully)
                     />
 
-                    <TextField label=async_t_string!(i18n, shared.email).to_signal() name="email" error=error_email />
+                    <TextField label=move || t!(i18n, shared.email) name="email" error=error_email />
 
-                    <PasswordField
-                        label=async_t_string!(i18n, shared.password).to_signal()
-                        name="password"
-                        error=error_password
-                    />
+                    <PasswordField label=move || t!(i18n, shared.password) name="password" error=error_password />
 
                     <SubmitButton is_loading=server_action.pending() />
                 </ActionForm>
