@@ -24,7 +24,7 @@ imageproc = "0.25.0"
 md-5 = "0.10.6"
 mime = "0.3.17"
 multer = "3.1.0"
-pulldown-cmark = "0.12.2"
+pulldown-cmark = "0.13.0"
 rand = "0.9.0"
 regex = { workspace = true }
 rust_iso3166 = { workspace = true }
