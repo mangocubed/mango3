@@ -7,7 +7,7 @@ use crate::CoreContext;
 use super::NavigationItem;
 
 impl NavigationItem {
-    pub async fn insert(
+    pub(crate) async fn insert(
         core_context: &CoreContext,
         website: &Website,
         position: i16,

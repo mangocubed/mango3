@@ -41,7 +41,7 @@ pub fn WebsiteTopBar() -> impl IntoView {
             class="bg-base-200"
             right_items=move || view! { <GoToMango3 /> }
         >
-            <Suspense>
+            <Transition>
                 {move || Suspend::new(async move {
                     navigation_items_resource
                         .get()
@@ -62,7 +62,7 @@ pub fn WebsiteTopBar() -> impl IntoView {
                             }
                         })
                 })}
-            </Suspense>
+            </Transition>
         </TopBar>
     }
 }
