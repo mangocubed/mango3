@@ -40,6 +40,8 @@ impl NavigationItem {
 
         let _ = Self::delete_all(core_context, skip_from_removal, website).await;
 
+        Self::cache_remove_by_website(website).await;
+
         Ok(())
     }
 }

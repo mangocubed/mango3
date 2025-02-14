@@ -1,17 +1,25 @@
+use std::fmt::Display;
+
+use serde::{Deserialize, Serialize};
 use sqlx::types::chrono::{DateTime, Utc};
 use sqlx::types::Uuid;
 use sqlx::{query, query_as};
 
+use crate::constants::PREFIX_NAVIGATION_ITEM_ALL_BY_WEBSITE;
 use crate::enums::Input;
 use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
 use crate::CoreContext;
 
-use super::Website;
+use super::{AsyncRedisCacheTrait, Website};
 
+mod navigation_item_all;
 mod navigation_item_insert;
 mod navigation_item_save_all;
 mod navigation_item_update;
 
+use navigation_item_all::NAVIGATION_ITEM_ALL_BY_WEBSITE;
+
+#[derive(Clone, Deserialize, Serialize)]
 pub struct NavigationItem {
     pub id: Uuid,
     pub website_id: Uuid,
@@ -22,16 +30,40 @@ pub struct NavigationItem {
     pub updated_at: Option<DateTime<Utc>>,
 }
 
-impl NavigationItem {
-    pub async fn all_by_website(core_context: &CoreContext, website: &Website) -> Vec<Self> {
-        query_as!(
-            Self,
-            "SELECT * FROM navigation_items WHERE website_id = $1 ORDER BY position ASC",
-            website.id // $1
+#[derive(Clone, Deserialize, Serialize)]
+struct NavigationItems(Vec<NavigationItem>);
+
+impl Display for NavigationItems {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            self.0
+                .iter()
+                .map(|item| item.id.to_string())
+                .collect::<Vec<String>>()
+                .join(", ")
         )
-        .fetch_all(&core_context.db_pool)
-        .await
-        .unwrap_or_default()
+    }
+}
+
+impl From<NavigationItems> for Vec<NavigationItem> {
+    fn from(items: NavigationItems) -> Self {
+        items.0
+    }
+}
+
+impl From<Vec<NavigationItem>> for NavigationItems {
+    fn from(items: Vec<NavigationItem>) -> Self {
+        NavigationItems(items)
+    }
+}
+
+impl NavigationItem {
+    async fn cache_remove_by_website(website: &Website) {
+        NAVIGATION_ITEM_ALL_BY_WEBSITE
+            .cache_remove(PREFIX_NAVIGATION_ITEM_ALL_BY_WEBSITE, &website.id)
+            .await;
     }
 
     pub async fn delete_all(
@@ -46,8 +78,11 @@ impl NavigationItem {
         )
         .execute(&core_context.db_pool)
         .await
-        .map(|_| ())
-        .map_err(|_| ValidationErrors::default())
+        .map_err(|_| ValidationErrors::default())?;
+
+        Self::cache_remove_by_website(website).await;
+
+        Ok(())
     }
 
     pub async fn get_by_id(core_context: &CoreContext, id: Uuid, website: Option<&Website>) -> sqlx::Result<Self> {
@@ -74,28 +109,6 @@ mod tests {
     use crate::test_utils::{fake_uuid, insert_test_navigation_item, insert_test_website, setup_core_context};
 
     use super::NavigationItem;
-
-    #[tokio::test]
-    async fn should_get_zero_navigation_items() {
-        let core_context = setup_core_context().await;
-        let website = insert_test_website(&core_context, None).await;
-
-        let items = NavigationItem::all_by_website(&core_context, &website).await;
-
-        assert!(items.is_empty());
-    }
-
-    #[tokio::test]
-    async fn should_get_one_navigation_item() {
-        let core_context = setup_core_context().await;
-        let website = insert_test_website(&core_context, None).await;
-
-        insert_test_navigation_item(&core_context, Some(&website)).await;
-
-        let items = NavigationItem::all_by_website(&core_context, &website).await;
-
-        assert_eq!(items.len(), 1);
-    }
 
     #[tokio::test]
     async fn should_delete_all_navigation_items() {

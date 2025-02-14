@@ -6,7 +6,7 @@ use crate::CoreContext;
 use super::NavigationItem;
 
 impl NavigationItem {
-    pub async fn update(
+    pub(crate) async fn update(
         &self,
         core_context: &CoreContext,
         position: i16,

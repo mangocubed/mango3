@@ -166,6 +166,7 @@ pub(crate) const PREFIX_GET_USER_PASSWORD_RESET_GET_BY_USER: &str = "get_user_pa
 pub(crate) const PREFIX_GET_USER_SESSION_BY_ID: &str = "get_user_session_by_id";
 pub(crate) const PREFIX_GET_WEBSITE_BY_ID: &str = "get_website_by_id";
 pub(crate) const PREFIX_GET_WEBSITE_BY_SUBDOMAIN: &str = "get_website_by_subdomain";
+pub(crate) const PREFIX_NAVIGATION_ITEM_ALL_BY_WEBSITE: &str = "navigation_item_all_by_website";
 pub(crate) const PREFIX_POST_COMMENT_CONTENT_HTML: &str = "post_comment_content_html";
 pub(crate) const PREFIX_POST_CONTENT_HTML: &str = "post_content_html";
 pub(crate) const PREFIX_POST_CONTENT_PREVIEW_HTML: &str = "post_content_preview_html";
