@@ -46,7 +46,7 @@ pub fn EmailConfirmationBadge(#[prop(into)] is_confirmed: RwSignal<bool>) -> imp
 
     if is_confirmed.get() {
         Either::Left(
-            view! { <div class="badge  badge-outline badge-lg">{t!(i18n, my_account.confirmed)} <CheckMini /></div> },
+            view! { <div class="badge  badge-outline badge-accept">{t!(i18n, my_account.confirmed)} <CheckMini /></div> },
         )
     } else {
         Either::Right(view! {

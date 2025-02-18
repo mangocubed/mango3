@@ -27,7 +27,7 @@ pub fn MultipleImageUploadField(
     view! {
         <ImageUploadField id=id label=label name=format!("{name}[]") website_id=website_id value=uploaded_blob />
 
-        <div class="form-control">
+        <fieldset class="fieldset">
             <ForEnumerate
                 each=move || value.get()
                 key=|blob| blob.id.clone()
@@ -47,6 +47,6 @@ pub fn MultipleImageUploadField(
                     }
                 }
             />
-        </div>
+        </fieldset>
     }
 }

@@ -18,7 +18,7 @@ pub fn LoadingOverlay(
     view! {
         <div class="loading-overlay" class:is-done=is_done>
             <figure>
-                <div class=move || format!("pulse {pulse_class}")></div>
+                <div class=move || format!("loading-pulse {pulse_class}")></div>
                 <img class=icon_class src=loading_icon_src />
             </figure>
         </div>

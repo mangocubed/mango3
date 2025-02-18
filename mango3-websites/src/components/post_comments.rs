@@ -108,7 +108,7 @@ pub fn PostComments(post_id: String) -> impl IntoView {
                                                 key=|comment: &PostCommentResp| comment.id.clone()
                                                 let:post_comment
                                             >
-                                                <div class="card card-compact card-bordered border-neutral-500 mt-4">
+                                                <div class="card card-sm card-border border-neutral-500 mt-4">
                                                     <div class="card-body">
                                                         <div class="flex gap-4 items-start">
                                                             <UserTagLink user=post_comment.user />

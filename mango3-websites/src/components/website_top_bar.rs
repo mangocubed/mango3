@@ -22,7 +22,11 @@ pub fn WebsiteTopBar() -> impl IntoView {
                             Some(website) => {
                                 Either::Left(
                                     view! {
-                                        <a class="btn btn-ghost text-xl pl-1 pr-2" href="/" title=website.name.clone()>
+                                        <a
+                                            class="btn btn-ghost btn-lg text-xl pl-1 pr-2"
+                                            href="/"
+                                            title=website.name.clone()
+                                        >
                                             <WebsiteIcon website=website.clone() size=42 />
 
                                             {website.name.clone()}

@@ -28,7 +28,7 @@ pub fn TopBar(
     view! {
         <div class=format!("navbar shadow-md py-0 gap-2 {class}")>
             <div class="dropdown md:hidden">
-                <button class="btn btn-ghost" tabindex="0">
+                <button class="btn btn-ghost btn-lg" tabindex="0">
                     <Bars3Outlined />
                 </button>
 
@@ -59,8 +59,8 @@ pub fn TopBar(
                                     Either::Left(
                                         view! {
                                             <div class="dropdown dropdown-end">
-                                                <button class="btn btn-ghost px-2" tabindex="1">
-                                                    <UserTag user=user.clone() text_class="hidden md:block" />
+                                                <button class="btn btn-ghost btn-lg px-2" tabindex="1">
+                                                    <UserTag user=user.clone() text_class="hidden md:block text-xs" />
 
                                                     <ChevronDownMini />
                                                 </button>

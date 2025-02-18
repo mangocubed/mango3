@@ -9,7 +9,7 @@ pub fn Hashtags(
 ) -> impl IntoView {
     view! {
         <For each=move || hashtags.clone() key=|hashtag| hashtag.id.clone() let:hashtag>
-            <a class="btn btn-sm btn-outline" href=format!("{}hashtags/{}", base_url, hashtag.name)>
+            <a class="btn btn-sm btn-outline btn-accent" href=format!("{}hashtags/{}", base_url, hashtag.name)>
                 "#"
                 {hashtag.name.clone()}
             </a>

@@ -165,7 +165,7 @@ pub fn PostReactions(post_id: String) -> impl IntoView {
                                                                         children=move |(emoji, count)| {
                                                                             view! {
                                                                                 <button
-                                                                                    class="btn btn-sm btn-ghost px-1"
+                                                                                    class="btn btn-ghost px-1"
                                                                                     on:click=move |_| {
                                                                                         if can_insert_reaction.get() {
                                                                                             insert_reaction_action.dispatch(emoji.to_owned());

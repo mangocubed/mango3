@@ -37,7 +37,7 @@ pub fn ShowUserPage() -> impl IntoView {
                             view! {
                                 <Page title=format!("{} (@{})", user.display_name, user.username)>
                                     <div class="flex flex-wrap justify-center gap-6 max-w-[1200px] mx-auto">
-                                        <div class="card card-compact bg-base-200 shadow-xl flex-1 self-start min-w-[320px] max-w-[640px]">
+                                        <div class="card card-sm bg-base-200 shadow-xl flex-1 self-start min-w-[320px] max-w-[640px]">
                                             <div class="card-body">
                                                 <div class="avatar self-center mt-4">
                                                     <div class="rounded-full w-64 h-64">

@@ -32,24 +32,22 @@ pub fn TextareaField(
     let has_error = move || error.get().is_some();
 
     view! {
-        <div class="form-control w-full">
-            <label class="label has-[span:empty]:hidden" for=field_id>
-                <span class="label-text">{label.run()}</span>
+        <fieldset class="fieldset">
+            <label class="fieldset-label :empty:hidden" for=field_id>
+                {label.run()}
             </label>
 
             <textarea
                 node_ref=node_ref
                 prop:value=content
                 on:input=move |event| set_content.set(event_target_value(&event))
-                class="textarea textarea-bordered font-mono"
+                class="textarea textarea-bordered font-mono w-full"
                 class:textarea-error=has_error
                 id=field_id
                 name=name
                 rows=rows
             />
-            <div class="label">
-                <span class="label-text-alt text-error">{move || error.get()}</span>
-            </div>
-        </div>
+            <div class="fieldset-label text-error">{move || error.get()}</div>
+        </fieldset>
     }
 }

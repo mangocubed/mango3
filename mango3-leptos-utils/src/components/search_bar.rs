@@ -40,7 +40,7 @@ pub fn SearchBar() -> impl IntoView {
                 action.dispatch(query.get());
             }
         >
-            <label class="input input-bordered flex items-center gap-2 h-9 pr-2">
+            <label class="input flex items-center gap-2 h-9 pr-2">
                 <input
                     class="grow"
                     type="search"

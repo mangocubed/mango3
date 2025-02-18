@@ -32,7 +32,7 @@ pub fn BottomBar(
     let available_langs = move || LANGUAGES.iter().filter(move |(_, locale)| *locale != i18n.get_locale());
 
     view! {
-        <footer class="footer bg-base-200 text-base-content p-10">
+        <footer class="footer md:footer-horizontal bg-base-200 text-base-content p-10">
             <aside>
                 <div>{aside_items.run()}</div>
 
@@ -85,7 +85,7 @@ pub fn BottomBar(
 
             <nav>
                 <div class="dropdown dropdown-top">
-                    <button tabindex="2" type="button" class="btn btn-outline">
+                    <button tabindex="2" type="button" class="btn btn-outline btn-accent">
                         {current_lang_name}
                         <ChevronUpMini />
                     </button>
@@ -101,7 +101,7 @@ pub fn BottomBar(
                 <div class="join">
                     <button
                         type="button"
-                        class="join-item btn btn-outline"
+                        class="join-item btn btn-outline btn-accent"
                         class:btn-active=move || mode.get() == ColorMode::Light
                         on:click=move |_| set_mode.set(ColorMode::Light)
                     >
@@ -109,7 +109,7 @@ pub fn BottomBar(
                     </button>
                     <button
                         type="button"
-                        class="join-item btn btn-outline"
+                        class="join-item btn btn-outline btn-accent"
                         class:btn-active=move || mode.get() == ColorMode::Dark
                         on:click=move |_| set_mode.set(ColorMode::Dark)
                     >
@@ -117,7 +117,7 @@ pub fn BottomBar(
                     </button>
                     <button
                         type="button"
-                        class="join-item btn btn-outline"
+                        class="join-item btn btn-outline btn-accent"
                         class:btn-active=move || mode.get() == ColorMode::Auto
                         on:click=move |_| set_mode.set(ColorMode::Auto)
                     >

@@ -22,7 +22,7 @@ pub fn SearchPage() -> impl IntoView {
             <h1 class="h2">{move || text_title.get()}</h1>
 
             <section class="max-w-[720px] w-full mx-auto">
-                <div role="tablist" class="tabs tabs-bordered mb-5">
+                <div role="tablist" class="tabs tabs-border mb-5">
                     <a
                         role="tab"
                         class="tab"

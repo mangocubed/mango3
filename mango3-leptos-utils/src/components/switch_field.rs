@@ -22,9 +22,10 @@ where
     let has_error = move || error.get().is_some();
 
     view! {
-        <div class="form-control w-full">
-            <label class="label" for=field_id>
-                <span class="label-text">{label}</span>
+        <fieldset class="fieldset">
+            <label class="fieldset-label" for=field_id>
+                {label}
+
                 <input
                     class="toggle"
                     class:toggle-error=has_error
@@ -35,9 +36,8 @@ where
                     checked=is_checked
                 />
             </label>
-            <div class="label">
-                <span class="label-text-alt text-error">{move || error.get()}</span>
-            </div>
-        </div>
+
+            <div class="fieldset-label text-error">{move || error.get()}</div>
+        </fieldset>
     }
 }

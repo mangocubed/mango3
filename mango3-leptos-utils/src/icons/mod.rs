@@ -15,7 +15,7 @@ mod trash;
 pub use bars::Bars3Outlined;
 pub use chevron::{ChevronDownMini, ChevronUpMini};
 pub use document::{DocumentOutlined, DocumentTextOutlined};
-pub use eye::{EyeOutlined, EyeSlashOutlined};
+pub use eye::{EyeMini, EyeSlashMini};
 pub use home::HomeOutlined;
 pub use information_circle::InformationCircleOutlined;
 pub use link::LinkOutlined;
