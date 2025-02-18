@@ -23,12 +23,13 @@ pub fn TextField(
     let has_error = move || error.get().is_some();
 
     view! {
-        <div class="form-control w-full">
-            <label class="label" for=field_id>
-                <span class="label-text">{label.run()}</span>
+        <fieldset class="fieldset">
+            <label class="fieldset-label" for=field_id>
+                {label.run()}
             </label>
+
             <input
-                class="input input-bordered"
+                class="input w-full"
                 class:input-error=has_error
                 id=field_id
                 name=name
@@ -40,9 +41,8 @@ pub fn TextField(
                 type=input_type
                 bind:value=value
             />
-            <div class="label">
-                <span class="label-text-alt text-error">{move || error.get()}</span>
-            </div>
-        </div>
+
+            <div class="fieldset-label text-error">{move || error.get()}</div>
+        </fieldset>
     }
 }

@@ -19,12 +19,10 @@ where
     let options_store = StoredValue::new(options);
 
     view! {
-        <div class="form-control">
+        <fieldset class="fieldset">
             <input type="hidden" name=name value=value />
 
-            <label class="label">
-                <span class="label-text">{label}</span>
-            </label>
+            <label class="fieldset-label">{label}</label>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <For
@@ -35,7 +33,7 @@ where
                         let is_selected = move || value.get() == key;
                         view! {
                             <div
-                                class="card card-compact card-bordered cursor-pointer hover:bg-base-100"
+                                class="card card-sm card-border cursor-pointer hover:bg-base-100"
                                 class:bg-base-100=is_selected
                                 on:click=move |_| value.set(key.to_owned())
                             >
@@ -64,7 +62,7 @@ where
                                         />
 
                                         <div class="m-6 max-w-[640px]">
-                                            <div class="card card-compact bg-base-200 shadow-xl">
+                                            <div class="card card-sm bg-base-200 shadow-xl">
                                                 <div class="card-body">
                                                     <div class="card-title">{"Lorem ipsum."}</div>
 
@@ -83,9 +81,7 @@ where
                 />
             </div>
 
-            <div class="label">
-                <span class="label-text-alt text-error">{move || error.get()}</span>
-            </div>
-        </div>
+            <div class="fieldset-label text-error">{move || error.get()}</div>
+        </fieldset>
     }
 }

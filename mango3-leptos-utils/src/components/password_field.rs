@@ -2,7 +2,7 @@ use leptos::either::Either;
 use leptos::ev::MouseEvent;
 use leptos::prelude::*;
 
-use crate::icons::{EyeOutlined, EyeSlashOutlined};
+use crate::icons::{EyeMini, EyeSlashMini};
 
 #[component]
 pub fn PasswordField(
@@ -35,25 +35,25 @@ pub fn PasswordField(
     };
 
     view! {
-        <div class="form-control w-full">
-            <label class="label" for=field_id>
-                <span class="label-text">{label.run()}</span>
+        <fieldset class="fieldset">
+            <label class="fieldset-label" for=field_id>
+                {label.run()}
             </label>
-            <div class="input input-bordered flex items-center gap-2 pr-0" class:input-error=has_error>
+
+            <div class="input flex items-center gap-2 pr-0 w-full" class:input-error=has_error>
                 <input class="grow" id=field_id name=name type=input_type />
-                <button class="btn btn-ghost" type="button" on:click=toggle_type>
+                <button class="btn btn-ghost btn-sm" type="button" on:click=toggle_type>
                     {move || {
                         if input_type.get() == "password" {
-                            Either::Left(view! { <EyeSlashOutlined /> })
+                            Either::Left(view! { <EyeSlashMini /> })
                         } else {
-                            Either::Right(view! { <EyeOutlined /> })
+                            Either::Right(view! { <EyeMini /> })
                         }
                     }}
                 </button>
             </div>
-            <div class="label">
-                <span class="label-text-alt text-error">{move || error.get()}</span>
-            </div>
-        </div>
+
+            <div class="fieldset-label text-error">{move || error.get()}</div>
+        </fieldset>
     }
 }

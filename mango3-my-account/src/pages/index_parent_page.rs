@@ -35,11 +35,11 @@ pub fn IndexParentPage() -> impl IntoView {
     };
 
     view! {
-        <div class="flex grow">
+        <div class="flex grow gap-4">
             <ul class="menu bg-base-200 rounded-box w-56">
                 <For each=menu_items key=|(href, _)| href.to_owned() let:data>
                     <li>
-                        <a class:active=move || location.pathname.get() == data.0 href=data.0>
+                        <a class:menu-active=move || location.pathname.get() == data.0 href=data.0>
                             {move || data.1.get()}
                         </a>
                     </li>

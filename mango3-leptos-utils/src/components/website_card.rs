@@ -22,7 +22,7 @@ pub fn WebsiteCard(
     };
 
     view! {
-        <div class="card card-compact bg-base-100 shadow-xl mb-4">
+        <div class="card card-sm bg-base-100 shadow-xl mb-4">
             <div class="card-body">
                 <div class="flex gap-3 items-center">
                     <a href=href.clone()>

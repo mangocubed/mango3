@@ -48,7 +48,7 @@ pub fn PostPreviewModal(
                 view! {
                     <div class="modal modal-open p-8 overflow-y-auto">
                         <div class="modal-box max-w-[1200px] w-[calc(100vw-64px)] max-h-[unset] overflow-y-visible">
-                            <div class="card card-compact bg-base-200 shadow-xl">
+                            <div class="card card-sm bg-base-200 shadow-xl">
                                 {move || {
                                     if let Some(Ok(post)) = preview_action_value.get() {
                                         Either::Left(

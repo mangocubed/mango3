@@ -65,10 +65,11 @@ pub fn ImageUploadField(
     };
 
     view! {
-        <div class="form-control w-full">
-            <label class="label" for=id.clone()>
-                <span class="label-text">{label.run()}</span>
+        <fieldset class="fieldset">
+            <label class="fieldset-label" for=id.clone()>
+                {label.run()}
             </label>
+
             {move || {
                 if upload_action.pending().get() {
                     EitherOf3::A(LoadingSpinner)
@@ -94,7 +95,7 @@ pub fn ImageUploadField(
                     EitherOf3::C(
                         view! {
                             <input
-                                class="file-input file-input-bordered w-full"
+                                class="file-input w-full"
                                 class:file-input-error=has_error
                                 id=id.clone()
                                 type="file"
@@ -105,9 +106,8 @@ pub fn ImageUploadField(
                     )
                 }
             }}
-            <div class="label">
-                <span class="label-text-alt text-error">{move || error.get()}</span>
-            </div>
-        </div>
+
+            <div class="fieldset-label text-error">{move || error.get()}</div>
+        </fieldset>
     }
 }

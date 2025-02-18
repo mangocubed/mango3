@@ -7,8 +7,9 @@ use mango3_leptos_utils::models::ActionFormResp;
 use crate::components::{MyWebsite, ThemeSelectorField};
 use crate::server_functions::AttemptToUpdateWebsite;
 
-const DARK_THEMES: [&str; 13] = [
+const DARK_THEMES: [&str; 14] = [
     "dark",
+    "abyss",
     "aqua",
     "black",
     "business",
@@ -22,11 +23,12 @@ const DARK_THEMES: [&str; 13] = [
     "sunset",
     "synthwave",
 ];
-const LIGHT_THEMES: [&str; 19] = [
+const LIGHT_THEMES: [&str; 21] = [
     "light",
     "acid",
     "autumn",
     "bumblebee",
+    "caramellatte",
     "cmyk",
     "corporate",
     "cupcake",
@@ -39,6 +41,7 @@ const LIGHT_THEMES: [&str; 19] = [
     "nord",
     "pastel",
     "retro",
+    "silk",
     "valentine",
     "winter",
     "wireframe",

@@ -33,11 +33,12 @@ pub fn CountryField(
     let has_error = move || error.get().is_some();
 
     view! {
-        <div class="form-control w-full">
-            <label class="label" for=field_id>
-                <span class="label-text">{label.run()}</span>
+        <fieldset class="fieldset">
+            <label class="fieldset-label" for=field_id>
+                {label.run()}
             </label>
-            <select class="select select-bordered" class:select-error=has_error id=field_id name=name>
+
+            <select class="select w-full" class:select-error=has_error id=field_id name=name>
                 <Suspense>
                     {move || Suspend::new(async move {
                         options_resource
@@ -61,9 +62,8 @@ pub fn CountryField(
                     })}
                 </Suspense>
             </select>
-            <div class="label">
-                <span class="label-text-alt text-error">{move || error.get()}</span>
-            </div>
-        </div>
+
+            <div class="fieldset-label text-error">{move || error.get()}</div>
+        </fieldset>
     }
 }

@@ -1,6 +1,9 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@config "../tailwind.config.js";
+
+@plugin "daisyui";
+@plugin "@tailwindcss/typography";
 
 @layer components {
     .card-text-preview {
@@ -45,8 +48,8 @@ pre:has(.hljs) {
     z-index: 1000;
 }
 
-.loading-overlay .pulse {
-    animation: pulse 1.5s infinite;
+.loading-overlay .loading-pulse {
+    animation: loading-pulse 1.5s infinite;
     bottom: 14px;
     height: 100px;
     left: 14px;
@@ -68,7 +71,7 @@ pre:has(.hljs) {
 }
 
 .loading-overlay img,
-.loading-overlay .pulse {
+.loading-overlay .loading-pulse {
     position: absolute;
     transition:
         visibility 0s 0.3s,
@@ -81,7 +84,7 @@ pre:has(.hljs) {
 }
 
 .loading-overlay.is-done img,
-.loading-overlay.is-done .pulse {
+.loading-overlay.is-done .loading-pulse {
     opacity: 0;
     visibility: hidden;
 }
@@ -90,7 +93,7 @@ pre:has(.hljs) {
     zoom: 0.75;
 }
 
-@keyframes pulse {
+@keyframes loading-pulse {
     0% {
         background-color: #333;
         box-shadow: 0 0 0 0px #333;

@@ -26,7 +26,7 @@ pub fn MenuItem(
 
     view! {
         <li>
-            <a class:active=is_active href=href title=label_text>
+            <a class:menu-active=is_active href=href title=label_text>
                 {icon.run()}
                 <span class="md:inline hidden">{label_text}</span>
             </a>

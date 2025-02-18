@@ -80,25 +80,25 @@ pub fn NavigationPage() -> impl IntoView {
                                     />
 
                                     <td class="p-2">
-                                        <div class="form-control w-full">
+                                        <fieldset class="fieldset">
                                             <input
-                                                class="input input-bordered"
+                                                class="input w-full"
                                                 name=move || format!("items[{}][title]", index.get())
                                                 type="text"
                                                 value=item.title
                                             />
-                                        </div>
+                                        </fieldset>
                                     </td>
 
                                     <td class="p-2">
-                                        <div class="form-control w-full">
+                                        <fieldset class="fieldset w-full">
                                             <input
-                                                class="input input-bordered"
+                                                class="input w-full"
                                                 name=move || format!("items[{}][url]", index.get())
                                                 type="text"
                                                 value=item.url
                                             />
-                                        </div>
+                                        </fieldset>
                                     </td>
 
                                     <td class="p-2">
