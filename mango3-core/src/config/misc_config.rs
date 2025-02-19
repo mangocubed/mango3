@@ -3,14 +3,11 @@ use std::path::{Path, PathBuf};
 use image::imageops::FilterType;
 use serde::{Deserialize, Serialize};
 
-use crate::enums::UserRole;
-
 use super::extract_from_env;
 
 #[derive(Deserialize, Serialize)]
 pub struct MiscConfig {
     pub client_ip_source: String,
-    default_user_role: String,
     pub(crate) confirmation_code_length: u8,
     pub(crate) font_path: String,
     image_ops_filter_type: String,
@@ -25,7 +22,6 @@ impl Default for MiscConfig {
         Self {
             client_ip_source: "XRealIp".to_owned(),
             confirmation_code_length: 6,
-            default_user_role: "user".to_owned(),
             font_path: "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf".to_owned(),
             image_ops_filter_type: "CatmullRom".to_owned(),
             invitation_code_length: 6,
@@ -42,10 +38,6 @@ impl Default for MiscConfig {
 impl MiscConfig {
     pub(crate) fn load() -> Self {
         extract_from_env("MISC_")
-    }
-
-    pub(crate) fn default_user_role(&self) -> UserRole {
-        (&self.default_user_role).into()
     }
 
     pub(crate) fn image_ops_filter_type(&self) -> FilterType {

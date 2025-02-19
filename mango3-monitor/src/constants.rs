@@ -19,6 +19,8 @@ pub const KEY_TEXT_WE_REGRET_TO_INFORM_YOU_THAT_WE_HAVE_DISABLED_YOUR_USER_ACCOU
 pub const KEY_TEXT_WELCOME_TO_TITLE: &str = "welcome-to-title";
 pub const KEY_TEXT_YOUR_USER_ACCOUNT_HAS_BEEN_ENABLED: &str = "your-user-account-has-been-enabled";
 pub const KEY_TEXT_YOUR_USER_ACCOUNT_HAS_BEEN_DISABLED: &str = "your-user-account-has-been-disabled";
+pub const KEY_TEXT_BY_DEFAULT_ALL_USER_ACCOUNTS_ARE_DISABLED_BUT_WE_WILL_LET_YOU_KNOW_WHEN_YOUR_ACCOUNT_IS_ENABLED:
+    &str = "by-default-all-user-accounts-are-disabled-but-we-will-let-you-know-when-your-account-is-enabled";
 
 pub const KEY_TEXT_ARG_ACTION: &str = "action";
 pub const KEY_TEXT_ARG_TITLE: &str = "title";

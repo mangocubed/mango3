@@ -10,11 +10,13 @@ mod basic_config;
 mod cache_config;
 mod mailer_config;
 mod misc_config;
+mod user_config;
 
 pub use basic_config::BasicConfig;
 pub(crate) use cache_config::CacheConfig;
 pub use mailer_config::MailerConfig;
 pub use misc_config::MiscConfig;
+pub(crate) use user_config::UserConfig;
 
 pub static BASIC_CONFIG: LazyLock<BasicConfig> = LazyLock::new(BasicConfig::load);
 pub(crate) static CACHE_CONFIG: LazyLock<CacheConfig> = LazyLock::new(CacheConfig::load);
@@ -23,6 +25,7 @@ pub(crate) static JOBS_CONFIG: LazyLock<JobsConfig> = LazyLock::new(JobsConfig::
 pub static MAILER_CONFIG: LazyLock<MailerConfig> = LazyLock::new(MailerConfig::load);
 pub static MISC_CONFIG: LazyLock<MiscConfig> = LazyLock::new(MiscConfig::load);
 pub static SESSIONS_CONFIG: LazyLock<SessionsConfig> = LazyLock::new(SessionsConfig::load);
+pub static USER_CONFIG: LazyLock<UserConfig> = LazyLock::new(UserConfig::load);
 
 pub fn load_config() {
     let _ = dotenv();
