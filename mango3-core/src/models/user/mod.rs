@@ -18,6 +18,7 @@ use crate::CoreContext;
 
 use super::{AsyncRedisCacheTrait, Blob, Hashtag, Website};
 
+mod user_all;
 mod user_bio;
 mod user_disable;
 mod user_email;

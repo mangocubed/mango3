@@ -12,7 +12,7 @@ use tokio::signal::unix::SignalKind;
 mod constants;
 mod workers;
 
-use crate::workers::{guest_mailer_worker, mailer_worker};
+use crate::workers::{admin_mailer_worker, guest_mailer_worker, mailer_worker};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -24,6 +24,12 @@ async fn main() -> anyhow::Result<()> {
     let mut sigterm = tokio::signal::unix::signal(SignalKind::terminate())?;
 
     let core_context = CoreContext::setup().await;
+
+    let admin_mailer_worker = WorkerBuilder::new("admin-mailer")
+        .layer(ErrorHandlingLayer::new())
+        .enable_tracing()
+        .backend(core_context.jobs.storage_admin_mailer.clone())
+        .build_fn(admin_mailer_worker);
 
     let guest_mailer_worker = WorkerBuilder::new("guest-mailer")
         .layer(ErrorHandlingLayer::new())
@@ -39,6 +45,7 @@ async fn main() -> anyhow::Result<()> {
         .build_fn(mailer_worker);
 
     Monitor::new()
+        .register(admin_mailer_worker)
         .register(guest_mailer_worker)
         .register(mailer_worker)
         .on_event(|e| {
