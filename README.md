@@ -121,6 +121,12 @@ cargo leptos serve --project mango3-home
 cargo leptos serve --project mango3-accounts
 ```
 
+* Admin:
+
+```sh
+cargo leptos serve --project mango3-admin
+```
+
 * My account:
 
 ```sh
