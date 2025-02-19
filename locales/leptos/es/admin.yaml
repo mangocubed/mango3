@@ -1,1 +1,6 @@
 admin: Admin
+are_you_sure_you_want_to_disable_this_user: ¿Estás seguro de que quieres deshabilitar este usuario?
+are_you_sure_you_want_to_enable_this_user: ¿Estás seguro de que quieres habilitar este usuario?
+disable: Deshabilitar
+enable: Habilitar
+users: Usuarios

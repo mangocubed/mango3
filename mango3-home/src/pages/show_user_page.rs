@@ -2,7 +2,9 @@ use leptos::either::EitherOf3;
 use leptos::prelude::*;
 use leptos_router::hooks::use_params_map;
 
-use mango3_leptos_utils::components::{Hashtags, InfiniteScroll, InfiniteScrollController, LoadingSpinner, PostCard};
+use mango3_leptos_utils::components::{
+    Hashtags, InfiniteScroll, InfiniteScrollControllerTrait, InfiniteScrollResourceController, LoadingSpinner, PostCard,
+};
 use mango3_leptos_utils::models::{CursorPageResp, PostPreviewResp};
 use mango3_leptos_utils::pages::{NotFoundPage, Page};
 
@@ -19,7 +21,7 @@ pub fn ShowUserPage() -> impl IntoView {
             {move || Suspend::new(async move {
                 match user_resource.get() {
                     Some(Ok(Some(user))) => {
-                        let controller = InfiniteScrollController::new(move |after| {
+                        let controller = InfiniteScrollResourceController::new(move |after| {
                             Resource::new_blocking(
                                 move || after.get(),
                                 move |after| async move {

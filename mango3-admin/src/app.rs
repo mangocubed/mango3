@@ -1,6 +1,6 @@
 use leptos::prelude::*;
 use leptos_meta::{provide_meta_context, Meta};
-use leptos_router::components::{Route, Router, Routes};
+use leptos_router::components::{ParentRoute, Route, Router, Routes};
 use leptos_router::StaticSegment;
 
 use mango3_leptos_utils::async_t_string;
@@ -11,7 +11,7 @@ use mango3_leptos_utils::i18n::use_i18n;
 use mango3_leptos_utils::pages::NotFoundPage;
 use mango3_leptos_utils::utils::ToSignalTrait;
 
-use crate::pages::IndexPage;
+use crate::pages::{IndexPage, IndexParentPage, UsersPage};
 
 #[component]
 pub fn App() -> impl IntoView {
@@ -39,7 +39,10 @@ pub fn App() -> impl IntoView {
 
                         <main class="flex flex-col grow md:m-6 m-4">
                             <Routes fallback=NotFoundPage>
-                                <Route path=StaticSegment("") view=IndexPage />
+                                <ParentRoute path=StaticSegment("") view=IndexParentPage>
+                                    <Route path=StaticSegment("") view=IndexPage />
+                                    <Route path=StaticSegment("users") view=UsersPage />
+                                </ParentRoute>
                             </Routes>
                         </main>
 

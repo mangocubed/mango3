@@ -8,20 +8,24 @@ use mango3_core::models::User;
 #[cfg(feature = "ssr")]
 use mango3_core::CoreContext;
 
-use super::BlobResp;
+use super::{BlobResp, HashtagResp};
 
 #[cfg(feature = "ssr")]
 use super::FromCore;
 
 #[derive(Clone, Deserialize, Serialize)]
 pub struct UserPreviewResp {
-    id: String,
+    pub id: String,
     pub username: String,
     pub display_name: String,
     pub initials: String,
+    pub bio_preview_html: String,
+    pub hashtags: Vec<HashtagResp>,
     pub avatar_image_blob: Option<BlobResp>,
     pub url: String,
     pub text_avatar_url: String,
+    pub role: String,
+    pub is_disabled: bool,
 }
 
 impl UserPreviewResp {
@@ -42,6 +46,13 @@ impl FromCore<User> for UserPreviewResp {
             username: user.username.clone(),
             display_name: user.display_name.clone(),
             initials: user.initials(),
+            hashtags: user
+                .hashtags(&core_context)
+                .await
+                .iter()
+                .map(|hashtag| hashtag.into())
+                .collect(),
+            bio_preview_html: user.bio_preview_html().await,
             avatar_image_blob: user
                 .avatar_image_blob(&core_context)
                 .await
@@ -49,6 +60,8 @@ impl FromCore<User> for UserPreviewResp {
                 .map(|blob| blob.into()),
             url: user.url().to_string(),
             text_avatar_url: user.text_avatar_url().to_string(),
+            role: user.role.to_string(),
+            is_disabled: user.is_disabled(),
         }
     }
 }
@@ -60,9 +73,13 @@ impl From<UserResp> for UserPreviewResp {
             username: value.username,
             display_name: value.display_name,
             initials: value.initials,
+            bio_preview_html: value.bio_preview_html,
+            hashtags: value.hashtags,
             avatar_image_blob: value.avatar_image_blob,
             url: value.url,
             text_avatar_url: value.text_avatar_url,
+            role: value.role,
+            is_disabled: value.is_disabled,
         }
     }
 }
@@ -75,10 +92,14 @@ pub struct UserResp {
     pub initials: String,
     pub email: String,
     pub email_is_confirmed: bool,
+    pub bio_preview_html: String,
+    pub hashtags: Vec<HashtagResp>,
     pub avatar_image_blob: Option<BlobResp>,
     pub can_insert_website: bool,
     pub url: String,
     pub text_avatar_url: String,
+    pub role: String,
+    pub is_disabled: bool,
 }
 
 impl UserResp {
@@ -101,6 +122,13 @@ impl FromCore<User> for UserResp {
             initials: user.initials(),
             email: user.email.clone(),
             email_is_confirmed: user.email_is_confirmed(),
+            bio_preview_html: user.bio_preview_html().await,
+            hashtags: user
+                .hashtags(&core_context)
+                .await
+                .iter()
+                .map(|hashtag| hashtag.into())
+                .collect(),
             avatar_image_blob: user
                 .avatar_image_blob(&core_context)
                 .await
@@ -109,6 +137,8 @@ impl FromCore<User> for UserResp {
             can_insert_website: user.can_insert_website(&core_context).await,
             url: user.url().to_string(),
             text_avatar_url: user.text_avatar_url().to_string(),
+            role: user.role.to_string(),
+            is_disabled: user.is_disabled(),
         }
     }
 }

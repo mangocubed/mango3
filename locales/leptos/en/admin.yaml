@@ -1,1 +1,6 @@
 admin: Admin
+are_you_sure_you_want_to_disable_this_user: Are you sure you want to disable this user?
+are_you_sure_you_want_to_enable_this_user: Are you sure you want to enable this user?
+disable: Disable
+enable: Enable
+users: Users

@@ -2,7 +2,9 @@ use leptos::either::EitherOf3;
 use leptos::prelude::*;
 use leptos_router::hooks::use_params_map;
 
-use mango3_leptos_utils::components::{InfiniteScroll, InfiniteScrollController, LoadingSpinner, PostCard};
+use mango3_leptos_utils::components::{
+    InfiniteScroll, InfiniteScrollControllerTrait, InfiniteScrollResourceController, LoadingSpinner, PostCard,
+};
 use mango3_leptos_utils::context::param_name;
 use mango3_leptos_utils::models::PostPreviewResp;
 use mango3_leptos_utils::pages::{NotFoundPage, Page};
@@ -19,7 +21,7 @@ pub fn ShowHashtagPage() -> impl IntoView {
             {move || Suspend::new(async move {
                 match hashtag_resource.get() {
                     Some(Ok(Some(hashtag))) => {
-                        let controller = InfiniteScrollController::new(|after| {
+                        let controller = InfiniteScrollResourceController::new(|after| {
                             Resource::new_blocking(
                                 {
                                     let hashtag_id = hashtag.id.clone();

@@ -49,6 +49,7 @@ pub(crate) async fn get_user_by_id(core_context: &CoreContext, id: Uuid) -> sqlx
             hashtag_ids,
             avatar_image_blob_id,
             role as "role!: UserRole",
+            disabled_at,
             created_at,
             updated_at
         FROM users WHERE id = $1 LIMIT 1"#,
@@ -87,6 +88,7 @@ pub(crate) async fn get_user_by_username(core_context: &CoreContext, username: &
             hashtag_ids,
             avatar_image_blob_id,
             role as "role!: UserRole",
+            disabled_at,
             created_at,
             updated_at
         FROM users WHERE LOWER(username) = $1 LIMIT 1"#,
@@ -128,11 +130,12 @@ pub(crate) async fn get_user_by_username_or_email(
             hashtag_ids,
             avatar_image_blob_id,
             role as "role!: UserRole",
+            disabled_at,
             created_at,
             updated_at
         FROM users
         WHERE
-            locked_at IS NULL
+            disabled_at IS NULL
             AND (LOWER(username) = $1 OR (email_confirmed_at IS NOT NULL AND LOWER(email) = $1))
         LIMIT 1"#,
         username_or_email.to_lowercase()

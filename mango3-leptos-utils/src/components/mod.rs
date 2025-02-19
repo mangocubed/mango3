@@ -21,6 +21,7 @@ mod image_upload_field;
 mod infinite_scroll;
 mod loading_overlay;
 mod loading_spinner;
+mod menu;
 mod multiple_image_upload_field;
 mod password_field;
 mod post_bottom_bar;
@@ -32,6 +33,7 @@ mod text_field;
 mod textarea_field;
 mod time_ago;
 mod top_bar;
+mod user_card;
 mod user_tag;
 mod website_card;
 
@@ -47,9 +49,13 @@ pub use country_field::CountryField;
 pub use current_user::{CurrentUser, CurrentUserOpt};
 pub use hashtags::Hashtags;
 pub use image_upload_field::ImageUploadField;
-pub use infinite_scroll::{InfiniteScroll, InfiniteScrollController};
+pub use infinite_scroll::{
+    InfiniteScroll, InfiniteScrollControllerTrait, InfiniteScrollLocalResourceController,
+    InfiniteScrollResourceController,
+};
 pub use loading_overlay::LoadingOverlay;
 pub use loading_spinner::LoadingSpinner;
+pub use menu::{Menu, MenuItem};
 pub use multiple_image_upload_field::MultipleImageUploadField;
 pub use password_field::PasswordField;
 pub use post_bottom_bar::PostBottomBar;
@@ -61,7 +67,8 @@ pub use text_field::TextField;
 pub use textarea_field::TextareaField;
 pub use time_ago::TimeAgo;
 pub use top_bar::TopBar;
-pub use user_tag::{UserTag, UserTagLink};
+pub use user_card::UserCard;
+pub use user_tag::{UserIcon, UserTag, UserTagLink};
 pub use website_card::WebsiteCard;
 
 pub struct EventFn(Box<dyn Fn(Event) + 'static>);

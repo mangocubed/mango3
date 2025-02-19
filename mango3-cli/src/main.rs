@@ -56,7 +56,7 @@ async fn main() {
             let user = User::get_by_username(&core_context, username)
                 .await
                 .expect("could not get user");
-            let result = user.lock(&core_context).await;
+            let result = user.disable(&core_context).await;
 
             match result {
                 Ok(_) => {
