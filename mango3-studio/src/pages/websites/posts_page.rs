@@ -1,7 +1,9 @@
 use leptos::prelude::*;
 use leptos_router::hooks::use_params_map;
 
-use mango3_leptos_utils::components::{ConfirmationDialog, InfiniteScroll, InfiniteScrollController, PostCard};
+use mango3_leptos_utils::components::{
+    ConfirmationDialog, InfiniteScroll, InfiniteScrollControllerTrait, InfiniteScrollResourceController, PostCard,
+};
 use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::icons::PlusOutlined;
 use mango3_leptos_utils::models::PostPreviewResp;
@@ -13,7 +15,7 @@ use crate::server_functions::{get_my_posts, AttemptToDeletePost};
 pub fn PostsPage() -> impl IntoView {
     let params_map = use_params_map();
     let i18n = use_i18n();
-    let controller = InfiniteScrollController::new(move |after| {
+    let controller = InfiniteScrollResourceController::new(move |after| {
         Resource::new_blocking(
             move || (param_website_id(params_map).unwrap_or_default(), after.get()),
             |(website_id, after)| async { get_my_posts(website_id, after).await },

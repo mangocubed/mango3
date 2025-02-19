@@ -1,7 +1,9 @@
 use leptos::prelude::*;
 
 use mango3_leptos_utils::async_t_string;
-use mango3_leptos_utils::components::{InfiniteScroll, InfiniteScrollController, WebsiteCard};
+use mango3_leptos_utils::components::{
+    InfiniteScroll, InfiniteScrollControllerTrait, InfiniteScrollResourceController, WebsiteCard,
+};
 use mango3_leptos_utils::i18n::use_i18n;
 use mango3_leptos_utils::models::WebsitePreviewResp;
 use mango3_leptos_utils::pages::Page;
@@ -12,7 +14,7 @@ use crate::server_functions::get_websites;
 #[component]
 pub fn WebsitesPage() -> impl IntoView {
     let i18n = use_i18n();
-    let controller = InfiniteScrollController::new(|after| {
+    let controller = InfiniteScrollResourceController::new(|after| {
         Resource::new_blocking(
             move || after.get(),
             |after| async move { get_websites(10, after).await },

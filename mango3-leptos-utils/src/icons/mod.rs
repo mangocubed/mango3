@@ -11,6 +11,7 @@ mod magnifying_glass;
 mod pencil;
 mod plus;
 mod trash;
+mod users;
 
 pub use bars::Bars3Outlined;
 pub use chevron::{ChevronDownMini, ChevronUpMini};
@@ -23,6 +24,7 @@ pub use magnifying_glass::MagnifyingGlassMini;
 pub use pencil::PencilSquareOutlined;
 pub use plus::PlusOutlined;
 pub use trash::TrashOutlined;
+pub use users::UsersOutlined;
 
 #[component]
 pub fn CheckMini() -> impl IntoView {

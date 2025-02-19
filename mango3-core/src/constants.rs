@@ -91,9 +91,10 @@ pub(crate) static BLACKLISTED_SLUGS: LazyLock<[&str; 80]> = LazyLock::new(|| {
     ]
 });
 
-pub(crate) static DARK_THEMES: LazyLock<[&str; 13]> = LazyLock::new(|| {
+pub(crate) static DARK_THEMES: LazyLock<[&str; 14]> = LazyLock::new(|| {
     [
         "dark",
+        "abyss",
         "aqua",
         "black",
         "business",
@@ -109,12 +110,13 @@ pub(crate) static DARK_THEMES: LazyLock<[&str; 13]> = LazyLock::new(|| {
     ]
 });
 
-pub(crate) static LIGHT_THEMES: LazyLock<[&str; 19]> = LazyLock::new(|| {
+pub(crate) static LIGHT_THEMES: LazyLock<[&str; 21]> = LazyLock::new(|| {
     [
         "light",
         "acid",
         "autumn",
         "bumblebee",
+        "caramellatte",
         "cmyk",
         "corporate",
         "cupcake",
@@ -127,6 +129,7 @@ pub(crate) static LIGHT_THEMES: LazyLock<[&str; 19]> = LazyLock::new(|| {
         "nord",
         "pastel",
         "retro",
+        "silk",
         "valentine",
         "winter",
         "wireframe",
@@ -171,5 +174,6 @@ pub(crate) const PREFIX_POST_COMMENT_CONTENT_HTML: &str = "post_comment_content_
 pub(crate) const PREFIX_POST_CONTENT_HTML: &str = "post_content_html";
 pub(crate) const PREFIX_POST_CONTENT_PREVIEW_HTML: &str = "post_content_preview_html";
 pub(crate) const PREFIX_USER_BIO_HTML: &str = "user_bio_html";
+pub(crate) const PREFIX_USER_BIO_PREVIEW_HTML: &str = "user_bio_preview_html";
 pub(crate) const PREFIX_WEBSITE_DESCRIPTION_HTML: &str = "website_description_html";
 pub(crate) const PREFIX_WEBSITE_DESCRIPTION_PREVIEW_HTML: &str = "website_description_preview_html";

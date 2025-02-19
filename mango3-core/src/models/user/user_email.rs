@@ -30,7 +30,7 @@ impl User {
         let result = query_as!(
             Self,
             r#"UPDATE users SET email_confirmation_code_id = NULL, email_confirmed_at = current_timestamp
-            WHERE locked_at IS NULL AND email_confirmed_at IS NULL AND id = $1 RETURNING
+            WHERE disabled_at IS NULL AND email_confirmed_at IS NULL AND id = $1 RETURNING
                 id,
                 username,
                 email,
@@ -46,6 +46,7 @@ impl User {
                 hashtag_ids,
                 avatar_image_blob_id,
                 role as "role!: UserRole",
+                disabled_at,
                 created_at,
                 updated_at"#,
             self.id, // $1
@@ -86,7 +87,7 @@ impl User {
 
         let result = query_as!(
             Self,
-            r#"UPDATE users SET email_confirmation_code_id = $2 WHERE locked_at IS NULL AND id = $1 RETURNING
+            r#"UPDATE users SET email_confirmation_code_id = $2 WHERE disabled_at IS NULL AND id = $1 RETURNING
                 id,
                 username,
                 email,
@@ -102,6 +103,7 @@ impl User {
                 hashtag_ids,
                 avatar_image_blob_id,
                 role as "role!: UserRole",
+                disabled_at,
                 created_at,
                 updated_at"#,
             self.id,              // $1
@@ -162,7 +164,7 @@ impl User {
         let result = query_as!(
             Self,
             r#"UPDATE users SET email = $2::text, email_confirmed_at = NULL, email_confirmation_code_id = NULL
-            WHERE locked_at IS NULL AND id = $1 RETURNING
+            WHERE disabled_at IS NULL AND id = $1 RETURNING
                 id,
                 username,
                 email,
@@ -178,6 +180,7 @@ impl User {
                 hashtag_ids,
                 avatar_image_blob_id,
                 role as "role!: UserRole",
+                disabled_at,
                 created_at,
                 updated_at"#,
             self.id, // $1

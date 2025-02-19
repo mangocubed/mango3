@@ -3,7 +3,9 @@ use leptos::prelude::*;
 
 use leptos_router::hooks::use_query_map;
 use mango3_leptos_utils::async_t_string;
-use mango3_leptos_utils::components::{InfiniteScroll, InfiniteScrollController, PostCard};
+use mango3_leptos_utils::components::{
+    InfiniteScroll, InfiniteScrollControllerTrait, InfiniteScrollResourceController, PostCard,
+};
 use mango3_leptos_utils::i18n::use_i18n;
 use mango3_leptos_utils::models::PostPreviewResp;
 use mango3_leptos_utils::pages::{NotFoundPage, Page};
@@ -20,7 +22,7 @@ pub fn SearchPage() -> impl IntoView {
                 Some(_) => {
                     let i18n = use_i18n();
                     let query_map = use_query_map();
-                    let controller = InfiniteScrollController::new(|after| Resource::new_blocking(
+                    let controller = InfiniteScrollResourceController::new(|after| Resource::new_blocking(
                         move || (param_query(query_map), after.get()),
                         |(query, after)| async { get_posts_search(query, after).await },
                     ));

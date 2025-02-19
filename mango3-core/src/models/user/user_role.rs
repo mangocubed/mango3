@@ -35,6 +35,7 @@ impl User {
                 hashtag_ids,
                 avatar_image_blob_id,
                 role as "role!: UserRole",
+                disabled_at,
                 created_at,
                 updated_at"#,
             self.id,          // $1

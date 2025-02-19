@@ -1,7 +1,9 @@
 use leptos::prelude::*;
 
 use mango3_leptos_utils::async_t_string;
-use mango3_leptos_utils::components::{InfiniteScroll, InfiniteScrollController, PostCard};
+use mango3_leptos_utils::components::{
+    InfiniteScroll, InfiniteScrollControllerTrait, InfiniteScrollResourceController, PostCard,
+};
 use mango3_leptos_utils::i18n::use_i18n;
 use mango3_leptos_utils::models::PostPreviewResp;
 use mango3_leptos_utils::pages::Page;
@@ -12,7 +14,7 @@ use crate::server_functions::get_posts;
 #[component]
 pub fn PostsPage() -> impl IntoView {
     let i18n = use_i18n();
-    let controller = InfiniteScrollController::new(|after| {
+    let controller = InfiniteScrollResourceController::new(|after| {
         Resource::new_blocking(move || after.get(), |after| async move { get_posts(10, after).await })
     });
     let text_title = async_t_string!(i18n, shared.posts).to_signal();

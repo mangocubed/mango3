@@ -3004,12 +3004,14 @@ version = "0.0.0-alpha.7"
 dependencies = [
  "console_error_panic_hook",
  "leptos",
+ "leptos_axum",
  "leptos_i18n",
  "leptos_meta",
  "leptos_router",
  "mango3-core",
  "mango3-leptos-utils",
  "tokio",
+ "uuid",
  "wasm-bindgen",
 ]
 

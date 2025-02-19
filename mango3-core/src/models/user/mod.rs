@@ -19,10 +19,11 @@ use crate::CoreContext;
 use super::{AsyncRedisCacheTrait, Blob, Hashtag, Website};
 
 mod user_bio;
+mod user_disable;
 mod user_email;
 mod user_get;
 mod user_insert;
-mod user_lock;
+mod user_paginate;
 mod user_password;
 mod user_profile;
 mod user_role;
@@ -47,6 +48,7 @@ pub struct User {
     pub hashtag_ids: Vec<Uuid>,
     pub avatar_image_blob_id: Option<Uuid>,
     pub role: UserRole,
+    pub disabled_at: Option<DateTime<Utc>>,
     pub created_at: DateTime<Utc>,
     pub updated_at: Option<DateTime<Utc>>,
 }

@@ -1,8 +1,8 @@
 use leptos::prelude::*;
 
 use mango3_leptos_utils::components::{
-    ActionFormAlert, CurrentUser, InfiniteScroll, InfiniteScrollController, SubmitButton, TextareaField, TimeAgo,
-    UserTag, UserTagLink,
+    ActionFormAlert, CurrentUser, InfiniteScroll, InfiniteScrollControllerTrait, InfiniteScrollResourceController,
+    SubmitButton, TextareaField, TimeAgo, UserTag, UserTagLink,
 };
 use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::models::{ActionFormResp, PostCommentResp};
@@ -30,7 +30,7 @@ pub fn PostComments(post_id: String) -> impl IntoView {
                     let post_id = post_id.clone();
                     move || {
                         let post_id = post_id.clone();
-                        let controller = InfiniteScrollController::new(|after| Resource::new_blocking(
+                        let controller = InfiniteScrollResourceController::new(|after| Resource::new_blocking(
                             {
                                 let post_id = post_id.clone();
                                 move || (post_id.clone(), after.get())

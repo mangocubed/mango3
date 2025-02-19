@@ -58,7 +58,7 @@ impl User {
                 bio = $6,
                 hashtag_ids = $7,
                 avatar_image_blob_id = $8
-            WHERE locked_at IS NULL AND id = $1 RETURNING
+            WHERE disabled_at IS NULL AND id = $1 RETURNING
                 id,
                 username,
                 email,
@@ -74,6 +74,7 @@ impl User {
                 hashtag_ids,
                 avatar_image_blob_id,
                 role as "role!: UserRole",
+                disabled_at,
                 created_at,
                 updated_at"#,
             self.id,                 // $1

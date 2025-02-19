@@ -48,7 +48,7 @@ impl User {
 
         let result = query_as!(
             Self,
-            r#"UPDATE users SET encrypted_password = $2 WHERE locked_at IS NULL AND id = $1 RETURNING
+            r#"UPDATE users SET encrypted_password = $2 WHERE disabled_at IS NULL AND id = $1 RETURNING
                 id,
                 username,
                 email,
@@ -64,6 +64,7 @@ impl User {
                 hashtag_ids,
                 avatar_image_blob_id,
                 role as "role!: UserRole",
+                disabled_at,
                 created_at,
                 updated_at"#,
             self.id,            // $1
@@ -111,7 +112,7 @@ impl User {
 
         let result = query_as!(
             Self,
-            r#"UPDATE users SET encrypted_password = $2 WHERE locked_at IS NULL AND id = $1
+            r#"UPDATE users SET encrypted_password = $2 WHERE disabled_at IS NULL AND id = $1
             RETURNING
                 id,
                 username,
@@ -128,6 +129,7 @@ impl User {
                 hashtag_ids,
                 avatar_image_blob_id,
                 role as "role!: UserRole",
+                disabled_at,
                 created_at,
                 updated_at"#,
             self.id,            // $1
