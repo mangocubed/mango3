@@ -1,7 +1,7 @@
 use sqlx::types::Uuid;
 use sqlx::{query, query_as};
 
-use crate::config::MISC_CONFIG;
+use crate::config::USER_CONFIG;
 use crate::constants::{BLACKLISTED_SLUGS, REGEX_EMAIL, REGEX_USERNAME};
 use crate::enums::{Input, InputError, MailerJobCommand, UserRole};
 use crate::models::{encrypt_password, find_country, parse_date};
@@ -89,8 +89,13 @@ impl User {
                 birthdate,
                 language_code,
                 country_alpha2,
-                role
-            ) VALUES ($1::text, $2::text, $3, $4, $5, $6, $7, $8, $9) RETURNING
+                role,
+                disabled_at
+            ) VALUES (
+                $1::text, $2::text, $3, $4, $5, $6, $7, $8, $9,
+                (CASE WHEN $10 IS TRUE THEN current_timestamp ELSE NULL END)
+            )
+            RETURNING
                 id,
                 username,
                 email,
@@ -109,15 +114,16 @@ impl User {
                 disabled_at,
                 created_at,
                 updated_at"#,
-            username,                                      // $1
-            email,                                         // $2
-            encrypted_password,                            // $3
-            display_name,                                  // $4
-            full_name,                                     // $5
-            birthdate,                                     // $6
-            language_code,                                 // $7
-            country.unwrap().alpha2,                       // $8
-            &MISC_CONFIG.default_user_role() as &UserRole, // $9
+            username,                                 // $1
+            email,                                    // $2
+            encrypted_password,                       // $3
+            display_name,                             // $4
+            full_name,                                // $5
+            birthdate,                                // $6
+            language_code,                            // $7
+            country.unwrap().alpha2,                  // $8
+            &USER_CONFIG.default_role() as &UserRole, // $9
+            USER_CONFIG.default_disabled,             // $10
         )
         .fetch_one(&core_context.db_pool)
         .await;

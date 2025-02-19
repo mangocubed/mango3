@@ -58,7 +58,6 @@ A free and open source website builder and content management system platform wr
 | MISC_CLIENT_IP_SOURCE           | String  | XRealIp                                                          |
 | MISC_CONFIRMATION_CODE_LENGTH   | Integer | 6                                                                |
 | MISC_FONT_PATH                  | String  | /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf                  |
-| MISC_DEFAULT_USER_ROLE          | String  | user                                                             |
 | MISC_IMAGE_OPS_FILTER_TYPE      | String  | CatmullRom                                                       |
 | MISC_INVITATION_CODE_LENGTH     | Integer | 6                                                                |
 | MISC_MAX_COMMENT_CONTENT_LENGTH | Integer | 8192                                                             |
@@ -66,6 +65,8 @@ A free and open source website builder and content management system platform wr
 | MISC_STORAGE_PATH               | String  | ./storage                                                        |
 | SESSIONS_KEY                    | String  | abcdefghijklmnopqrestuvvwxyz0123456789ABCDEFGHIJKLMNOPQRESTUVVWX |
 | SESSIONS_REDIS_URL              | String  | redis://127.0.0.1:6379/1                                         |
+| USER_DEFAULT_DISABLED           | Boolean | false                                                            |
+| USER_DEFAULT_ROLE               | String  | user                                                             |
 
 ### Installation and setup
 
