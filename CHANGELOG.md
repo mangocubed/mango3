@@ -1,6 +1,12 @@
 # Changelog
 
-## [0.0.0-alpha.8] - 2026-02-19
+## [0.0.0-alpha.9] - 2025-02-19
+
+### Fixed
+
+- Version in Cargo.toml was wrong. (https://github.com/mangocubed/mango3/pull/228)
+
+## [0.0.0-alpha.8] - 2025-02-19
 
 ### Added
 
