@@ -2,6 +2,8 @@ use std::str::FromStr;
 
 use serde::{Deserialize, Serialize};
 
+use crate::models::User;
+
 #[derive(Debug, Deserialize, Serialize)]
 pub enum GuestMailerJobCommand {
     InvitationCode(String),
@@ -53,6 +55,11 @@ pub enum MailerJobCommand {
     NewUserSession,
     Disabled,
     Welcome,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub enum AdminMailerJobCommand {
+    NewUser(User),
 }
 
 #[derive(sqlx::Type, strum::Display, Clone, Debug, Deserialize, PartialEq, Serialize)]

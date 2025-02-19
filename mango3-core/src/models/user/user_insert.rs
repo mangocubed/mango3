@@ -1,9 +1,10 @@
+use futures::future;
 use sqlx::types::Uuid;
 use sqlx::{query, query_as};
 
 use crate::config::USER_CONFIG;
 use crate::constants::{BLACKLISTED_SLUGS, REGEX_EMAIL, REGEX_USERNAME};
-use crate::enums::{Input, InputError, MailerJobCommand, UserRole};
+use crate::enums::{AdminMailerJobCommand, Input, InputError, MailerJobCommand, UserRole};
 use crate::models::{encrypt_password, find_country, parse_date};
 use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
 use crate::CoreContext;
@@ -130,7 +131,13 @@ impl User {
 
         match result {
             Ok(user) => {
-                core_context.jobs.mailer(&user, MailerJobCommand::Welcome).await;
+                future::join(
+                    core_context
+                        .jobs
+                        .admin_mailer(AdminMailerJobCommand::NewUser(user.clone())),
+                    core_context.jobs.mailer(&user, MailerJobCommand::Welcome),
+                )
+                .await;
 
                 Ok(user)
             }
