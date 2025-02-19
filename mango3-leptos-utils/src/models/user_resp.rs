@@ -8,7 +8,7 @@ use mango3_core::models::User;
 #[cfg(feature = "ssr")]
 use mango3_core::CoreContext;
 
-use super::{BlobResp, HashtagResp};
+use super::{BlobResp, HashtagResp, UserProfileResp};
 
 #[cfg(feature = "ssr")]
 use super::FromCore;
@@ -22,18 +22,22 @@ pub struct UserPreviewResp {
     pub bio_preview_html: String,
     pub hashtags: Vec<HashtagResp>,
     pub avatar_image_blob: Option<BlobResp>,
-    pub url: String,
     pub text_avatar_url: String,
+    pub url: String,
     pub role: String,
     pub is_disabled: bool,
 }
 
 impl UserPreviewResp {
     pub fn avatar_image_url(&self, size: u16) -> String {
+        if self.avatar_image_blob.is_none() || self.is_disabled {
+            return format!("{}?size={}", self.text_avatar_url, size);
+        }
+
         self.avatar_image_blob
             .as_ref()
-            .map(|blob| blob.variant_url(size, size, true))
-            .unwrap_or_else(|| format!("{}?size={}", self.text_avatar_url, size))
+            .expect("Could not get avatar image blob")
+            .variant_url(size, size, true)
     }
 }
 
@@ -58,8 +62,8 @@ impl FromCore<User> for UserPreviewResp {
                 .await
                 .and_then(|result| result.ok())
                 .map(|blob| blob.into()),
-            url: user.url().to_string(),
             text_avatar_url: user.text_avatar_url().to_string(),
+            url: user.url().to_string(),
             role: user.role.to_string(),
             is_disabled: user.is_disabled(),
         }
@@ -68,6 +72,24 @@ impl FromCore<User> for UserPreviewResp {
 
 impl From<UserResp> for UserPreviewResp {
     fn from(value: UserResp) -> Self {
+        Self {
+            id: value.id,
+            username: value.username,
+            display_name: value.display_name,
+            initials: value.initials,
+            bio_preview_html: value.bio_preview_html,
+            hashtags: value.hashtags,
+            avatar_image_blob: value.avatar_image_blob,
+            url: value.url,
+            text_avatar_url: value.text_avatar_url,
+            role: value.role,
+            is_disabled: value.is_disabled,
+        }
+    }
+}
+
+impl From<UserProfileResp> for UserPreviewResp {
+    fn from(value: UserProfileResp) -> Self {
         Self {
             id: value.id,
             username: value.username,
@@ -104,10 +126,14 @@ pub struct UserResp {
 
 impl UserResp {
     pub fn avatar_image_url(&self, size: u16) -> String {
+        if self.avatar_image_blob.is_none() || self.is_disabled {
+            return format!("{}?size={}", self.text_avatar_url, size);
+        }
+
         self.avatar_image_blob
             .as_ref()
-            .map(|blob| blob.variant_url(size, size, true))
-            .unwrap_or_else(|| format!("{}?size={}", self.text_avatar_url, size))
+            .expect("Could not get avatar image blob")
+            .variant_url(size, size, true)
     }
 }
 

@@ -68,7 +68,7 @@ pub use textarea_field::TextareaField;
 pub use time_ago::TimeAgo;
 pub use top_bar::TopBar;
 pub use user_card::UserCard;
-pub use user_tag::{UserIcon, UserTag, UserTagLink};
+pub use user_tag::{UserAvatar, UserLabels, UserTag, UserTagLink};
 pub use website_card::WebsiteCard;
 
 pub struct EventFn(Box<dyn Fn(Event) + 'static>);

@@ -16,6 +16,7 @@ module.exports = {
             rs: (content) => content.replace(/(?:^|\s)class:/g, " "),
         },
     },
+    safeList: ["opacity-50"],
     theme: {
         extend: {},
     },

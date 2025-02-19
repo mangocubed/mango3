@@ -25,17 +25,25 @@ pub struct UserProfileResp {
     pub country_name: String,
     pub bio: String,
     pub bio_html: String,
+    pub bio_preview_html: String,
     pub hashtags: Vec<HashtagResp>,
     pub avatar_image_blob: Option<BlobResp>,
     pub text_avatar_url: String,
+    pub url: String,
+    pub role: String,
+    pub is_disabled: bool,
 }
 
 impl UserProfileResp {
     pub fn avatar_image_url(&self, size: u16) -> String {
+        if self.avatar_image_blob.is_none() || self.is_disabled {
+            return format!("{}?size={}", self.text_avatar_url, size);
+        }
+
         self.avatar_image_blob
             .as_ref()
-            .map(|blob| blob.variant_url(size, size, true))
-            .unwrap_or_else(|| format!("{}?size={}", self.text_avatar_url, size))
+            .expect("Could not get avatar image blob")
+            .variant_url(size, size, true)
     }
 }
 
@@ -54,6 +62,7 @@ impl FromCore<User> for UserProfileResp {
             country_name: user.country().name.to_owned(),
             bio: user.bio.clone(),
             bio_html: user.bio_html().await,
+            bio_preview_html: user.bio_preview_html().await,
             hashtags: user
                 .hashtags(&core_context)
                 .await
@@ -66,6 +75,9 @@ impl FromCore<User> for UserProfileResp {
                 .and_then(|result| result.ok())
                 .map(|blob| blob.into()),
             text_avatar_url: user.text_avatar_url().to_string(),
+            url: user.url().to_string(),
+            role: user.role.to_string(),
+            is_disabled: user.is_disabled(),
         }
     }
 }

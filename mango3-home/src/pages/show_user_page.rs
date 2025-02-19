@@ -3,7 +3,8 @@ use leptos::prelude::*;
 use leptos_router::hooks::use_params_map;
 
 use mango3_leptos_utils::components::{
-    Hashtags, InfiniteScroll, InfiniteScrollControllerTrait, InfiniteScrollResourceController, LoadingSpinner, PostCard,
+    Hashtags, InfiniteScroll, InfiniteScrollControllerTrait, InfiniteScrollResourceController, LoadingSpinner,
+    PostCard, UserAvatar, UserLabels,
 };
 use mango3_leptos_utils::models::{CursorPageResp, PostPreviewResp};
 use mango3_leptos_utils::pages::{NotFoundPage, Page};
@@ -34,35 +35,33 @@ pub fn ShowUserPage() -> impl IntoView {
                                 },
                             )
                         });
-                        let avatar_image_url = user.avatar_image_url(256);
                         EitherOf3::A(
                             view! {
                                 <Page title=format!("{} (@{})", user.display_name, user.username)>
                                     <div class="flex flex-wrap justify-center gap-6 max-w-[1200px] mx-auto">
                                         <div class="card card-sm bg-base-200 shadow-xl flex-1 self-start min-w-[320px] max-w-[640px]">
                                             <div class="card-body">
-                                                <div class="avatar self-center mt-4">
-                                                    <div class="rounded-full w-64 h-64">
-                                                        <img
-                                                            alt=user.initials.clone()
-                                                            class="rounded-full"
-                                                            src=avatar_image_url
-                                                        />
-                                                    </div>
+                                                <div
+                                                    class="flex flex-col items-center"
+                                                    class:opacity-50=move || user.is_disabled
+                                                >
+                                                    <UserAvatar class="my-4" size=256 user=user.clone() />
+
+                                                    <h1 class="h1 mb-1">{user.display_name.clone()}</h1>
+
+                                                    <h2 class="h2 opacity-70 font-normal">
+                                                        "@" {user.username.clone()}
+                                                    </h2>
                                                 </div>
 
-                                                <h1 class="h1 mb-1 text-center">{user.display_name}</h1>
-
-                                                <h2 class="h2 opacity-70 font-normal text-center">
-                                                    "@"{user.username}
-                                                </h2>
-
                                                 <div
-                                                    class="prose prose-pre:bg-transparent max-w-none break-words"
+                                                    class="prose prose-pre:bg-transparent max-w-none break-words empty:hidden"
                                                     inner_html=user.bio_html.clone()
                                                 />
 
                                                 <div class="empty:hidden my-4 flex flex-wrap gap-2">
+                                                    <UserLabels user=user.clone() />
+
                                                     <Hashtags hashtags=user.hashtags />
                                                 </div>
                                             </div>

@@ -33,7 +33,7 @@ pub fn TextareaField(
 
     view! {
         <fieldset class="fieldset">
-            <label class="fieldset-label :empty:hidden" for=field_id>
+            <label class="fieldset-label empty:hidden" for=field_id>
                 {label.run()}
             </label>
 
