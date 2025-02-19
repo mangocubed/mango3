@@ -1,7 +1,6 @@
 use leptos::prelude::*;
 
-use crate::components::{Hashtags, UserIcon};
-use crate::i18n::{t, use_i18n};
+use crate::components::{Hashtags, UserAvatar, UserLabels};
 use crate::models::UserPreviewResp;
 
 #[component]
@@ -10,8 +9,6 @@ pub fn UserCard(
     #[prop(into, optional)] actions: ViewFn,
     #[prop(default = "/".to_owned())] hashtags_base_url: String,
 ) -> impl IntoView {
-    let i18n = use_i18n();
-
     let user_url = user.url.clone();
 
     let href = if !user.is_disabled {
@@ -24,12 +21,12 @@ pub fn UserCard(
         <div class="card card-sm bg-base-100 shadow-xl mb-4">
             <div class="card-body">
                 <div class="flex gap-3 items-center">
-                    <a href=href.clone()>
-                        <UserIcon user=user.clone() />
+                    <a class:opacity-50=move || user.is_disabled href=href.clone()>
+                        <UserAvatar user=user.clone() />
                     </a>
 
                     <div class="card-title">
-                        <a href=href.clone()>
+                        <a href=href.clone() class:opacity-50=move || user.is_disabled>
                             <div class="font-bold text-lg">{user.display_name.clone()}</div>
                             <div class="text-base opacity-70">"@"{user.username.clone()}</div>
                         </a>
@@ -42,12 +39,7 @@ pub fn UserCard(
                 </a>
 
                 <div class="empty:hidden my-1 flex gap-2 overflow-x-auto">
-                    <Show when={
-                        let is_disabled = user.is_disabled;
-                        move || is_disabled
-                    }>
-                        <a class="btn btn-sm btn-outline btn-error no-animation">{t!(i18n, shared.disabled)}</a>
-                    </Show>
+                    <UserLabels user=user.clone() />
 
                     <Hashtags hashtags=user.hashtags.clone() base_url=hashtags_base_url />
                 </div>
