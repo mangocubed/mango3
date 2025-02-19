@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.0.0-alpha.8] - 2026-02-19
+
+### Added
+
+- Store navigation items query in a cache. (https://github.com/mangocubed/mango3/pull/220)
+- Disable or enable users in admin panel. (https://github.com/mangocubed/mango3/pull/223)
+- Show labels when users is disabled or is admin. (https://github.com/mangocubed/mango3/pull/224)
+- Add env var to disable users by default. (https://github.com/mangocubed/mango3/pull/225)
+- Notify admins by email when a user account is created. (https://github.com/mangocubed/mango3/pull/226)
+
+### Changed
+
+- Bump cargo-leptos from 0.2.26 to 0.2.28 in GH Actions. (https://github.com/mangocubed/mango3/pull/217)
+- Bump @types/node from 22.13.1 to 22.13.4. (https://github.com/mangocubed/mango3/pull/218)
+- Bump attohttpc from 0.28.2 to 0.28.5. (https://github.com/mangocubed/mango3/pull/219)
+- Bump handlebars from 6.3.0 to 6.3.1. (https://github.com/mangocubed/mango3/pull/221)
+- Bump clap from 4.5.29 to 4.5.30. (https://github.com/mangocubed/mango3/pull/222)
+- Bump tailwindcss from 3.4.17 to 4.0.6. (https://github.com/mangocubed/mango3/pull/206)
+
+### Fixed
+
+- Move async_t_string! outside closure in websites. (https://github.com/mangocubed/mango3/pull/216)
+
 ## [0.0.0-alpha.7] - 2025-02-13
 
 ### Added
