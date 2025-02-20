@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.0.0-alpha.10] - 2025-02-20
+
+### Added
+
+- Modal component. (https://github.com/mangocubed/mango3/pull/232)
+
+### Changed
+
+- Bump lettre from 0.11.12 to 0.11.13. (https://github.com/mangocubed/mango3/pull/229)
+- Bump tailwindcss from 4.0.6 to 4.0.7. (https://github.com/mangocubed/mango3/pull/230)
+
+### Fixed
+
+- TopBar responsiveness with daisyUI v5. (https://github.com/mangocubed/mango3/pull/231)
+
 ## [0.0.0-alpha.9] - 2025-02-19
 
 ### Fixed

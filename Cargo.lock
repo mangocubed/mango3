@@ -2984,7 +2984,7 @@ dependencies = [
 
 [[package]]
 name = "mango3-accounts"
-version = "0.0.0-alpha.9"
+version = "0.0.0-alpha.10"
 dependencies = [
  "console_error_panic_hook",
  "leptos",
@@ -3000,7 +3000,7 @@ dependencies = [
 
 [[package]]
 name = "mango3-admin"
-version = "0.0.0-alpha.9"
+version = "0.0.0-alpha.10"
 dependencies = [
  "console_error_panic_hook",
  "leptos",
@@ -3017,7 +3017,7 @@ dependencies = [
 
 [[package]]
 name = "mango3-cli"
-version = "0.0.0-alpha.9"
+version = "0.0.0-alpha.10"
 dependencies = [
  "clap",
  "mango3-core",
@@ -3026,7 +3026,7 @@ dependencies = [
 
 [[package]]
 name = "mango3-core"
-version = "0.0.0-alpha.9"
+version = "0.0.0-alpha.10"
 dependencies = [
  "ab_glyph",
  "apalis",
@@ -3066,7 +3066,7 @@ dependencies = [
 
 [[package]]
 name = "mango3-home"
-version = "0.0.0-alpha.9"
+version = "0.0.0-alpha.10"
 dependencies = [
  "console_error_panic_hook",
  "leptos",
@@ -3082,7 +3082,7 @@ dependencies = [
 
 [[package]]
 name = "mango3-leptos-utils"
-version = "0.0.0-alpha.9"
+version = "0.0.0-alpha.10"
 dependencies = [
  "accept-language",
  "async-trait",
@@ -3117,7 +3117,7 @@ dependencies = [
 
 [[package]]
 name = "mango3-monitor"
-version = "0.0.0-alpha.9"
+version = "0.0.0-alpha.10"
 dependencies = [
  "anyhow",
  "apalis",
@@ -3129,7 +3129,7 @@ dependencies = [
 
 [[package]]
 name = "mango3-my-account"
-version = "0.0.0-alpha.9"
+version = "0.0.0-alpha.10"
 dependencies = [
  "console_error_panic_hook",
  "leptos",
@@ -3145,7 +3145,7 @@ dependencies = [
 
 [[package]]
 name = "mango3-studio"
-version = "0.0.0-alpha.9"
+version = "0.0.0-alpha.10"
 dependencies = [
  "async-trait",
  "chrono",
@@ -3168,7 +3168,7 @@ dependencies = [
 
 [[package]]
 name = "mango3-uploads"
-version = "0.0.0-alpha.9"
+version = "0.0.0-alpha.10"
 dependencies = [
  "axum",
  "mango3-core",
@@ -3179,7 +3179,7 @@ dependencies = [
 
 [[package]]
 name = "mango3-websites"
-version = "0.0.0-alpha.9"
+version = "0.0.0-alpha.10"
 dependencies = [
  "chrono",
  "console_error_panic_hook",
