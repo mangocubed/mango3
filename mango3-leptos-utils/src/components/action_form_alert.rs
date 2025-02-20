@@ -1,12 +1,12 @@
-use leptos::either::EitherOf3;
 use leptos::prelude::*;
 use leptos::text_prop::TextProp;
 use leptos_router::hooks::use_navigate;
 use server_fn::error::NoCustomError;
 
+use crate::enums::ActionFormStatus;
 use crate::models::ActionFormResp;
 
-use super::BoxedFn;
+use super::{BoxedFn, Modal};
 
 #[component]
 pub fn ActionFormAlert(
@@ -14,13 +14,29 @@ pub fn ActionFormAlert(
     #[prop(into, optional)] error_message: ViewFn,
     #[prop(into, optional)] on_success: Option<BoxedFn>,
     #[prop(into, optional)] redirect_to: Option<TextProp>,
+    #[prop(default = RwSignal::new(ActionFormStatus::Pending), into)] status: RwSignal<ActionFormStatus>,
     #[prop(into)] success_message: ViewFn,
 ) -> impl IntoView {
     let navigate = use_navigate();
-    let is_done = RwSignal::new(false);
 
     Effect::new(move || {
-        if !is_done.get() {
+        let response = ActionFormResp::from(action_value);
+
+        match response.success {
+            Some(true) => {
+                status.set(ActionFormStatus::Success);
+            }
+            Some(false) => {
+                status.set(ActionFormStatus::Error);
+            }
+            _ => {
+                status.set(ActionFormStatus::Pending);
+            }
+        }
+    });
+
+    Effect::new(move || {
+        if !status.get().is_done() {
             return;
         }
 
@@ -33,43 +49,46 @@ pub fn ActionFormAlert(
         }
     });
 
-    move || match ActionFormResp::from(action_value).success {
-        Some(true) => EitherOf3::A(view! {
-            <dialog class="modal" class:modal-open=move || !is_done.get()>
-                <div class="modal-box">
-                    <div>{success_message.run()}</div>
-                    <div class="modal-action">
-                        <button
-                            class="btn btn-primary"
-                            on:click=move |event| {
-                                event.prevent_default();
-                                is_done.set(true);
-                            }
-                        >
-                            "Ok"
-                        </button>
-                    </div>
-                </div>
-            </dialog>
-        }),
-        Some(false) => {
-            is_done.set(false);
-            EitherOf3::B(view! { <ActionFormError message=error_message.clone() /> })
-        }
-        _ => {
-            is_done.set(false);
-            EitherOf3::C(())
-        }
+    view! {
+        <ActionFormError message=error_message status=status />
+
+        <SuccessModal message=success_message status=status />
     }
 }
 
 #[component]
-pub fn ActionFormError(#[prop(into)] message: ViewFn) -> impl IntoView {
+pub fn ActionFormError(#[prop(into)] message: ViewFn, status: RwSignal<ActionFormStatus>) -> impl IntoView {
     view! {
-        <div class="pt-2 pb-2 has-[div:empty]:hidden">
+        <div class="pt-2 pb-2 has-[div:empty]:hidden" class:hidden=move || !status.get().is_error()>
             <div role="alert" class="alert alert-error">
                 {message.run()}
             </div>
         </div>
+    }
+}
+
+#[component]
+pub fn SuccessModal(#[prop(into)] message: ViewFn, status: RwSignal<ActionFormStatus>) -> impl IntoView {
+    let is_open = RwSignal::new(false);
+
+    Effect::new(move || {
+        is_open.set(status.get().is_success());
+    });
+
+    view! {
+        <Modal is_closable=false is_open=is_open>
+            <div>{message.run()}</div>
+            <div class="modal-action">
+                <button
+                    class="btn btn-primary"
+                    on:click=move |event| {
+                        event.prevent_default();
+                        status.set(ActionFormStatus::Done)
+                    }
+                >
+                    "Ok"
+                </button>
+            </div>
+        </Modal>
     }
 }

@@ -3,7 +3,7 @@ use leptos::prelude::*;
 
 use mango3_leptos_utils::async_t_string;
 use mango3_leptos_utils::components::{
-    ConfirmationDialog, InfiniteScroll, InfiniteScrollControllerTrait, InfiniteScrollLocalResourceController, UserCard,
+    ConfirmationModal, InfiniteScroll, InfiniteScrollControllerTrait, InfiniteScrollLocalResourceController, UserCard,
     UserTag,
 };
 use mango3_leptos_utils::context::use_basic_config;
@@ -60,7 +60,7 @@ pub fn UsersPage() -> impl IntoView {
             <h1 class="h1">{move || text_title.get()}</h1>
 
             <section class="max-w-[720px] w-full mx-auto">
-                <ConfirmationDialog
+                <ConfirmationModal
                     is_open=show_disable_confirmation
                     on_accept=move || {
                         let user = disable_user.get().unwrap();
@@ -73,9 +73,9 @@ pub fn UsersPage() -> impl IntoView {
                     <div>{t!(i18n, admin.are_you_sure_you_want_to_disable_this_user)}</div>
 
                     {move || disable_user.get().map(|user| view! { <UserTag class="justify-center my-3" user=user /> })}
-                </ConfirmationDialog>
+                </ConfirmationModal>
 
-                <ConfirmationDialog
+                <ConfirmationModal
                     is_open=show_enable_confirmation
                     on_accept=move || {
                         let user = enable_user.get().unwrap();
@@ -88,7 +88,7 @@ pub fn UsersPage() -> impl IntoView {
                     <div>{t!(i18n, admin.are_you_sure_you_want_to_enable_this_user)}</div>
 
                     {move || enable_user.get().map(|user| view! { <UserTag class="justify-center my-3" user=user /> })}
-                </ConfirmationDialog>
+                </ConfirmationModal>
 
                 <InfiniteScroll controller=controller key=|user: &UserPreviewResp| user.id.clone() let:user>
                     <UserCard

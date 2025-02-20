@@ -140,7 +140,7 @@ pub fn PostFormFields(
         </div>
 
         <PostPreviewModal
-            is_active=show_preview
+            is_open=show_preview
             title=value_title
             content=value_content
             variables=value_variables

@@ -3,7 +3,7 @@ use leptos_router::components::Outlet;
 use leptos_router::hooks::{use_location, use_navigate};
 
 use mango3_leptos_utils::async_t_string;
-use mango3_leptos_utils::components::ConfirmationDialog;
+use mango3_leptos_utils::components::ConfirmationModal;
 use mango3_leptos_utils::context::use_basic_config;
 use mango3_leptos_utils::i18n::{t, use_i18n};
 
@@ -55,13 +55,13 @@ pub fn IndexParentPage() -> impl IntoView {
             </div>
         </div>
 
-        <ConfirmationDialog
+        <ConfirmationModal
             is_open=show_logout_confirmation
             on_accept=move || {
                 logout_server_action.dispatch(AttemptToLogout {});
             }
         >
             {t!(i18n, my_account.are_you_sure_you_want_to_logout)}
-        </ConfirmationDialog>
+        </ConfirmationModal>
     }
 }
