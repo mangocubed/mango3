@@ -3,6 +3,7 @@ use leptos::prelude::*;
 
 use mango3_leptos_utils::components::{CurrentUser, WebsiteIcon};
 use mango3_leptos_utils::context::use_basic_config;
+use mango3_leptos_utils::enums::Orientation;
 use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::icons::{ChevronDownMini, PlusOutlined};
 
@@ -11,13 +12,15 @@ use crate::context::use_selected_website;
 use super::MyWebsitesInfiniteScroll;
 
 #[component]
-pub fn SelectedWebsiteDropdown() -> impl IntoView {
+pub fn SelectWebsiteDropdown(orientation: Orientation) -> impl IntoView {
     let i18n = use_i18n();
     let selected_website = use_selected_website();
 
+    let is_horizontal = orientation.is_horizontal();
+
     view! {
-        <div class="dropdown">
-            <button type="button" class="btn btn-outline btn-block justify-start md:justify-center">
+        <div class:dropdown=is_horizontal>
+            <button type="button" class="btn btn-outline btn-accent btn-block justify-between">
                 {move || match selected_website.get() {
                     Some(website) => {
                         Either::Left(
@@ -31,10 +34,15 @@ pub fn SelectedWebsiteDropdown() -> impl IntoView {
                     None => Either::Right(t!(i18n, studio.select)),
                 }}
 
-                <ChevronDownMini class="hidden md:block" />
+                <ChevronDownMini />
             </button>
 
-            <ul class="md:dropdown-content md:menu bg-base-100 rounded-box z-[1] w-[17rem] p-2 md:shadow">
+            <ul
+                class="bg-base-100 rounded-box z-[1] p-2 md:w-60"
+                class:menu=is_horizontal
+                class:shadow=is_horizontal
+                class:dropdown-content=is_horizontal
+            >
                 <MyWebsitesInfiniteScroll let:website>
                     <li>
                         <a href=format!("/websites/{}", website.id)>

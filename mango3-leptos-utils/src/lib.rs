@@ -9,6 +9,7 @@ pub mod macros;
 pub mod components;
 pub mod constants;
 pub mod context;
+pub mod enums;
 pub mod icons;
 pub mod utils;
 

@@ -31,7 +31,7 @@ pub fn App() -> impl IntoView {
                     <Router>
                         <TopBar
                             brand=move || view! { <Brand href="/login" suffix=text_suffix /> }
-                            right_items=move || view! { <GoToMango3 /> }
+                            right_items=move |_| view! { <GoToMango3 /> }
                             show_user_menu=false
                         />
 

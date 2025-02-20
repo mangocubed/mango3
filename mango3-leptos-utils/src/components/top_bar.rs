@@ -1,29 +1,44 @@
+use std::sync::Arc;
+
 use leptos::either::Either;
 use leptos::prelude::*;
 
 use crate::components::{CurrentUserOpt, UserTag};
 use crate::context::use_basic_config;
+use crate::enums::Orientation;
 use crate::i18n::{t, use_i18n};
 use crate::icons::{Bars3Outlined, ChevronDownMini};
 
+#[derive(Clone)]
+pub struct ItemsViewFn(Arc<dyn Fn(Orientation) -> AnyView + Send + Sync + 'static>);
+
+impl Default for ItemsViewFn {
+    fn default() -> Self {
+        Self(Arc::new(|_| ().into_any()))
+    }
+}
+
+impl<F, C> From<F> for ItemsViewFn
+where
+    F: Fn(Orientation) -> C + Send + Sync + 'static,
+    C: RenderHtml + Send + 'static,
+{
+    fn from(value: F) -> Self {
+        Self(Arc::new(move |orientation| value(orientation).into_any()))
+    }
+}
+
 #[component]
 pub fn TopBar(
-    #[prop(optional)] children: Option<ChildrenFn>,
     #[prop(into)] brand: ViewFnOnce,
     #[prop(default = "bg-base-300")] class: &'static str,
+    #[prop(into, optional)] left_items: ItemsViewFn,
+    #[prop(into, optional)] right_items: ItemsViewFn,
     #[prop(default = true)] show_user_menu: bool,
-    #[prop(into, optional)] right_items: ViewFn,
 ) -> impl IntoView {
     let i18n = use_i18n();
-    let children_store = StoredValue::new(children);
-
-    let items = move || {
-        view! {
-            <div class="md:flex-1 max-w-full">{children_store.read_value().as_ref().map(|c| c())}</div>
-
-            <div class="md:flex-none">{right_items.run()}</div>
-        }
-    };
+    let left_items_store = StoredValue::new(left_items);
+    let right_items_store = StoredValue::new(right_items);
 
     view! {
         <div class=format!("navbar shadow-md py-0 gap-2 {class}")>
@@ -32,15 +47,27 @@ pub fn TopBar(
                     <Bars3Outlined />
                 </button>
 
-                <div tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] p-2 shadow w-72">
-                    {items.clone()}
+                <div tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] p-2 shadow w-65">
+                    <div class="max-w-full">
+                        {left_items_store.with_value(|left_items| left_items.0(Orientation::Vertical))}
+                    </div>
+
+                    <div>{right_items_store.with_value(|right_items| right_items.0(Orientation::Vertical))}</div>
                 </div>
             </div>
 
             <div class="flex-none">{brand.run()}</div>
 
             <div class="flex-1">
-                <div class="hidden md:flex items-center w-full">{items}</div>
+                <div class="hidden md:flex items-center w-full">
+                    <div class="flex-1 max-w-full">
+                        {left_items_store.with_value(|left_items| left_items.0(Orientation::Horizontal))}
+                    </div>
+
+                    <div class="flex-none">
+                        {right_items_store.with_value(|right_items| right_items.0(Orientation::Horizontal))}
+                    </div>
+                </div>
             </div>
 
             <Show when=move || {
