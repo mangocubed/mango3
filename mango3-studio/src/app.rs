@@ -9,7 +9,7 @@ use mango3_leptos_utils::i18n::use_i18n;
 use mango3_leptos_utils::pages::NotFoundPage;
 use mango3_leptos_utils::utils::ToSignalTrait;
 
-use crate::components::SelectedWebsiteDropdown;
+use crate::components::SelectWebsiteDropdown;
 use crate::constants::{KEY_PARAM_POST_ID, KEY_PARAM_WEBSITE_ID};
 use crate::context::provide_selected_website;
 use crate::pages::{websites, IndexPage, NewWebsitePage};
@@ -36,10 +36,9 @@ pub fn App() -> impl IntoView {
                     <Router>
                         <TopBar
                             brand=move || view! { <Brand href="/" suffix=text_suffix /> }
-                            right_items=move || view! { <GoToMango3 /> }
-                        >
-                            <SelectedWebsiteDropdown />
-                        </TopBar>
+                            left_items=move |orientation| view! { <SelectWebsiteDropdown orientation=orientation /> }
+                            right_items=move |_| view! { <GoToMango3 /> }
+                        />
 
                         <main class="flex flex-col grow md:m-6 m-4">
                             <Routes fallback=NotFoundPage>

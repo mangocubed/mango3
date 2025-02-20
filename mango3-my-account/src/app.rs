@@ -31,7 +31,7 @@ pub fn App() -> impl IntoView {
                     <Router>
                         <TopBar
                             brand=move || view! { <Brand href="/" suffix=text_suffix /> }
-                            right_items=move || view! { <GoToMango3 /> }
+                            right_items=move |_| view! { <GoToMango3 /> }
                         />
 
                         <main class="flex flex-col grow md:m-6 m-4">

@@ -3,6 +3,7 @@ use leptos::prelude::*;
 
 use mango3_leptos_utils::components::{Brand, GoToMango3, SearchBar, TopBar, WebsiteIcon};
 use mango3_leptos_utils::context::use_basic_config;
+use mango3_leptos_utils::enums::Orientation;
 
 use crate::server_functions::get_all_navigation_items;
 
@@ -43,30 +44,35 @@ pub fn WebsiteTopBar() -> impl IntoView {
                 }
             }
             class="bg-base-200"
-            right_items=move || view! { <GoToMango3 /> }
-        >
-            <Transition>
-                {move || Suspend::new(async move {
-                    navigation_items_resource
-                        .get()
-                        .and_then(|result| result.ok())
-                        .map(|items| {
-                            view! {
-                                <ul class="menu md:menu-horizontal gap-1">
-                                    <For each=move || items.clone() key=|item| item.id.clone() let:item>
-                                        <li>
-                                            <a href=item.url>{item.title}</a>
-                                        </li>
-                                    </For>
+            left_items=move |orientation: Orientation| {
+                let is_horizontal = orientation.is_horizontal();
 
-                                    <li>
-                                        <SearchBar />
-                                    </li>
-                                </ul>
-                            }
-                        })
-                })}
-            </Transition>
-        </TopBar>
+                view! {
+                    <Transition>
+                        {move || Suspend::new(async move {
+                            navigation_items_resource
+                                .get()
+                                .and_then(|result| result.ok())
+                                .map(|items| {
+                                    view! {
+                                        <ul class="menu gap-1" class:menu-horizontal=is_horizontal>
+                                            <For each=move || items.clone() key=|item| item.id.clone() let:item>
+                                                <li>
+                                                    <a href=item.url>{item.title}</a>
+                                                </li>
+                                            </For>
+
+                                            <li>
+                                                <SearchBar />
+                                            </li>
+                                        </ul>
+                                    }
+                                })
+                        })}
+                    </Transition>
+                }
+            }
+            right_items=move |_| view! { <GoToMango3 /> }
+        />
     }
 }

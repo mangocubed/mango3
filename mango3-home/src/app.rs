@@ -35,21 +35,26 @@ pub fn App() -> impl IntoView {
                     <Meta name="copyright" content=basic_config.copyright.clone() />
 
                     <Router>
-                        <TopBar brand=move || view! { <Brand href="/" /> }>
-                            <ul class="menu md:menu-horizontal gap-1">
-                                <li>
-                                    <a href="/posts">{t!(i18n, shared.posts)}</a>
-                                </li>
+                        <TopBar
+                            brand=move || view! { <Brand href="/" /> }
+                            left_items=move |_| {
+                                view! {
+                                    <ul class="menu md:menu-horizontal gap-1">
+                                        <li>
+                                            <a href="/posts">{t!(i18n, shared.posts)}</a>
+                                        </li>
 
-                                <li>
-                                    <a href="/websites">{t!(i18n, home.websites)}</a>
-                                </li>
+                                        <li>
+                                            <a href="/websites">{t!(i18n, home.websites)}</a>
+                                        </li>
 
-                                <li>
-                                    <SearchBar />
-                                </li>
-                            </ul>
-                        </TopBar>
+                                        <li>
+                                            <SearchBar />
+                                        </li>
+                                    </ul>
+                                }
+                            }
+                        />
 
                         <main class="grow md:m-6 m-4">
                             <Routes fallback=NotFoundPage>
