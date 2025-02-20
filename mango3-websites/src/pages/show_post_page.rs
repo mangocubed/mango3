@@ -3,7 +3,7 @@ use leptos::prelude::*;
 use leptos_meta::Meta;
 use leptos_router::hooks::use_params_map;
 
-use mango3_leptos_utils::components::{Hashtags, LoadingSpinner, PostBottomBar, UserTagLink};
+use mango3_leptos_utils::components::{Hashtags, LoadingSpinner, Modal, PostBottomBar, UserTagLink};
 use mango3_leptos_utils::pages::NotFoundPage;
 use mango3_leptos_utils::pages::Page;
 
@@ -21,7 +21,11 @@ pub fn ShowPostPage() -> impl IntoView {
             {move || Suspend::new(async move {
                 match post_resource.get() {
                     Some(Ok(Some(post))) => {
-                        let modal_image_url = RwSignal::new(None);
+                        let image_modal_url = RwSignal::new(None);
+                        let image_modal_is_open = RwSignal::new(false);
+                        Effect::new(move || {
+                            image_modal_is_open.set(image_modal_url.get().is_some());
+                        });
                         EitherOf3::A(
                             view! {
                                 <Page class="max-w-[1200px] w-full ml-auto mr-auto" title=post.title.clone()>
@@ -91,7 +95,7 @@ pub fn ShowPostPage() -> impl IntoView {
                                                     <figure
                                                         class="rounded"
                                                         on:click=move |_| {
-                                                            modal_image_url.set(Some(blob.url.clone()))
+                                                            image_modal_url.set(Some(blob.url.clone()));
                                                         }
                                                     >
                                                         <img src=blob.variant_url(128, 128, true) />
@@ -99,23 +103,18 @@ pub fn ShowPostPage() -> impl IntoView {
                                                 </For>
                                             </div>
 
-                                            <Show when=move || modal_image_url.get().is_some()>
-                                                <div class="modal modal-open overflow-y-visible">
-                                                    <div class="modal-box overflow-y-visible max-w-[max-content]">
-                                                        <figure class="max-w-full">
-                                                            <img
-                                                                class="max-w-[calc(100vw-120px)] max-h-[calc(100vh-120px)]"
-                                                                src=modal_image_url
-                                                            />
-                                                        </figure>
-                                                    </div>
-
-                                                    <div
-                                                        class="modal-backdrop"
-                                                        on:click=move |_| modal_image_url.set(None)
+                                            <Modal
+                                                class="overflow-y-visible"
+                                                box_class="overflow-y-visible max-w-[max-content]"
+                                                is_open=image_modal_is_open
+                                            >
+                                                <figure class="max-w-full">
+                                                    <img
+                                                        class="max-w-[calc(100vw-120px)] max-h-[calc(100vh-120px)]"
+                                                        src=image_modal_url
                                                     />
-                                                </div>
-                                            </Show>
+                                                </figure>
+                                            </Modal>
 
                                             <div class="empty:hidden my-4 flex flex-wrap gap-2">
                                                 <Hashtags hashtags=post.hashtags />

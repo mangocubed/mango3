@@ -9,7 +9,7 @@ use mango3_leptos_utils::models::ActionFormResp;
 use mango3_leptos_utils::pages::GuestPage;
 use mango3_leptos_utils::utils::ToSignalTrait;
 
-use crate::components::InvitationCodeDialog;
+use crate::components::InvitationCodeModal;
 use crate::server_functions::AttemptToRegister;
 
 #[component]
@@ -47,7 +47,7 @@ pub fn RegisterPage() -> impl IntoView {
         <GuestPage title=text_title>
             <h2 class="h2">{move || text_title.get()}</h2>
 
-            <InvitationCodeDialog value=value_invitation_code_id />
+            <InvitationCodeModal value=value_invitation_code_id />
 
             <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
                 <ActionFormAlert

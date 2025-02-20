@@ -2,7 +2,7 @@ use leptos::prelude::*;
 use leptos_router::hooks::use_params_map;
 
 use mango3_leptos_utils::components::{
-    ConfirmationDialog, InfiniteScroll, InfiniteScrollControllerTrait, InfiniteScrollResourceController, PostCard,
+    ConfirmationModal, InfiniteScroll, InfiniteScrollControllerTrait, InfiniteScrollResourceController, PostCard,
 };
 use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::icons::PlusOutlined;
@@ -26,7 +26,7 @@ pub fn PostsPage() -> impl IntoView {
     let show_delete_confirmation = RwSignal::new(false);
 
     view! {
-        <ConfirmationDialog
+        <ConfirmationModal
             is_open=show_delete_confirmation
             on_accept={
                 let controller = controller.clone();
@@ -47,7 +47,7 @@ pub fn PostsPage() -> impl IntoView {
             }
         >
             {t!(i18n, studio.are_you_sure_you_want_to_delete_this_post)}
-        </ConfirmationDialog>
+        </ConfirmationModal>
 
         <h2 class="h2">{t!(i18n, shared.posts)}</h2>
 

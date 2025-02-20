@@ -8,7 +8,7 @@ use mango3_leptos_utils::models::ActionFormResp;
 use mango3_leptos_utils::pages::GuestPage;
 use mango3_leptos_utils::utils::ToSignalTrait;
 
-use crate::components::ResetPasswordDialog;
+use crate::components::ResetPasswordModal;
 use crate::server_functions::AttemptToSendPasswordResetCode;
 
 #[component]
@@ -18,7 +18,7 @@ pub fn ResetPasswordPage() -> impl IntoView {
     let action_value = server_action.value();
     let value_username_or_email = RwSignal::new(String::new());
     let error_username_or_email = RwSignal::new(None);
-    let show_reset_password_dialog = RwSignal::new(false);
+    let reset_password_modal_is_open = RwSignal::new(false);
     let text_title = async_t_string!(i18n, accounts.reset_password).to_signal();
 
     Effect::new(move || {
@@ -35,13 +35,13 @@ pub fn ResetPasswordPage() -> impl IntoView {
         <GuestPage title=text_title>
             <h2 class="h2">{move || text_title.get()}</h2>
 
-            <ResetPasswordDialog username_or_email=value_username_or_email is_open=show_reset_password_dialog />
+            <ResetPasswordModal username_or_email=value_username_or_email is_open=reset_password_modal_is_open />
 
             <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
                 <ActionFormAlert
                     action_value=action_value
                     error_message=move || t!(i18n, accounts.failed_to_send_password_reset_code)
-                    on_success=move || show_reset_password_dialog.set(true)
+                    on_success=move || reset_password_modal_is_open.set(true)
                     success_message=move || t!(i18n, accounts.password_reset_code_sent_successfully)
                 />
 
