@@ -52,6 +52,7 @@ profile: Profile
 register: Registrate
 remove: Remover
 search_results_for: Resultados de busqueda para “{{query}}”
+select: Seleccionar
 studio: Estudio
 submit: Enviar
 terms_of_service: Términos de servicio

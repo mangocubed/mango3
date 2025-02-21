@@ -1,15 +1,13 @@
 use leptos::prelude::*;
 
+use crate::i18n::{t, use_i18n};
+
 #[server]
 pub async fn get_country_options() -> Result<Vec<(String, String)>, ServerFnError> {
-    let mut countries: Vec<(String, String)> = rust_iso3166::ALL
+    Ok(rust_iso3166::ALL
         .iter()
         .map(|country| (country.name.to_owned(), country.alpha2.to_owned()))
-        .collect();
-
-    countries.insert(0, ("Select".to_owned(), "".to_owned()));
-
-    Ok(countries)
+        .collect())
 }
 
 #[component]
@@ -20,6 +18,7 @@ pub fn CountryField(
     name: &'static str,
     #[prop(optional, into)] value: Signal<String>,
 ) -> impl IntoView {
+    let i18n = use_i18n();
     let options_resource = Resource::new_blocking(|| (), |_| get_country_options());
 
     let field_id = move || {
@@ -39,6 +38,7 @@ pub fn CountryField(
             </label>
 
             <select class="select w-full" class:select-error=has_error id=field_id name=name>
+                <option value="">{t!(i18n, shared.select)}</option>
                 <Suspense>
                     {move || Suspend::new(async move {
                         options_resource
