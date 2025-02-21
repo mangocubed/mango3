@@ -4,7 +4,9 @@ use leptos_router::components::{ParentRoute, Route, Router, Routes};
 use leptos_router::{ParamSegment, StaticSegment};
 
 use mango3_leptos_utils::async_t_string;
-use mango3_leptos_utils::components::*;
+use mango3_leptos_utils::components::{
+    AppProvider, AppTitle, BottomBar, Brand, FaviconLink, GoToMango3, LoadingOverlay, TopBar, UnconfirmedEmailAlert,
+};
 use mango3_leptos_utils::i18n::use_i18n;
 use mango3_leptos_utils::pages::NotFoundPage;
 use mango3_leptos_utils::utils::ToSignalTrait;
@@ -39,6 +41,8 @@ pub fn App() -> impl IntoView {
                             left_items=move |orientation| view! { <SelectWebsiteDropdown orientation=orientation /> }
                             right_items=move |_| view! { <GoToMango3 /> }
                         />
+
+                        <UnconfirmedEmailAlert />
 
                         <main class="flex flex-col grow md:m-6 m-4">
                             <Routes fallback=NotFoundPage>

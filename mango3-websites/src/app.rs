@@ -5,7 +5,9 @@ use leptos_router::components::{Route, Router, Routes};
 use leptos_router::{ParamSegment, StaticSegment};
 
 use mango3_leptos_utils::async_t_string;
-use mango3_leptos_utils::components::{AppProvider, AppTitle, BottomBar, FaviconLink, LoadingOverlay};
+use mango3_leptos_utils::components::{
+    AppProvider, AppTitle, BottomBar, FaviconLink, LoadingOverlay, UnconfirmedEmailAlert,
+};
 use mango3_leptos_utils::constants::KEY_PARAM_NAME;
 use mango3_leptos_utils::context::use_basic_config;
 use mango3_leptos_utils::i18n::{t, use_i18n};
@@ -64,6 +66,8 @@ pub fn App() -> impl IntoView {
 
                     <Router>
                         <WebsiteTopBar />
+
+                        <UnconfirmedEmailAlert />
 
                         <main class="grow md:m-6 m-4">
                             <Routes fallback=NotFoundPage>

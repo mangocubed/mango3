@@ -59,7 +59,7 @@ pub fn ActionFormAlert(
 #[component]
 pub fn ActionFormError(#[prop(into)] message: ViewFn, status: RwSignal<ActionFormStatus>) -> impl IntoView {
     view! {
-        <div class="pt-2 pb-2 has-[div:empty]:hidden" class:hidden=move || !status.get().is_error()>
+        <div class="py-2 has-[div:empty]:hidden" class:hidden=move || !status.get().is_error()>
             <div role="alert" class="alert alert-error">
                 {message.run()}
             </div>
