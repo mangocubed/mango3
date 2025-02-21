@@ -4,7 +4,9 @@ use leptos_router::components::{ParentRoute, Route, Router, Routes};
 use leptos_router::StaticSegment;
 
 use mango3_leptos_utils::async_t_string;
-use mango3_leptos_utils::components::*;
+use mango3_leptos_utils::components::{
+    AppProvider, AppTitle, BottomBar, Brand, FaviconLink, GoToMango3, LoadingOverlay, TopBar,
+};
 use mango3_leptos_utils::i18n::use_i18n;
 use mango3_leptos_utils::pages::NotFoundPage;
 use mango3_leptos_utils::utils::ToSignalTrait;
