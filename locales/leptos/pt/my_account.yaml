@@ -1,0 +1,19 @@
+are_you_sure_you_want_to_logout: Tem certeza que deseja sair?
+avatar_image: Imagem de avatar
+bio: Bio
+change_email: Alterar e-mail
+confirm_email: Confirmar e-mail
+confirmed: Confirmado
+current_email: E-mail atual
+current_password: Senha atual
+display_name: Nome de exibição
+edit_email: Editar e-mail
+edit_profile: Editar perfil
+email_confirmed_successfully: E-mail confirmado com sucesso
+email_updated_successfully: E-mail atualizado com sucesso
+failed_to_confirm_email: Falha ao confirmar e-mail
+failed_to_update_email: Falha ao atualizar e-mail
+failed_to_update_profile: Falha ao atualizar perfil
+logout: Sair
+send_confirmation_code: Enviar código de confirmação
+profile_updated_successfully: Perfil atualizado com sucesso
