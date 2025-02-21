@@ -96,7 +96,13 @@ pub fn PostPreviewModal(
             </div>
 
             <div class="flex justify-end mt-4">
-                <button on:click=move |_| is_open.set(false) class="btn btn-outline">
+                <button
+                    on:click=move |event| {
+                        event.prevent_default();
+                        is_open.set(false)
+                    }
+                    class="btn btn-outline"
+                >
                     {t!(i18n, studio.close_preview)}
                 </button>
             </div>
