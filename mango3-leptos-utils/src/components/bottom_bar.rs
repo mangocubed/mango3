@@ -5,7 +5,11 @@ use crate::context::{use_basic_config, use_color_mode_with_options, use_info, Us
 use crate::i18n::{t, use_i18n, Locale};
 use crate::icons::{ChevronUpMini, ComputerOutlined, MoonOutlined, SunOutlined};
 
-const LANGUAGES: [(&str, Locale); 2] = [("English", Locale::en), ("Español", Locale::es)];
+const LANGUAGES: [(&str, Locale); 3] = [
+    ("English", Locale::en),
+    ("Español", Locale::es),
+    ("Português", Locale::pt),
+];
 
 #[component]
 pub fn BottomBar(

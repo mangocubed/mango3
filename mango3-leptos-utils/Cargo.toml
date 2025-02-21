@@ -69,6 +69,6 @@ ssr = [
 
 [package.metadata.leptos-i18n]
 default = "en"
-locales = ["en", "es"]
+locales = ["en", "es", "pt"]
 namespaces = ["accounts", "admin", "home", "my_account", "shared", "studio", "websites"]
 locales-dir = "../locales/leptos"

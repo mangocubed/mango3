@@ -1,0 +1,61 @@
+about_us: Sobre nós
+accept: Aceitar
+birthdate: Data de nascimento
+cancel: Cancelar
+change_password: Alterar senha
+code: Código
+count_comments: "{{count}} comentários"
+count_days_ago: "há {{count}} dias"
+count_hours_ago: "há {{count}} horas"
+count_minutes_ago: "há {{count}} minutos"
+count_months_ago: "há {{count}} meses"
+count_reactions: "{{count}} reações"
+count_seconds_ago: "há {{count}} segundos"
+count_views: "{{count}} visualizações"
+count_weeks_ago: "há {{count}} semanas"
+count_years_ago: "há {{count}} anos"
+country: País
+copy_url: Copiar URL
+disabled: Desativado
+edited: editado
+email: E-mail
+failed_to_update_password: Falha ao atualizar senha
+full_name: Nome completo
+go_to_title: Ir para {{title}}
+home: Início
+login: Entrar
+more_than_a_day_ago: mais de um dia atrás
+more_than_an_hour_ago: mais de uma hora atrás
+more_than_a_month_ago: mais de um mês atrás
+more_than_a_week_ago: mais de uma semana atrás
+more_than_a_year_ago: mais de um ano atrás
+my_account: Minha conta
+new_password: Nova senha
+new_website: Novo website
+no_results_found: Nenhum resultado encontrado.
+on_subdomain: em {{subdomain}}
+one_comment: 1 comentário
+one_day_ago: há um dia
+one_hour_ago: há uma hora
+one_minute_ago: há um minuto
+one_month_ago: há um mês
+one_reaction: 1 reação
+one_second_ago: há um segundo
+one_view: 1 visualização
+one_week_ago: há uma semana
+one_year_ago: há um ano
+password: Senha
+password_updated_successfully: Senha atualizada com sucesso
+posts: Posts
+privacy_policy: Política de privacidade
+profile: Perfil
+register: Registrar
+remove: Remover
+search_results_for: Resultados da busca para “{{query}}”
+select: Selecionar
+studio: Studio
+submit: Enviar
+terms_of_service: Termos de serviço
+unpublished: Não publicado
+view_more: Ver mais
+view_source_code: Ver código fonte

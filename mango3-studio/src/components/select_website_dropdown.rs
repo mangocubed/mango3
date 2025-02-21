@@ -31,7 +31,7 @@ pub fn SelectWebsiteDropdown(orientation: Orientation) -> impl IntoView {
                             },
                         )
                     }
-                    None => Either::Right(t!(i18n, studio.select)),
+                    None => Either::Right(t!(i18n, shared.select)),
                 }}
 
                 <ChevronDownMini />

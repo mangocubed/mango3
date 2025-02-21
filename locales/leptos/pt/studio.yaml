@@ -1,0 +1,34 @@
+add_item: Adicionar item
+are_you_sure_you_want_to_delete_this_post: Tem certeza que deseja excluir esta postagem?
+attached_images: Imagens anexadas
+close_preview: Fechar visualização
+content: Conteúdo
+cover_image: Imagem de capa
+dark_theme: Tema escuro
+delete: Excluir
+edit: Editar
+edit_post: Editar postagem
+failed_to_create_post: Falha ao criar postagem
+failed_to_create_website: Falha ao criar website
+failed_to_save_navigation: Falha ao salvar navegação
+failed_to_update_post: Falha ao atualizar postagem
+failed_to_update_website: Falha ao atualizar website
+description: Descrição
+icon_image: Imagem do ícone
+light_theme: Tema claro
+my_websites: Meus websites
+name: Nome
+navigation: Navegação
+navigation_saved_successfully: Navegação salva com sucesso
+new_post: Nova postagem
+post_created_successfully: Postagem criada com sucesso
+post_updated_successfully: Postagem atualizada com sucesso
+preview: Visualizar
+publish: Publicar
+slug: Slug
+subdomain: Subdomínio
+title: Título
+url: URL
+variables: Variáveis
+website_created_successfully: Website criado com sucesso
+website_updated_successfully: Website atualizado com sucesso

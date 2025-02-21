@@ -29,7 +29,7 @@ pub fn IndexPage() -> impl IntoView {
                         actions=move || {
                             view! {
                                 <a class="btn btn-ghost font-bold" href=format!("/websites/{}", website.id)>
-                                    {t!(i18n, studio.select)}
+                                    {t!(i18n, shared.select)}
                                 </a>
                             }
                         }
