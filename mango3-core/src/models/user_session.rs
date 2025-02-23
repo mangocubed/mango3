@@ -8,18 +8,20 @@ use sqlx::types::chrono::{DateTime, Utc};
 use sqlx::types::Uuid;
 use sqlx::{query, query_as};
 
-use crate::constants::PREFIX_GET_USER_SESSION_BY_ID;
-use crate::enums::MailerJobCommand;
+use crate::constants::{KEY_TEXT_CONFIRM_YOUR_LOGIN, PREFIX_GET_USER_SESSION_BY_ID};
+use crate::enums::{Input, InputError, MailerJobCommand};
 use crate::models::async_redis_cache;
-use crate::validator::ValidationErrors;
+use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
 use crate::CoreContext;
 
-use super::{AsyncRedisCacheTrait, User};
+use super::{AsyncRedisCacheTrait, ConfirmationCode, User};
 
 #[derive(Clone, Deserialize, Serialize)]
 pub struct UserSession {
     pub id: Uuid,
     pub user_id: Uuid,
+    pub confirmation_code_id: Option<Uuid>,
+    pub confirmed_at: Option<DateTime<Utc>>,
     pub created_at: DateTime<Utc>,
     pub updated_at: Option<DateTime<Utc>>,
 }
@@ -36,6 +38,53 @@ impl UserSession {
             .fetch_all(&core_context.db_pool)
             .await
             .unwrap_or_default()
+    }
+
+    pub async fn confirm(&self, core_context: &CoreContext, code: &str) -> Result<Self, ValidationErrors> {
+        let mut validator = Validator::default();
+
+        if validator.validate_presence(Input::Code, code) {
+            let confirmation_code = self
+                .confirmation_code(core_context)
+                .await
+                .ok_or_else(ValidationErrors::default)?
+                .map_err(|_| ValidationErrors::default())?;
+            let code_is_verified = confirmation_code.verify_code(core_context, code).await;
+
+            validator.custom_validation(Input::Code, InputError::IsInvalid, &|| code_is_verified);
+        }
+
+        if !validator.is_valid {
+            return Err(validator.errors);
+        }
+
+        let result = query_as!(
+            Self,
+            r#"UPDATE user_sessions SET confirmation_code_id = NULL, confirmed_at = current_timestamp
+            WHERE confirmed_at IS NULL AND id = $1 RETURNING *"#,
+            self.id, // $1
+        )
+        .fetch_one(&core_context.db_pool)
+        .await;
+
+        match result {
+            Ok(user_session) => {
+                if let Ok(user) = user_session.user(core_context).await {
+                    core_context.jobs.mailer(&user, MailerJobCommand::NewUserSession).await;
+                }
+
+                Ok(user_session)
+            }
+            Err(_) => Err(ValidationErrors::default()),
+        }
+    }
+
+    pub async fn confirmation_code(&self, core_context: &CoreContext) -> Option<sqlx::Result<ConfirmationCode>> {
+        if let Some(confirmation_code_id) = self.confirmation_code_id {
+            Some(ConfirmationCode::get_by_id(core_context, confirmation_code_id).await)
+        } else {
+            None
+        }
     }
 
     pub async fn delete(&self, core_context: &CoreContext) -> Result<(), ValidationErrors> {
@@ -64,34 +113,61 @@ impl UserSession {
         Ok(())
     }
 
-    pub async fn exists(core_context: &CoreContext, id: Uuid) -> bool {
-        query!("SELECT id FROM user_sessions WHERE id = $1 LIMIT 1", id)
-            .fetch_one(&core_context.db_pool)
-            .await
-            .is_ok()
+    pub async fn get_by_confirmation_code(
+        core_context: &CoreContext,
+        confirmation_code: &ConfirmationCode,
+    ) -> sqlx::Result<Self> {
+        query_as!(
+            Self,
+            "SELECT * FROM user_sessions WHERE confirmed_at IS NULL AND confirmation_code_id = $1 LIMIT 1",
+            confirmation_code.id
+        )
+        .fetch_one(&core_context.db_pool)
+        .await
     }
 
     pub async fn get_by_id(core_context: &CoreContext, id: Uuid) -> Result<Self, sqlx::Error> {
         get_user_session_by_id(core_context, id).await
     }
 
-    pub async fn insert(core_context: &CoreContext, user: &User) -> Result<Self, ValidationErrors> {
+    pub async fn insert(
+        core_context: &CoreContext,
+        user: &User,
+        force_confirmation: bool,
+    ) -> Result<Self, ValidationErrors> {
+        let confirmation_code_id = if !force_confirmation && user.email_is_confirmed() {
+            let action = user.i18n().text(KEY_TEXT_CONFIRM_YOUR_LOGIN);
+
+            Some(ConfirmationCode::insert(core_context, user, &action).await?.id)
+        } else {
+            None
+        };
+
         let result = query_as!(
             Self,
-            "INSERT INTO user_sessions (user_id) VALUES ($1) RETURNING *",
-            user.id,
+            "INSERT INTO user_sessions (user_id, confirmation_code_id, confirmed_at)
+            VALUES ($1, $2, CASE WHEN $2::uuid IS NULL THEN current_timestamp ELSE NULL END)
+            RETURNING *",
+            user.id,              // $1
+            confirmation_code_id, // $2
         )
         .fetch_one(&core_context.db_pool)
         .await;
 
         match result {
             Ok(user_session) => {
-                core_context.jobs.mailer(user, MailerJobCommand::NewUserSession).await;
+                if user_session.is_confirmed() {
+                    core_context.jobs.mailer(user, MailerJobCommand::NewUserSession).await;
+                }
 
                 Ok(user_session)
             }
             Err(_) => Err(ValidationErrors::default()),
         }
+    }
+
+    pub fn is_confirmed(&self) -> bool {
+        self.confirmed_at.is_some()
     }
 
     pub async fn user(&self, core_context: &CoreContext) -> Result<User, sqlx::Error> {
@@ -106,7 +182,11 @@ impl UserSession {
     create = r##" { async_redis_cache(PREFIX_GET_USER_SESSION_BY_ID).await } "##
 )]
 pub(crate) async fn get_user_session_by_id(core_context: &CoreContext, id: Uuid) -> Result<UserSession, sqlx::Error> {
-    query_as!(UserSession, "SELECT * FROM user_sessions WHERE id = $1 LIMIT 1", id)
-        .fetch_one(&core_context.db_pool)
-        .await
+    query_as!(
+        UserSession,
+        "SELECT * FROM user_sessions WHERE confirmed_at IS NOT NULL AND id = $1 LIMIT 1",
+        id
+    )
+    .fetch_one(&core_context.db_pool)
+    .await
 }

@@ -130,22 +130,13 @@ pub fn TopBar(
                                 } else {
                                     Either::Right(
                                         view! {
-                                            <div class="dropdown dropdown-end dropdown-hover">
-                                                <a class="btn" href=basic_config.login_url.clone() tabindex="1">
-                                                    {t!(i18n, shared.login)}
-                                                </a>
-
-                                                <ul
-                                                    tabindex="1"
-                                                    class="dropdown-content menu bg-base-100 rounded-box z-[1] p-2 shadow"
-                                                >
-                                                    <li>
-                                                        <a href=basic_config
-                                                            .register_url
-                                                            .clone()>{t!(i18n, shared.register)}</a>
-                                                    </li>
-                                                </ul>
-                                            </div>
+                                            <a
+                                                class="btn btn-ghost btn-block px-2"
+                                                href=basic_config.login_url.clone()
+                                                tabindex="1"
+                                            >
+                                                {t!(i18n, shared.login)}
+                                            </a>
                                         },
                                     )
                                 }

@@ -10,8 +10,10 @@ use mango3_core::CoreContext;
 
 use crate::context::use_language_cookie;
 
+mod confirmation_codes;
 mod user_sessions;
 
+pub use confirmation_codes::*;
 pub use user_sessions::*;
 
 pub async fn extract_client_ip() -> Result<String, ServerFnError> {

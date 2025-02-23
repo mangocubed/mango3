@@ -1,5 +1,6 @@
 by-default-all-user-accounts-are-disabled-but-we-will-let-you-know-when-your-account-is-enabled = Por defecto, todas las cuentas de usuario están deshabilitadas, pero te informaremos cuando tu cuenta esté habilitada
 confirm-your-email = Confirmar tu correo electrónico
+confirm-your-login = Confirmar tu inicio de sesión
 if-not-please-contact-us-at-the-following-email-address = Si no, por favor contáctenos a la siguiente dirección de correo electrónico
 if-you-have-any-questions-please-contact-us-at-the-following-email-address = Si tienes alguna pregunta, por favor contáctenos a la siguiente dirección de correo electrónico
 if-you-recognize-this-action-you-can-ignore-this-message = Si reconoces esta acción, puedes ignorar este mensaje

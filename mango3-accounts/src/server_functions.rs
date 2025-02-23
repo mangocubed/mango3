@@ -8,9 +8,78 @@ use mango3_leptos_utils::models::ActionFormResp;
 #[cfg(feature = "ssr")]
 use mango3_core::config::BASIC_CONFIG;
 #[cfg(feature = "ssr")]
-use mango3_core::models::{InvitationCode, User, UserPasswordReset};
+use mango3_core::models::{InvitationCode, User, UserPasswordReset, UserSession};
 #[cfg(feature = "ssr")]
-use mango3_leptos_utils::ssr::{expect_core_context, extract_i18n, require_no_authentication};
+use mango3_leptos_utils::ssr::{
+    expect_core_context, extract_confirmation_code, extract_i18n, finish_confirmation_code, require_no_authentication,
+    start_confirmation_code, start_user_session,
+};
+
+use crate::models::UserSessionResp;
+
+#[server]
+pub async fn attempt_to_confirm_login(code: String) -> Result<ActionFormResp, ServerFnError> {
+    let i18n = extract_i18n().await?;
+
+    if !require_no_authentication().await? {
+        return ActionFormResp::new_with_error(&i18n);
+    };
+
+    let Some(confirmation_code) = extract_confirmation_code().await? else {
+        return ActionFormResp::new_with_error(&i18n);
+    };
+
+    let core_context = expect_core_context();
+
+    let user_session = UserSession::get_by_confirmation_code(&core_context, &confirmation_code).await?;
+
+    let result = user_session.confirm(&core_context, &code).await;
+
+    match result {
+        Ok(ref user_session) => {
+            let _ = start_user_session(&core_context, &user_session).await;
+            let _ = finish_confirmation_code().await;
+
+            ActionFormResp::new(&i18n, result)
+        }
+        _ => ActionFormResp::new_with_error(&i18n),
+    }
+}
+
+#[server]
+pub async fn attempt_to_login(
+    username_or_email: String,
+    password: String,
+) -> Result<ActionFormResp<UserSessionResp>, ServerFnError> {
+    let i18n = extract_i18n().await?;
+
+    if !require_no_authentication().await? {
+        return ActionFormResp::new_with_error(&i18n);
+    }
+
+    let core_context = expect_core_context();
+
+    let Ok(user) = User::authenticate(&core_context, &username_or_email, &password).await else {
+        return ActionFormResp::new_with_error(&i18n);
+    };
+
+    let result = UserSession::insert(&core_context, &user, false).await;
+
+    match result {
+        Ok(ref user_session) => {
+            let user_session_resp = UserSessionResp::from(user_session);
+
+            if let Some(Ok(confirmation_code)) = user_session.confirmation_code(&core_context).await {
+                let _ = start_confirmation_code(&confirmation_code).await;
+            } else {
+                let _ = start_user_session(&core_context, &user_session).await;
+            }
+
+            ActionFormResp::new_with_data(&i18n, result, user_session_resp)
+        }
+        _ => ActionFormResp::new_with_error(&i18n),
+    }
+}
 
 #[server]
 pub async fn attempt_to_register(
@@ -22,9 +91,6 @@ pub async fn attempt_to_register(
     birthdate: String,
     country_alpha2: String,
 ) -> Result<ActionFormResp, ServerFnError> {
-    use mango3_core::models::User;
-    use mango3_leptos_utils::ssr::{expect_core_context, extract_i18n, require_no_authentication, start_user_session};
-
     let i18n = extract_i18n().await?;
 
     if !require_no_authentication().await? {
@@ -56,7 +122,9 @@ pub async fn attempt_to_register(
     .await;
 
     if let Ok(ref user) = result {
-        start_user_session(&core_context, &user).await?;
+        if let Ok(user_session) = UserSession::insert(&core_context, &user, true).await {
+            let _ = start_user_session(&core_context, &user_session).await?;
+        }
 
         if let Some(invitation_code) = invitation_code {
             let _ = invitation_code.delete(&core_context).await;
@@ -67,7 +135,9 @@ pub async fn attempt_to_register(
 }
 
 #[server]
-pub async fn attempt_to_send_password_reset_code(username_or_email: String) -> Result<ActionFormResp, ServerFnError> {
+pub async fn attempt_to_send_password_reset_code(
+    username_or_email: String,
+) -> Result<ActionFormResp<()>, ServerFnError> {
     let i18n = extract_i18n().await?;
 
     if !require_no_authentication().await? {
@@ -91,7 +161,7 @@ pub async fn attempt_to_update_password_with_code(
     username_or_email: String,
     code: String,
     new_password: String,
-) -> Result<ActionFormResp, ServerFnError> {
+) -> Result<ActionFormResp<()>, ServerFnError> {
     let i18n = extract_i18n().await?;
 
     if !require_no_authentication().await? {

@@ -1,5 +1,6 @@
 by-default-all-user-accounts-are-disabled-but-we-will-let-you-know-when-your-account-is-enabled = By default, all user accounts are disabled, but we will let you know when your account is enabled
 confirm-your-email = Confirm your email
+confirm-your-login = Confirm your login
 if-not-please-contact-us-at-the-following-email-address = If not, please contact us at the following email address
 if-you-have-any-questions-please-contact-us-at-the-following-email-address = If you have any questions, please contact us at the following email address
 if-you-recognize-this-action-you-can-ignore-this-message = If you recognize this action, you can ignore this message

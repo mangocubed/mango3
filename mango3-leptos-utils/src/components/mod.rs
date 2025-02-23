@@ -39,7 +39,9 @@ mod user_card;
 mod user_tag;
 mod website_card;
 
-pub use action_form_alert::{ActionFormAlert, ActionFormError};
+pub mod forms;
+
+pub use action_form_alert::{ActionFormAlert, ActionFormError, SuccessModal};
 pub use alert_modal::AlertModal;
 pub use app_provider::AppProvider;
 pub use authentication::{RequireAuthentication, RequireNoAuthentication};

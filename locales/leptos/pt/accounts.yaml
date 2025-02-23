@@ -1,7 +1,10 @@
+a_confirmation_code_has_been_sent_to_your_email_address: Um código de confirmação foi enviado para seu endereço de e-mail
 accounts: Contas
 back_to_login: Voltar ao login
 by_submitting_this_form_you_agree_to_the_following: Ao enviar este formulário, você concorda com o seguinte
+confirm_login: Confirmar login
 failed_to_authenticate_user: Falha ao autenticar usuário
+failed_to_confirm_login: Falha ao confirmar login
 failed_to_create_user: Falha ao criar usuário
 failed_to_get_invitation: Falha ao obter convite
 failed_to_send_password_reset_code: Falha ao enviar código de redefinição de senha
