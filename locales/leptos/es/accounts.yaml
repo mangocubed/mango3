@@ -1,7 +1,10 @@
+a_confirmation_code_has_been_sent_to_your_email_address: Un código de confirmación ha sido enviado a su dirección de correo electrónico
 accounts: Cuentas
 back_to_login: Volver a inicio de sesión
 by_submitting_this_form_you_agree_to_the_following: Al enviar este formulario, usted acepta lo siguiente
+confirm_login: Confirmar inicio de sesión
 failed_to_authenticate_user: Error al autenticar usuario
+failed_to_confirm_login: Error al confirmar inicio de sesión
 failed_to_create_user: Error al crear usuario
 failed_to_send_password_reset_code: Error al enviar código de reinicio de contraseña
 failed_to_get_invitation: Error al obtener invitación

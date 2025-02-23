@@ -36,7 +36,7 @@ pub async fn extract_user_session() -> Result<Option<UserSession>, ServerFnError
     Ok(UserSession::get_by_id(&core_context, id).await.ok())
 }
 
-pub async fn finish_user_session(core_context: &CoreContext) -> Result<(), ServerFnError> {
+pub async fn finish_and_delete_user_session(core_context: &CoreContext) -> Result<(), ServerFnError> {
     let Some(user_session) = extract_user_session().await? else {
         return Ok(());
     };
@@ -48,7 +48,7 @@ pub async fn finish_user_session(core_context: &CoreContext) -> Result<(), Serve
     user_session
         .delete(&core_context)
         .await
-        .map_err(|_| ServerFnError::new("Could not finish user session.".to_owned()))?;
+        .map_err(|_| ServerFnError::new("Could not delete user session.".to_owned()))?;
 
     let session = extract_session().await?;
 
@@ -81,17 +81,15 @@ pub async fn require_no_authentication() -> Result<bool, ServerFnError> {
     Ok(true)
 }
 
-pub async fn start_user_session(core_context: &CoreContext, user: &User) -> Result<UserSession, ServerFnError> {
+pub async fn start_user_session(core_context: &CoreContext, user_session: &UserSession) -> Result<(), ServerFnError> {
+    let user = user_session.user(core_context).await?;
+
     let session = extract_session().await?;
     let (_, set_cookie_lang) = use_language_cookie::<FromToStringCodec>();
-
-    let user_session = UserSession::insert(&core_context, user)
-        .await
-        .map_err(|_| ServerFnError::new("Could not start user session.".to_owned()))?;
 
     session.insert(KEY_USER_SESSION_ID, user_session.id).await?;
 
     set_cookie_lang.set(Locale::from_str(&user.language_code).ok());
 
-    Ok(user_session)
+    Ok(())
 }

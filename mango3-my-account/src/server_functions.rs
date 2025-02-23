@@ -10,7 +10,9 @@ use mango3_core::models::Blob;
 #[cfg(feature = "ssr")]
 use mango3_leptos_utils::models::FromCore;
 #[cfg(feature = "ssr")]
-use mango3_leptos_utils::ssr::*;
+use mango3_leptos_utils::ssr::{
+    expect_core_context, extract_i18n, extract_user, finish_and_delete_user_session, require_authentication,
+};
 
 #[server]
 pub async fn attempt_to_confirm_email(code: String) -> Result<ActionFormResp, ServerFnError> {
@@ -36,7 +38,7 @@ pub async fn attempt_to_logout() -> Result<(), ServerFnError> {
 
     let core_context = expect_core_context();
 
-    finish_user_session(&core_context).await?;
+    finish_and_delete_user_session(&core_context).await?;
 
     Ok(())
 }

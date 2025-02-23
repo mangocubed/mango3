@@ -1,7 +1,10 @@
+a_confirmation_code_has_been_sent_to_your_email_address: A confirmation code has been sent to your email address
 accounts: Accounts
 back_to_login: Back to login
 by_submitting_this_form_you_agree_to_the_following: By submitting this form, you agree to the following
+confirm_login: Confirm login
 failed_to_authenticate_user: Failed to authenticate user
+failed_to_confirm_login: Failed to confirm login
 failed_to_create_user: Failed to create user
 failed_to_get_invitation: Failed to get invitation
 failed_to_send_password_reset_code: Failed to send password reset code
