@@ -6,12 +6,15 @@ use uuid::Uuid;
 use mango3_leptos_utils::models::{ActionFormResp, UserProfileResp};
 
 #[cfg(feature = "ssr")]
+use mango3_core::enums::ConfirmationCodeAction;
+#[cfg(feature = "ssr")]
 use mango3_core::models::Blob;
 #[cfg(feature = "ssr")]
 use mango3_leptos_utils::models::FromCore;
 #[cfg(feature = "ssr")]
 use mango3_leptos_utils::ssr::{
-    expect_core_context, extract_i18n, extract_user, finish_and_delete_user_session, require_authentication,
+    expect_core_context, extract_confirmation_code, extract_i18n, extract_user, finish_and_delete_user_session,
+    require_authentication, start_confirmation_code,
 };
 
 #[server]
@@ -22,10 +25,25 @@ pub async fn attempt_to_confirm_email(code: String) -> Result<ActionFormResp, Se
         return ActionFormResp::new_with_error(&i18n);
     };
 
+    let Some(confirmation_code) = extract_confirmation_code().await? else {
+        return ActionFormResp::new_with_error(&i18n);
+    };
+
     let core_context = expect_core_context();
     let user = extract_user().await?.unwrap();
 
-    let result = user.confirm_email(&core_context, &code).await;
+    let result = confirmation_code
+        .confirm(
+            &core_context.clone(),
+            ConfirmationCodeAction::EmailConfirmation,
+            &code,
+            || {
+                let core_context = core_context.clone();
+                let user = user.clone();
+                async move { user.confirm_email(&core_context).await.map(|_| ()) }
+            },
+        )
+        .await;
 
     ActionFormResp::new(&i18n, result)
 }
@@ -55,6 +73,10 @@ pub async fn attempt_to_send_email_confirmation_code() -> Result<ActionFormResp,
     let user = extract_user().await?.unwrap();
 
     let result = user.send_email_confirmation_code(&core_context).await;
+
+    if let Ok(ref confirmation_code) = result {
+        let _ = start_confirmation_code(&confirmation_code).await;
+    }
 
     ActionFormResp::new(&i18n, result)
 }

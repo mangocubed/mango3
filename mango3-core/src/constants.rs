@@ -156,10 +156,6 @@ pub(crate) static REGEX_USERNAME: LazyLock<Regex> =
 
 pub(crate) const HASHTAG_LOOKAROUND: [Option<&str>; 3] = [Some(" "), Some("\n"), None];
 
-pub(crate) const KEY_TEXT_CONFIRM_YOUR_EMAIL: &str = "confirm-your-email";
-pub(crate) const KEY_TEXT_CONFIRM_YOUR_LOGIN: &str = "confirm-your-login";
-pub(crate) const KEY_TEXT_RESET_YOUR_PASSWORD: &str = "reset-your-password";
-
 pub(crate) const PREFIX_GET_BLOB_BY_ID: &str = "get_blob_by_id";
 pub(crate) const PREFIX_GET_POST_BY_ID: &str = "get_post_by_id";
 pub(crate) const PREFIX_GET_POST_BY_SLUG: &str = "get_post_by_slug";

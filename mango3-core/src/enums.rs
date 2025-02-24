@@ -4,6 +4,14 @@ use serde::{Deserialize, Serialize};
 
 use crate::models::User;
 
+#[derive(sqlx::Type, Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[sqlx(type_name = "confirmation_code_action", rename_all = "snake_case")]
+pub enum ConfirmationCodeAction {
+    EmailConfirmation,
+    LoginConfirmation,
+    PasswordReset,
+}
+
 #[derive(Debug, Deserialize, Serialize)]
 pub enum GuestMailerJobCommand {
     InvitationCode(String),
@@ -50,7 +58,10 @@ pub enum InputError {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub enum MailerJobCommand {
-    ConfirmationCode { action: String, code: String },
+    ConfirmationCode {
+        action: ConfirmationCodeAction,
+        code: String,
+    },
     Enabled,
     NewUserSession,
     Disabled,

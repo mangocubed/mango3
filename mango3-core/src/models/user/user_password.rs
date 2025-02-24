@@ -1,7 +1,6 @@
 use sqlx::query_as;
 
-use crate::enums::{Input, InputError, UserRole};
-use crate::models::user_password_reset::UserPasswordReset;
+use crate::enums::{ConfirmationCodeAction, Input, InputError, UserRole};
 use crate::models::{encrypt_password, verify_password, ConfirmationCode};
 use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
 use crate::CoreContext;
@@ -9,15 +8,69 @@ use crate::CoreContext;
 use super::User;
 
 impl User {
-    pub async fn password_reset(&self, core_context: &CoreContext) -> sqlx::Result<UserPasswordReset> {
-        UserPasswordReset::get_by_user(core_context, self).await
+    pub async fn reset_password(
+        &self,
+        core_context: &CoreContext,
+        new_password: &str,
+    ) -> Result<Self, ValidationErrors> {
+        let mut validator = Validator::default();
+
+        validator.validate_password(Input::NewPassword, new_password);
+
+        if !validator.is_valid {
+            return Err(validator.errors);
+        }
+
+        let encrypted_password = encrypt_password(new_password);
+
+        let result = query_as!(
+            Self,
+            r#"UPDATE users SET encrypted_password = $2 WHERE disabled_at IS NULL AND id = $1
+                RETURNING
+                    id,
+                    username,
+                    email,
+                    email_confirmed_at,
+                    encrypted_password,
+                    display_name,
+                    full_name,
+                    birthdate,
+                    language_code,
+                    country_alpha2,
+                    bio,
+                    hashtag_ids,
+                    avatar_image_blob_id,
+                    role as "role!: UserRole",
+                    disabled_at,
+                    created_at,
+                    updated_at"#,
+            self.id,            // $1
+            encrypted_password, // $2
+        )
+        .fetch_one(&core_context.db_pool)
+        .await;
+
+        match result {
+            Ok(user) => {
+                user.cache_remove().await;
+
+                Ok(user)
+            }
+            Err(_) => Err(ValidationErrors::default()),
+        }
     }
 
-    pub async fn password_reset_confirmation_code(&self, core_context: &CoreContext) -> sqlx::Result<ConfirmationCode> {
-        self.password_reset(core_context)
-            .await?
-            .confirmation_code(core_context)
+    pub async fn send_password_reset_code(
+        &self,
+        core_context: &CoreContext,
+    ) -> Result<ConfirmationCode, ValidationErrors> {
+        if !self.email_is_confirmed() {
+            return Err(ValidationErrors::default());
+        }
+
+        ConfirmationCode::insert(core_context, self, ConfirmationCodeAction::PasswordReset)
             .await
+            .map_err(|_| ValidationErrors::default())
     }
 
     pub async fn update_password(
@@ -52,7 +105,6 @@ impl User {
                 id,
                 username,
                 email,
-                email_confirmation_code_id,
                 email_confirmed_at,
                 encrypted_password,
                 display_name,
@@ -75,73 +127,6 @@ impl User {
 
         match result {
             Ok(user) => {
-                user.cache_remove().await;
-
-                Ok(user)
-            }
-            Err(_) => Err(ValidationErrors::default()),
-        }
-    }
-
-    pub async fn update_password_with_code(
-        &self,
-        core_context: &CoreContext,
-        code: &str,
-        new_password: &str,
-    ) -> Result<Self, ValidationErrors> {
-        let mut validator = Validator::default();
-
-        let confirmation_code = self
-            .password_reset_confirmation_code(core_context)
-            .await
-            .map_err(|_| ValidationErrors::default())?;
-
-        if validator.validate_presence(Input::Code, code) {
-            let code_is_verified = confirmation_code.verify_code(core_context, code).await;
-
-            validator.custom_validation(Input::Code, InputError::IsInvalid, &|| code_is_verified);
-        }
-
-        validator.validate_password(Input::NewPassword, new_password);
-
-        if !validator.is_valid {
-            return Err(validator.errors);
-        }
-
-        let encrypted_password = encrypt_password(new_password);
-
-        let result = query_as!(
-            Self,
-            r#"UPDATE users SET encrypted_password = $2 WHERE disabled_at IS NULL AND id = $1
-            RETURNING
-                id,
-                username,
-                email,
-                email_confirmation_code_id,
-                email_confirmed_at,
-                encrypted_password,
-                display_name,
-                full_name,
-                birthdate,
-                language_code,
-                country_alpha2,
-                bio,
-                hashtag_ids,
-                avatar_image_blob_id,
-                role as "role!: UserRole",
-                disabled_at,
-                created_at,
-                updated_at"#,
-            self.id,            // $1
-            encrypted_password, // $2
-        )
-        .fetch_one(&core_context.db_pool)
-        .await;
-
-        match result {
-            Ok(user) => {
-                let _ = confirmation_code.delete(core_context).await;
-
                 user.cache_remove().await;
 
                 Ok(user)
