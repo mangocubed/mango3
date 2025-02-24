@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.0.0-alpha.11] - 2025-02-24
+
+### Added
+
+- Portuguese translations. (https://github.com/mangocubed/mango3/pull/236)
+- Show alert when email is unconfirmed. (https://github.com/mangocubed/mango3/pull/237)
+- 2FA with email. (https://github.com/mangocubed/mango3/pull/238)
+- Delete expired confirmation codes. (https://github.com/mangocubed/mango3/pull/239)
+
+### Changed
+
+- Bump serde from 1.0.217 to 1.0.218. (https://github.com/mangocubed/mango3/pull/235)
+- Bump lettre from 0.11.13 to 0.11.14. (https://github.com/mangocubed/mango3/pull/240)
+- Bump @types/node from 22.13.4 to 22.13.5. (https://github.com/mangocubed/mango3/pull/242)
+- Refactor confirmation codes. (https://github.com/mangocubed/mango3/pull/243)
+
+### Fixed
+
+- Prevent submitting post when closing preview modal. (https://github.com/mangocubed/mango3/pull/234)
+
 ## [0.0.0-alpha.10] - 2025-02-20
 
 ### Added
