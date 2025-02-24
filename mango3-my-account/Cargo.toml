@@ -15,7 +15,7 @@ leptos_router = { workspace = true }
 tokio = { workspace = true, optional = true }
 uuid = { workspace = true, optional = true }
 wasm-bindgen = { workspace = true }
-web-sys = { version = "0.3.77" }
+web-sys = { workspace = true }
 mango3-core = { workspace = true, optional = true }
 mango3-leptos-utils = { workspace = true }
 
