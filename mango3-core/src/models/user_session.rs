@@ -113,6 +113,14 @@ impl UserSession {
         Ok(())
     }
 
+    pub async fn delete_all_expired(core_context: &CoreContext) -> Result<(), ValidationErrors> {
+        query!("DELETE FROM user_sessions WHERE confirmed_at IS NULL AND created_at < current_timestamp - INTERVAL '1 hour'")
+            .execute(&core_context.db_pool)
+            .await
+            .map(|_| ())
+            .map_err(|_| ValidationErrors::default())
+    }
+
     pub async fn get_by_confirmation_code(
         core_context: &CoreContext,
         confirmation_code: &ConfirmationCode,

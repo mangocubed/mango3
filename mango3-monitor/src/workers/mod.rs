@@ -7,10 +7,12 @@ use mango3_core::config::MAILER_CONFIG;
 mod admin_mailer_worker;
 mod guest_mailer_worker;
 mod mailer_worker;
+mod scheduled_worker;
 
 pub use admin_mailer_worker::admin_mailer_worker;
 pub use guest_mailer_worker::guest_mailer_worker;
 pub use mailer_worker::mailer_worker;
+pub use scheduled_worker::scheduled_worker;
 
 async fn send_email(to: &str, subject: &str, body: &str) {
     if !MAILER_CONFIG.enable {
