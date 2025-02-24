@@ -8,7 +8,7 @@ anyhow = "1.0.95"
 apalis = { workspace = true, features = ["limit"] }
 apalis-cron = "0.6.4"
 chrono = { workspace = true }
-lettre = { version = "0.11.13", features = [
+lettre = { version = "0.11.14", features = [
     "smtp-transport",
     "tokio1-native-tls",
 ] }
