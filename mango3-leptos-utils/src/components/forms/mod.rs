@@ -19,10 +19,10 @@ pub fn ActionFormErrorAlert(#[prop(into)] is_active: Signal<bool>, #[prop(into)]
 pub fn ActionFormSuccessModal(
     is_open: RwSignal<bool>,
     #[prop(into)] message: ViewFn,
-    #[prop(into)] on_close: Callback<()>,
+    #[prop(optional, into)] on_close: Option<Callback<()>>,
 ) -> impl IntoView {
     view! {
-        <Modal is_closable=false is_open=is_open on_close=on_close>
+        <Modal is_closable=false is_open=is_open>
             <div>{message.run()}</div>
             <div class="modal-action">
                 <button
@@ -30,7 +30,9 @@ pub fn ActionFormSuccessModal(
                     on:click=move |event| {
                         event.prevent_default();
                         is_open.set(false);
-                        on_close.run(());
+                        if let Some(oc) = on_close {
+                            oc.run(())
+                        }
                     }
                 >
                     "Ok"

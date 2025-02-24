@@ -1,52 +1,50 @@
 use leptos::prelude::*;
 
-use mango3_leptos_utils::components::{
-    ActionFormAlert, ActionFormError, Modal, PasswordField, SubmitButton, TextField,
-};
-use mango3_leptos_utils::enums::ActionFormStatus;
+use mango3_leptos_utils::components::forms::ActionFormErrorAlert;
+use mango3_leptos_utils::components::{Modal, PasswordField, SubmitButton, TextField};
 use mango3_leptos_utils::i18n::{t, use_i18n};
+use mango3_leptos_utils::icons::InformationCircleOutlined;
 use mango3_leptos_utils::models::ActionFormResp;
 
-use crate::server_functions::AttemptToUpdatePasswordWithCode;
+use crate::server_functions::AttemptToResetPassword;
 
 #[component]
-pub fn ResetPasswordModal(
-    #[prop(into)] username_or_email: Signal<String>,
-    #[prop(into)] is_open: RwSignal<bool>,
-) -> impl IntoView {
+pub fn ResetPasswordModal(is_open: RwSignal<bool>, #[prop(into)] on_success: Callback<()>) -> impl IntoView {
     let i18n = use_i18n();
-    let server_action = ServerAction::<AttemptToUpdatePasswordWithCode>::new();
+    let server_action = ServerAction::<AttemptToResetPassword>::new();
     let action_value = server_action.value();
-    let status = RwSignal::new(ActionFormStatus::Pending);
+    let error_alert_is_active = RwSignal::new(false);
     let error_code = RwSignal::new(None);
     let error_new_password = RwSignal::new(None);
 
     Effect::new(move || {
         let response = ActionFormResp::from(action_value);
 
-        if let Some(true) = response.success {
+        if response.is_success() {
             is_open.set(false);
+            on_success.run(());
         }
 
+        error_alert_is_active.set(response.is_invalid());
         error_code.set(response.error("code"));
         error_new_password.set(response.error("new-password"));
     });
 
     view! {
-        <ActionFormAlert
-            action_value=action_value
-            redirect_to="/login"
-            status=status
-            success_message=move || t!(i18n, shared.password_updated_successfully)
-        />
-
         <Modal is_open=is_open>
             <h4 class="text-lg font-bold">{t!(i18n, shared.change_password)}</h4>
 
-            <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
-                <ActionFormError message=move || t!(i18n, shared.failed_to_update_password) status=status />
+            <div role="alert" class="alert mt-4">
+                <InformationCircleOutlined class="self-start my-2" />
 
-                <input type="hidden" name="username_or_email" value=username_or_email />
+                <div>{t!(i18n, accounts.a_confirmation_code_has_been_sent_to_your_email_address)}"."</div>
+            </div>
+
+            <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
+                <ActionFormErrorAlert
+                    is_active=error_alert_is_active
+                    message=move || t!(i18n, shared.failed_to_update_password)
+                />
 
                 <TextField label=move || t!(i18n, shared.code) name="code" error=error_code />
 

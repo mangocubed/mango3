@@ -13,7 +13,6 @@ impl User {
                 id,
                 username,
                 email,
-                email_confirmation_code_id,
                 email_confirmed_at,
                 encrypted_password,
                 display_name,

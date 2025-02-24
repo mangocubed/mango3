@@ -8,14 +8,14 @@ use mango3_leptos_utils::models::ActionFormResp;
 #[cfg(feature = "ssr")]
 use mango3_core::config::BASIC_CONFIG;
 #[cfg(feature = "ssr")]
-use mango3_core::models::{InvitationCode, User, UserPasswordReset, UserSession};
+use mango3_core::enums::ConfirmationCodeAction;
+#[cfg(feature = "ssr")]
+use mango3_core::models::{InvitationCode, User, UserSession};
 #[cfg(feature = "ssr")]
 use mango3_leptos_utils::ssr::{
     expect_core_context, extract_confirmation_code, extract_i18n, finish_confirmation_code, require_no_authentication,
     start_confirmation_code, start_user_session,
 };
-
-use crate::models::UserSessionResp;
 
 #[server]
 pub async fn attempt_to_confirm_login(code: String) -> Result<ActionFormResp, ServerFnError> {
@@ -30,27 +30,41 @@ pub async fn attempt_to_confirm_login(code: String) -> Result<ActionFormResp, Se
     };
 
     let core_context = expect_core_context();
+    let user = confirmation_code.user(&core_context).await?;
 
-    let user_session = UserSession::get_by_confirmation_code(&core_context, &confirmation_code).await?;
+    let result = confirmation_code
+        .confirm(
+            &core_context.clone(),
+            ConfirmationCodeAction::LoginConfirmation,
+            &code,
+            || {
+                let core_context = core_context.clone();
+                let user = user.clone();
+                async move {
+                    let result = UserSession::insert(&core_context, &user).await;
 
-    let result = user_session.confirm(&core_context, &code).await;
+                    match result {
+                        Ok(ref user_session) => {
+                            let _ = start_user_session(&core_context, &user_session).await;
+                            let _ = finish_confirmation_code().await;
 
-    match result {
-        Ok(ref user_session) => {
-            let _ = start_user_session(&core_context, &user_session).await;
-            let _ = finish_confirmation_code().await;
+                            Ok(())
+                        }
+                        Err(err) => Err(err),
+                    }
+                }
+            },
+        )
+        .await;
 
-            ActionFormResp::new(&i18n, result)
-        }
-        _ => ActionFormResp::new_with_error(&i18n),
-    }
+    ActionFormResp::new(&i18n, result)
 }
 
 #[server]
 pub async fn attempt_to_login(
     username_or_email: String,
     password: String,
-) -> Result<ActionFormResp<UserSessionResp>, ServerFnError> {
+) -> Result<ActionFormResp<bool>, ServerFnError> {
     let i18n = extract_i18n().await?;
 
     if !require_no_authentication().await? {
@@ -63,22 +77,25 @@ pub async fn attempt_to_login(
         return ActionFormResp::new_with_error(&i18n);
     };
 
-    let result = UserSession::insert(&core_context, &user, false).await;
+    if user.email_is_confirmed() {
+        let result = user.send_login_confirmation_code(&core_context).await;
 
-    match result {
-        Ok(ref user_session) => {
-            let user_session_resp = UserSessionResp::from(user_session);
+        if let Ok(ref confirmation_code) = result {
+            let _ = start_confirmation_code(&confirmation_code).await;
 
-            if let Some(Ok(confirmation_code)) = user_session.confirmation_code(&core_context).await {
-                let _ = start_confirmation_code(&confirmation_code).await;
-            } else {
-                let _ = start_user_session(&core_context, &user_session).await;
-            }
-
-            ActionFormResp::new_with_data(&i18n, result, user_session_resp)
+            return ActionFormResp::new_with_data(&i18n, result, false);
         }
-        _ => ActionFormResp::new_with_error(&i18n),
+    } else {
+        let result = UserSession::insert(&core_context, &user).await;
+
+        if let Ok(ref user_session) = result {
+            let _ = start_user_session(&core_context, &user_session).await;
+
+            return ActionFormResp::new_with_data(&i18n, result, true);
+        }
     }
+
+    ActionFormResp::new_with_error(&i18n)
 }
 
 #[server]
@@ -122,7 +139,7 @@ pub async fn attempt_to_register(
     .await;
 
     if let Ok(ref user) = result {
-        if let Ok(user_session) = UserSession::insert(&core_context, &user, true).await {
+        if let Ok(user_session) = UserSession::insert(&core_context, &user).await {
             let _ = start_user_session(&core_context, &user_session).await?;
         }
 
@@ -135,9 +152,7 @@ pub async fn attempt_to_register(
 }
 
 #[server]
-pub async fn attempt_to_send_password_reset_code(
-    username_or_email: String,
-) -> Result<ActionFormResp<()>, ServerFnError> {
+pub async fn attempt_to_send_password_reset_code(username_or_email: String) -> Result<ActionFormResp, ServerFnError> {
     let i18n = extract_i18n().await?;
 
     if !require_no_authentication().await? {
@@ -151,32 +166,53 @@ pub async fn attempt_to_send_password_reset_code(
         return ActionFormResp::new_with_error(&i18n);
     };
 
-    let result = UserPasswordReset::delete_and_insert(&core_context, &user).await;
+    let result = user.send_password_reset_code(&core_context).await;
+
+    if let Ok(ref confirmation_code) = result {
+        let _ = start_confirmation_code(&confirmation_code).await;
+    }
 
     ActionFormResp::new(&i18n, result)
 }
 
 #[server]
-pub async fn attempt_to_update_password_with_code(
-    username_or_email: String,
-    code: String,
-    new_password: String,
-) -> Result<ActionFormResp<()>, ServerFnError> {
+pub async fn attempt_to_reset_password(code: String, new_password: String) -> Result<ActionFormResp, ServerFnError> {
     let i18n = extract_i18n().await?;
 
     if !require_no_authentication().await? {
         return ActionFormResp::new_with_error(&i18n);
     };
 
-    let core_context = expect_core_context();
-    let result = User::get_by_username_or_email(&core_context, &username_or_email).await;
-
-    let Ok(user) = result else {
+    let Some(confirmation_code) = extract_confirmation_code().await? else {
         return ActionFormResp::new_with_error(&i18n);
     };
 
-    let result = user
-        .update_password_with_code(&core_context, &code, &new_password)
+    let core_context = expect_core_context();
+    let user = confirmation_code.user(&core_context).await?;
+
+    let result = confirmation_code
+        .confirm(
+            &core_context.clone(),
+            ConfirmationCodeAction::PasswordReset,
+            &code,
+            || {
+                let core_context = core_context.clone();
+                let user = user.clone();
+                let new_password = new_password.clone();
+                async move {
+                    let result = user.reset_password(&core_context, &new_password).await;
+
+                    match result {
+                        Ok(_) => {
+                            let _ = finish_confirmation_code().await;
+
+                            Ok(())
+                        }
+                        Err(err) => Err(err),
+                    }
+                }
+            },
+        )
         .await;
 
     ActionFormResp::new(&i18n, result)

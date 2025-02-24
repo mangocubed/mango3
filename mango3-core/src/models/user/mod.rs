@@ -13,7 +13,7 @@ use crate::constants::{
 };
 use crate::enums::{Input, InputError, UserRole};
 use crate::locales::I18n;
-use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
+use crate::validator::{Validator, ValidatorTrait};
 use crate::CoreContext;
 
 use super::{AsyncRedisCacheTrait, Blob, Hashtag, Website};
@@ -24,6 +24,7 @@ mod user_disable;
 mod user_email;
 mod user_get;
 mod user_insert;
+mod user_login;
 mod user_paginate;
 mod user_password;
 mod user_profile;
@@ -37,7 +38,6 @@ pub struct User {
     pub id: Uuid,
     pub username: String,
     pub email: String,
-    email_confirmation_code_id: Option<Uuid>,
     pub email_confirmed_at: Option<DateTime<Utc>>,
     encrypted_password: String,
     pub display_name: String,
@@ -61,31 +61,6 @@ impl Display for User {
 }
 
 impl User {
-    pub async fn authenticate(
-        core_context: &CoreContext,
-        username_or_email: &str,
-        password: &str,
-    ) -> Result<Self, ValidationErrors> {
-        let mut validator = Validator::default();
-
-        validator.validate_presence(Input::UsernameOrEmail, username_or_email);
-        validator.validate_presence(Input::Password, password);
-
-        if !validator.is_valid {
-            return Err(validator.errors);
-        }
-
-        let user = Self::get_by_username_or_email(core_context, username_or_email)
-            .await
-            .map_err(|_| ValidationErrors::default())?;
-
-        if user.verify_password(password) {
-            Ok(user)
-        } else {
-            Err(ValidationErrors::default())
-        }
-    }
-
     pub async fn avatar_image_blob(&self, core_context: &CoreContext) -> Option<sqlx::Result<Blob>> {
         if let Some(id) = self.avatar_image_blob_id {
             Some(Blob::get_by_id(core_context, id, Some(self), None).await)

@@ -31,7 +31,7 @@ pub fn LoginPage() -> impl IntoView {
         let response = ActionFormResp::from(action_value);
 
         if response.is_success() {
-            if response.data.as_ref().map(|user_session| user_session.is_confirmed) == Some(true) {
+            if response.data == Some(true) {
                 success_modal_is_open.set(true);
             } else {
                 login_confirmation_modal_is_open.set(true);

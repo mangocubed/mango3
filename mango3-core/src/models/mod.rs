@@ -22,7 +22,6 @@ mod post_comment;
 mod post_reaction;
 mod post_view;
 mod user;
-mod user_password_reset;
 mod user_session;
 mod website;
 
@@ -36,7 +35,6 @@ pub use post_comment::PostComment;
 pub use post_reaction::PostReaction;
 pub use post_view::PostView;
 pub use user::User;
-pub use user_password_reset::UserPasswordReset;
 pub use user_session::UserSession;
 pub use website::Website;
 

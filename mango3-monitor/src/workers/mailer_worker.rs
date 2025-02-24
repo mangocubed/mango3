@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use apalis::prelude::Error;
 
 use mango3_core::config::{BASIC_CONFIG, USER_CONFIG};
-use mango3_core::enums::MailerJobCommand;
+use mango3_core::enums::{ConfirmationCodeAction, MailerJobCommand};
 use mango3_core::jobs::MailerJob;
 use mango3_core::locales::I18n;
 use mango3_core::models::User;
@@ -11,11 +11,13 @@ use mango3_core::models::User;
 use crate::constants::{
     KEY_TEXT_ARG_ACTION, KEY_TEXT_ARG_TITLE,
     KEY_TEXT_BY_DEFAULT_ALL_USER_ACCOUNTS_ARE_DISABLED_BUT_WE_WILL_LET_YOU_KNOW_WHEN_YOUR_ACCOUNT_IS_ENABLED,
-    KEY_TEXT_CONFIRMATION_CODE, KEY_TEXT_HELLO, KEY_TEXT_IF_NOT_PLEASE_CONTACT_US_AT_THE_FOLLOWING_EMAIL_ADDRESS,
+    KEY_TEXT_CONFIRMATION_CODE, KEY_TEXT_CONFIRM_YOUR_EMAIL, KEY_TEXT_CONFIRM_YOUR_LOGIN, KEY_TEXT_HELLO,
+    KEY_TEXT_IF_NOT_PLEASE_CONTACT_US_AT_THE_FOLLOWING_EMAIL_ADDRESS,
     KEY_TEXT_IF_YOU_HAVE_ANY_QUESTIONS_PLEASE_CONTACT_US_AT_THE_FOLLOWING_EMAIL_ADDRESS,
     KEY_TEXT_IF_YOU_RECOGNIZE_THIS_ACTION_YOU_CAN_IGNORE_THIS_MESSAGE, KEY_TEXT_NEW_USER_SESSION_STARTED,
-    KEY_TEXT_SOMEONE_HAS_STARTED_A_USER_SESSION_WITH_YOUR_ACCOUNT, KEY_TEXT_USE_THIS_CODE_TO_ACTION,
-    KEY_TEXT_WELCOME_TO_TITLE, KEY_TEXT_WE_ARE_GLAD_TO_INFORM_YOU_THAT_WE_HAVE_ENABLED_YOUR_USER_ACCOUNT,
+    KEY_TEXT_RESET_YOUR_PASSWORD, KEY_TEXT_SOMEONE_HAS_STARTED_A_USER_SESSION_WITH_YOUR_ACCOUNT,
+    KEY_TEXT_USE_THIS_CODE_TO_ACTION, KEY_TEXT_WELCOME_TO_TITLE,
+    KEY_TEXT_WE_ARE_GLAD_TO_INFORM_YOU_THAT_WE_HAVE_ENABLED_YOUR_USER_ACCOUNT,
     KEY_TEXT_WE_REGRET_TO_INFORM_YOU_THAT_WE_HAVE_DISABLED_YOUR_USER_ACCOUNT,
     KEY_TEXT_YOUR_USER_ACCOUNT_HAS_BEEN_DISABLED, KEY_TEXT_YOUR_USER_ACCOUNT_HAS_BEEN_ENABLED,
 };
@@ -27,7 +29,7 @@ pub async fn mailer_worker(job: MailerJob) -> Result<(), Error> {
 
     match job.command {
         MailerJobCommand::ConfirmationCode { action, code } => {
-            send_confirmation_code_email(&i18n, &job.user, &action, &code).await
+            send_confirmation_code_email(&i18n, &job.user, action, &code).await
         }
         MailerJobCommand::Disabled => send_disabled_email(&i18n, &job.user).await,
         MailerJobCommand::Enabled => send_enabled_email(&i18n, &job.user).await,
@@ -38,10 +40,20 @@ pub async fn mailer_worker(job: MailerJob) -> Result<(), Error> {
     Ok(())
 }
 
-pub async fn send_confirmation_code_email(i18n: &I18n, user: &User, action: &str, code: &str) {
+pub async fn send_confirmation_code_email(i18n: &I18n, user: &User, action: ConfirmationCodeAction, code: &str) {
     let title = i18n.text(KEY_TEXT_CONFIRMATION_CODE);
     let mut text_args = HashMap::new();
-    text_args.insert(KEY_TEXT_ARG_ACTION.into(), action.into());
+    text_args.insert(
+        KEY_TEXT_ARG_ACTION.into(),
+        match action {
+            ConfirmationCodeAction::EmailConfirmation => i18n.text(KEY_TEXT_CONFIRM_YOUR_EMAIL),
+            ConfirmationCodeAction::LoginConfirmation => i18n.text(KEY_TEXT_CONFIRM_YOUR_LOGIN),
+            ConfirmationCodeAction::PasswordReset => i18n.text(KEY_TEXT_RESET_YOUR_PASSWORD),
+        }
+        .to_lowercase()
+        .into(),
+    );
+
     let message = format!(
         "{} {},\n\n{}:\n\n{}",
         i18n.text(KEY_TEXT_HELLO),
