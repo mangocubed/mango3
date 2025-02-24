@@ -166,7 +166,6 @@ pub(crate) const PREFIX_GET_POST_BY_SLUG: &str = "get_post_by_slug";
 pub(crate) const PREFIX_GET_USER_BY_ID: &str = "get_user_by_id";
 pub(crate) const PREFIX_GET_USER_BY_USERNAME: &str = "get_user_by_username";
 pub(crate) const PREFIX_GET_USER_BY_USERNAME_OR_EMAIL: &str = "get_user_by_username_or_email";
-pub(crate) const PREFIX_GET_USER_PASSWORD_RESET_GET_BY_USER: &str = "get_user_password_reset_get_by_user";
 pub(crate) const PREFIX_GET_USER_SESSION_BY_ID: &str = "get_user_session_by_id";
 pub(crate) const PREFIX_GET_WEBSITE_BY_ID: &str = "get_website_by_id";
 pub(crate) const PREFIX_GET_WEBSITE_BY_SUBDOMAIN: &str = "get_website_by_subdomain";

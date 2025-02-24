@@ -1,18 +1,14 @@
 use std::fmt::Display;
 
-use cached::proc_macro::io_cached;
-use cached::AsyncRedisCache;
 use serde::{Deserialize, Serialize};
 use sqlx::types::chrono::{DateTime, Utc};
 use sqlx::types::Uuid;
 use sqlx::{query, query_as};
 
-use crate::constants::{KEY_TEXT_RESET_YOUR_PASSWORD, PREFIX_GET_USER_PASSWORD_RESET_GET_BY_USER};
-use crate::models::{async_redis_cache, ConfirmationCode, User};
+use crate::constants::KEY_TEXT_RESET_YOUR_PASSWORD;
+use crate::models::{ConfirmationCode, User};
 use crate::validator::ValidationErrors;
 use crate::CoreContext;
-
-use super::AsyncRedisCacheTrait;
 
 #[derive(Clone, Deserialize, Serialize)]
 pub struct UserPasswordReset {
@@ -37,15 +33,27 @@ impl UserPasswordReset {
             .map(|_| ())
             .map_err(|_| ValidationErrors::default())?;
 
-        GET_USER_PASSWORD_RESET_GET_BY_USER
-            .cache_remove(PREFIX_GET_USER_PASSWORD_RESET_GET_BY_USER, &self.user_id)
-            .await;
+        Ok(())
+    }
+
+    pub async fn delete_all_expired(core_context: &CoreContext) -> Result<(), ValidationErrors> {
+        query!("DELETE FROM user_password_resets WHERE created_at < current_timestamp - INTERVAL '1 hour'")
+            .execute(&core_context.db_pool)
+            .await
+            .map(|_| ())
+            .map_err(|_| ValidationErrors::default())?;
 
         Ok(())
     }
 
     pub async fn get_by_user(core_context: &CoreContext, user: &User) -> sqlx::Result<Self> {
-        get_user_password_reset_get_by_user(core_context, user).await
+        query_as!(
+            Self,
+            "SELECT * FROM user_password_resets WHERE user_id = $1 LIMIT 1",
+            user.id
+        )
+        .fetch_one(&core_context.db_pool)
+        .await
     }
 
     pub async fn confirmation_code(&self, core_context: &CoreContext) -> sqlx::Result<ConfirmationCode> {
@@ -76,23 +84,4 @@ impl UserPasswordReset {
         .await
         .map_err(|_| ValidationErrors::default())
     }
-}
-
-#[io_cached(
-    map_error = r##"|_| sqlx::Error::RowNotFound"##,
-    convert = r#"{ user.id }"#,
-    ty = "AsyncRedisCache<Uuid, UserPasswordReset>",
-    create = r##" { async_redis_cache(PREFIX_GET_USER_PASSWORD_RESET_GET_BY_USER).await } "##
-)]
-pub async fn get_user_password_reset_get_by_user(
-    core_context: &CoreContext,
-    user: &User,
-) -> sqlx::Result<UserPasswordReset> {
-    query_as!(
-        UserPasswordReset,
-        "SELECT * FROM user_password_resets WHERE user_id = $1 LIMIT 1",
-        user.id
-    )
-    .fetch_one(&core_context.db_pool)
-    .await
 }

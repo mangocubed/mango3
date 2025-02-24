@@ -26,6 +26,14 @@ impl ConfirmationCode {
             .map_err(|_| ValidationErrors::default())
     }
 
+    pub async fn delete_all_expired(core_context: &CoreContext) -> Result<(), ValidationErrors> {
+        query!("DELETE FROM confirmation_codes WHERE created_at < current_timestamp - INTERVAL '1 hour'")
+            .execute(&core_context.db_pool)
+            .await
+            .map(|_| ())
+            .map_err(|_| ValidationErrors::default())
+    }
+
     pub async fn get_by_id(core_context: &CoreContext, id: Uuid) -> sqlx::Result<Self> {
         query_as!(Self, "SELECT * FROM confirmation_codes WHERE id = $1 LIMIT 1", id,)
             .fetch_one(&core_context.db_pool)

@@ -1,7 +1,9 @@
+use std::str::FromStr;
 use std::time::Duration;
 
 use apalis::layers::{ErrorHandlingLayer, WorkerBuilderExt};
 use apalis::prelude::{Event, Monitor, WorkerBuilder, WorkerFactoryFn};
+use apalis_cron::{CronStream, Schedule};
 use log::{error, info};
 
 use mango3_core::config::load_config;
@@ -12,7 +14,7 @@ use tokio::signal::unix::SignalKind;
 mod constants;
 mod workers;
 
-use crate::workers::{admin_mailer_worker, guest_mailer_worker, mailer_worker};
+use crate::workers::{admin_mailer_worker, guest_mailer_worker, mailer_worker, scheduled_worker};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -44,10 +46,20 @@ async fn main() -> anyhow::Result<()> {
         .backend(core_context.jobs.storage_mailer.clone())
         .build_fn(mailer_worker);
 
+    let scheduled_worker = WorkerBuilder::new("scheduled")
+        .layer(ErrorHandlingLayer::new())
+        .enable_tracing()
+        .concurrency(1)
+        .backend(CronStream::new(
+            Schedule::from_str("0 */1 * * * *").expect("Failed to get schedule"),
+        ))
+        .build_fn(scheduled_worker);
+
     Monitor::new()
         .register(admin_mailer_worker)
         .register(guest_mailer_worker)
         .register(mailer_worker)
+        .register(scheduled_worker)
         .on_event(|e| {
             let worker_id = e.id();
             match e.inner() {
