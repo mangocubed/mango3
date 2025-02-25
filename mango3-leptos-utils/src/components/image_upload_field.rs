@@ -8,7 +8,7 @@ use web_sys::{FormData, HtmlInputElement};
 use crate::components::{CopyableText, LoadingSpinner};
 use crate::icons::TrashOutlined;
 use crate::models::BlobResp;
-use crate::server_functions::attempt_to_upload_file;
+use crate::server_functions::attempt_to_upload_image;
 
 #[component]
 pub fn ImageUploadField(
@@ -21,7 +21,7 @@ pub fn ImageUploadField(
     #[prop(into)] name: String,
     #[prop(into, optional)] website_id: TextProp,
 ) -> impl IntoView {
-    let upload_action = Action::new_local(|data: &FormData| attempt_to_upload_file(data.clone().into()));
+    let upload_action = Action::new_local(|data: &FormData| attempt_to_upload_image(data.clone().into()));
     let upload_action_value = upload_action.value();
     let website_id_store = StoredValue::new(website_id);
 

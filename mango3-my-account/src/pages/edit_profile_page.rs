@@ -1,7 +1,9 @@
 use leptos::prelude::*;
 
 use mango3_leptos_utils::async_t_string;
-use mango3_leptos_utils::components::*;
+use mango3_leptos_utils::components::{
+    ActionFormAlert, CountryField, ImageUploadField, SubmitButton, TextField, TextareaField,
+};
 use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::models::ActionFormResp;
 use mango3_leptos_utils::pages::AuthenticatedPage;

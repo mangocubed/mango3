@@ -1,7 +1,9 @@
 use std::path::{Path, PathBuf};
 
-use image::imageops::FilterType;
 use serde::{Deserialize, Serialize};
+
+#[cfg(feature = "blob_read")]
+use image::imageops::FilterType;
 
 use super::extract_from_env;
 
@@ -40,6 +42,7 @@ impl MiscConfig {
         extract_from_env("MISC_")
     }
 
+    #[cfg(feature = "blob_read")]
     pub(crate) fn image_ops_filter_type(&self) -> FilterType {
         match self.image_ops_filter_type.as_str() {
             "CatmullRom" => FilterType::CatmullRom,

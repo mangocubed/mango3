@@ -30,17 +30,19 @@ leptos-use = { workspace = true, features = [
 regex = { workspace = true, optional = true }
 rust_iso3166 = { workspace = true, optional = true }
 serde = { workspace = true }
-server_fn = { workspace = true, features = ["multipart"] }
+server_fn = { workspace = true }
 time = { version = "0.3.37", optional = true }
 tower-sessions =  { version = "0.13.0", optional = true,  features = ["private"] }
 tower-sessions-redis-store = { version = "0.15.0", optional = true }
 tokio = { workspace = true, optional = true }
 uuid = { workspace = true, optional = true }
 wasm-bindgen = { workspace = true }
-web-sys = { workspace = true, features = ["File", "FileList"] }
+web-sys = { workspace = true }
 mango3-core = { workspace = true, optional = true }
 
 [features]
+image_upload = ["web-sys/File", "web-sys/FileList", "server_fn/multipart", "mango3-core?/blob_write"]
+multiple_image_upload = ["image_upload"]
 hydrate = ["leptos/hydrate", "leptos_i18n/hydrate"]
 ssr = [
     "dep:accept-language",
