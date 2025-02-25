@@ -17,13 +17,11 @@ mod copyable_text;
 mod country_field;
 mod current_user;
 mod hashtags;
-mod image_upload_field;
 mod infinite_scroll;
 mod loading_overlay;
 mod loading_spinner;
 mod menu;
 mod modal;
-mod multiple_image_upload_field;
 mod password_field;
 mod post_bottom_bar;
 mod post_card;
@@ -39,6 +37,11 @@ mod user_card;
 mod user_tag;
 mod website_card;
 
+#[cfg(feature = "image_upload")]
+mod image_upload_field;
+#[cfg(feature = "multiple_image_upload")]
+mod multiple_image_upload_field;
+
 pub mod forms;
 
 pub use action_form_alert::{ActionFormAlert, ActionFormError, SuccessModal};
@@ -52,7 +55,6 @@ pub use copyable_text::CopyableText;
 pub use country_field::CountryField;
 pub use current_user::{CurrentUser, CurrentUserOpt};
 pub use hashtags::Hashtags;
-pub use image_upload_field::ImageUploadField;
 pub use infinite_scroll::{
     InfiniteScroll, InfiniteScrollControllerTrait, InfiniteScrollLocalResourceController,
     InfiniteScrollResourceController,
@@ -61,7 +63,6 @@ pub use loading_overlay::LoadingOverlay;
 pub use loading_spinner::LoadingSpinner;
 pub use menu::{Menu, MenuItem};
 pub use modal::Modal;
-pub use multiple_image_upload_field::MultipleImageUploadField;
 pub use password_field::PasswordField;
 pub use post_bottom_bar::PostBottomBar;
 pub use post_card::PostCard;
@@ -76,6 +77,11 @@ pub use unconfirmed_email_alert::UnconfirmedEmailAlert;
 pub use user_card::UserCard;
 pub use user_tag::{UserAvatar, UserLabels, UserTag, UserTagLink};
 pub use website_card::WebsiteCard;
+
+#[cfg(feature = "image_upload")]
+pub use image_upload_field::ImageUploadField;
+#[cfg(feature = "multiple_image_upload")]
+pub use multiple_image_upload_field::MultipleImageUploadField;
 
 pub struct EventFn(Box<dyn Fn(Event) + 'static>);
 

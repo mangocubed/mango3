@@ -11,7 +11,8 @@ use uuid::Uuid;
 
 use mango3_core::config::load_config;
 use mango3_core::models::Blob;
-use mango3_core::{text_icon, CoreContext};
+use mango3_core::utils::text_icon;
+use mango3_core::CoreContext;
 
 #[derive(Deserialize)]
 pub struct BlobQueryParams {
