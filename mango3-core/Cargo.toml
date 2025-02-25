@@ -38,5 +38,5 @@ uuid = { workspace = true }
 
 [dev-dependencies]
 chrono = { workspace = true }
-fake = { version = "3.1.0", features = ["chrono", "url"] }
+fake = { version = "4.0.0", features = ["chrono", "url"] }
 tokio = { workspace = true }
