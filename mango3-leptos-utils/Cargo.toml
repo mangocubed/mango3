@@ -41,7 +41,7 @@ web-sys = { workspace = true }
 mango3-core = { workspace = true, optional = true }
 
 [features]
-image_upload = ["web-sys/File", "web-sys/FileList", "server_fn/multipart", "mango3-core/blob_write"]
+image_upload = ["web-sys/File", "web-sys/FileList", "server_fn/multipart", "mango3-core?/blob_write"]
 multiple_image_upload = ["image_upload"]
 hydrate = ["leptos/hydrate", "leptos_i18n/hydrate"]
 ssr = [
