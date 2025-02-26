@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.0.0-alpha.12] - 2025-02-26
+
+### Added
+
+- Cargo features for blobs in mango3-core. (https://github.com/mangocubed/mango3/pull/247)
+- Cargo features for content. (https://github.com/mangocubed/mango3/pull/249)
+
+### Changed
+
+- Bump strum from 0.27.0 to 0.27.1. (https://github.com/mangocubed/mango3/pull/245)
+- Bump tailwindcss from 4.0.7 to 4.0.8. (https://github.com/mangocubed/mango3/pull/241)
+- Bump fake from 3.1.0 to 4.0.0. (https://github.com/mangocubed/mango3/pull/246)
+- Bump cargo-leptos from 0.2.28 to 0.2.29. (https://github.com/mangocubed/mango3/pull/251)
+- Use LocalResource to get websites in studio selector. (https://github.com/mangocubed/mango3/pull/252)
+- Use LocalResource to get post reactions. (https://github.com/mangocubed/mango3/pull/253)
+
 ## [0.0.0-alpha.11] - 2025-02-24
 
 ### Added
