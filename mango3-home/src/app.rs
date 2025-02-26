@@ -39,7 +39,7 @@ pub fn App() -> impl IntoView {
                             brand=move || view! { <Brand href="/" /> }
                             left_items=move |_| {
                                 view! {
-                                    <ul class="menu md:menu-horizontal gap-1">
+                                    <ul class="menu md:menu-horizontal gap-1 flex-nowrap">
                                         <li>
                                             <a href="/posts">{t!(i18n, shared.posts)}</a>
                                         </li>
@@ -48,7 +48,7 @@ pub fn App() -> impl IntoView {
                                             <a href="/websites">{t!(i18n, home.websites)}</a>
                                         </li>
 
-                                        <li>
+                                        <li class="shrink">
                                             <SearchBar />
                                         </li>
                                     </ul>
