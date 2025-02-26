@@ -18,8 +18,13 @@ pub struct WebsiteResp {
     pub id: String,
     pub name: String,
     pub description: String,
+
+    #[cfg(feature = "website_description_html")]
     pub description_html: String,
+
+    #[cfg(feature = "website_description_preview_html")]
     pub description_preview_html: String,
+
     pub hashtags: Vec<HashtagResp>,
     pub initials: String,
     pub icon_image_blob: Option<BlobResp>,
@@ -49,7 +54,11 @@ impl FromCore<Website> for WebsiteResp {
             id: website.id.to_string(),
             name: website.name.clone(),
             description: website.description.clone(),
+
+            #[cfg(feature = "website_description_html")]
             description_html: website.description_html().await,
+
+            #[cfg(feature = "website_description_preview_html")]
             description_preview_html: website.description_preview_html().await,
             hashtags: website
                 .hashtags(&core_context)
@@ -82,7 +91,10 @@ impl FromCore<Website> for WebsiteResp {
 pub struct WebsitePreviewResp {
     pub id: String,
     pub name: String,
+
+    #[cfg(feature = "website_description_preview_html")]
     pub description_preview_html: String,
+
     pub hashtags: Vec<HashtagResp>,
     pub initials: String,
     pub icon_image_blob: Option<BlobResp>,
@@ -108,7 +120,10 @@ impl FromCore<Website> for WebsitePreviewResp {
         Self {
             id: website.id.to_string(),
             name: website.name.clone(),
+
+            #[cfg(feature = "website_description_preview_html")]
             description_preview_html: website.description_preview_html().await,
+
             hashtags: website
                 .hashtags(&core_context)
                 .await
@@ -134,7 +149,10 @@ impl From<&WebsiteResp> for WebsitePreviewResp {
         Self {
             id: website.id.clone(),
             name: website.name.clone(),
+
+            #[cfg(feature = "website_description_preview_html")]
             description_preview_html: website.description_preview_html.clone(),
+
             hashtags: website.hashtags.clone(),
             initials: website.initials.clone(),
             icon_image_blob: website.icon_image_blob.clone(),

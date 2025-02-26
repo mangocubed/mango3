@@ -92,6 +92,7 @@ pub(crate) static BLACKLISTED_SLUGS: LazyLock<[&str; 80]> = LazyLock::new(|| {
     ]
 });
 
+#[cfg(feature = "website_write")]
 pub(crate) static DARK_THEMES: LazyLock<[&str; 14]> = LazyLock::new(|| {
     [
         "dark",
@@ -111,6 +112,7 @@ pub(crate) static DARK_THEMES: LazyLock<[&str; 14]> = LazyLock::new(|| {
     ]
 });
 
+#[cfg(feature = "website_write")]
 pub(crate) static LIGHT_THEMES: LazyLock<[&str; 21]> = LazyLock::new(|| {
     [
         "light",
@@ -149,11 +151,15 @@ pub static REGEX_FIND_HASHTAGS: LazyLock<Regex> =
 pub static REGEX_HANDLEBARS: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"(^|[^\\])\{\{(?s:.)*?\}\}").unwrap());
 pub(crate) static REGEX_HASHTAG: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"\A[[:alnum:]]+(?:[-_][[:alnum:]]+)*\z").unwrap());
-pub(crate) static REGEX_SLUG: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"\A[[:alnum:]]+(?:-[[:alnum:]]+)*\z").unwrap());
-pub(crate) static REGEX_SUBDOMAIN: LazyLock<Regex> = LazyLock::new(|| REGEX_SLUG.clone());
 pub(crate) static REGEX_USERNAME: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"\A[-_.]?([[:alnum:]]+[-_.]?)+\z").unwrap());
+
+#[cfg(feature = "post_write")]
+pub(crate) static REGEX_SLUG: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"\A[[:alnum:]]+(?:-[[:alnum:]]+)*\z").unwrap());
+#[cfg(feature = "website_write")]
+pub(crate) static REGEX_SUBDOMAIN: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"\A[[:alnum:]]+(?:-[[:alnum:]]+)*\z").unwrap());
 
 pub(crate) const HASHTAG_LOOKAROUND: [Option<&str>; 3] = [Some(" "), Some("\n"), None];
 
@@ -167,10 +173,18 @@ pub(crate) const PREFIX_GET_USER_SESSION_BY_ID: &str = "get_user_session_by_id";
 pub(crate) const PREFIX_GET_WEBSITE_BY_ID: &str = "get_website_by_id";
 pub(crate) const PREFIX_GET_WEBSITE_BY_SUBDOMAIN: &str = "get_website_by_subdomain";
 pub(crate) const PREFIX_NAVIGATION_ITEM_ALL_BY_WEBSITE: &str = "navigation_item_all_by_website";
+
+#[cfg(feature = "post_comment_content_html")]
 pub(crate) const PREFIX_POST_COMMENT_CONTENT_HTML: &str = "post_comment_content_html";
+#[cfg(feature = "post_content_html")]
 pub(crate) const PREFIX_POST_CONTENT_HTML: &str = "post_content_html";
+#[cfg(feature = "post_content_preview_html")]
 pub(crate) const PREFIX_POST_CONTENT_PREVIEW_HTML: &str = "post_content_preview_html";
+#[cfg(feature = "user_bio_html")]
 pub(crate) const PREFIX_USER_BIO_HTML: &str = "user_bio_html";
+#[cfg(feature = "user_bio_preview_html")]
 pub(crate) const PREFIX_USER_BIO_PREVIEW_HTML: &str = "user_bio_preview_html";
+#[cfg(feature = "website_description_html")]
 pub(crate) const PREFIX_WEBSITE_DESCRIPTION_HTML: &str = "website_description_html";
+#[cfg(feature = "website_description_preview_html")]
 pub(crate) const PREFIX_WEBSITE_DESCRIPTION_PREVIEW_HTML: &str = "website_description_preview_html";

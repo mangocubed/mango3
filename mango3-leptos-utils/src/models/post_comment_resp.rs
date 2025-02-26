@@ -18,7 +18,10 @@ use super::FromCore;
 pub struct PostCommentResp {
     pub id: String,
     pub user: UserPreviewResp,
+
+    #[cfg(feature = "post_comment_content_html")]
     pub content_html: String,
+
     pub created_at: DateTime<Utc>,
     pub updated_at: Option<DateTime<Utc>>,
 }
@@ -34,7 +37,10 @@ impl FromCore<PostComment> for PostCommentResp {
                 &comment.user(&core_context).await.expect("Could not get user"),
             )
             .await,
+
+            #[cfg(feature = "post_comment_content_html")]
             content_html: comment.content_html().await,
+
             created_at: comment.created_at,
             updated_at: comment.updated_at,
         }

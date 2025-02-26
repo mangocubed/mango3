@@ -1,6 +1,5 @@
 use std::fmt::Display;
 
-use futures::future;
 use rust_iso3166::CountryCode;
 use serde::{Deserialize, Serialize};
 use sqlx::types::chrono::{DateTime, NaiveDate, Utc};
@@ -8,18 +7,23 @@ use sqlx::types::Uuid;
 use url::Url;
 
 use crate::config::BASIC_CONFIG;
-use crate::constants::{
-    PREFIX_GET_USER_BY_ID, PREFIX_GET_USER_BY_USERNAME, PREFIX_GET_USER_BY_USERNAME_OR_EMAIL, PREFIX_USER_BIO_HTML,
-};
 use crate::enums::{Input, InputError, UserRole};
 use crate::locales::I18n;
 use crate::validator::{Validator, ValidatorTrait};
 use crate::CoreContext;
 
-use super::{AsyncRedisCacheTrait, Blob, Hashtag, Website};
+#[cfg(feature = "user_cache_remove")]
+use crate::constants::{
+    PREFIX_GET_USER_BY_ID, PREFIX_GET_USER_BY_USERNAME, PREFIX_GET_USER_BY_USERNAME_OR_EMAIL, PREFIX_USER_BIO_HTML,
+    PREFIX_USER_BIO_PREVIEW_HTML,
+};
+
+use super::{Blob, Hashtag, Website};
+
+#[cfg(feature = "user_cache_remove")]
+use super::AsyncRedisCacheTrait;
 
 mod user_all;
-mod user_bio;
 mod user_disable;
 mod user_email;
 mod user_get;
@@ -27,10 +31,17 @@ mod user_insert;
 mod user_login;
 mod user_paginate;
 mod user_password;
+
+#[cfg(any(feature = "user_bio_html", feature = "user_bio_preview_html"))]
+mod user_bio;
+#[cfg(feature = "user_cache_remove")]
 mod user_profile;
+#[cfg(feature = "user_cache_remove")]
 mod user_role;
 
-use user_bio::USER_BIO_HTML;
+#[cfg(feature = "user_cache_remove")]
+use user_bio::{USER_BIO_HTML, USER_BIO_PREVIEW_HTML};
+#[cfg(feature = "user_cache_remove")]
 use user_get::{GET_USER_BY_ID, GET_USER_BY_USERNAME, GET_USER_BY_USERNAME_OR_EMAIL};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -69,17 +80,18 @@ impl User {
         }
     }
 
+    #[cfg(feature = "user_cache_remove")]
     async fn cache_remove(&self) {
-        future::join5(
+        let email = self.email.to_lowercase();
+        let username = self.username.to_lowercase();
+        futures::join!(
             USER_BIO_HTML.cache_remove(PREFIX_USER_BIO_HTML, &self.id),
+            USER_BIO_PREVIEW_HTML.cache_remove(PREFIX_USER_BIO_PREVIEW_HTML, &self.id),
             GET_USER_BY_ID.cache_remove(PREFIX_GET_USER_BY_ID, &self.id),
-            GET_USER_BY_USERNAME.cache_remove(PREFIX_GET_USER_BY_USERNAME, &self.username.to_lowercase()),
-            GET_USER_BY_USERNAME_OR_EMAIL
-                .cache_remove(PREFIX_GET_USER_BY_USERNAME_OR_EMAIL, &self.username.to_lowercase()),
-            GET_USER_BY_USERNAME_OR_EMAIL
-                .cache_remove(PREFIX_GET_USER_BY_USERNAME_OR_EMAIL, &self.email.to_lowercase()),
-        )
-        .await;
+            GET_USER_BY_USERNAME.cache_remove(PREFIX_GET_USER_BY_USERNAME, &username),
+            GET_USER_BY_USERNAME_OR_EMAIL.cache_remove(PREFIX_GET_USER_BY_USERNAME_OR_EMAIL, &username),
+            GET_USER_BY_USERNAME_OR_EMAIL.cache_remove(PREFIX_GET_USER_BY_USERNAME_OR_EMAIL, &email),
+        );
     }
 
     pub async fn can_insert_website(&self, core_context: &CoreContext) -> bool {

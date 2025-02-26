@@ -20,7 +20,10 @@ pub struct PostResp {
     pub user: UserPreviewResp,
     pub title: String,
     pub slug: String,
+
+    #[cfg(feature = "post_content_html")]
     pub content_html: String,
+
     pub hashtags: Vec<HashtagResp>,
     pub cover_image_blob: Option<BlobResp>,
     pub blobs: Vec<BlobResp>,
@@ -48,7 +51,10 @@ impl FromCore<Post> for PostResp {
             .await,
             title: post.title.clone(),
             slug: post.slug.clone(),
+
+            #[cfg(feature = "post_content_html")]
             content_html: post.content_html().await,
+
             hashtags: post
                 .hashtags(&core_context)
                 .await
@@ -81,7 +87,10 @@ pub struct PostPreviewResp {
     pub user: UserPreviewResp,
     pub title: String,
     pub slug: String,
+
+    #[cfg(feature = "post_content_preview_html")]
     pub content_preview_html: String,
+
     pub hashtags: Vec<HashtagResp>,
     pub cover_image_blob: Option<BlobResp>,
     pub is_published: bool,
@@ -112,7 +121,10 @@ impl FromCore<Post> for PostPreviewResp {
             .await,
             title: post.title.clone(),
             slug: post.slug.clone(),
+
+            #[cfg(feature = "post_content_preview_html")]
             content_preview_html: post.content_preview_html().await,
+
             hashtags: post
                 .hashtags(&core_context)
                 .await

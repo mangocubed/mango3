@@ -2,17 +2,27 @@ use sqlx::types::chrono::{DateTime, Utc};
 use sqlx::types::Uuid;
 use sqlx::{query, query_as};
 
-use super::{AsyncRedisCacheTrait, Post, User};
-
-use crate::config::MISC_CONFIG;
-use crate::constants::PREFIX_POST_COMMENT_CONTENT_HTML;
-use crate::enums::Input;
-use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
 use crate::CoreContext;
 
-mod post_comment_content;
+#[cfg(feature = "post_comment_cache_remove")]
+use crate::config::MISC_CONFIG;
+#[cfg(feature = "post_comment_cache_remove")]
+use crate::constants::PREFIX_POST_COMMENT_CONTENT_HTML;
+#[cfg(feature = "post_comment_cache_remove")]
+use crate::enums::Input;
+#[cfg(feature = "post_comment_cache_remove")]
+use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
+
+use super::{Post, User};
+
+#[cfg(feature = "post_comment_cache_remove")]
+use super::AsyncRedisCacheTrait;
+
 mod post_comment_paginate;
 
+#[cfg(feature = "post_comment_content_html")]
+mod post_comment_content;
+#[cfg(feature = "post_comment_cache_remove")]
 use post_comment_content::POST_COMMENT_CONTENT_HTML;
 
 #[derive(Clone)]
@@ -26,6 +36,7 @@ pub struct PostComment {
 }
 
 impl PostComment {
+    #[cfg(feature = "post_comment_cache_remove")]
     async fn cache_remove(&self) {
         POST_COMMENT_CONTENT_HTML
             .cache_remove(PREFIX_POST_COMMENT_CONTENT_HTML, &self.id)
@@ -43,6 +54,7 @@ impl PostComment {
         .unwrap_or_default()
     }
 
+    #[cfg(feature = "post_comment_cache_remove")]
     pub async fn delete(&self, core_context: &CoreContext) -> Result<(), ValidationErrors> {
         query!("DELETE FROM post_comments WHERE id = $1", self.id)
             .execute(&core_context.db_pool)
@@ -68,6 +80,7 @@ impl PostComment {
         .await
     }
 
+    #[cfg(feature = "post_comment_cache_remove")]
     pub async fn insert(
         core_context: &CoreContext,
         post: &Post,

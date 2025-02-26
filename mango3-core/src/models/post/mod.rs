@@ -1,32 +1,50 @@
 use std::fmt::Display;
 
-use futures::future;
 use serde::{Deserialize, Serialize};
-use sqlx::query;
 use sqlx::types::chrono::{DateTime, Utc};
 use sqlx::types::{JsonValue, Uuid};
 use url::Url;
 
+#[cfg(feature = "post_cache_remove")]
+use futures::future;
+#[cfg(feature = "post_write")]
+use sqlx::query;
+
+use crate::CoreContext;
+
+#[cfg(feature = "post_write")]
 use crate::config::MISC_CONFIG;
+#[cfg(feature = "post_cache_remove")]
 use crate::constants::{
     BLACKLISTED_SLUGS, PREFIX_GET_POST_BY_ID, PREFIX_GET_POST_BY_SLUG, PREFIX_POST_CONTENT_HTML,
     PREFIX_POST_CONTENT_PREVIEW_HTML, REGEX_SLUG,
 };
+#[cfg(feature = "post_write")]
 use crate::enums::{Input, InputError};
+#[cfg(feature = "post_write")]
 use crate::validator::{Validator, ValidatorTrait};
-use crate::CoreContext;
 
-use super::{AsyncRedisCacheTrait, Blob, Hashtag, PostComment, PostReaction, PostView, User, Website};
+#[cfg(feature = "post_cache_remove")]
+use super::AsyncRedisCacheTrait;
 
-mod post_content;
-mod post_delete;
+use super::{Blob, Hashtag, PostComment, PostReaction, PostView, User, Website};
+
 mod post_get;
-mod post_insert;
 mod post_paginate;
 mod post_search;
+
+#[cfg(any(feature = "post_content_html", feature = "post_content_preview_html"))]
+mod post_content;
+#[cfg(feature = "post_write")]
+mod post_delete;
+#[cfg(feature = "post_write")]
+mod post_insert;
+#[cfg(feature = "post_write")]
 mod post_update;
 
+#[cfg(feature = "post_cache_remove")]
 use post_content::{POST_CONTENT_HTML, POST_CONTENT_PREVIEW_HTML};
+#[cfg(feature = "post_cache_remove")]
 use post_get::{GET_POST_BY_ID, GET_POST_BY_SLUG};
 
 #[derive(Clone, Deserialize, Serialize)]
@@ -60,6 +78,7 @@ impl Post {
         Blob::all_by_ids(core_context, self.blob_ids.clone(), None, None).await
     }
 
+    #[cfg(feature = "post_cache_remove")]
     async fn cache_remove(&self, core_context: &CoreContext) {
         future::join4(
             POST_CONTENT_HTML.cache_remove(PREFIX_POST_CONTENT_HTML, &self.id),
@@ -125,6 +144,7 @@ impl Post {
     }
 }
 
+#[cfg(feature = "post_write")]
 impl Validator {
     fn validate_post_title(&mut self, value: &str) -> bool {
         self.validate_presence(Input::Title, value)

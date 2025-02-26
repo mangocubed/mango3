@@ -19,7 +19,10 @@ pub struct UserPreviewResp {
     pub username: String,
     pub display_name: String,
     pub initials: String,
+
+    #[cfg(feature = "user_bio_preview_html")]
     pub bio_preview_html: String,
+
     pub hashtags: Vec<HashtagResp>,
     pub avatar_image_blob: Option<BlobResp>,
     pub text_avatar_url: String,
@@ -56,7 +59,10 @@ impl FromCore<User> for UserPreviewResp {
                 .iter()
                 .map(|hashtag| hashtag.into())
                 .collect(),
+
+            #[cfg(feature = "user_bio_preview_html")]
             bio_preview_html: user.bio_preview_html().await,
+
             avatar_image_blob: user
                 .avatar_image_blob(&core_context)
                 .await
@@ -77,7 +83,10 @@ impl From<UserResp> for UserPreviewResp {
             username: value.username,
             display_name: value.display_name,
             initials: value.initials,
+
+            #[cfg(feature = "user_bio_preview_html")]
             bio_preview_html: value.bio_preview_html,
+
             hashtags: value.hashtags,
             avatar_image_blob: value.avatar_image_blob,
             url: value.url,
@@ -95,7 +104,10 @@ impl From<UserProfileResp> for UserPreviewResp {
             username: value.username,
             display_name: value.display_name,
             initials: value.initials,
+
+            #[cfg(feature = "user_bio_preview_html")]
             bio_preview_html: value.bio_preview_html,
+
             hashtags: value.hashtags,
             avatar_image_blob: value.avatar_image_blob,
             url: value.url,
@@ -114,7 +126,10 @@ pub struct UserResp {
     pub initials: String,
     pub email: String,
     pub email_is_confirmed: bool,
+
+    #[cfg(feature = "user_bio_preview_html")]
     pub bio_preview_html: String,
+
     pub hashtags: Vec<HashtagResp>,
     pub avatar_image_blob: Option<BlobResp>,
     pub can_insert_website: bool,
@@ -148,7 +163,10 @@ impl FromCore<User> for UserResp {
             initials: user.initials(),
             email: user.email.clone(),
             email_is_confirmed: user.email_is_confirmed(),
+
+            #[cfg(feature = "user_bio_preview_html")]
             bio_preview_html: user.bio_preview_html().await,
+
             hashtags: user
                 .hashtags(&core_context)
                 .await

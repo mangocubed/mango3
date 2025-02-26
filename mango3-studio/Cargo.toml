@@ -22,8 +22,10 @@ slug = "0.1.6"
 tokio = { workspace = true, optional = true }
 uuid = { workspace = true, optional = true }
 wasm-bindgen = { workspace = true }
-mango3-core = { workspace = true, optional = true }
-mango3-leptos-utils = { workspace = true, features = ["multiple_image_upload"] }
+mango3-core = { workspace = true, features = ["post_write", "website_write"], optional = true }
+mango3-leptos-utils = { workspace = true, features = [
+    "multiple_image_upload", "post_card", "post_content_html", "website_card"
+] }
 
 [features]
 hydrate = ["leptos/hydrate", "leptos_i18n/hydrate", "mango3-leptos-utils/hydrate"]

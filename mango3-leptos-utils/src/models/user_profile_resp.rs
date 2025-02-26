@@ -24,8 +24,13 @@ pub struct UserProfileResp {
     pub country_alpha2: String,
     pub country_name: String,
     pub bio: String,
+
+    #[cfg(feature = "user_bio_html")]
     pub bio_html: String,
+
+    #[cfg(feature = "user_bio_preview_html")]
     pub bio_preview_html: String,
+
     pub hashtags: Vec<HashtagResp>,
     pub avatar_image_blob: Option<BlobResp>,
     pub text_avatar_url: String,
@@ -61,8 +66,13 @@ impl FromCore<User> for UserProfileResp {
             country_alpha2: user.country_alpha2.clone(),
             country_name: user.country().name.to_owned(),
             bio: user.bio.clone(),
+
+            #[cfg(feature = "user_bio_html")]
             bio_html: user.bio_html().await,
+
+            #[cfg(feature = "user_bio_preview_html")]
             bio_preview_html: user.bio_preview_html().await,
+
             hashtags: user
                 .hashtags(&core_context)
                 .await

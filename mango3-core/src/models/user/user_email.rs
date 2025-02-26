@@ -1,14 +1,22 @@
+#[cfg(feature = "user_cache_remove")]
 use sqlx::{query, query_as};
 
-use crate::constants::REGEX_EMAIL;
-use crate::enums::{ConfirmationCodeAction, Input, InputError, UserRole};
+use crate::enums::ConfirmationCodeAction;
 use crate::models::ConfirmationCode;
-use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
+use crate::validator::ValidationErrors;
 use crate::CoreContext;
+
+#[cfg(feature = "user_cache_remove")]
+use crate::constants::REGEX_EMAIL;
+#[cfg(feature = "user_cache_remove")]
+use crate::enums::{Input, InputError, UserRole};
+#[cfg(feature = "user_cache_remove")]
+use crate::validator::{Validator, ValidatorTrait};
 
 use super::User;
 
 impl User {
+    #[cfg(feature = "user_cache_remove")]
     pub async fn confirm_email(&self, core_context: &CoreContext) -> Result<Self, ValidationErrors> {
         let result = query_as!(
             Self,
@@ -63,6 +71,7 @@ impl User {
             .map_err(|_| ValidationErrors::default())
     }
 
+    #[cfg(feature = "user_cache_remove")]
     pub async fn update_email(
         &self,
         core_context: &CoreContext,
