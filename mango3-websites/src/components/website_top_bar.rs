@@ -3,7 +3,6 @@ use leptos::prelude::*;
 
 use mango3_leptos_utils::components::{Brand, GoToMango3, SearchBar, TopBar, WebsiteIcon};
 use mango3_leptos_utils::context::use_basic_config;
-use mango3_leptos_utils::enums::Orientation;
 
 use crate::server_functions::get_all_navigation_items;
 
@@ -44,9 +43,7 @@ pub fn WebsiteTopBar() -> impl IntoView {
                 }
             }
             class="bg-base-200"
-            left_items=move |orientation: Orientation| {
-                let is_horizontal = orientation.is_horizontal();
-
+            left_items=move |_| {
                 view! {
                     <Transition>
                         {move || Suspend::new(async move {
@@ -55,14 +52,14 @@ pub fn WebsiteTopBar() -> impl IntoView {
                                 .and_then(|result| result.ok())
                                 .map(|items| {
                                     view! {
-                                        <ul class="menu gap-1" class:menu-horizontal=is_horizontal>
+                                        <ul class="menu gap-1 md:menu-horizontal flex-nowrap">
                                             <For each=move || items.clone() key=|item| item.id.clone() let:item>
                                                 <li>
                                                     <a href=item.url>{item.title}</a>
                                                 </li>
                                             </For>
 
-                                            <li>
+                                            <li class="shrink">
                                                 <SearchBar />
                                             </li>
                                         </ul>

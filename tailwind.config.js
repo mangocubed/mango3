@@ -1,7 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
     content: {
-        relative: true,
         files: [
             "*.html",
             "./mango3-accounts/src/**/*.rs",
@@ -16,7 +15,7 @@ module.exports = {
             rs: (content) => content.replace(/(?:^|\s)class:/g, " "),
         },
     },
-    safeList: ["opacity-50"],
+    safeList: ["input-error", "opacity-50"],
     theme: {
         extend: {},
     },
