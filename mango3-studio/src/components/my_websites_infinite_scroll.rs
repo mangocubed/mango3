@@ -1,7 +1,7 @@
 use leptos::prelude::*;
 
 use mango3_leptos_utils::components::{
-    InfiniteScroll, InfiniteScrollControllerTrait, InfiniteScrollResourceController,
+    InfiniteScroll, InfiniteScrollControllerTrait, InfiniteScrollLocalResourceController,
 };
 use mango3_leptos_utils::models::WebsitePreviewResp;
 
@@ -14,8 +14,9 @@ where
     IV: IntoView + 'static,
     VF: Fn(WebsitePreviewResp) -> IV + Clone + Send + Sync + 'static,
 {
-    let controller =
-        InfiniteScrollResourceController::new(|after| Resource::new_blocking(move || after.get(), get_my_websites));
+    let controller = InfiniteScrollLocalResourceController::new(|after| {
+        LocalResource::new(move || async move { get_my_websites(after.get()).await })
+    });
     let selected_website = use_selected_website();
 
     selected_website.set(None);
