@@ -24,7 +24,6 @@ mod menu;
 mod modal;
 mod password_field;
 mod post_bottom_bar;
-mod post_card;
 mod search_bar;
 mod submit_button;
 mod switch_field;
@@ -33,14 +32,18 @@ mod textarea_field;
 mod time_ago;
 mod top_bar;
 mod unconfirmed_email_alert;
-mod user_card;
 mod user_tag;
-mod website_card;
 
 #[cfg(feature = "image_upload")]
 mod image_upload_field;
 #[cfg(feature = "multiple_image_upload")]
 mod multiple_image_upload_field;
+#[cfg(feature = "post_card")]
+mod post_card;
+#[cfg(feature = "user_card")]
+mod user_card;
+#[cfg(feature = "website_card")]
+mod website_card;
 
 pub mod forms;
 
@@ -65,7 +68,6 @@ pub use menu::{Menu, MenuItem};
 pub use modal::Modal;
 pub use password_field::PasswordField;
 pub use post_bottom_bar::PostBottomBar;
-pub use post_card::PostCard;
 pub use search_bar::SearchBar;
 pub use submit_button::SubmitButton;
 pub use switch_field::SwitchField;
@@ -74,14 +76,18 @@ pub use textarea_field::TextareaField;
 pub use time_ago::TimeAgo;
 pub use top_bar::TopBar;
 pub use unconfirmed_email_alert::UnconfirmedEmailAlert;
-pub use user_card::UserCard;
 pub use user_tag::{UserAvatar, UserLabels, UserTag, UserTagLink};
-pub use website_card::WebsiteCard;
 
 #[cfg(feature = "image_upload")]
 pub use image_upload_field::ImageUploadField;
 #[cfg(feature = "multiple_image_upload")]
 pub use multiple_image_upload_field::MultipleImageUploadField;
+#[cfg(feature = "post_card")]
+pub use post_card::PostCard;
+#[cfg(feature = "user_card")]
+pub use user_card::UserCard;
+#[cfg(feature = "website_card")]
+pub use website_card::WebsiteCard;
 
 pub struct EventFn(Box<dyn Fn(Event) + 'static>);
 

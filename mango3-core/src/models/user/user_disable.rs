@@ -1,13 +1,19 @@
+#[cfg(feature = "user_cache_remove")]
 use sqlx::query;
 
+#[cfg(feature = "user_cache_remove")]
 use crate::enums::MailerJobCommand;
+#[cfg(feature = "user_cache_remove")]
 use crate::models::UserSession;
+#[cfg(feature = "user_cache_remove")]
 use crate::validator::ValidationErrors;
+#[cfg(feature = "user_cache_remove")]
 use crate::CoreContext;
 
 use super::User;
 
 impl User {
+    #[cfg(feature = "user_cache_remove")]
     pub async fn disable(&self, core_context: &CoreContext) -> Result<(), ValidationErrors> {
         let result = query!(
             "UPDATE users SET disabled_at = current_timestamp WHERE role = 'user' AND disabled_at IS NULL AND id = $1",
@@ -32,6 +38,7 @@ impl User {
         }
     }
 
+    #[cfg(feature = "user_cache_remove")]
     pub async fn enable(&self, core_context: &CoreContext) -> Result<(), ValidationErrors> {
         let result = query!(
             "UPDATE users SET disabled_at = NULL WHERE disabled_at IS NOT NULL AND id = $1",

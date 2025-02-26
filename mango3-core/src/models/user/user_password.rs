@@ -1,13 +1,22 @@
+#[cfg(feature = "user_cache_remove")]
 use sqlx::query_as;
 
-use crate::enums::{ConfirmationCodeAction, Input, InputError, UserRole};
-use crate::models::{encrypt_password, verify_password, ConfirmationCode};
-use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
+use crate::enums::ConfirmationCodeAction;
+use crate::models::{verify_password, ConfirmationCode};
+use crate::validator::ValidationErrors;
 use crate::CoreContext;
+
+#[cfg(feature = "user_cache_remove")]
+use crate::enums::{Input, InputError, UserRole};
+#[cfg(feature = "user_cache_remove")]
+use crate::models::encrypt_password;
+#[cfg(feature = "user_cache_remove")]
+use crate::validator::{Validator, ValidatorTrait};
 
 use super::User;
 
 impl User {
+    #[cfg(feature = "user_cache_remove")]
     pub async fn reset_password(
         &self,
         core_context: &CoreContext,
@@ -73,6 +82,7 @@ impl User {
             .map_err(|_| ValidationErrors::default())
     }
 
+    #[cfg(feature = "user_cache_remove")]
     pub async fn update_password(
         &self,
         core_context: &CoreContext,

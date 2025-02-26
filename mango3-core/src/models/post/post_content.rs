@@ -3,22 +3,31 @@ use cached::stores::AsyncRedisCache;
 use cached::RedisCacheError;
 use sqlx::types::uuid::Uuid;
 
-use crate::constants::{PREFIX_POST_CONTENT_HTML, PREFIX_POST_CONTENT_PREVIEW_HTML, REGEX_HANDLEBARS};
 use crate::models::async_redis_cache;
-use crate::utils::{parse_html, render_handlebars};
+
+use crate::constants::{PREFIX_POST_CONTENT_PREVIEW_HTML, REGEX_HANDLEBARS};
+use crate::utils::parse_html;
+
+#[cfg(feature = "post_content_html")]
+use crate::constants::PREFIX_POST_CONTENT_HTML;
+#[cfg(feature = "handlebars")]
+use crate::utils::render_handlebars;
 
 use super::Post;
 
 impl Post {
+    #[cfg(feature = "post_content_html")]
     pub async fn content_html(&self) -> String {
         post_content_html(self).await.unwrap_or_default()
     }
 
+    #[cfg(feature = "post_content_preview_html")]
     pub async fn content_preview_html(&self) -> String {
         post_content_preview_html(self).await.unwrap_or_default()
     }
 }
 
+#[cfg(feature = "post_content_html")]
 #[io_cached(
     map_error = r##"|err| err"##,
     convert = r#"{ post.id }"#,
@@ -32,6 +41,7 @@ pub(crate) async fn post_content_html(post: &Post) -> Result<String, RedisCacheE
     ))
 }
 
+#[cfg(feature = "post_content_preview_html")]
 #[io_cached(
     map_error = r##"|err| err"##,
     convert = r#"{ post.id }"#,

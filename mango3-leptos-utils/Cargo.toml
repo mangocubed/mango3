@@ -43,6 +43,16 @@ mango3-core = { workspace = true, optional = true }
 [features]
 image_upload = ["web-sys/File", "web-sys/FileList", "server_fn/multipart", "mango3-core?/blob_write"]
 multiple_image_upload = ["image_upload"]
+post_card = ["post_content_preview_html"]
+post_comment_content_html = ["mango3-core?/post_comment_content_html"]
+post_content_html = ["mango3-core?/post_content_html"]
+post_content_preview_html = ["mango3-core?/post_content_preview_html"]
+user_bio_html = ["mango3-core?/user_bio_html"]
+user_bio_preview_html = ["mango3-core?/user_bio_preview_html"]
+user_card = ["user_bio_preview_html"]
+website_card = ["website_description_preview_html"]
+website_description_html = ["mango3-core?/website_description_html"]
+website_description_preview_html = ["mango3-core?/website_description_preview_html"]
 hydrate = ["leptos/hydrate", "leptos_i18n/hydrate"]
 ssr = [
     "dep:accept-language",

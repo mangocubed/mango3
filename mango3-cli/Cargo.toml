@@ -6,4 +6,4 @@ edition.workspace = true
 [dependencies]
 clap = "4.5.30"
 tokio = { workspace = true }
-mango3-core = { workspace = true }
+mango3-core = { workspace = true, features = ["user_cache_remove"] }
