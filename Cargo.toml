@@ -23,7 +23,7 @@ apalis = "0.6.4"
 apalis-redis = "0.6.4"
 async-trait = "0.1.86"
 axum = "0.7.9"
-chrono = {version = "0.4.39", features = ["serde"] }
+chrono = {version = "0.4.40", features = ["serde"] }
 console_error_panic_hook = "0.1.7"
 futures = "0.3.31"
 leptos = "0.7.7"
