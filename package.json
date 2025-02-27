@@ -3,7 +3,7 @@
     "private": true,
     "dependencies": {
         "@tailwindcss/typography": "^0.5.16",
-        "daisyui": "^5.0.0-beta.8",
+        "daisyui": "^5.0.0-beta.9",
         "tailwindcss": "^4.0.8"
     },
     "devDependencies": {
