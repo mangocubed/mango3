@@ -372,10 +372,11 @@ dependencies = [
 
 [[package]]
 name = "attohttpc"
-version = "0.28.5"
+version = "0.29.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "07a9b245ba0739fc90935094c29adbaee3f977218b5fb95e822e261cda7f56a3"
+checksum = "a7c14caf35ca56b10df488b6edb27092d01838e3ee677c7fb7349aa1ce2080bd"
 dependencies = [
+ "base64",
  "encoding_rs",
  "encoding_rs_io",
  "flate2",
