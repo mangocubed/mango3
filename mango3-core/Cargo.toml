@@ -8,7 +8,7 @@ ab_glyph = { version = "0.2.29", optional = true }
 argon2 = "0.5.3"
 apalis = { workspace = true }
 apalis-redis = { workspace = true }
-attohttpc = { version = "0.28.5", features = ["charsets",  "json"], optional = true }
+attohttpc = { version = "0.29.1", features = ["charsets",  "json"], optional = true }
 cached = { version = "0.54.0", features = ["async", "redis_store", "redis_tokio"] }
 dotenvy = "0.15.7"
 figment = { version = "0.10.19", features = ["env"] }
