@@ -15,7 +15,7 @@ module.exports = {
             rs: (content) => content.replace(/(?:^|\s)class:/g, " "),
         },
     },
-    safeList: ["input-error", "opacity-50"],
+    safeList: ["collapse-open", "input-error", "opacity-50"],
     theme: {
         extend: {},
     },
