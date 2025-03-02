@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.0.0-alpha.13] - 2025-03-02
+
+### Changed
+
+- Bump chrono from 0.4.39 to 0.4.40. (https://github.com/mangocubed/mango3/pull/255)
+- Bump clap from 4.5.30 to 4.5.31. (https://github.com/mangocubed/mango3/pull/257)
+- Bump daisyui from 5.0.0-beta.8 to 5.0.0. (https://github.com/mangocubed/mango3/pull/256, https://github.com/mangocubed/mango3/pull/258)
+- Bump tailwindcss from 4.0.8 to 4.0.9. (https://github.com/mangocubed/mango3/pull/250)
+- Bump leptos_i18n from 0.5.6 to 0.5.8. (https://github.com/mangocubed/mango3/pull/259)
+- Bump serde_json from 1.0.138 to 1.0.139. (https://github.com/mangocubed/mango3/pull/260)
+- Bump uuid from 1.13.1 to 1.15.1. (https://github.com/mangocubed/mango3/pull/261)
+- Bump fred from 10.0.4 to 10.1.0. (https://github.com/mangocubed/mango3/pull/262)
+- Bump attohttpc from 0.28.5 to 0.29.1. (https://github.com/mangocubed/mango3/pull/263)
+
+### Fixed
+
+- Add collapse-open to safeList in tailwind.config.js. (https://github.com/mangocubed/mango3/pull/264)
+
 ## [0.0.0-alpha.12] - 2025-02-26
 
 ### Added
