@@ -12,6 +12,6 @@ lettre = { version = "0.11.14", features = [
     "smtp-transport",
     "tokio1-native-tls",
 ] }
-log = "0.4.22"
+log = "0.4.26"
 tokio = { workspace = true, features = ["signal"] }
 mango3-core = { workspace = true }
