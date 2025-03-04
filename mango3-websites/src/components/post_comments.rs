@@ -1,8 +1,9 @@
 use leptos::prelude::*;
 
+use mango3_leptos_utils::components::forms::MarkdownEditorField;
 use mango3_leptos_utils::components::{
     ActionFormAlert, CurrentUser, InfiniteScroll, InfiniteScrollControllerTrait, InfiniteScrollResourceController,
-    SubmitButton, TextareaField, TimeAgo, UserTag, UserTagLink,
+    SubmitButton, TimeAgo, UserTag, UserTagLink,
 };
 use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::models::{ActionFormResp, PostCommentResp};
@@ -89,7 +90,7 @@ pub fn PostComments(post_id: String) -> impl IntoView {
                                                                 />
                                                                 <input type="hidden" name="post_id" value=post_id />
 
-                                                                <TextareaField
+                                                                <MarkdownEditorField
                                                                     name="content"
                                                                     rows=2
                                                                     error=error_content

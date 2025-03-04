@@ -1,7 +1,8 @@
 use leptos::prelude::*;
 
 use mango3_leptos_utils::async_t_string;
-use mango3_leptos_utils::components::{ActionFormAlert, SubmitButton, TextField, TextareaField};
+use mango3_leptos_utils::components::forms::MarkdownEditorField;
+use mango3_leptos_utils::components::{ActionFormAlert, SubmitButton, TextField};
 use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::models::ActionFormResp;
 use mango3_leptos_utils::pages::AuthenticatedPage;
@@ -58,7 +59,11 @@ pub fn NewWebsitePage() -> impl IntoView {
                     error=error_subdomain
                 />
 
-                <TextareaField label=move || t!(i18n, studio.description) name="description" error=error_description />
+                <MarkdownEditorField
+                    label=move || t!(i18n, studio.description)
+                    name="description"
+                    error=error_description
+                />
 
                 <SubmitButton is_loading=server_action.pending() />
             </ActionForm>

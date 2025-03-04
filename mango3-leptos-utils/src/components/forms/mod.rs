@@ -2,6 +2,10 @@ use leptos::prelude::*;
 
 use crate::components::Modal;
 
+mod markdown_editor_field;
+
+pub use markdown_editor_field::MarkdownEditorField;
+
 #[component]
 pub fn ActionFormErrorAlert(#[prop(into)] is_active: Signal<bool>, #[prop(into)] message: ViewFn) -> impl IntoView {
     view! {

@@ -1,6 +1,7 @@
 use leptos::prelude::*;
 
-use mango3_leptos_utils::components::*;
+use mango3_leptos_utils::components::forms::MarkdownEditorField;
+use mango3_leptos_utils::components::{ActionFormAlert, ImageUploadField, SubmitButton, SwitchField, TextField};
 use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::models::ActionFormResp;
 
@@ -93,7 +94,7 @@ pub fn EditPage() -> impl IntoView {
 
                     <TextField label=move || t!(i18n, studio.name) name="name" error=error_name value=value_name />
 
-                    <TextareaField
+                    <MarkdownEditorField
                         label=move || t!(i18n, studio.description)
                         name="description"
                         error=error_description

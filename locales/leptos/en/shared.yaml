@@ -1,6 +1,7 @@
 about_us: About us
 accept: Accept
 birthdate: Birthdate
+bold: Bold
 cancel: Cancel
 change_password: Change password
 code: Code
@@ -23,6 +24,7 @@ failed_to_update_password: Failed to update password
 full_name: Full name
 go_to_title: Go to {{title}}
 home: Home
+italic: Italic
 login: Login
 more_than_a_day_ago: more than a day ago
 more_than_an_hour_ago: more than an hour ago
@@ -53,6 +55,7 @@ register: Register
 remove: Remove
 search_results_for: Search results for “{{query}}”
 select: Select
+strikethrough: Strikethrough
 studio: Studio
 submit: Submit
 terms_of_service: Terms of service

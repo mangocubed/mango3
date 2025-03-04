@@ -1,6 +1,7 @@
 about_us: Sobre nós
 accept: Aceitar
 birthdate: Data de nascimento
+bold: Negrito
 cancel: Cancelar
 change_password: Alterar senha
 code: Código
@@ -23,6 +24,7 @@ failed_to_update_password: Falha ao atualizar senha
 full_name: Nome completo
 go_to_title: Ir para {{title}}
 home: Início
+italic: Itálico
 login: Entrar
 more_than_a_day_ago: mais de um dia atrás
 more_than_an_hour_ago: mais de uma hora atrás
@@ -53,6 +55,7 @@ register: Registrar
 remove: Remover
 search_results_for: Resultados da busca para “{{query}}”
 select: Selecionar
+strikethrough: Tachado
 studio: Studio
 submit: Enviar
 terms_of_service: Termos de serviço
