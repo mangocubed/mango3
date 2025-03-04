@@ -50,7 +50,8 @@ password: Contraseña
 password_updated_successfully: Contraseña actualizada exitosamente
 posts: Posts
 privacy_policy: Política de privacidad
-profile: Profile
+profile: Perfil
+redo: Rehacer
 register: Registrate
 remove: Remover
 search_results_for: Resultados de busqueda para “{{query}}”
@@ -60,6 +61,7 @@ studio: Estudio
 submit: Enviar
 terms_of_service: Términos de servicio
 unpublished: Sin publicar
+undo: Deshacer
 view_more: Ver más
 view_source_code: Ver código fuente
 you_should_go_to_the_following_link_to_confirm_your_email_address: Deberías ir al siguiente enlace para confirmar tu dirección de correo electrónico

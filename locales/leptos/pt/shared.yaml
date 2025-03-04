@@ -51,6 +51,7 @@ password_updated_successfully: Senha atualizada com sucesso
 posts: Posts
 privacy_policy: Política de privacidade
 profile: Perfil
+redo: Rehacer
 register: Registrar
 remove: Remover
 search_results_for: Resultados da busca para “{{query}}”
@@ -59,6 +60,7 @@ strikethrough: Tachado
 studio: Studio
 submit: Enviar
 terms_of_service: Termos de serviço
+undo: Desfazer
 unpublished: Não publicado
 view_more: Ver mais
 view_source_code: Ver código fonte

@@ -51,6 +51,7 @@ password_updated_successfully: Password updated successfully
 posts: Posts
 privacy_policy: Privacy policy
 profile: Profile
+redo: Redo
 register: Register
 remove: Remove
 search_results_for: Search results for “{{query}}”
@@ -59,6 +60,7 @@ strikethrough: Strikethrough
 studio: Studio
 submit: Submit
 terms_of_service: Terms of service
+undo: Undo
 unpublished: Unpublished
 view_more: View more
 view_source_code: View source code

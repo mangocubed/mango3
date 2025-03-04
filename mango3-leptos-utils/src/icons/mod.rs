@@ -1,5 +1,6 @@
 use leptos::prelude::*;
 
+mod arrow;
 mod bars;
 mod chevron;
 mod document;
@@ -15,6 +16,7 @@ mod text_editor;
 mod trash;
 mod users;
 
+pub use arrow::{ArrowUturnLeftMini, ArrowUturnRightMini};
 pub use bars::Bars3Outlined;
 pub use chevron::{ChevronDownMini, ChevronUpMini};
 pub use document::{DocumentOutlined, DocumentTextOutlined};

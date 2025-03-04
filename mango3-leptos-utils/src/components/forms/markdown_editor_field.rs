@@ -7,7 +7,7 @@ use wasm_bindgen::JsCast;
 use web_sys::{HtmlDocument, HtmlTextAreaElement};
 
 use crate::i18n::use_i18n;
-use crate::icons::{BoldMini, ItalicMini, StrikethroughMini};
+use crate::icons::{ArrowUturnLeftMini, ArrowUturnRightMini, BoldMini, ItalicMini, StrikethroughMini};
 
 const BOLD: &str = "**";
 const ITALIC: &str = "_";
@@ -35,28 +35,32 @@ pub fn MarkdownEditorField(
             .content(value),
     );
 
+    let html_document = move || {
+        document()
+            .dyn_into::<HtmlDocument>()
+            .expect("Could not cast to HtmlDocument")
+    };
+    let textarea_element = move || node_ref.get().expect("Could not get element") as HtmlTextAreaElement;
+
     let set_wrap = move |chars: &str| {
-        let element: HtmlTextAreaElement = node_ref.get().expect("Could not get element");
-        let mut sel_start = element.selection_start().ok().flatten().unwrap_or_default() as usize;
-        let mut sel_end = element.selection_end().ok().flatten().unwrap_or_default() as usize;
+        let el = textarea_element();
+        let mut sel_start = el.selection_start().ok().flatten().unwrap_or_default() as usize;
+        let mut sel_end = el.selection_end().ok().flatten().unwrap_or_default() as usize;
         let chars_len = chars.len();
 
         if sel_start > sel_end {
             (sel_start, sel_end) = (sel_end, sel_start);
         }
 
-        let _ = element.focus();
-        let _ = document()
-            .dyn_into::<HtmlDocument>()
-            .expect("Could not cast to HtmlDocument")
-            .exec_command_with_show_ui_and_value(
-                "insertText",
-                false,
-                &format!("{chars}{}{chars}", &value.get()[sel_start..sel_end]),
-            );
-        let _ = element.set_selection_range((sel_start + chars_len) as u32, (sel_end + chars_len) as u32);
+        let _ = el.focus();
+        let _ = html_document().exec_command_with_show_ui_and_value(
+            "insertText",
+            false,
+            &format!("{chars}{}{chars}", &value.get()[sel_start..sel_end]),
+        );
+        let _ = el.set_selection_range((sel_start + chars_len) as u32, (sel_end + chars_len) as u32);
 
-        set_content.set(element.value());
+        set_content.set(el.value());
     };
 
     let _ = use_event_listener(node_ref, keydown, move |event| {
@@ -83,7 +87,6 @@ pub fn MarkdownEditorField(
 
     let _ = use_event_listener(node_ref, keyup, move |event| {
         event.prevent_default();
-
         hotkey_pressed.set(false);
     });
 
@@ -96,6 +99,20 @@ pub fn MarkdownEditorField(
     };
 
     let has_error = move || error.get().is_some();
+
+    let on_click_undo = move |event: MouseEvent| {
+        event.prevent_default();
+
+        let _ = textarea_element().focus();
+        let _ = html_document().exec_command("undo");
+    };
+
+    let on_click_redo = move |event: MouseEvent| {
+        event.prevent_default();
+
+        let _ = textarea_element().focus();
+        let _ = html_document().exec_command("redo");
+    };
 
     let on_click_bold = move |event: MouseEvent| {
         event.prevent_default();
@@ -119,6 +136,33 @@ pub fn MarkdownEditorField(
             </label>
 
             <div class="join">
+                <button
+                    class="btn btn-sm btn-outline btn-accent px-2"
+                    on:click=on_click_undo
+                    title=move || {
+                        format!(
+                            "{} (Ctrl + Z)",
+                            async_t_string!(i18n, shared.undo).with(|value| value.unwrap_or("Undo")),
+                        )
+                    }
+                >
+                    <ArrowUturnLeftMini />
+                </button>
+                <button
+                    class="btn btn-sm btn-outline btn-accent px-2"
+                    on:click=on_click_redo
+                    title=move || {
+                        format!(
+                            "{} (Ctrl + Shift + Z)",
+                            async_t_string!(i18n, shared.redo).with(|value| value.unwrap_or("Redo")),
+                        )
+                    }
+                >
+                    <ArrowUturnRightMini />
+                </button>
+
+                <div class="divider divider-horizontal mx-1" />
+
                 <button
                     class="btn btn-sm btn-outline btn-accent px-2"
                     on:click=on_click_bold
