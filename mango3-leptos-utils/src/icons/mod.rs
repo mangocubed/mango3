@@ -11,6 +11,7 @@ mod link;
 mod magnifying_glass;
 mod pencil;
 mod plus;
+mod text_editor;
 mod trash;
 mod users;
 
@@ -25,6 +26,7 @@ pub use link::LinkOutlined;
 pub use magnifying_glass::MagnifyingGlassMini;
 pub use pencil::PencilSquareOutlined;
 pub use plus::PlusOutlined;
+pub use text_editor::{BoldMini, ItalicMini, StrikethroughMini};
 pub use trash::TrashOutlined;
 pub use users::UsersOutlined;
 

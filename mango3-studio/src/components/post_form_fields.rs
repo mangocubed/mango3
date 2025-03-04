@@ -4,6 +4,7 @@ use leptos::prelude::*;
 use leptos::text_prop::TextProp;
 use server_fn::error::NoCustomError;
 
+use mango3_leptos_utils::components::forms::MarkdownEditorField;
 use mango3_leptos_utils::components::{
     ImageUploadField, MultipleImageUploadField, SubmitButton, SwitchField, TextField, TextareaField,
 };
@@ -79,7 +80,7 @@ pub fn PostFormFields(
 
         <TextField label=move || t!(i18n, studio.slug) name="slug" value=value_slug error=error_slug />
 
-        <TextareaField
+        <MarkdownEditorField
             label=move || t!(i18n, studio.content)
             name="content"
             rows=8

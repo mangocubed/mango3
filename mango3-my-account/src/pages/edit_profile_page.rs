@@ -1,9 +1,8 @@
 use leptos::prelude::*;
 
 use mango3_leptos_utils::async_t_string;
-use mango3_leptos_utils::components::{
-    ActionFormAlert, CountryField, ImageUploadField, SubmitButton, TextField, TextareaField,
-};
+use mango3_leptos_utils::components::forms::MarkdownEditorField;
+use mango3_leptos_utils::components::{ActionFormAlert, CountryField, ImageUploadField, SubmitButton, TextField};
 use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::models::ActionFormResp;
 use mango3_leptos_utils::pages::AuthenticatedPage;
@@ -93,7 +92,7 @@ pub fn EditProfilePage() -> impl IntoView {
                                         value=value_country_alpha2
                                     />
 
-                                    <TextareaField
+                                    <MarkdownEditorField
                                         label=move || t!(i18n, my_account.bio)
                                         name="bio"
                                         error=error_bio
