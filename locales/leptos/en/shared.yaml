@@ -1,5 +1,6 @@
 about_us: About us
 accept: Accept
+alternative_text: Alternative text
 birthdate: Birthdate
 bold: Bold
 cancel: Cancel
@@ -25,6 +26,7 @@ full_name: Full name
 go_to_title: Go to {{title}}
 home: Home
 insert_link: Insert link
+insert_image: Insert image
 italic: Italic
 login: Login
 more_than_a_day_ago: more than a day ago

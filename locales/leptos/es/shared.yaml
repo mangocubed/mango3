@@ -1,5 +1,6 @@
 about_us: Acerca de nosotros
 accept: Aceptar
+alternative_text: Texto alternativo
 birthdate: Fecha de nacimiento
 bold: Negrita
 cancel: Cancelar
@@ -25,6 +26,7 @@ full_name: Nombre completo
 go_to_title: Ir a {{title}}
 home: Inicio
 insert_link: Insertar enlace
+insert_image: Insertar imagen
 italic: Itálica
 login: Iniciar sesión
 more_than_a_day_ago: hace más de un día

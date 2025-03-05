@@ -1,6 +1,8 @@
 use leptos::{ev::keydown, prelude::*};
 use leptos_use::use_event_listener;
 
+use crate::constants::KEY_CODE_ENTER;
+
 use super::EventFn;
 
 #[component]
@@ -24,7 +26,7 @@ pub fn TextField(
     };
 
     let _ = use_event_listener(node_ref, keydown, |event| {
-        if event.key_code() == 13 {
+        if event.key_code() == KEY_CODE_ENTER {
             event.prevent_default();
         }
     });

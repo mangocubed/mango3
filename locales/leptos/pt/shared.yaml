@@ -1,5 +1,6 @@
 about_us: Sobre nós
 accept: Aceitar
+alternative_text: Texto alternativo
 birthdate: Data de nascimento
 bold: Negrito
 cancel: Cancelar
@@ -26,6 +27,7 @@ go_to_title: Ir para {{title}}
 home: Início
 italic: Itálico
 insert_link: Inserir link
+insert_image: Inserir imagem
 login: Entrar
 more_than_a_day_ago: mais de um dia atrás
 more_than_an_hour_ago: mais de uma hora atrás

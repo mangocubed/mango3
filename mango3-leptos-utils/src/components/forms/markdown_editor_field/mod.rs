@@ -6,11 +6,16 @@ use leptos_use::{
 use wasm_bindgen::JsCast;
 use web_sys::{HtmlDocument, HtmlTextAreaElement};
 
+use crate::constants::{KEY_CODE_5, KEY_CODE_B, KEY_CODE_I, KEY_CODE_K};
 use crate::i18n::use_i18n;
-use crate::icons::{ArrowUturnLeftMini, ArrowUturnRightMini, BoldMini, ItalicMini, LinkMini, StrikethroughMini};
+use crate::icons::{
+    ArrowUturnLeftMini, ArrowUturnRightMini, BoldMini, ImageMini, ItalicMini, LinkMini, StrikethroughMini,
+};
 
+mod image_modal;
 mod link_modal;
 
+use image_modal::ImageModal;
 use link_modal::LinkModal;
 
 const BOLD: &str = "**";
@@ -29,6 +34,7 @@ pub fn MarkdownEditorField(
     let i18n = use_i18n();
     let node_ref = NodeRef::new();
     let hotkey_pressed = RwSignal::new(false);
+    let image_modal_is_open = RwSignal::new(false);
     let link_modal_is_open = RwSignal::new(false);
 
     let UseTextareaAutosizeReturn {
@@ -82,44 +88,49 @@ pub fn MarkdownEditorField(
         insert_text(&format!("{chars}{text}{chars}",), chars.len() + text.len());
     };
 
-    let open_link_modal = move || {
-        link_modal_is_open.set(true);
-    };
-
     let _ = use_event_listener(node_ref, keydown, move |event| {
         if hotkey_pressed.get() {
             event.prevent_default();
             return;
         }
 
-        if !event.ctrl_key() {
-            return;
-        }
-
-        match event.key().to_lowercase().as_str() {
-            "b" => {
-                event.prevent_default();
-                insert_wrap(BOLD);
-            }
-            "i" => {
-                event.prevent_default();
-                insert_wrap(ITALIC);
-            }
-            "s" => {
-                if !event.alt_key() {
+        if event.ctrl_key() {
+            match event.key_code() {
+                KEY_CODE_B => {
+                    event.prevent_default();
+                    insert_wrap(BOLD);
+                }
+                KEY_CODE_I => {
+                    event.prevent_default();
+                    insert_wrap(ITALIC);
+                }
+                KEY_CODE_K => {
+                    event.prevent_default();
+                    link_modal_is_open.set(true);
+                }
+                _ => {
+                    hotkey_pressed.set(false);
                     return;
                 }
-
-                event.prevent_default();
-                insert_wrap(STRIKETHROUGH);
             }
-            "k" => {
-                event.prevent_default();
-                open_link_modal();
+        } else if event.alt_key() && event.shift_key() {
+            match event.key_code() {
+                KEY_CODE_5 => {
+                    event.prevent_default();
+                    insert_wrap(STRIKETHROUGH);
+                }
+                KEY_CODE_I => {
+                    event.prevent_default();
+                    image_modal_is_open.set(true);
+                }
+                _ => {
+                    hotkey_pressed.set(false);
+                    return;
+                }
             }
-            _ => {
-                return;
-            }
+        } else {
+            hotkey_pressed.set(false);
+            return;
         }
 
         hotkey_pressed.set(true);
@@ -171,7 +182,12 @@ pub fn MarkdownEditorField(
 
     let on_click_link = move |event: MouseEvent| {
         event.prevent_default();
-        open_link_modal();
+        link_modal_is_open.set(true);
+    };
+
+    let on_click_image = move |event: MouseEvent| {
+        event.prevent_default();
+        image_modal_is_open.set(true);
     };
 
     view! {
@@ -237,7 +253,7 @@ pub fn MarkdownEditorField(
                     on:click=on_click_strikethrough
                     title=move || {
                         format!(
-                            "{} (Ctrl + Alt + S)",
+                            "{} (Alt + Shift + S)",
                             async_t_string!(i18n, shared.strikethrough).with(|value| value.unwrap_or("Strikethrough")),
                         )
                     }
@@ -259,9 +275,23 @@ pub fn MarkdownEditorField(
                 >
                     <LinkMini />
                 </button>
+                <button
+                    class="btn btn-sm btn-outline btn-accent px-2"
+                    on:click=on_click_image
+                    title=move || {
+                        format!(
+                            "{} (Alt + Shift + I)",
+                            async_t_string!(i18n, shared.insert_image).with(|value| value.unwrap_or("Insert image")),
+                        )
+                    }
+                >
+                    <ImageMini />
+                </button>
             </div>
 
             <LinkModal insert_text=insert_text is_open=link_modal_is_open selected_text=selected_text />
+
+            <ImageModal insert_text=insert_text is_open=image_modal_is_open selected_text=selected_text />
 
             <textarea
                 node_ref=node_ref
