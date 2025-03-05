@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.0.0-alpha.14] - 2025-03-05
+
+### Added
+
+- Markdown editor field. (https://github.com/mangocubed/mango3/pull/269)
+- Undo and redo buttons in markdown editor field. (https://github.com/mangocubed/mango3/pull/271)
+- Link button in markdown editor field. (https://github.com/mangocubed/mango3/pull/272)
+- Image button in markdown editor field. (https://github.com/mangocubed/mango3/pull/273)
+
+
+### Changed
+
+- Bump @types/node from 22.13.5 to 22.13.9. (https://github.com/mangocubed/mango3/pull/266, https://github.com/mangocubed/mango3/pull/270)
+- Bump @faker-js/faker from 9.5.0 to 9.5.1. (https://github.com/mangocubed/mango3/pull/267)
+- Bump log from 0.4.25 to 0.4.26. (https://github.com/mangocubed/mango3/pull/268)
+
 ## [0.0.0-alpha.13] - 2025-03-02
 
 ### Changed
