@@ -16,12 +16,19 @@ where
             <div>{children()}</div>
 
             <div class="modal-action">
-                <button class="btn" on:click=move |_| is_open.set(false)>
+                <button
+                    class="btn"
+                    on:click=move |event| {
+                        event.prevent_default();
+                        is_open.set(false);
+                    }
+                >
                     {t!(i18n, shared.cancel)}
                 </button>
                 <button
                     class="btn btn-primary"
-                    on:click=move |_| {
+                    on:click=move |event| {
+                        event.prevent_default();
                         is_open.set(false);
                         on_accept()
                     }

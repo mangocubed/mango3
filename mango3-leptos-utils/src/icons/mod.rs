@@ -24,7 +24,7 @@ pub use exclamation::ExclamationOutlined;
 pub use eye::{EyeMini, EyeSlashMini};
 pub use home::HomeOutlined;
 pub use information_circle::InformationCircleOutlined;
-pub use link::LinkOutlined;
+pub use link::{LinkMini, LinkOutlined};
 pub use magnifying_glass::MagnifyingGlassMini;
 pub use pencil::PencilSquareOutlined;
 pub use plus::PlusOutlined;

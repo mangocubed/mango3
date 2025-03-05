@@ -7,7 +7,11 @@ use wasm_bindgen::JsCast;
 use web_sys::{HtmlDocument, HtmlTextAreaElement};
 
 use crate::i18n::use_i18n;
-use crate::icons::{ArrowUturnLeftMini, ArrowUturnRightMini, BoldMini, ItalicMini, StrikethroughMini};
+use crate::icons::{ArrowUturnLeftMini, ArrowUturnRightMini, BoldMini, ItalicMini, LinkMini, StrikethroughMini};
+
+mod link_modal;
+
+use link_modal::LinkModal;
 
 const BOLD: &str = "**";
 const ITALIC: &str = "_";
@@ -25,6 +29,7 @@ pub fn MarkdownEditorField(
     let i18n = use_i18n();
     let node_ref = NodeRef::new();
     let hotkey_pressed = RwSignal::new(false);
+    let link_modal_is_open = RwSignal::new(false);
 
     let UseTextareaAutosizeReturn {
         content, set_content, ..
@@ -42,25 +47,43 @@ pub fn MarkdownEditorField(
     };
     let textarea_element = move || node_ref.get().expect("Could not get element") as HtmlTextAreaElement;
 
-    let set_wrap = move |chars: &str| {
+    let text_selection = move || {
         let el = textarea_element();
-        let mut sel_start = el.selection_start().ok().flatten().unwrap_or_default() as usize;
-        let mut sel_end = el.selection_end().ok().flatten().unwrap_or_default() as usize;
-        let chars_len = chars.len();
+        let sel_start = el.selection_start().ok().flatten().unwrap_or_default() as usize;
+        let sel_end = el.selection_end().ok().flatten().unwrap_or_default() as usize;
 
-        if sel_start > sel_end {
-            (sel_start, sel_end) = (sel_end, sel_start);
+        if sel_end >= sel_start {
+            (sel_start, sel_end)
+        } else {
+            (sel_end, sel_start)
         }
+    };
+
+    let selected_text = move || {
+        let (sel_start, sel_end) = text_selection();
+
+        value.get().get(sel_start..sel_end).unwrap_or_default().to_owned()
+    };
+
+    let insert_text = move |text: &str, cursor_pos: usize| {
+        let el = textarea_element();
+        let (sel_start, _) = text_selection();
+        let new_position = (sel_start + cursor_pos) as u32;
 
         let _ = el.focus();
-        let _ = html_document().exec_command_with_show_ui_and_value(
-            "insertText",
-            false,
-            &format!("{chars}{}{chars}", &value.get()[sel_start..sel_end]),
-        );
-        let _ = el.set_selection_range((sel_start + chars_len) as u32, (sel_end + chars_len) as u32);
+        let _ = html_document().exec_command_with_show_ui_and_value("insertText", false, text);
+        let _ = el.set_selection_range(new_position, new_position);
 
         set_content.set(el.value());
+    };
+
+    let insert_wrap = move |chars: &str| {
+        let text = selected_text();
+        insert_text(&format!("{chars}{text}{chars}",), chars.len() + text.len());
+    };
+
+    let open_link_modal = move || {
+        link_modal_is_open.set(true);
     };
 
     let _ = use_event_listener(node_ref, keydown, move |event| {
@@ -69,17 +92,34 @@ pub fn MarkdownEditorField(
             return;
         }
 
-        if event.ctrl_key() && event.key().to_lowercase() == "b" {
-            event.prevent_default();
-            set_wrap(BOLD);
-        } else if event.ctrl_key() && event.key().to_lowercase() == "i" {
-            event.prevent_default();
-            set_wrap(ITALIC);
-        } else if event.ctrl_key() && event.alt_key() && event.key().to_lowercase() == "s" {
-            event.prevent_default();
-            set_wrap(STRIKETHROUGH);
-        } else {
+        if !event.ctrl_key() {
             return;
+        }
+
+        match event.key().to_lowercase().as_str() {
+            "b" => {
+                event.prevent_default();
+                insert_wrap(BOLD);
+            }
+            "i" => {
+                event.prevent_default();
+                insert_wrap(ITALIC);
+            }
+            "s" => {
+                if !event.alt_key() {
+                    return;
+                }
+
+                event.prevent_default();
+                insert_wrap(STRIKETHROUGH);
+            }
+            "k" => {
+                event.prevent_default();
+                open_link_modal();
+            }
+            _ => {
+                return;
+            }
         }
 
         hotkey_pressed.set(true);
@@ -116,17 +156,22 @@ pub fn MarkdownEditorField(
 
     let on_click_bold = move |event: MouseEvent| {
         event.prevent_default();
-        set_wrap(BOLD);
+        insert_wrap(BOLD);
     };
 
     let on_click_italic = move |event: MouseEvent| {
         event.prevent_default();
-        set_wrap(ITALIC);
+        insert_wrap(ITALIC);
     };
 
     let on_click_strikethrough = move |event: MouseEvent| {
         event.prevent_default();
-        set_wrap(STRIKETHROUGH);
+        insert_wrap(STRIKETHROUGH);
+    };
+
+    let on_click_link = move |event: MouseEvent| {
+        event.prevent_default();
+        open_link_modal();
     };
 
     view! {
@@ -199,7 +244,24 @@ pub fn MarkdownEditorField(
                 >
                     <StrikethroughMini />
                 </button>
+
+                <div class="divider divider-horizontal mx-1" />
+
+                <button
+                    class="btn btn-sm btn-outline btn-accent px-2"
+                    on:click=on_click_link
+                    title=move || {
+                        format!(
+                            "{} (Ctrl + K)",
+                            async_t_string!(i18n, shared.insert_link).with(|value| value.unwrap_or("Insert link")),
+                        )
+                    }
+                >
+                    <LinkMini />
+                </button>
             </div>
+
+            <LinkModal insert_text=insert_text is_open=link_modal_is_open selected_text=selected_text />
 
             <textarea
                 node_ref=node_ref

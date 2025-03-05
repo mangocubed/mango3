@@ -25,6 +25,7 @@ full_name: Nome completo
 go_to_title: Ir para {{title}}
 home: Início
 italic: Itálico
+insert_link: Inserir link
 login: Entrar
 more_than_a_day_ago: mais de um dia atrás
 more_than_an_hour_ago: mais de uma hora atrás
@@ -60,8 +61,10 @@ strikethrough: Tachado
 studio: Studio
 submit: Enviar
 terms_of_service: Termos de serviço
+text: Texto
 undo: Desfazer
 unpublished: Não publicado
+url: URL
 view_more: Ver mais
 view_source_code: Ver código fonte
 you_should_go_to_the_following_link_to_confirm_your_email_address: Você deve acessar o seguinte link para confirmar seu endereço de e-mail

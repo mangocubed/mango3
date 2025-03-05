@@ -29,6 +29,10 @@
     .h3 {
         @apply text-lg font-bold mb-4;
     }
+
+    .h4 {
+        @apply text-lg font-bold mb-3;
+    }
 }
 
 pre:has(.hljs) {

@@ -24,6 +24,7 @@ failed_to_update_password: Error al actualizar contraseña
 full_name: Nombre completo
 go_to_title: Ir a {{title}}
 home: Inicio
+insert_link: Insertar enlace
 italic: Itálica
 login: Iniciar sesión
 more_than_a_day_ago: hace más de un día
@@ -60,8 +61,10 @@ strikethrough: Tachado
 studio: Estudio
 submit: Enviar
 terms_of_service: Términos de servicio
+text: Texto
 unpublished: Sin publicar
 undo: Deshacer
+url: URL
 view_more: Ver más
 view_source_code: Ver código fuente
 you_should_go_to_the_following_link_to_confirm_your_email_address: Deberías ir al siguiente enlace para confirmar tu dirección de correo electrónico
