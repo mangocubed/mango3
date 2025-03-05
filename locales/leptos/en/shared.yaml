@@ -24,6 +24,7 @@ failed_to_update_password: Failed to update password
 full_name: Full name
 go_to_title: Go to {{title}}
 home: Home
+insert_link: Insert link
 italic: Italic
 login: Login
 more_than_a_day_ago: more than a day ago
@@ -60,8 +61,10 @@ strikethrough: Strikethrough
 studio: Studio
 submit: Submit
 terms_of_service: Terms of service
+text: Text
 undo: Undo
 unpublished: Unpublished
+url: URL
 view_more: View more
 view_source_code: View source code
 you_should_go_to_the_following_link_to_confirm_your_email_address: You should go to the following link to confirm your email address

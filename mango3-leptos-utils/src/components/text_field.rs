@@ -1,4 +1,5 @@
-use leptos::prelude::*;
+use leptos::{ev::keydown, prelude::*};
+use leptos_use::use_event_listener;
 
 use super::EventFn;
 
@@ -12,6 +13,8 @@ pub fn TextField(
     #[prop(into, optional)] on_input: Option<EventFn>,
     #[prop(optional, into)] value: RwSignal<String>,
 ) -> impl IntoView {
+    let node_ref = NodeRef::new();
+
     let field_id = move || {
         if let Some(id) = id {
             id.to_owned()
@@ -19,6 +22,12 @@ pub fn TextField(
             format!("field-{name}")
         }
     };
+
+    let _ = use_event_listener(node_ref, keydown, |event| {
+        if event.key_code() == 13 {
+            event.prevent_default();
+        }
+    });
 
     let has_error = move || error.get().is_some();
 
@@ -33,6 +42,7 @@ pub fn TextField(
                 class:input-error=has_error
                 id=field_id
                 name=name
+                node_ref=node_ref
                 on:input=move |event| {
                     if let Some(on_input) = on_input.as_ref() {
                         on_input.0(event)
