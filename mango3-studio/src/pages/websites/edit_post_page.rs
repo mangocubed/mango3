@@ -44,10 +44,12 @@ pub fn EditPostPage() -> impl IntoView {
                                     <ActionFormAlert
                                         action_value=action_value
                                         error_message=move || t!(i18n, studio.failed_to_update_post)
-                                        redirect_to=format!(
-                                            "/websites/{}/posts",
-                                            param_website_id(params_map).unwrap_or_default(),
-                                        )
+                                        redirect_to=move || {
+                                            format!(
+                                                "/websites/{}/posts",
+                                                param_website_id(params_map).unwrap_or_default(),
+                                            )
+                                        }
                                         success_message=move || t!(i18n, studio.post_updated_successfully)
                                     />
 
