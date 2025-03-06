@@ -31,7 +31,7 @@ regex = { workspace = true, optional = true }
 rust_iso3166 = { workspace = true, optional = true }
 serde = { workspace = true }
 server_fn = { workspace = true }
-time = { version = "0.3.37", optional = true }
+time = { version = "0.3.38", optional = true }
 tower-sessions =  { version = "0.13.0", optional = true,  features = ["private"] }
 tower-sessions-redis-store = { version = "0.15.0", optional = true }
 tokio = { workspace = true, optional = true }
