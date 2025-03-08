@@ -1,6 +1,8 @@
 use leptos::prelude::*;
 
+use crate::components::forms::FormField;
 use crate::i18n::{t, use_i18n};
+use crate::models::ActionValue;
 
 #[server]
 pub async fn get_country_options() -> Result<Vec<(String, String)>, ServerFnError> {
@@ -12,32 +14,22 @@ pub async fn get_country_options() -> Result<Vec<(String, String)>, ServerFnErro
 
 #[component]
 pub fn CountryField(
-    #[prop(optional, into)] error: MaybeProp<String>,
-    #[prop(into, optional)] id: Option<&'static str>,
-    #[prop(into)] label: ViewFn,
-    name: &'static str,
-    #[prop(optional, into)] value: Signal<String>,
+    #[prop(optional)] action_value: ActionValue,
+    #[prop(into, optional)] error: RwSignal<Option<String>>,
+    #[prop(into, optional)] id: &'static str,
+    #[prop(into, optional)] label: ViewFn,
+    #[prop(into, optional)] name: &'static str,
+    #[prop(into, optional)] value: RwSignal<String>,
 ) -> impl IntoView {
     let i18n = use_i18n();
     let options_resource = Resource::new_blocking(|| (), |_| get_country_options());
 
-    let field_id = move || {
-        if let Some(id) = id {
-            id.to_owned()
-        } else {
-            format!("field-{name}")
-        }
-    };
-
     let has_error = move || error.get().is_some();
 
     view! {
-        <fieldset class="fieldset">
-            <label class="fieldset-label" for=field_id>
-                {label.run()}
-            </label>
+        <FormField action_value=action_value error=error id=id label=label name=name>
 
-            <select class="select w-full" class:select-error=has_error id=field_id name=name>
+            <select class="select w-full" class:select-error=has_error id=id name=name>
                 <option value="">{t!(i18n, shared.select)}</option>
                 <Suspense>
                     {move || Suspend::new(async move {
@@ -62,8 +54,6 @@ pub fn CountryField(
                     })}
                 </Suspense>
             </select>
-
-            <div class="fieldset-label text-error">{move || error.get()}</div>
-        </fieldset>
+        </FormField>
     }
 }

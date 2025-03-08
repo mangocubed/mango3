@@ -1,28 +1,25 @@
 use leptos::prelude::*;
 
+use mango3_leptos_utils::components::forms::FormField;
 use mango3_leptos_utils::components::{TopBar, WebsiteIcon};
-use mango3_leptos_utils::models::WebsitePreviewResp;
+use mango3_leptos_utils::models::{ActionValue, WebsitePreviewResp};
 
 #[component]
-pub fn ThemeSelectorField<L>(
-    #[prop(into, optional)] error: MaybeProp<String>,
-    label: L,
+pub fn ThemeSelectorField(
+    action_value: ActionValue,
+    id: &'static str,
+    #[prop(into)] label: ViewFn,
     name: &'static str,
     options: Vec<&'static str>,
     value: RwSignal<String>,
     #[prop(into)] website: WebsitePreviewResp,
-) -> impl IntoView
-where
-    L: IntoView,
-{
+) -> impl IntoView {
     let website_name = website.name.clone();
     let options_store = StoredValue::new(options);
 
     view! {
-        <fieldset class="fieldset">
+        <FormField action_value=action_value id=id label=label name=name>
             <input type="hidden" name=name value=value />
-
-            <label class="fieldset-label">{label}</label>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <For
@@ -80,8 +77,6 @@ where
                     }
                 />
             </div>
-
-            <div class="fieldset-label text-error">{move || error.get()}</div>
-        </fieldset>
+        </FormField>
     }
 }

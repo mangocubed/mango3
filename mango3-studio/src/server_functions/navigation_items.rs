@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 #[cfg(feature = "ssr")]
 use uuid::Uuid;
 
-use mango3_leptos_utils::models::{ActionFormResp, NavigationItemResp};
+use mango3_leptos_utils::models::{FormResp, NavigationItemResp};
 
 #[cfg(feature = "ssr")]
 use mango3_core::models::NavigationItem;
@@ -37,11 +37,11 @@ pub async fn get_all_my_navigation_items(website_id: String) -> Result<Vec<Navig
 pub async fn attempt_to_save_navigation(
     website_id: String,
     items: Option<Vec<NavigationItemParam>>,
-) -> Result<ActionFormResp, ServerFnError> {
+) -> Result<FormResp, ServerFnError> {
     let i18n = extract_i18n().await?;
 
     let Some(website) = my_website(&website_id).await? else {
-        return ActionFormResp::new_with_error(&i18n);
+        return FormResp::new_with_error(&i18n);
     };
 
     let core_context = expect_core_context();
@@ -54,5 +54,5 @@ pub async fn attempt_to_save_navigation(
 
     let result = NavigationItem::save_all(&core_context, &website, items).await;
 
-    ActionFormResp::new(&i18n, result)
+    FormResp::new(&i18n, result)
 }

@@ -17,7 +17,7 @@ uuid = { workspace = true, optional = true }
 wasm-bindgen = { workspace = true }
 web-sys = { workspace = true }
 mango3-core = { workspace = true, features = ["user_cache_remove"], optional = true }
-mango3-leptos-utils = { workspace = true, features = ["image_upload"] }
+mango3-leptos-utils = { workspace = true, features = ["image_upload", "markdown_editor"] }
 
 [features]
 hydrate = ["leptos/hydrate", "leptos_i18n/hydrate", "mango3-leptos-utils/hydrate"]

@@ -25,7 +25,6 @@ leptos-use = { workspace = true, features = [
     "use_color_mode",
     "use_infinite_scroll",
     "use_interval_fn",
-    "use_textarea_autosize",
 ] }
 regex = { workspace = true, optional = true }
 rust_iso3166 = { workspace = true, optional = true }
@@ -37,11 +36,13 @@ tower-sessions-redis-store = { version = "0.15.0", optional = true }
 tokio = { workspace = true, optional = true }
 uuid = { workspace = true, optional = true }
 wasm-bindgen = { workspace = true }
-web-sys = { workspace = true, features = ["HtmlDocument", "HtmlTextAreaElement", "KeyboardEvent"] }
+web-sys = { workspace = true }
 mango3-core = { workspace = true, optional = true }
 
 [features]
-image_upload = ["web-sys/File", "web-sys/FileList", "server_fn/multipart", "mango3-core?/blob_write"]
+forms = ["leptos-use/use_textarea_autosize"]
+image_upload = ["forms", "web-sys/File", "web-sys/FileList", "server_fn/multipart", "mango3-core?/blob_write"]
+markdown_editor = ["forms", "web-sys/HtmlDocument", "web-sys/HtmlTextAreaElement", "web-sys/KeyboardEvent"]
 multiple_image_upload = ["image_upload"]
 post_card = ["post_content_preview_html"]
 post_comment_content_html = ["mango3-core?/post_comment_content_html"]

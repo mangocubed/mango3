@@ -10,7 +10,6 @@ use mango3_core::pagination::CursorPage;
 #[cfg(feature = "ssr")]
 use mango3_core::CoreContext;
 
-mod action_form_resp;
 mod basic_config_resp;
 mod blob_resp;
 mod hashtag_resp;
@@ -22,7 +21,9 @@ mod user_profile_resp;
 mod user_resp;
 mod website_resp;
 
-pub use action_form_resp::ActionFormResp;
+#[cfg(feature = "forms")]
+mod form_resp;
+
 pub use basic_config_resp::BasicConfigResp;
 pub use blob_resp::BlobResp;
 pub use hashtag_resp::HashtagResp;
@@ -33,6 +34,9 @@ pub use post_resp::{PostPreviewResp, PostResp};
 pub use user_profile_resp::UserProfileResp;
 pub use user_resp::{UserPreviewResp, UserResp};
 pub use website_resp::{WebsitePreviewResp, WebsiteResp};
+
+#[cfg(feature = "forms")]
+pub use form_resp::{ActionValue, FormResp};
 
 #[cfg(feature = "ssr")]
 #[async_trait]

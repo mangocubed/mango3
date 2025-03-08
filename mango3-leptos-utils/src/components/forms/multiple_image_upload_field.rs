@@ -7,9 +7,9 @@ use super::ImageUploadField;
 
 #[component]
 pub fn MultipleImageUploadField(
-    #[prop(into)] id: &'static str,
+    #[prop(into, optional)] id: &'static str,
     #[prop(into)] label: ViewFn,
-    #[prop(into)] name: &'static str,
+    #[prop(into, optional)] name: &'static str,
     #[prop(into, optional)] value: RwSignal<Vec<BlobResp>>,
     #[prop(into, optional)] website_id: TextProp,
 ) -> impl IntoView {
@@ -25,7 +25,7 @@ pub fn MultipleImageUploadField(
     });
 
     view! {
-        <ImageUploadField id=id label=label name=format!("{name}[]") website_id=website_id value=uploaded_blob />
+        <ImageUploadField id=id label=label name=&format!("{name}[]") website_id=website_id value=uploaded_blob />
 
         <fieldset class="fieldset">
             <ForEnumerate
@@ -43,7 +43,7 @@ pub fn MultipleImageUploadField(
                     });
 
                     view! {
-                        <ImageUploadField id=format!("{}_{}", id, index.get()) name=format!("{name}[]") value=blob />
+                        <ImageUploadField id=&format!("{}_{}", id, index.get()) name=&format!("{name}[]") value=blob />
                     }
                 }
             />

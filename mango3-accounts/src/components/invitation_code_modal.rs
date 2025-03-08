@@ -1,31 +1,30 @@
 use leptos::prelude::*;
 
-use mango3_leptos_utils::components::{ActionFormError, Modal, SubmitButton, TextField};
+use mango3_leptos_utils::components::forms::{FormErrorAlert, SubmitButton, TextField};
+use mango3_leptos_utils::components::Modal;
 use mango3_leptos_utils::context::use_basic_config;
-use mango3_leptos_utils::enums::ActionFormStatus;
 use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::icons::InformationCircleOutlined;
+use mango3_leptos_utils::models::FormResp;
 
-use crate::server_functions::GetInvitationCodeId;
+use crate::server_functions::AttemptToGetInvitationCodeId;
 
 #[component]
 pub fn InvitationCodeModal(value: RwSignal<Option<String>>) -> impl IntoView {
     let basic_config = use_basic_config();
     let i18n = use_i18n();
-    let server_action = ServerAction::<GetInvitationCodeId>::new();
+    let server_action = ServerAction::<AttemptToGetInvitationCodeId>::new();
     let action_value = server_action.value();
-    let status = RwSignal::new(ActionFormStatus::Pending);
     let is_open = RwSignal::new(!basic_config.enable_register);
     let support_email_address = basic_config.support_email_address;
 
-    Effect::new(move || match action_value.get() {
-        Some(Ok(Some(id))) => {
-            value.set(Some(id));
-            status.set(ActionFormStatus::Success);
+    Effect::new(move || {
+        let response = FormResp::from(action_value);
+
+        if response.is_success() {
+            value.set(response.data);
             is_open.set(false);
         }
-        Some(Ok(None)) => status.set(ActionFormStatus::Error),
-        _ => is_open.set(!basic_config.enable_register),
     });
 
     view! {
@@ -45,9 +44,9 @@ pub fn InvitationCodeModal(value: RwSignal<Option<String>>) -> impl IntoView {
             </div>
 
             <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
-                <ActionFormError message=move || t!(i18n, accounts.failed_to_get_invitation) status=status />
+                <FormErrorAlert action_value=action_value message=move || t!(i18n, accounts.failed_to_get_invitation) />
 
-                <TextField label=move || t!(i18n, shared.code) name="code" />
+                <TextField action_value=action_value id="code" label=move || t!(i18n, shared.code) name="code" />
 
                 <SubmitButton is_loading=server_action.pending() />
             </ActionForm>

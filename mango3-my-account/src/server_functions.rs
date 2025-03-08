@@ -3,7 +3,7 @@ use leptos::prelude::*;
 #[cfg(feature = "ssr")]
 use uuid::Uuid;
 
-use mango3_leptos_utils::models::{ActionFormResp, UserProfileResp};
+use mango3_leptos_utils::models::{FormResp, UserProfileResp};
 
 #[cfg(feature = "ssr")]
 use mango3_core::enums::ConfirmationCodeAction;
@@ -18,15 +18,15 @@ use mango3_leptos_utils::ssr::{
 };
 
 #[server]
-pub async fn attempt_to_confirm_email(code: String) -> Result<ActionFormResp, ServerFnError> {
+pub async fn attempt_to_confirm_email(code: String) -> Result<FormResp, ServerFnError> {
     let i18n = extract_i18n().await?;
 
     if !require_authentication().await? {
-        return ActionFormResp::new_with_error(&i18n);
+        return FormResp::new_with_error(&i18n);
     };
 
     let Some(confirmation_code) = extract_confirmation_code().await? else {
-        return ActionFormResp::new_with_error(&i18n);
+        return FormResp::new_with_error(&i18n);
     };
 
     let core_context = expect_core_context();
@@ -45,7 +45,7 @@ pub async fn attempt_to_confirm_email(code: String) -> Result<ActionFormResp, Se
         )
         .await;
 
-    ActionFormResp::new(&i18n, result)
+    FormResp::new(&i18n, result)
 }
 
 #[server]
@@ -62,11 +62,11 @@ pub async fn attempt_to_logout() -> Result<(), ServerFnError> {
 }
 
 #[server]
-pub async fn attempt_to_send_email_confirmation_code() -> Result<ActionFormResp, ServerFnError> {
+pub async fn attempt_to_send_email_confirmation_code() -> Result<FormResp, ServerFnError> {
     let i18n = extract_i18n().await?;
 
     if !require_authentication().await? {
-        return ActionFormResp::new_with_error(&i18n);
+        return FormResp::new_with_error(&i18n);
     };
 
     let core_context = expect_core_context();
@@ -78,15 +78,15 @@ pub async fn attempt_to_send_email_confirmation_code() -> Result<ActionFormResp,
         let _ = start_confirmation_code(&confirmation_code).await;
     }
 
-    ActionFormResp::new(&i18n, result)
+    FormResp::new(&i18n, result)
 }
 
 #[server]
-pub async fn attempt_to_update_email(email: String, password: String) -> Result<ActionFormResp, ServerFnError> {
+pub async fn attempt_to_update_email(email: String, password: String) -> Result<FormResp, ServerFnError> {
     let i18n = extract_i18n().await?;
 
     if !require_authentication().await? {
-        return ActionFormResp::new_with_error(&i18n);
+        return FormResp::new_with_error(&i18n);
     };
 
     let core_context = expect_core_context();
@@ -94,18 +94,18 @@ pub async fn attempt_to_update_email(email: String, password: String) -> Result<
 
     let result = user.update_email(&core_context, &email, &password).await;
 
-    ActionFormResp::new(&i18n, result)
+    FormResp::new(&i18n, result)
 }
 
 #[server]
 pub async fn attempt_to_update_password(
     current_password: String,
     new_password: String,
-) -> Result<ActionFormResp, ServerFnError> {
+) -> Result<FormResp, ServerFnError> {
     let i18n = extract_i18n().await?;
 
     if !require_authentication().await? {
-        return ActionFormResp::new_with_error(&i18n);
+        return FormResp::new_with_error(&i18n);
     };
 
     let core_context = expect_core_context();
@@ -115,7 +115,7 @@ pub async fn attempt_to_update_password(
         .update_password(&core_context, &current_password, &new_password)
         .await;
 
-    ActionFormResp::new(&i18n, result)
+    FormResp::new(&i18n, result)
 }
 
 #[server]
@@ -126,11 +126,11 @@ pub async fn attempt_to_update_profile(
     country_alpha2: String,
     bio: String,
     avatar_image_blob_id: Option<String>,
-) -> Result<ActionFormResp, ServerFnError> {
+) -> Result<FormResp, ServerFnError> {
     let i18n = extract_i18n().await?;
 
     if !require_authentication().await? {
-        return ActionFormResp::new_with_error(&i18n);
+        return FormResp::new_with_error(&i18n);
     };
 
     let core_context = expect_core_context();
@@ -155,7 +155,7 @@ pub async fn attempt_to_update_profile(
         )
         .await;
 
-    ActionFormResp::new(&i18n, result)
+    FormResp::new(&i18n, result)
 }
 
 #[server]

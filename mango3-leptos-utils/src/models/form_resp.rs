@@ -9,16 +9,18 @@ use mango3_core::locales::I18n;
 #[cfg(feature = "ssr")]
 use mango3_core::validator::ValidationErrors;
 
+pub type ActionValue<D = ()> = RwSignal<Option<Result<FormResp<D>, ServerFnError<NoCustomError>>>>;
+
 #[derive(Clone, Default, Deserialize, Serialize)]
-pub struct ActionFormResp<D = ()> {
+pub struct FormResp<D = ()> {
     pub success: Option<bool>,
     pub errors: Option<HashMap<String, String>>,
     pub data: Option<D>,
 }
 
-impl<D> ActionFormResp<D> {
-    pub fn error(&self, key: &'static str) -> Option<String> {
-        self.errors.as_ref().and_then(|e| e.get(key)).cloned()
+impl<D> FormResp<D> {
+    pub fn error(&self, key: String) -> Option<String> {
+        self.errors.as_ref().and_then(|e| e.get(&key)).cloned()
     }
 
     pub fn is_invalid(&self) -> bool {
@@ -77,11 +79,11 @@ impl<D> ActionFormResp<D> {
     }
 }
 
-impl<D> From<RwSignal<Option<Result<ActionFormResp<D>, ServerFnError<NoCustomError>>>>> for ActionFormResp<D>
+impl<D> From<ActionValue<D>> for FormResp<D>
 where
     D: Default + Send + Sync + Clone + 'static,
 {
-    fn from(action: RwSignal<Option<Result<ActionFormResp<D>, ServerFnError<NoCustomError>>>>) -> Self {
+    fn from(action: ActionValue<D>) -> Self {
         action.with(|resp| resp.clone().and_then(|result| result.ok()).unwrap_or_default())
     }
 }

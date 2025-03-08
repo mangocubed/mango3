@@ -19,7 +19,7 @@ uuid = { workspace = true, optional = true }
 wasm-bindgen = { workspace = true }
 mango3-core = { workspace = true, features = ["post_comment_cache_remove"], optional = true }
 mango3-leptos-utils = { workspace = true, features = [
-    "post_card", "post_comment_content_html", "post_content_html", "website_description_html"
+    "markdown_editor", "post_card", "post_comment_content_html", "post_content_html", "website_description_html"
 ] }
 
 [features]

@@ -7,18 +7,21 @@ use web_sys::{FormData, HtmlInputElement};
 
 use crate::components::{CopyableText, LoadingSpinner};
 use crate::icons::TrashOutlined;
-use crate::models::BlobResp;
+use crate::models::{ActionValue, BlobResp};
 use crate::server_functions::attempt_to_upload_image;
+
+use super::FormField;
 
 #[component]
 pub fn ImageUploadField(
-    #[prop(optional, into)] error: MaybeProp<String>,
+    #[prop(optional)] action_value: ActionValue,
+    #[prop(into, optional)] error: RwSignal<Option<String>>,
     #[prop(default = 48)] height: u16,
-    #[prop(into)] id: String,
+    #[prop(into, optional)] id: String,
     #[prop(into, optional)] label: ViewFn,
+    #[prop(into, optional)] name: String,
     #[prop(into, optional)] value: RwSignal<Option<BlobResp>>,
     #[prop(default = 48)] width: u16,
-    #[prop(into)] name: String,
     #[prop(into, optional)] website_id: TextProp,
 ) -> impl IntoView {
     let upload_action = Action::new_local(|data: &FormData| attempt_to_upload_image(data.clone().into()));
@@ -65,11 +68,7 @@ pub fn ImageUploadField(
     };
 
     view! {
-        <fieldset class="fieldset">
-            <label class="fieldset-label" for=id.clone()>
-                {label.run()}
-            </label>
-
+        <FormField action_value=action_value error=error id=id.clone() label=label name=name.clone()>
             {move || {
                 if upload_action.pending().get() {
                     EitherOf3::A(LoadingSpinner)
@@ -106,8 +105,6 @@ pub fn ImageUploadField(
                     )
                 }
             }}
-
-            <div class="fieldset-label text-error">{move || error.get()}</div>
-        </fieldset>
+        </FormField>
     }
 }

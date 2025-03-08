@@ -1,24 +1,33 @@
 use leptos::either::Either;
-use leptos::ev::MouseEvent;
+use leptos::ev::{keydown, MouseEvent};
 use leptos::prelude::*;
+use leptos_use::use_event_listener;
 
+use crate::constants::KEY_CODE_ENTER;
 use crate::icons::{EyeMini, EyeSlashMini};
+use crate::models::ActionValue;
+
+use super::FormField;
 
 #[component]
-pub fn PasswordField(
-    #[prop(into, optional)] error: MaybeProp<String>,
-    #[prop(into, optional)] id: Option<&'static str>,
-    #[prop(into)] label: ViewFn,
-    name: &'static str,
-) -> impl IntoView {
+pub fn PasswordField<D>(
+    action_value: ActionValue<D>,
+    #[prop(into, optional)] error: RwSignal<Option<String>>,
+    #[prop(into, optional)] id: &'static str,
+    #[prop(into, optional)] label: ViewFn,
+    #[prop(into, optional)] name: &'static str,
+) -> impl IntoView
+where
+    D: Clone + Default + Send + Sync + 'static,
+{
+    let node_ref = NodeRef::new();
     let input_type = RwSignal::new("password".to_owned());
-    let field_id = move || {
-        if let Some(id) = id {
-            id.to_owned()
-        } else {
-            format!("field-{name}")
+
+    let _ = use_event_listener(node_ref, keydown, |event| {
+        if event.key_code() == KEY_CODE_ENTER {
+            event.prevent_default();
         }
-    };
+    });
 
     let has_error = move || error.get().is_some();
 
@@ -35,13 +44,9 @@ pub fn PasswordField(
     };
 
     view! {
-        <fieldset class="fieldset">
-            <label class="fieldset-label" for=field_id>
-                {label.run()}
-            </label>
-
+        <FormField action_value=action_value error=error id=id label=label name=name>
             <div class="input flex items-center gap-2 pr-0 w-full" class:input-error=has_error>
-                <input class="grow" id=field_id name=name type=input_type />
+                <input node_ref=node_ref class="grow" id=id name=name type=input_type />
                 <button class="btn btn-ghost btn-sm" type="button" on:click=toggle_type>
                     {move || {
                         if input_type.get() == "password" {
@@ -52,8 +57,6 @@ pub fn PasswordField(
                     }}
                 </button>
             </div>
-
-            <div class="fieldset-label text-error">{move || error.get()}</div>
-        </fieldset>
+        </FormField>
     }
 }

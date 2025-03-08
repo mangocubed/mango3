@@ -3,7 +3,7 @@ use leptos::prelude::*;
 #[cfg(feature = "ssr")]
 use uuid::Uuid;
 
-use mango3_leptos_utils::models::ActionFormResp;
+use mango3_leptos_utils::models::FormResp;
 
 #[cfg(feature = "ssr")]
 use mango3_core::config::BASIC_CONFIG;
@@ -18,15 +18,15 @@ use mango3_leptos_utils::ssr::{
 };
 
 #[server]
-pub async fn attempt_to_confirm_login(code: String) -> Result<ActionFormResp, ServerFnError> {
+pub async fn attempt_to_confirm_login(code: String) -> Result<FormResp, ServerFnError> {
     let i18n = extract_i18n().await?;
 
     if !require_no_authentication().await? {
-        return ActionFormResp::new_with_error(&i18n);
+        return FormResp::new_with_error(&i18n);
     };
 
     let Some(confirmation_code) = extract_confirmation_code().await? else {
-        return ActionFormResp::new_with_error(&i18n);
+        return FormResp::new_with_error(&i18n);
     };
 
     let core_context = expect_core_context();
@@ -57,24 +57,21 @@ pub async fn attempt_to_confirm_login(code: String) -> Result<ActionFormResp, Se
         )
         .await;
 
-    ActionFormResp::new(&i18n, result)
+    FormResp::new(&i18n, result)
 }
 
 #[server]
-pub async fn attempt_to_login(
-    username_or_email: String,
-    password: String,
-) -> Result<ActionFormResp<bool>, ServerFnError> {
+pub async fn attempt_to_login(username_or_email: String, password: String) -> Result<FormResp<bool>, ServerFnError> {
     let i18n = extract_i18n().await?;
 
     if !require_no_authentication().await? {
-        return ActionFormResp::new_with_error(&i18n);
+        return FormResp::new_with_error(&i18n);
     }
 
     let core_context = expect_core_context();
 
     let Ok(user) = User::authenticate(&core_context, &username_or_email, &password).await else {
-        return ActionFormResp::new_with_error(&i18n);
+        return FormResp::new_with_error(&i18n);
     };
 
     if user.email_is_confirmed() {
@@ -83,7 +80,7 @@ pub async fn attempt_to_login(
         if let Ok(ref confirmation_code) = result {
             let _ = start_confirmation_code(&confirmation_code).await;
 
-            return ActionFormResp::new_with_data(&i18n, result, false);
+            return FormResp::new_with_data(&i18n, result, false);
         }
     } else {
         let result = UserSession::insert(&core_context, &user).await;
@@ -91,11 +88,11 @@ pub async fn attempt_to_login(
         if let Ok(ref user_session) = result {
             let _ = start_user_session(&core_context, &user_session).await;
 
-            return ActionFormResp::new_with_data(&i18n, result, true);
+            return FormResp::new_with_data(&i18n, result, true);
         }
     }
 
-    ActionFormResp::new_with_error(&i18n)
+    FormResp::new_with_error(&i18n)
 }
 
 #[server]
@@ -107,18 +104,18 @@ pub async fn attempt_to_register(
     full_name: String,
     birthdate: String,
     country_alpha2: String,
-) -> Result<ActionFormResp, ServerFnError> {
+) -> Result<FormResp, ServerFnError> {
     let i18n = extract_i18n().await?;
 
     if !require_no_authentication().await? {
-        return ActionFormResp::new_with_error(&i18n);
+        return FormResp::new_with_error(&i18n);
     }
 
     let core_context = expect_core_context();
 
     let invitation_code = if !BASIC_CONFIG.enable_register {
         let Some(id) = invitation_code_id else {
-            return ActionFormResp::new_with_error(&i18n);
+            return FormResp::new_with_error(&i18n);
         };
 
         Some(InvitationCode::get_by_id(&core_context, Uuid::try_parse(&id)?).await?)
@@ -148,22 +145,22 @@ pub async fn attempt_to_register(
         }
     }
 
-    ActionFormResp::new(&i18n, result)
+    FormResp::new(&i18n, result)
 }
 
 #[server]
-pub async fn attempt_to_send_password_reset_code(username_or_email: String) -> Result<ActionFormResp, ServerFnError> {
+pub async fn attempt_to_send_password_reset_code(username_or_email: String) -> Result<FormResp, ServerFnError> {
     let i18n = extract_i18n().await?;
 
     if !require_no_authentication().await? {
-        return ActionFormResp::new_with_error(&i18n);
+        return FormResp::new_with_error(&i18n);
     }
 
     let core_context = expect_core_context();
     let result = User::get_by_username_or_email(&core_context, &username_or_email).await;
 
     let Ok(user) = result else {
-        return ActionFormResp::new_with_error(&i18n);
+        return FormResp::new_with_error(&i18n);
     };
 
     let result = user.send_password_reset_code(&core_context).await;
@@ -172,19 +169,19 @@ pub async fn attempt_to_send_password_reset_code(username_or_email: String) -> R
         let _ = start_confirmation_code(&confirmation_code).await;
     }
 
-    ActionFormResp::new(&i18n, result)
+    FormResp::new(&i18n, result)
 }
 
 #[server]
-pub async fn attempt_to_reset_password(code: String, new_password: String) -> Result<ActionFormResp, ServerFnError> {
+pub async fn attempt_to_reset_password(code: String, new_password: String) -> Result<FormResp, ServerFnError> {
     let i18n = extract_i18n().await?;
 
     if !require_no_authentication().await? {
-        return ActionFormResp::new_with_error(&i18n);
+        return FormResp::new_with_error(&i18n);
     };
 
     let Some(confirmation_code) = extract_confirmation_code().await? else {
-        return ActionFormResp::new_with_error(&i18n);
+        return FormResp::new_with_error(&i18n);
     };
 
     let core_context = expect_core_context();
@@ -215,19 +212,23 @@ pub async fn attempt_to_reset_password(code: String, new_password: String) -> Re
         )
         .await;
 
-    ActionFormResp::new(&i18n, result)
+    FormResp::new(&i18n, result)
 }
 
 #[server]
-pub async fn get_invitation_code_id(code: String) -> Result<Option<String>, ServerFnError> {
+pub async fn attempt_to_get_invitation_code_id(code: String) -> Result<FormResp<String>, ServerFnError> {
+    let i18n = extract_i18n().await?;
+
     if !require_no_authentication().await? {
-        return Ok(None);
+        return FormResp::new_with_error(&i18n);
     };
 
     let core_context = expect_core_context();
 
-    Ok(InvitationCode::get_by_code(&core_context, &code)
-        .await
-        .map(|i| i.id.to_string())
-        .ok())
+    let result = InvitationCode::get_by_code(&core_context, &code).await;
+
+    match result {
+        Ok(invitation_code) => FormResp::new_with_data(&i18n, Ok(()), invitation_code.id.to_string()),
+        Err(_) => FormResp::new_with_error(&i18n),
+    }
 }

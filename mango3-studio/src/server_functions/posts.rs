@@ -7,7 +7,7 @@ use serde_json::Value;
 #[cfg(feature = "ssr")]
 use uuid::Uuid;
 
-use mango3_leptos_utils::models::{ActionFormResp, CursorPageResp, PostPreviewResp, PostResp};
+use mango3_leptos_utils::models::{CursorPageResp, FormResp, PostPreviewResp, PostResp};
 
 #[cfg(feature = "ssr")]
 use mango3_core::constants::{BLACKLISTED_HASHTAGS, REGEX_FIND_HASHTAGS};
@@ -125,11 +125,11 @@ pub async fn attempt_to_create_post(
     blob_ids: Option<Vec<String>>,
     cover_image_blob_id: Option<String>,
     publish: Option<bool>,
-) -> Result<ActionFormResp, ServerFnError> {
+) -> Result<FormResp, ServerFnError> {
     let i18n = extract_i18n().await?;
 
     let Some(website) = my_website(&website_id).await? else {
-        return ActionFormResp::new_with_error(&i18n);
+        return FormResp::new_with_error(&i18n);
     };
 
     let core_context = expect_core_context();
@@ -155,22 +155,22 @@ pub async fn attempt_to_create_post(
     )
     .await;
 
-    ActionFormResp::new(&i18n, result)
+    FormResp::new(&i18n, result)
 }
 
 #[server]
-pub async fn attempt_to_delete_post(website_id: String, id: String) -> Result<ActionFormResp, ServerFnError> {
+pub async fn attempt_to_delete_post(website_id: String, id: String) -> Result<FormResp, ServerFnError> {
     let i18n = extract_i18n().await?;
 
     let Some(post) = my_post(&website_id, &id).await? else {
-        return ActionFormResp::new_with_error(&i18n);
+        return FormResp::new_with_error(&i18n);
     };
 
     let core_context = expect_core_context();
 
     let result = post.delete(&core_context).await;
 
-    ActionFormResp::new(&i18n, result)
+    FormResp::new(&i18n, result)
 }
 
 #[server]
@@ -184,11 +184,11 @@ pub async fn attempt_to_update_post(
     blob_ids: Option<Vec<String>>,
     cover_image_blob_id: Option<String>,
     publish: Option<bool>,
-) -> Result<ActionFormResp, ServerFnError> {
+) -> Result<FormResp, ServerFnError> {
     let i18n = extract_i18n().await?;
 
     let Some(post) = my_post(&website_id, &id).await? else {
-        return ActionFormResp::new_with_error(&i18n);
+        return FormResp::new_with_error(&i18n);
     };
 
     let core_context = expect_core_context();
@@ -214,7 +214,7 @@ pub async fn attempt_to_update_post(
         )
         .await;
 
-    ActionFormResp::new(&i18n, result)
+    FormResp::new(&i18n, result)
 }
 
 #[server]

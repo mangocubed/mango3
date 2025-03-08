@@ -18,7 +18,7 @@ pub enum GuestMailerJobCommand {
 }
 
 #[derive(strum::Display, Clone, Debug, Eq, Hash, PartialEq)]
-#[strum(serialize_all = "kebab-case")]
+#[strum(serialize_all = "snake_case")]
 pub enum Input {
     Bio,
     Birthdate,
