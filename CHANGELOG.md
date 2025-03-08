@@ -1,5 +1,15 @@
 # Changelog
 
+### [0.0.0-alpha.15] - 2025-03-08
+
+### Changed
+
+- Bump time from 0.3.37 to 0.3.38. (https://github.com/mangocubed/mango3/pull/276)
+- Bump @playwright/test from 1.50.1 to 1.51.0. (https://github.com/mangocubed/mango3/pull/278)
+- Bump anyhow from 1.0.96 to 1.0.97. (https://github.com/mangocubed/mango3/pull/279)
+- Bump ring from 0.17.8 to 0.17.13 in the cargo group. (https://github.com/mangocubed/mango3/pull/280)
+- Refactor all form components. (https://github.com/mangocubed/mango3/pull/281)
+
 ## [0.0.0-alpha.14] - 2025-03-05
 
 ### Added
@@ -8,7 +18,6 @@
 - Undo and redo buttons in markdown editor field. (https://github.com/mangocubed/mango3/pull/271)
 - Link button in markdown editor field. (https://github.com/mangocubed/mango3/pull/272)
 - Image button in markdown editor field. (https://github.com/mangocubed/mango3/pull/273)
-
 
 ### Changed
 
