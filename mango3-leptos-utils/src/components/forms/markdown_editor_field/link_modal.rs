@@ -1,8 +1,10 @@
 use leptos::ev::MouseEvent;
 use leptos::prelude::*;
 
-use crate::components::{Modal, TextField};
+use crate::components::forms::TextField;
+use crate::components::Modal;
 use crate::i18n::{t, use_i18n};
+use crate::models::ActionValue;
 
 #[component]
 pub fn LinkModal<IT, ST>(insert_text: IT, is_open: RwSignal<bool>, selected_text: ST) -> impl IntoView
@@ -11,6 +13,7 @@ where
     ST: Fn() -> String + 'static,
 {
     let i18n = use_i18n();
+    let dummy_action_value = ActionValue::<()>::new(None);
     let value_url = RwSignal::new("".to_string());
     let value_text = RwSignal::new("".to_string());
 
@@ -42,8 +45,8 @@ where
         <Modal is_open=is_open on_close=on_close>
             <h4 class="h4">{t!(i18n, shared.insert_link)}</h4>
 
-            <TextField name="link_url" label=move || t!(i18n, shared.url) value=value_url />
-            <TextField name="link_text" label=move || t!(i18n, shared.text) value=value_text />
+            <TextField action_value=dummy_action_value label=move || t!(i18n, shared.url) value=value_url />
+            <TextField action_value=dummy_action_value label=move || t!(i18n, shared.text) value=value_text />
 
             <div class="modal-action">
                 <button class="btn" on:click=on_click_cancel>

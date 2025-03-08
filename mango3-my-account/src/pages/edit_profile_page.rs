@@ -1,10 +1,11 @@
 use leptos::prelude::*;
 
+use leptos_router::hooks::use_navigate;
 use mango3_leptos_utils::async_t_string;
-use mango3_leptos_utils::components::forms::MarkdownEditorField;
-use mango3_leptos_utils::components::{ActionFormAlert, CountryField, ImageUploadField, SubmitButton, TextField};
+use mango3_leptos_utils::components::forms::{
+    CountryField, FormErrorAlert, FormSuccessModal, ImageUploadField, MarkdownEditorField, SubmitButton, TextField,
+};
 use mango3_leptos_utils::i18n::{t, use_i18n};
-use mango3_leptos_utils::models::ActionFormResp;
 use mango3_leptos_utils::pages::AuthenticatedPage;
 use mango3_leptos_utils::utils::ToSignalTrait;
 
@@ -16,22 +17,7 @@ pub fn EditProfilePage() -> impl IntoView {
     let user_profile_resource = Resource::new_blocking(|| (), |_| get_user_profile());
     let server_action = ServerAction::<AttemptToUpdateProfile>::new();
     let action_value = server_action.value();
-    let error_display_name = RwSignal::new(None);
-    let error_full_name = RwSignal::new(None);
-    let error_birthdate = RwSignal::new(None);
-    let error_country_alpha2 = RwSignal::new(None);
-    let error_bio = RwSignal::new(None);
     let title = async_t_string!(i18n, my_account.edit_profile).to_signal();
-
-    Effect::new(move || {
-        let response = ActionFormResp::from(action_value);
-
-        error_display_name.set(response.error("display-name"));
-        error_full_name.set(response.error("full-name"));
-        error_birthdate.set(response.error("birthdate"));
-        error_country_alpha2.set(response.error("country-alpha2"));
-        error_bio.set(response.error("bio"));
-    });
 
     view! {
         <AuthenticatedPage title=title>
@@ -43,6 +29,7 @@ pub fn EditProfilePage() -> impl IntoView {
                         .get()
                         .and_then(|result| result.ok().unwrap_or_default())
                         .map(|user_profile| {
+                            let navigate = use_navigate();
                             let value_display_name = RwSignal::new(user_profile.display_name);
                             let value_full_name = RwSignal::new(user_profile.full_name);
                             let value_birthdate = RwSignal::new(user_profile.birthdate);
@@ -56,46 +43,49 @@ pub fn EditProfilePage() -> impl IntoView {
                                     attr:novalidate="true"
                                     attr:class="form"
                                 >
-                                    <ActionFormAlert
+                                    <FormErrorAlert
                                         action_value=action_value
-                                        error_message=move || t!(i18n, my_account.failed_to_update_profile)
-                                        redirect_to="/"
-                                        success_message=move || t!(i18n, my_account.profile_updated_successfully)
+                                        message=move || t!(i18n, my_account.failed_to_update_profile)
                                     />
 
                                     <TextField
+                                        action_value=action_value
+                                        id="display_name"
                                         label=move || t!(i18n, my_account.display_name)
                                         name="display_name"
-                                        error=error_display_name
                                         value=value_display_name
                                     />
 
                                     <TextField
+                                        action_value=action_value
+                                        id="full_name"
                                         label=move || t!(i18n, shared.full_name)
                                         name="full_name"
-                                        error=error_full_name
                                         value=value_full_name
                                     />
 
                                     <TextField
+                                        action_value=action_value
+                                        id="birthdate"
                                         label=move || t!(i18n, shared.birthdate)
                                         name="birthdate"
                                         input_type="date"
-                                        error=error_birthdate
                                         value=value_birthdate
                                     />
 
                                     <CountryField
+                                        action_value=action_value
+                                        id="country_alpha2"
                                         label=move || t!(i18n, shared.country)
                                         name="country_alpha2"
-                                        error=error_country_alpha2
                                         value=value_country_alpha2
                                     />
 
                                     <MarkdownEditorField
+                                        action_value=action_value
+                                        id="bio"
                                         label=move || t!(i18n, my_account.bio)
                                         name="bio"
-                                        error=error_bio
                                         value=value_bio
                                     />
 
@@ -108,6 +98,12 @@ pub fn EditProfilePage() -> impl IntoView {
 
                                     <SubmitButton is_loading=server_action.pending() />
                                 </ActionForm>
+
+                                <FormSuccessModal
+                                    action_value=action_value
+                                    message=move || t!(i18n, my_account.profile_updated_successfully)
+                                    on_close=move || navigate("/", Default::default())
+                                />
                             }
                         })
                 })}

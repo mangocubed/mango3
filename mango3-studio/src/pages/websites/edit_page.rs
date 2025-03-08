@@ -1,9 +1,10 @@
 use leptos::prelude::*;
 
-use mango3_leptos_utils::components::forms::MarkdownEditorField;
-use mango3_leptos_utils::components::{ActionFormAlert, ImageUploadField, SubmitButton, SwitchField, TextField};
+use leptos_router::hooks::use_navigate;
+use mango3_leptos_utils::components::forms::{
+    FormErrorAlert, FormSuccessModal, ImageUploadField, MarkdownEditorField, SubmitButton, SwitchField, TextField,
+};
 use mango3_leptos_utils::i18n::{t, use_i18n};
-use mango3_leptos_utils::models::ActionFormResp;
 
 use crate::components::{MyWebsite, ThemeSelectorField};
 use crate::server_functions::AttemptToUpdateWebsite;
@@ -52,24 +53,10 @@ const LIGHT_THEMES: [&str; 21] = [
 pub fn EditPage() -> impl IntoView {
     let server_action = ServerAction::<AttemptToUpdateWebsite>::new();
     let action_value = server_action.value();
-    let error_name = RwSignal::new(None);
-    let error_description = RwSignal::new(None);
-    let error_light_theme = RwSignal::new(None);
-    let error_dark_theme = RwSignal::new(None);
-    let error_publish = RwSignal::new(None);
-
-    Effect::new(move || {
-        let response = ActionFormResp::from(action_value);
-
-        error_name.set(response.error("name"));
-        error_description.set(response.error("description"));
-        error_light_theme.set(response.error("light-theme"));
-        error_dark_theme.set(response.error("dark-theme"));
-        error_publish.set(response.error("publish"));
-    });
 
     view! {
         <MyWebsite children=move |website| {
+            let navigate = use_navigate();
             let i18n = use_i18n();
             let value_name = RwSignal::new(website.name.clone());
             let value_description = RwSignal::new(website.description.clone());
@@ -83,67 +70,85 @@ pub fn EditPage() -> impl IntoView {
                 <h2 class="h2">{t!(i18n, studio.edit)}</h2>
 
                 <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
-                    <ActionFormAlert
+                    <FormErrorAlert
                         action_value=action_value
-                        error_message=move || t!(i18n, studio.failed_to_update_website)
-                        redirect_to="/"
-                        success_message=move || t!(i18n, studio.website_updated_successfully)
+                        message=move || t!(i18n, studio.failed_to_update_website)
                     />
 
                     <input type="hidden" name="id" value=website.id.clone() />
 
-                    <TextField label=move || t!(i18n, studio.name) name="name" error=error_name value=value_name />
+                    <TextField
+                        action_value=action_value
+                        id="name"
+                        label=move || t!(i18n, studio.name)
+                        name="name"
+                        value=value_name
+                    />
 
                     <MarkdownEditorField
+                        action_value=action_value
+                        id="description"
                         label=move || t!(i18n, studio.description)
                         name="description"
-                        error=error_description
                         value=value_description
                     />
 
                     <ImageUploadField
-                        label=move || t!(i18n, studio.icon_image)
+                        action_value=action_value
                         id="icon_image_blob_id"
+                        label=move || t!(i18n, studio.icon_image)
                         name="icon_image_blob_id"
                         value=value_icon_image_blob
                         website_id=website.id.clone()
                     />
 
                     <ImageUploadField
-                        label=move || t!(i18n, studio.cover_image)
+                        action_value=action_value
                         id="cover_image_blob_id"
+                        label=move || t!(i18n, studio.cover_image)
                         name="cover_image_blob_id"
                         width=288
                         value=value_cover_image_blob
                     />
 
                     <ThemeSelectorField
+                        action_value=action_value
+                        id="light_theme"
                         label=move || t!(i18n, studio.light_theme)
                         name="light_theme"
                         options=LIGHT_THEMES.to_vec()
                         value=value_light_theme
-                        error=error_light_theme
                         website=website.clone()
                     />
 
                     <ThemeSelectorField
+                        action_value=action_value
+                        id="dark_theme"
                         label=move || t!(i18n, studio.dark_theme)
                         name="dark_theme"
                         options=DARK_THEMES.to_vec()
                         value=value_dark_theme
-                        error=error_dark_theme
                         website=website.clone()
                     />
 
                     <SwitchField
-                        label=t!(i18n, studio.publish)
+                        action_value=action_value
+                        id="publish"
+                        label=move || t!(i18n, studio.publish)
                         name="publish"
-                        error=error_publish
                         is_checked=value_publish
                     />
 
                     <SubmitButton is_loading=server_action.pending() />
                 </ActionForm>
+
+                <FormSuccessModal
+                    action_value=action_value
+                    message=move || t!(i18n, studio.website_updated_successfully)
+                    on_close=move || {
+                        navigate("/", Default::default());
+                    }
+                />
             }
         } />
     }

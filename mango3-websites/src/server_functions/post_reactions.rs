@@ -1,6 +1,6 @@
 use leptos::prelude::*;
 
-use mango3_leptos_utils::models::ActionFormResp;
+use mango3_leptos_utils::models::FormResp;
 
 #[cfg(feature = "ssr")]
 use mango3_core::models::PostReaction;
@@ -11,11 +11,11 @@ use mango3_leptos_utils::ssr::{expect_core_context, extract_i18n, extract_user, 
 use super::posts::current_post;
 
 #[server]
-pub async fn attempt_to_delete_post_reaction(post_id: String) -> Result<ActionFormResp, ServerFnError> {
+pub async fn attempt_to_delete_post_reaction(post_id: String) -> Result<FormResp, ServerFnError> {
     let i18n = extract_i18n().await?;
 
     if !require_authentication().await? {
-        return ActionFormResp::new_with_error(&i18n);
+        return FormResp::new_with_error(&i18n);
     }
 
     let post = current_post(post_id).await?;
@@ -26,18 +26,18 @@ pub async fn attempt_to_delete_post_reaction(post_id: String) -> Result<ActionFo
 
     let result = post_reaction.delete(&core_context).await;
 
-    ActionFormResp::new(&i18n, result)
+    FormResp::new(&i18n, result)
 }
 
 #[server]
 pub async fn attempt_to_insert_or_update_post_reaction(
     post_id: String,
     emoji: String,
-) -> Result<ActionFormResp, ServerFnError> {
+) -> Result<FormResp, ServerFnError> {
     let i18n = extract_i18n().await?;
 
     if !require_authentication().await? {
-        return ActionFormResp::new_with_error(&i18n);
+        return FormResp::new_with_error(&i18n);
     }
 
     let post = current_post(post_id).await?;
@@ -46,7 +46,7 @@ pub async fn attempt_to_insert_or_update_post_reaction(
 
     let result = PostReaction::insert_or_update(&core_context, &post, &user, &emoji).await;
 
-    ActionFormResp::new(&i18n, result)
+    FormResp::new(&i18n, result)
 }
 
 #[server]

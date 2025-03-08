@@ -1,8 +1,8 @@
 use leptos::either::Either;
 use leptos::prelude::*;
-use leptos_router::hooks::use_params_map;
+use leptos_router::hooks::{use_navigate, use_params_map};
 
-use mango3_leptos_utils::components::ActionFormAlert;
+use mango3_leptos_utils::components::forms::{FormErrorAlert, FormSuccessModal};
 use mango3_leptos_utils::i18n::{t, use_i18n};
 
 use crate::components::PostFormFields;
@@ -31,6 +31,7 @@ pub fn EditPostPage() -> impl IntoView {
             {move || {
                 Suspend::new(async move {
                     if let Some(Ok(Some(post))) = post_resource.get() {
+                        let navigate = use_navigate();
                         Either::Left(
                             view! {
                                 <h2 class="h2">{t!(i18n, studio.edit_post)}</h2>
@@ -41,16 +42,9 @@ pub fn EditPostPage() -> impl IntoView {
                                     attr:novalidate="true"
                                     attr:class="form max-w-5xl"
                                 >
-                                    <ActionFormAlert
+                                    <FormErrorAlert
                                         action_value=action_value
-                                        error_message=move || t!(i18n, studio.failed_to_update_post)
-                                        redirect_to=move || {
-                                            format!(
-                                                "/websites/{}/posts",
-                                                param_website_id(params_map).unwrap_or_default(),
-                                            )
-                                        }
-                                        success_message=move || t!(i18n, studio.post_updated_successfully)
+                                        message=move || t!(i18n, studio.failed_to_update_post)
                                     />
 
                                     <input type="hidden" name="id" value=post.id.clone() />
@@ -62,6 +56,20 @@ pub fn EditPostPage() -> impl IntoView {
                                         post=post
                                     />
                                 </ActionForm>
+
+                                <FormSuccessModal
+                                    action_value=action_value
+                                    message=move || t!(i18n, studio.post_updated_successfully)
+                                    on_close=move || {
+                                        navigate(
+                                            &format!(
+                                                "/websites/{}/posts",
+                                                param_website_id(params_map).unwrap_or_default(),
+                                            ),
+                                            Default::default(),
+                                        );
+                                    }
+                                />
                             },
                         )
                     } else {

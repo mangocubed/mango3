@@ -3,7 +3,7 @@ use leptos::prelude::*;
 #[cfg(feature = "ssr")]
 use uuid::Uuid;
 
-use mango3_leptos_utils::models::ActionFormResp;
+use mango3_leptos_utils::models::FormResp;
 use mango3_leptos_utils::models::{CursorPageResp, UserPreviewResp};
 
 #[cfg(feature = "ssr")]
@@ -34,11 +34,11 @@ pub async fn require_admin() -> Result<bool, ServerFnError> {
 }
 
 #[server]
-pub async fn attempt_to_disable_user(id: String) -> Result<ActionFormResp, ServerFnError> {
+pub async fn attempt_to_disable_user(id: String) -> Result<FormResp, ServerFnError> {
     let i18n = extract_i18n().await?;
 
     if !require_admin().await? {
-        return ActionFormResp::new_with_error(&i18n);
+        return FormResp::new_with_error(&i18n);
     }
 
     let core_context = expect_core_context();
@@ -46,15 +46,15 @@ pub async fn attempt_to_disable_user(id: String) -> Result<ActionFormResp, Serve
 
     let result = user.disable(&core_context).await;
 
-    ActionFormResp::new(&i18n, result)
+    FormResp::new(&i18n, result)
 }
 
 #[server]
-pub async fn attempt_to_enable_user(id: String) -> Result<ActionFormResp, ServerFnError> {
+pub async fn attempt_to_enable_user(id: String) -> Result<FormResp, ServerFnError> {
     let i18n = extract_i18n().await?;
 
     if !require_admin().await? {
-        return ActionFormResp::new_with_error(&i18n);
+        return FormResp::new_with_error(&i18n);
     }
 
     let core_context = expect_core_context();
@@ -62,7 +62,7 @@ pub async fn attempt_to_enable_user(id: String) -> Result<ActionFormResp, Server
 
     let result = user.enable(&core_context).await;
 
-    ActionFormResp::new(&i18n, result)
+    FormResp::new(&i18n, result)
 }
 
 #[server]

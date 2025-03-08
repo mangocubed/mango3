@@ -2,12 +2,12 @@ use leptos::either::Either;
 use leptos::ev::MouseEvent;
 use leptos::prelude::*;
 
-use mango3_leptos_utils::components::forms::{ActionFormErrorAlert, ActionFormSuccessModal};
-use mango3_leptos_utils::components::{Modal, SubmitButton, TextField};
+use mango3_leptos_utils::components::forms::{FormErrorAlert, FormSuccessModal, SubmitButton, TextField};
+use mango3_leptos_utils::components::Modal;
 use mango3_leptos_utils::context::use_current_user_resource;
 use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::icons::CheckMini;
-use mango3_leptos_utils::models::ActionFormResp;
+use mango3_leptos_utils::models::FormResp;
 
 use crate::server_functions::{AttemptToConfirmEmail, AttemptToSendEmailConfirmationCode};
 
@@ -17,19 +17,15 @@ pub fn EmailConfirmationModal(is_open: RwSignal<bool>) -> impl IntoView {
     let current_user_resource = use_current_user_resource();
     let server_action = ServerAction::<AttemptToConfirmEmail>::new();
     let action_value = server_action.value();
-    let error_alert_is_active = RwSignal::new(false);
-    let error_code = RwSignal::new(None);
     let success_modal_is_open = RwSignal::new(false);
 
     Effect::new(move || {
-        let response = ActionFormResp::from(action_value);
+        let response = FormResp::from(action_value);
 
         if let Some(true) = response.success {
             is_open.set(false);
             success_modal_is_open.set(true);
         }
-
-        error_code.set(response.error("code"));
     });
 
     view! {
@@ -37,18 +33,18 @@ pub fn EmailConfirmationModal(is_open: RwSignal<bool>) -> impl IntoView {
             <h4 class="text-lg font-bold">{t!(i18n, my_account.confirm_email)}</h4>
 
             <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
-                <ActionFormErrorAlert
-                    is_active=error_alert_is_active
+                <FormErrorAlert
+                    action_value=action_value
                     message=move || t!(i18n, my_account.failed_to_confirm_email)
                 />
 
-                <TextField label=move || t!(i18n, shared.code) name="code" error=error_code />
+                <TextField action_value=action_value id="code" label=move || t!(i18n, shared.code) name="code" />
 
                 <SubmitButton is_loading=server_action.pending() />
             </ActionForm>
         </Modal>
 
-        <ActionFormSuccessModal
+        <FormSuccessModal
             is_open=success_modal_is_open
             message=move || t!(i18n, my_account.email_confirmed_successfully)
             on_close=move || current_user_resource.refetch()
@@ -64,7 +60,7 @@ pub fn EmailConfirmationBadge(#[prop(into)] is_confirmed: Signal<bool>) -> impl 
     let confirmation_modal_is_open = RwSignal::new(false);
 
     Effect::new(move || {
-        let response = ActionFormResp::from(send_code_action_value);
+        let response = FormResp::from(send_code_action_value);
 
         if let Some(true) = response.success {
             confirmation_modal_is_open.set(true)

@@ -11,6 +11,9 @@ use crate::i18n::use_i18n;
 use crate::icons::{
     ArrowUturnLeftMini, ArrowUturnRightMini, BoldMini, ImageMini, ItalicMini, LinkMini, StrikethroughMini,
 };
+use crate::models::ActionValue;
+
+use super::FormField;
 
 mod image_modal;
 mod link_modal;
@@ -24,12 +27,13 @@ const STRIKETHROUGH: &str = "~";
 
 #[component]
 pub fn MarkdownEditorField(
-    #[prop(into, optional)] error: MaybeProp<String>,
-    #[prop(into, optional)] id: Option<&'static str>,
+    #[prop(optional)] action_value: ActionValue,
+    #[prop(into, optional)] error: RwSignal<Option<String>>,
+    #[prop(into, optional)] id: &'static str,
     #[prop(into, optional)] label: ViewFn,
+    #[prop(into, optional)] name: &'static str,
     #[prop(default = 4, into)] rows: i8,
     #[prop(optional, into)] value: RwSignal<String>,
-    name: &'static str,
 ) -> impl IntoView {
     let i18n = use_i18n();
     let node_ref = NodeRef::new();
@@ -141,14 +145,6 @@ pub fn MarkdownEditorField(
         hotkey_pressed.set(false);
     });
 
-    let field_id = move || {
-        if let Some(id) = id {
-            id.to_owned()
-        } else {
-            format!("field-{name}")
-        }
-    };
-
     let has_error = move || error.get().is_some();
 
     let on_click_undo = move |event: MouseEvent| {
@@ -191,11 +187,7 @@ pub fn MarkdownEditorField(
     };
 
     view! {
-        <fieldset class="fieldset">
-            <label class="fieldset-label empty:hidden" for=field_id>
-                {label.run()}
-            </label>
-
+        <FormField action_value=action_value error=error id=id label=label name=name>
             <div class="join">
                 <button
                     class="btn btn-sm btn-outline btn-accent px-2"
@@ -299,11 +291,10 @@ pub fn MarkdownEditorField(
                 on:input=move |event| set_content.set(event_target_value(&event))
                 class="textarea textarea-bordered font-mono w-full"
                 class:textarea-error=has_error
-                id=field_id
+                id=id
                 name=name
                 rows=rows
             />
-            <div class="fieldset-label text-error">{move || error.get()}</div>
-        </fieldset>
+        </FormField>
     }
 }

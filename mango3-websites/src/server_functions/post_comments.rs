@@ -3,7 +3,7 @@ use leptos::prelude::*;
 #[cfg(feature = "ssr")]
 use uuid::Uuid;
 
-use mango3_leptos_utils::models::{ActionFormResp, CursorPageResp, PostCommentResp};
+use mango3_leptos_utils::models::{CursorPageResp, FormResp, PostCommentResp};
 
 #[cfg(feature = "ssr")]
 use mango3_core::models::PostComment;
@@ -18,11 +18,11 @@ use mango3_leptos_utils::ssr::{expect_core_context, extract_i18n, extract_user, 
 use super::posts::current_post;
 
 #[server]
-pub async fn attempt_to_create_post_comment(post_id: String, content: String) -> Result<ActionFormResp, ServerFnError> {
+pub async fn attempt_to_create_post_comment(post_id: String, content: String) -> Result<FormResp, ServerFnError> {
     let i18n = extract_i18n().await?;
 
     if !require_authentication().await? {
-        return ActionFormResp::new_with_error(&i18n);
+        return FormResp::new_with_error(&i18n);
     }
 
     let post = current_post(post_id).await?;
@@ -31,7 +31,7 @@ pub async fn attempt_to_create_post_comment(post_id: String, content: String) ->
 
     let result = PostComment::insert(&core_context, &post, &user, &content).await;
 
-    ActionFormResp::new(&i18n, result)
+    FormResp::new(&i18n, result)
 }
 
 #[server]

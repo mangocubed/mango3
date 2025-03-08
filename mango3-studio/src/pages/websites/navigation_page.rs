@@ -1,8 +1,8 @@
 use leptos::ev::MouseEvent;
 use leptos::prelude::*;
-use leptos_router::hooks::use_params_map;
+use leptos_router::hooks::{use_navigate, use_params_map};
 
-use mango3_leptos_utils::components::{ActionFormAlert, SubmitButton};
+use mango3_leptos_utils::components::forms::{FormErrorAlert, FormSuccessModal, SubmitButton};
 use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::icons::{PlusOutlined, TrashOutlined};
 use mango3_leptos_utils::models::NavigationItemResp;
@@ -12,6 +12,7 @@ use crate::server_functions::{get_all_my_navigation_items, AttemptToSaveNavigati
 
 #[component]
 pub fn NavigationPage() -> impl IntoView {
+    let navigate = use_navigate();
     let i18n = use_i18n();
     let params_map = use_params_map();
     let items_resource = Resource::new_blocking(
@@ -48,12 +49,7 @@ pub fn NavigationPage() -> impl IntoView {
         <h2 class="h2">{t!(i18n, studio.navigation)}</h2>
 
         <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
-            <ActionFormAlert
-                action_value=action_value
-                error_message=move || t!(i18n, studio.failed_to_save_navigation)
-                redirect_to=move || format!("/websites/{}", param_website_id(params_map).unwrap_or_default())
-                success_message=move || t!(i18n, studio.navigation_saved_successfully)
-            />
+            <FormErrorAlert action_value=action_value message=move || t!(i18n, studio.failed_to_save_navigation) />
 
             <input type="hidden" name="website_id" value=move || param_website_id(params_map) />
 
@@ -129,5 +125,16 @@ pub fn NavigationPage() -> impl IntoView {
 
             <SubmitButton is_loading=server_action.pending() />
         </ActionForm>
+
+        <FormSuccessModal
+            action_value=action_value
+            message=move || t!(i18n, studio.navigation_saved_successfully)
+            on_close=move || {
+                navigate(
+                    &format!("/websites/{}", param_website_id(params_map).unwrap_or_default()),
+                    Default::default(),
+                );
+            }
+        />
     }
 }

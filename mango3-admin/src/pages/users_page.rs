@@ -8,7 +8,7 @@ use mango3_leptos_utils::components::{
 };
 use mango3_leptos_utils::context::use_basic_config;
 use mango3_leptos_utils::i18n::{t, use_i18n};
-use mango3_leptos_utils::models::{ActionFormResp, UserPreviewResp};
+use mango3_leptos_utils::models::{FormResp, UserPreviewResp};
 use mango3_leptos_utils::utils::ToSignalTrait;
 
 use crate::components::AdminPageContainer;
@@ -34,7 +34,7 @@ pub fn UsersPage() -> impl IntoView {
     Effect::new({
         let controller = controller.clone();
         move || {
-            let response = ActionFormResp::from(action_value_disable_user);
+            let response = FormResp::from(action_value_disable_user);
 
             if let Some(true) = response.success {
                 controller.clear_and_refetch();
@@ -46,7 +46,7 @@ pub fn UsersPage() -> impl IntoView {
     Effect::new({
         let controller = controller.clone();
         move || {
-            let response = ActionFormResp::from(action_value_enable_user);
+            let response = FormResp::from(action_value_enable_user);
 
             if let Some(true) = response.success {
                 controller.clear_and_refetch();

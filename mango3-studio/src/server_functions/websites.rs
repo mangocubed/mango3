@@ -3,7 +3,7 @@ use leptos::prelude::*;
 #[cfg(feature = "ssr")]
 use uuid::Uuid;
 
-use mango3_leptos_utils::models::{ActionFormResp, CursorPageResp, WebsitePreviewResp, WebsiteResp};
+use mango3_leptos_utils::models::{CursorPageResp, FormResp, WebsitePreviewResp, WebsiteResp};
 
 #[cfg(feature = "ssr")]
 use mango3_core::models::{Blob, Website};
@@ -19,23 +19,23 @@ pub async fn attempt_to_create_website(
     name: String,
     subdomain: String,
     description: String,
-) -> Result<ActionFormResp, ServerFnError> {
+) -> Result<FormResp, ServerFnError> {
     let i18n = extract_i18n().await?;
 
     if !require_authentication().await? {
-        return ActionFormResp::new_with_error(&i18n);
+        return FormResp::new_with_error(&i18n);
     }
 
     let core_context = expect_core_context();
     let user = extract_user().await?.unwrap();
 
     if !user.can_insert_website(&core_context).await {
-        return ActionFormResp::new_with_error(&i18n);
+        return FormResp::new_with_error(&i18n);
     }
 
     let result = Website::insert(&core_context, &user, &name, &subdomain, &description).await;
 
-    ActionFormResp::new(&i18n, result)
+    FormResp::new(&i18n, result)
 }
 
 #[server]
@@ -48,11 +48,11 @@ pub async fn attempt_to_update_website(
     light_theme: String,
     dark_theme: String,
     publish: Option<bool>,
-) -> Result<ActionFormResp, ServerFnError> {
+) -> Result<FormResp, ServerFnError> {
     let i18n = extract_i18n().await?;
 
     let Some(website) = my_website(&id).await? else {
-        return ActionFormResp::new_with_error(&i18n);
+        return FormResp::new_with_error(&i18n);
     };
 
     let core_context = expect_core_context();
@@ -83,7 +83,7 @@ pub async fn attempt_to_update_website(
         )
         .await;
 
-    ActionFormResp::new(&i18n, result)
+    FormResp::new(&i18n, result)
 }
 
 #[server]
