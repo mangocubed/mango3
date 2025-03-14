@@ -24,6 +24,7 @@ pub struct BlobResp {
 #[cfg(feature = "ssr")]
 #[async_trait]
 impl FromCore<Blob> for BlobResp {
+    #[allow(unused_variables)]
     async fn from_core(core_context: &CoreContext, blob: &Blob) -> Self {
         Self {
             id: blob.id.to_string(),
