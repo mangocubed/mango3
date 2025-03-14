@@ -7,7 +7,6 @@ use mango3_leptos_utils::async_t_string;
 use mango3_leptos_utils::i18n::use_i18n;
 use mango3_leptos_utils::icons::*;
 use mango3_leptos_utils::pages::{AuthenticatedPage, NotFoundPage};
-use mango3_leptos_utils::utils::ToSignalTrait;
 
 use crate::components::MyWebsiteOpt;
 use crate::context::{provide_my_website_resource, use_selected_website};
@@ -16,7 +15,7 @@ use crate::context::{provide_my_website_resource, use_selected_website};
 pub fn MenuItem(
     href: String,
     #[prop(into)] icon: ViewFnOnce,
-    #[prop(into)] label: Signal<&'static str>,
+    #[prop(into)] label: AsyncDerived<&'static str>,
 ) -> impl IntoView {
     let location = use_location();
     let href_clone = href.clone();
@@ -48,6 +47,7 @@ pub fn ShowParentPage() -> impl IntoView {
             if let Some(website) = website {
                 let home_path = format!("/websites/{}", website.id);
                 let posts_path = format!("{home_path}/posts");
+                let files_path = format!("{home_path}/files");
                 let navigation_path = format!("{home_path}/navigation");
                 let edit_path = format!("{home_path}/edit");
                 let text_title = Signal::derive(move || {
@@ -60,25 +60,31 @@ pub fn ShowParentPage() -> impl IntoView {
                                 <MenuItem
                                     href=home_path
                                     icon=move || view! { <HomeOutlined /> }
-                                    label=async_t_string!(i18n, shared.home).to_signal()
+                                    label=async_t_string!(i18n, shared.home)
                                 />
 
                                 <MenuItem
                                     href=posts_path
                                     icon=move || view! { <DocumentTextOutlined /> }
-                                    label=async_t_string!(i18n, shared.posts).to_signal()
+                                    label=async_t_string!(i18n, shared.posts)
+                                />
+
+                                <MenuItem
+                                    href=files_path
+                                    icon=move || view! { <PaperClipOutlined /> }
+                                    label=async_t_string!(i18n, studio.files)
                                 />
 
                                 <MenuItem
                                     href=navigation_path
                                     icon=move || view! { <Bars3Outlined /> }
-                                    label=async_t_string!(i18n, studio.navigation).to_signal()
+                                    label=async_t_string!(i18n, studio.navigation)
                                 />
 
                                 <MenuItem
                                     href=edit_path
                                     icon=move || view! { <PencilSquareOutlined /> }
-                                    label=async_t_string!(i18n, studio.edit).to_signal()
+                                    label=async_t_string!(i18n, studio.edit)
                                 />
                             </ul>
 

@@ -105,7 +105,7 @@ where
     });
 
     view! {
-        <fieldset class="fieldset">
+        <fieldset class="fieldset w-full">
             <FieldLabel id=id>{label.run()}</FieldLabel>
 
             {children()}

@@ -22,9 +22,11 @@ slug = "0.1.6"
 tokio = { workspace = true, optional = true }
 uuid = { workspace = true, optional = true }
 wasm-bindgen = { workspace = true }
-mango3-core = { workspace = true, features = ["post_write", "website_write"], optional = true }
+mango3-core = { workspace = true, features = [
+    "blob_delete", "blob_paginate", "post_write", "website_write"
+], optional = true }
 mango3-leptos-utils = { workspace = true, features = [
-    "markdown_editor", "multiple_image_upload", "post_card", "post_content_html", "website_card"
+    "blob_delete", "markdown_editor", "multiple_image_upload", "post_card", "post_content_html", "website_card"
 ] }
 
 [features]

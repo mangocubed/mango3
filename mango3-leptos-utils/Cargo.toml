@@ -41,10 +41,11 @@ mango3-core = { workspace = true, optional = true }
 
 [features]
 forms = ["leptos-use/use_textarea_autosize"]
-image_upload = ["forms", "web-sys/File", "web-sys/FileList", "server_fn/multipart", "mango3-core?/blob_write"]
+image_upload = ["forms", "web-sys/File", "web-sys/FileList", "server_fn/multipart", "mango3-core?/blob_insert"]
 markdown_editor = ["forms", "web-sys/HtmlDocument", "web-sys/HtmlTextAreaElement", "web-sys/KeyboardEvent"]
 multiple_image_upload = ["image_upload"]
 post_card = ["post_content_preview_html"]
+blob_delete = ["mango3-core?/blob_delete"]
 post_comment_content_html = ["mango3-core?/post_comment_content_html"]
 post_content_html = ["mango3-core?/post_content_html"]
 post_content_preview_html = ["mango3-core?/post_content_preview_html"]
