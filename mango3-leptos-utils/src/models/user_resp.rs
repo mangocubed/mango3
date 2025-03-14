@@ -48,6 +48,12 @@ impl UserPreviewResp {
 #[async_trait]
 impl FromCore<User> for UserPreviewResp {
     async fn from_core(core_context: &CoreContext, user: &User) -> Self {
+        let avatar_image_blob = if let Some(Ok(blob)) = user.avatar_image_blob(&core_context).await {
+            Some(BlobResp::from_core(core_context, &blob).await)
+        } else {
+            None
+        };
+
         Self {
             id: user.id.to_string(),
             username: user.username.clone(),
@@ -63,11 +69,7 @@ impl FromCore<User> for UserPreviewResp {
             #[cfg(feature = "user_bio_preview_html")]
             bio_preview_html: user.bio_preview_html().await,
 
-            avatar_image_blob: user
-                .avatar_image_blob(&core_context)
-                .await
-                .and_then(|result| result.ok())
-                .map(|blob| blob.into()),
+            avatar_image_blob,
             text_avatar_url: user.text_avatar_url().to_string(),
             url: user.url().to_string(),
             role: user.role.to_string(),
@@ -156,6 +158,12 @@ impl UserResp {
 #[async_trait]
 impl FromCore<User> for UserResp {
     async fn from_core(core_context: &CoreContext, user: &User) -> Self {
+        let avatar_image_blob = if let Some(Ok(blob)) = user.avatar_image_blob(&core_context).await {
+            Some(BlobResp::from_core(core_context, &blob).await)
+        } else {
+            None
+        };
+
         Self {
             id: user.id.to_string(),
             username: user.username.clone(),
@@ -173,11 +181,7 @@ impl FromCore<User> for UserResp {
                 .iter()
                 .map(|hashtag| hashtag.into())
                 .collect(),
-            avatar_image_blob: user
-                .avatar_image_blob(&core_context)
-                .await
-                .and_then(|result| result.ok())
-                .map(|blob| blob.into()),
+            avatar_image_blob,
             can_insert_website: user.can_insert_website(&core_context).await,
             url: user.url().to_string(),
             text_avatar_url: user.text_avatar_url().to_string(),

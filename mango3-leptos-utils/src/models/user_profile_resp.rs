@@ -56,6 +56,12 @@ impl UserProfileResp {
 #[async_trait]
 impl FromCore<User> for UserProfileResp {
     async fn from_core(core_context: &CoreContext, user: &User) -> Self {
+        let avatar_image_blob = if let Some(Ok(blob)) = user.avatar_image_blob(&core_context).await {
+            Some(BlobResp::from_core(core_context, &blob).await)
+        } else {
+            None
+        };
+
         Self {
             id: user.id.to_string(),
             username: user.username.clone(),
@@ -79,11 +85,7 @@ impl FromCore<User> for UserProfileResp {
                 .iter()
                 .map(|hashtag| hashtag.into())
                 .collect(),
-            avatar_image_blob: user
-                .avatar_image_blob(&core_context)
-                .await
-                .and_then(|result| result.ok())
-                .map(|blob| blob.into()),
+            avatar_image_blob,
             text_avatar_url: user.text_avatar_url().to_string(),
             url: user.url().to_string(),
             role: user.role.to_string(),

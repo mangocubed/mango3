@@ -10,7 +10,7 @@ pub fn CopyableText(#[prop(into)] value: String) -> impl IntoView {
     let i18n = use_i18n();
 
     view! {
-        <div class="grow input flex items-center gap-2 pr-0">
+        <div class="grow input flex items-center gap-2 pr-0 w-full">
             <input class="grow" value=value.clone() readonly />
 
             <Show when=move || is_supported.get()>

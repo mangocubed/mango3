@@ -11,6 +11,8 @@ use mango3_core::models::{Blob, Website};
 use crate::models::BlobResp;
 
 #[cfg(feature = "ssr")]
+use crate::models::FromCore;
+#[cfg(feature = "ssr")]
 use crate::ssr::{expect_core_context, extract_user, require_authentication};
 
 #[server(input = MultipartFormData)]
@@ -50,9 +52,10 @@ pub async fn attempt_to_upload_image(data: MultipartData) -> Result<Option<BlobR
         None
     };
 
-    let blob = Blob::insert(&core_context, &user, website.as_ref(), &mut field)
-        .await
-        .ok();
+    let result = Blob::insert(&core_context, &user, website.as_ref(), &mut field).await;
 
-    Ok(blob.map(|blob| blob.into()))
+    match result {
+        Ok(blob) => Ok(Some(BlobResp::from_core(&core_context, &blob).await)),
+        _ => Ok(None),
+    }
 }

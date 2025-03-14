@@ -13,8 +13,8 @@ impl Blob {
     pub async fn get_by_id(
         core_context: &CoreContext,
         id: Uuid,
-        user: Option<&User>,
         website: Option<&Website>,
+        user: Option<&User>,
     ) -> sqlx::Result<Self> {
         let blob = get_blob_by_id(core_context, id).await?;
 
@@ -72,7 +72,7 @@ mod tests {
         let user = insert_test_user(&core_context).await;
         let blob = insert_test_blob(&core_context, Some(&user), None).await;
 
-        let result = Blob::get_by_id(&core_context, blob.id, Some(&user), None).await;
+        let result = Blob::get_by_id(&core_context, blob.id, None, Some(&user)).await;
 
         assert!(result.is_ok());
     }
@@ -83,7 +83,7 @@ mod tests {
         let user = insert_test_user(&core_context).await;
         let blob = insert_test_blob(&core_context, None, None).await;
 
-        let result = Blob::get_by_id(&core_context, blob.id, Some(&user), None).await;
+        let result = Blob::get_by_id(&core_context, blob.id, None, Some(&user)).await;
 
         assert!(result.is_err());
     }

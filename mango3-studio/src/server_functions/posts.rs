@@ -14,37 +14,20 @@ use mango3_core::constants::{BLACKLISTED_HASHTAGS, REGEX_FIND_HASHTAGS};
 #[cfg(feature = "ssr")]
 use mango3_core::hashtag_has_lookaround;
 #[cfg(feature = "ssr")]
-use mango3_core::models::{Blob, Post, User, Website};
+use mango3_core::models::{Blob, Post};
 #[cfg(feature = "ssr")]
 use mango3_core::pagination::CursorPageParams;
 #[cfg(feature = "ssr")]
 use mango3_core::utils::{parse_html, render_handlebars};
 #[cfg(feature = "ssr")]
-use mango3_core::CoreContext;
-#[cfg(feature = "ssr")]
-use mango3_leptos_utils::models::{FromCore, HashtagResp, UserPreviewResp};
+use mango3_leptos_utils::models::{BlobResp, FromCore, HashtagResp, UserPreviewResp};
 #[cfg(feature = "ssr")]
 use mango3_leptos_utils::ssr::{expect_core_context, extract_i18n, extract_user};
 
 use crate::models::EditPostResp;
 
 #[cfg(feature = "ssr")]
-use super::my_website;
-
-#[cfg(feature = "ssr")]
-async fn get_blobs(core_context: &CoreContext, user: &User, website: &Website, ids: Option<Vec<String>>) -> Vec<Blob> {
-    let Some(ids) = ids else {
-        return vec![];
-    };
-
-    Blob::all_by_ids(
-        &core_context,
-        ids.iter().map(|id| Uuid::try_parse(id).unwrap()).collect(),
-        Some(&user),
-        Some(&website),
-    )
-    .await
-}
+use super::{get_blobs_by_ids, my_website};
 
 #[server]
 pub async fn preview_post(
@@ -85,11 +68,12 @@ pub async fn preview_post(
         })
         .collect::<Vec<HashtagResp>>();
 
-    let cover_image_blob = if let Some(id) = cover_image_blob_id.as_ref().and_then(|id| Uuid::try_parse(id).ok()) {
-        Blob::get_by_id(&core_context, id, Some(&user), None)
-            .await
-            .map(|blob| blob.into())
-            .ok()
+    let cover_image_blob = if let Some(id) = cover_image_blob_id.and_then(|id| Uuid::try_parse(&id).ok()) {
+        if let Ok(blob) = Blob::get_by_id(&core_context, id, None, Some(&user)).await {
+            Some(BlobResp::from_core(&core_context, &blob).await)
+        } else {
+            None
+        }
     } else {
         None
     };
@@ -134,9 +118,11 @@ pub async fn attempt_to_create_post(
 
     let core_context = expect_core_context();
     let user = extract_user().await?.unwrap();
-    let blobs = get_blobs(&core_context, &user, &website, blob_ids).await;
+    let blobs = get_blobs_by_ids(&website, &user, blob_ids).await;
     let cover_image_blob = if let Some(id) = cover_image_blob_id.as_ref().and_then(|id| Uuid::try_parse(id).ok()) {
-        Blob::get_by_id(&core_context, id, Some(&user), None).await.ok()
+        Blob::get_by_id(&core_context, id, Some(&website), Some(&user))
+            .await
+            .ok()
     } else {
         None
     };
@@ -194,9 +180,11 @@ pub async fn attempt_to_update_post(
     let core_context = expect_core_context();
     let user = extract_user().await?.unwrap();
     let website = post.website(&core_context).await?;
-    let blobs = get_blobs(&core_context, &user, &website, blob_ids).await;
+    let blobs = get_blobs_by_ids(&website, &user, blob_ids).await;
     let cover_image_blob = if let Some(id) = cover_image_blob_id.as_ref().and_then(|id| Uuid::try_parse(id).ok()) {
-        Blob::get_by_id(&core_context, id, Some(&user), None).await.ok()
+        Blob::get_by_id(&core_context, id, Some(&website), Some(&user))
+            .await
+            .ok()
     } else {
         None
     };

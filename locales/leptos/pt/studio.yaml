@@ -1,4 +1,5 @@
 add_item: Adicionar item
+are_you_sure_you_want_to_delete_this_file: Tem certeza que deseja excluir este arquivo?
 are_you_sure_you_want_to_delete_this_post: Tem certeza que deseja excluir esta postagem?
 attached_images: Imagens anexadas
 close_preview: Fechar visualização
@@ -13,6 +14,7 @@ failed_to_create_website: Falha ao criar website
 failed_to_save_navigation: Falha ao salvar navegação
 failed_to_update_post: Falha ao atualizar postagem
 failed_to_update_website: Falha ao atualizar website
+files: Arquivos
 description: Descrição
 icon_image: Imagem do ícone
 light_theme: Tema claro
@@ -28,6 +30,7 @@ publish: Publicar
 slug: Slug
 subdomain: Subdomínio
 title: Título
+upload_files: Subir arquivos
 url: URL
 variables: Variáveis
 website_created_successfully: Website criado com sucesso

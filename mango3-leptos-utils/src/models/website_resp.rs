@@ -50,6 +50,17 @@ impl WebsiteResp {
 #[async_trait]
 impl FromCore<Website> for WebsiteResp {
     async fn from_core(core_context: &CoreContext, website: &Website) -> Self {
+        let icon_image_blob = if let Some(Ok(blob)) = website.icon_image_blob(&core_context).await {
+            Some(BlobResp::from_core(core_context, &blob).await)
+        } else {
+            None
+        };
+        let cover_image_blob = if let Some(Ok(blob)) = website.cover_image_blob(&core_context).await {
+            Some(BlobResp::from_core(core_context, &blob).await)
+        } else {
+            None
+        };
+
         Self {
             id: website.id.to_string(),
             name: website.name.clone(),
@@ -67,17 +78,9 @@ impl FromCore<Website> for WebsiteResp {
                 .map(|hashtag| hashtag.into())
                 .collect(),
             initials: website.initials(),
-            icon_image_blob: website
-                .icon_image_blob(&core_context)
-                .await
-                .and_then(|result| result.ok())
-                .map(|blob| blob.into()),
+            icon_image_blob,
             text_icon_url: website.text_icon_url().to_string(),
-            cover_image_blob: website
-                .cover_image_blob(&core_context)
-                .await
-                .and_then(|result| result.ok())
-                .map(|blob| blob.into()),
+            cover_image_blob,
             light_theme: website.light_theme.clone(),
             dark_theme: website.dark_theme.clone(),
             is_published: website.is_published(),
@@ -117,6 +120,12 @@ impl WebsitePreviewResp {
 #[async_trait]
 impl FromCore<Website> for WebsitePreviewResp {
     async fn from_core(core_context: &CoreContext, website: &Website) -> Self {
+        let icon_image_blob = if let Some(Ok(blob)) = website.icon_image_blob(&core_context).await {
+            Some(BlobResp::from_core(core_context, &blob).await)
+        } else {
+            None
+        };
+
         Self {
             id: website.id.to_string(),
             name: website.name.clone(),
@@ -131,11 +140,7 @@ impl FromCore<Website> for WebsitePreviewResp {
                 .map(|hashtag| hashtag.into())
                 .collect(),
             initials: website.initials(),
-            icon_image_blob: website
-                .icon_image_blob(&core_context)
-                .await
-                .and_then(|result| result.ok())
-                .map(|blob| blob.into()),
+            icon_image_blob,
             text_icon_url: website.text_icon_url().to_string(),
             is_published: website.is_published(),
             host: website.host(),

@@ -3,6 +3,8 @@ use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "ssr")]
 use async_trait::async_trait;
+#[cfg(feature = "ssr")]
+use futures::future;
 
 #[cfg(feature = "ssr")]
 use mango3_core::models::Post;
@@ -42,6 +44,19 @@ pub struct PostResp {
 #[async_trait]
 impl FromCore<Post> for PostResp {
     async fn from_core(core_context: &CoreContext, post: &Post) -> Self {
+        let cover_image_blob = if let Some(Ok(blob)) = post.cover_image_blob(&core_context).await {
+            Some(BlobResp::from_core(core_context, &blob).await)
+        } else {
+            None
+        };
+        let blobs = future::join_all(
+            post.blobs(&core_context)
+                .await
+                .iter()
+                .map(|blob| BlobResp::from_core(core_context, blob)),
+        )
+        .await;
+
         Self {
             id: post.id.to_string(),
             user: UserPreviewResp::from_core(
@@ -61,12 +76,8 @@ impl FromCore<Post> for PostResp {
                 .iter()
                 .map(|hashtag| hashtag.into())
                 .collect(),
-            cover_image_blob: post
-                .cover_image_blob(&core_context)
-                .await
-                .and_then(|result| result.ok())
-                .map(|blob| blob.into()),
-            blobs: post.blobs(&core_context).await.iter().map(|blob| blob.into()).collect(),
+            cover_image_blob,
+            blobs,
             is_published: post.is_published(core_context).await,
             url: post.url(&core_context).await.to_string(),
             views_count: post.views_count(&core_context).await,
@@ -107,6 +118,12 @@ pub struct PostPreviewResp {
 #[async_trait]
 impl FromCore<Post> for PostPreviewResp {
     async fn from_core(core_context: &CoreContext, post: &Post) -> Self {
+        let cover_image_blob = if let Some(Ok(blob)) = post.cover_image_blob(&core_context).await {
+            Some(BlobResp::from_core(core_context, &blob).await)
+        } else {
+            None
+        };
+
         Self {
             id: post.id.to_string(),
             website: WebsitePreviewResp::from_core(
@@ -131,11 +148,7 @@ impl FromCore<Post> for PostPreviewResp {
                 .iter()
                 .map(|hashtag| hashtag.into())
                 .collect(),
-            cover_image_blob: post
-                .cover_image_blob(&core_context)
-                .await
-                .and_then(|result| result.ok())
-                .map(|blob| blob.into()),
+            cover_image_blob,
             is_published: post.is_published(core_context).await,
             views_count: post.views_count(&core_context).await,
             comments_count: post.comments_count(&core_context).await,

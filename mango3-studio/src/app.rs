@@ -66,6 +66,7 @@ pub fn App() -> impl IntoView {
                                         )
                                         view=websites::EditPostPage
                                     />
+                                    <Route path=StaticSegment("files") view=websites::FilesPage />
                                     <Route path=StaticSegment("navigation") view=websites::NavigationPage />
                                     <Route path=StaticSegment("edit") view=websites::EditPage />
                                 </ParentRoute>

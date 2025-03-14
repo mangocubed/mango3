@@ -1,4 +1,5 @@
 add_item: Agregar item
+are_you_sure_you_want_to_delete_this_file: ¿Seguro deseas eliminar este archivo?;
 are_you_sure_you_want_to_delete_this_post: ¿Seguro deseas eliminar este post?
 attached_images: Imágenes adjuntas
 close_preview: Cerrar previsualización
@@ -13,6 +14,7 @@ failed_to_create_website: Error al crear website
 failed_to_save_navigation: Error al guardar navegación
 failed_to_update_post: Error al actualizar post
 failed_to_update_website: Error al actualizar website
+files: Archivos
 description: Descripción
 icon_image: Imagen de icono
 light_theme: Tema claro
@@ -28,6 +30,7 @@ publish: Publicar
 slug: Slug
 subdomain: Subdominio
 title: Título
+upload_files: Subir archivos
 url: URL
 variables: Variables
 website_created_successfully: Website creado exitosamente

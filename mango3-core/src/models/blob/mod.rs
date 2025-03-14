@@ -12,19 +12,22 @@ use crate::config::{BASIC_CONFIG, MISC_CONFIG};
 use crate::models::{User, Website};
 use crate::CoreContext;
 
-mod blob_delete;
 mod blob_get;
 
-#[cfg(feature = "blob_write")]
+#[cfg(feature = "blob_delete")]
+mod blob_delete;
+#[cfg(feature = "blob_insert")]
 mod blob_insert;
+#[cfg(feature = "blob_paginate")]
+mod blob_paginate;
 #[cfg(feature = "blob_read")]
 mod blob_read;
 
 #[derive(Clone, Deserialize, Serialize)]
 pub struct Blob {
     pub id: Uuid,
-    pub user_id: Uuid,
     pub website_id: Option<Uuid>,
+    pub user_id: Uuid,
     pub file_name: String,
     pub content_type: String,
     pub byte_size: i64,
@@ -43,19 +46,51 @@ impl Blob {
     pub async fn all_by_ids(
         core_context: &CoreContext,
         ids: Vec<Uuid>,
-        user: Option<&User>,
         website: Option<&Website>,
+        user: Option<&User>,
     ) -> Vec<Self> {
         if ids.is_empty() {
             return vec![];
         }
 
-        future::join_all(ids.iter().map(|id| Self::get_by_id(core_context, *id, user, website)))
+        future::join_all(ids.iter().map(|id| Self::get_by_id(core_context, *id, website, user)))
             .await
             .iter()
             .filter_map(|result| result.as_ref().ok())
             .cloned()
             .collect()
+    }
+
+    #[cfg(feature = "blob_delete")]
+    pub async fn is_removable(&self, core_context: &CoreContext) -> bool {
+        sqlx::query!(
+            "SELECT id
+            FROM blobs AS b
+            WHERE
+                id = $1 AND (
+                    (
+                        website_id IS NULL AND (
+                            SELECT id FROM users AS u WHERE u.id = b.user_id AND u.avatar_image_blob_id = b.id LIMIT 1
+                        ) IS NULL
+                    ) OR (
+                        (
+                            SELECT id FROM websites AS w
+                            WHERE w.id = b.website_id AND (w.cover_image_blob_id = b.id OR w.icon_image_blob_id = b.id)
+                            LIMIT 1
+                        ) IS NULL AND (
+                            SELECT id FROM posts AS p
+                            WHERE
+                                p.website_id = b.website_id AND (p.cover_image_blob_id = b.id OR b.id = ANY(p.blob_ids))
+                            LIMIT 1
+                        ) IS NULL
+                    )
+                )
+            LIMIT 1",
+            self.id
+        )
+        .fetch_one(&core_context.db_pool)
+        .await
+        .is_ok()
     }
 
     pub fn default_path(&self) -> String {
