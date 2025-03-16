@@ -51,39 +51,39 @@ pub fn ShowParentPage() -> impl IntoView {
                 let edit_path = format!("{home_path}/edit");
                 Either::Left(
                     view! {
-                        <ul class="menu bg-base-200 rounded-box md:w-56">
-                            <MenuItem
-                                href=home_path
-                                icon=move || view! { <HomeOutlined /> }
-                                label=async_t_string!(i18n, shared.home)
-                            />
+                        <div class="flex grow gap-4">
+                            <ul class="menu bg-base-200 rounded-box md:w-56">
+                                <MenuItem
+                                    href=home_path
+                                    icon=move || view! { <HomeOutlined /> }
+                                    label=async_t_string!(i18n, shared.home)
+                                />
 
-                            <MenuItem
-                                href=posts_path
-                                icon=move || view! { <DocumentTextOutlined /> }
-                                label=async_t_string!(i18n, shared.posts)
-                            />
+                                <MenuItem
+                                    href=posts_path
+                                    icon=move || view! { <DocumentTextOutlined /> }
+                                    label=async_t_string!(i18n, shared.posts)
+                                />
 
-                            <MenuItem
-                                href=files_path
-                                icon=move || view! { <PaperClipOutlined /> }
-                                label=async_t_string!(i18n, studio.files)
-                            />
+                                <MenuItem
+                                    href=files_path
+                                    icon=move || view! { <PaperClipOutlined /> }
+                                    label=async_t_string!(i18n, studio.files)
+                                />
 
-                            <MenuItem
-                                href=navigation_path
-                                icon=move || view! { <Bars3Outlined /> }
-                                label=async_t_string!(i18n, studio.navigation)
-                            />
+                                <MenuItem
+                                    href=navigation_path
+                                    icon=move || view! { <Bars3Outlined /> }
+                                    label=async_t_string!(i18n, studio.navigation)
+                                />
 
-                            <MenuItem
-                                href=edit_path
-                                icon=move || view! { <PencilSquareOutlined /> }
-                                label=async_t_string!(i18n, studio.edit)
-                            />
-                        </ul>
+                                <MenuItem
+                                    href=edit_path
+                                    icon=move || view! { <PencilSquareOutlined /> }
+                                    label=async_t_string!(i18n, studio.edit)
+                                />
+                            </ul>
 
-                        <div class="grow">
                             <Outlet />
                         </div>
                     },

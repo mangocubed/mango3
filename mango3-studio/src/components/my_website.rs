@@ -60,7 +60,11 @@ where
                             website_name.clone(),
                         )
                     });
-                    view! { <Page title=text_title>{children(website)}</Page> }
+                    view! {
+                        <Page class="grow" title=text_title>
+                            {children(website)}
+                        </Page>
+                    }
                 })
         } />
     }
