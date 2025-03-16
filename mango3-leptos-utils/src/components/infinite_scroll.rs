@@ -93,7 +93,7 @@ where
     fn resource_get(&self) -> Option<CursorPageResp<T>> {
         let resource = self.resource.get()?;
 
-        resource.as_ref().ok().cloned()
+        resource.take().ok()
     }
 
     fn resource_refetch(&self) {

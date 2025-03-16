@@ -6,7 +6,7 @@ use mango3_leptos_utils::components::forms::{
 };
 use mango3_leptos_utils::i18n::{t, use_i18n};
 
-use crate::components::{MyWebsite, ThemeSelectorField};
+use crate::components::{MyWebsitePageWrapper, ThemeSelectorField};
 use crate::server_functions::AttemptToUpdateWebsite;
 
 const DARK_THEMES: [&str; 14] = [
@@ -55,7 +55,7 @@ pub fn EditPage() -> impl IntoView {
     let action_value = server_action.value();
 
     view! {
-        <MyWebsite children=move |website| {
+        <MyWebsitePageWrapper children=move |website| {
             let navigate = use_navigate();
             let i18n = use_i18n();
             let value_name = RwSignal::new(website.name.clone());
