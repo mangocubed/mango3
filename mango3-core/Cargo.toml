@@ -17,7 +17,7 @@ fluent-bundle = { version = "0.15.3", optional = true }
 futures-util = "0.3.31"
 futures = { workspace = true }
 env_logger = "0.11.6"
-handlebars = { version = "6.3.1", features = ["no_logging"], optional = true}
+handlebars = { version = "6.3.2", features = ["no_logging"], optional = true}
 handlebars_misc_helpers = { version = "0.17.0", default-features = false, features = [
     "json", "jsontype", "string"
 ], optional = true }
