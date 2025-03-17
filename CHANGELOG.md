@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.0.0-alpha.16] - 2025-03-17
+
+### Added
+
+- Manage website files. (https://github.com/mangocubed/mango3/pull/295)
+
+### Changed
+
+- Bump @faker-js/faker from 9.5.1 to 9.6.0. (https://github.com/mangocubed/mango3/pull/284)
+- Bump @types/node from 22.13.9 to 22.13.10. (https://github.com/mangocubed/mango3/pull/286)
+- Bump serde_json from 1.0.139 to 1.0.140. (https://github.com/mangocubed/mango3/pull/287)
+- Bump time from 0.3.38 to 0.3.39. (https://github.com/mangocubed/mango3/pull/288)
+- Bump async-trait from 0.1.86 to 0.1.87. (https://github.com/mangocubed/mango3/pull/291)
+- Bump daisyui from 5.0.0 to 5.0.4. (https://github.com/mangocubed/mango3/pull/292, https://github.com/mangocubed/mango3/pull/297)
+- Bump clap from 4.5.31 to 4.5.32. (https://github.com/mangocubed/mango3/pull/294)
+- Bump tailwindcss from 4.0.9 to 4.0.14. (https://github.com/mangocubed/mango3/pull/293)
+- Bump handlebars from 6.3.1 to 6.3.2. (https://github.com/mangocubed/mango3/pull/298)
+- Bump other dependencies. (https://github.com/mangocubed/mango3/pull/299)
+
+### Fixed
+
+- Unit tests in GH Actions. (https://github.com/mangocubed/mango3/pull/283)
+- Refactor website wrapper in studio. (https://github.com/mangocubed/mango3/pull/296)
+
 ### [0.0.0-alpha.15] - 2025-03-08
 
 ### Changed
