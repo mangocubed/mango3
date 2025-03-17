@@ -13,16 +13,13 @@ pub fn provide_selected_website() {
 
 pub fn provide_my_website_resource() {
     let params_map = use_params_map();
-    provide_context(Resource::new_blocking(
-        move || param_website_id(params_map),
-        |website_id| async {
-            if let Some(id) = website_id {
-                get_my_website(id).await
-            } else {
-                Ok(None)
-            }
-        },
-    ))
+    provide_context(LocalResource::new(move || async move {
+        if let Some(id) = param_website_id(params_map) {
+            get_my_website(id).await
+        } else {
+            Ok(None)
+        }
+    }))
 }
 
 pub fn use_selected_website() -> RwSignal<Option<WebsitePreviewResp>> {
@@ -33,6 +30,6 @@ pub fn param_website_id(params_map: Memo<ParamsMap>) -> Option<String> {
     params_map.with(|params| params.get(KEY_PARAM_WEBSITE_ID))
 }
 
-pub fn use_my_website_resource() -> Resource<Result<Option<WebsiteResp>, ServerFnError>> {
-    use_context::<Resource<Result<Option<WebsiteResp>, ServerFnError>>>().unwrap()
+pub fn use_my_website_resource() -> LocalResource<Result<Option<WebsiteResp>, ServerFnError>> {
+    use_context::<LocalResource<Result<Option<WebsiteResp>, ServerFnError>>>().unwrap()
 }

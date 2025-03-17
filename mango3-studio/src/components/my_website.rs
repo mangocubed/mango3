@@ -21,7 +21,7 @@ where
     view! {
         <Suspense fallback=LoadingSpinner>
             {move || Suspend::new(async move {
-                match my_website_resource.get() {
+                match my_website_resource.get().map(|resource| resource.take()) {
                     Some(Ok(website_opt)) => Either::Left(children_store.with_value(|store| store(website_opt))),
                     _ => Either::Right(()),
                 }
