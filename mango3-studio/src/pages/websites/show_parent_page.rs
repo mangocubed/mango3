@@ -6,7 +6,7 @@ use leptos_router::hooks::use_location;
 use mango3_leptos_utils::async_t_string;
 use mango3_leptos_utils::i18n::use_i18n;
 use mango3_leptos_utils::icons::*;
-use mango3_leptos_utils::pages::{AuthenticatedPage, NotFoundPage};
+use mango3_leptos_utils::pages::NotFoundPage;
 
 use crate::components::MyWebsiteOpt;
 use crate::context::{provide_my_website_resource, use_selected_website};
@@ -38,7 +38,6 @@ pub fn ShowParentPage() -> impl IntoView {
     provide_my_website_resource();
 
     let i18n = use_i18n();
-    let text_my_websites = async_t_string!(i18n, studio.my_websites);
 
     view! {
         <MyWebsiteOpt children=move |website| {
@@ -50,12 +49,9 @@ pub fn ShowParentPage() -> impl IntoView {
                 let files_path = format!("{home_path}/files");
                 let navigation_path = format!("{home_path}/navigation");
                 let edit_path = format!("{home_path}/edit");
-                let text_title = Signal::derive(move || {
-                    format!("{} > {}", text_my_websites.with(|value| value.unwrap_or("My websites")), website.name)
-                });
                 Either::Left(
                     view! {
-                        <AuthenticatedPage class="flex grow gap-4" title=text_title>
+                        <div class="flex grow gap-4">
                             <ul class="menu bg-base-200 rounded-box md:w-56">
                                 <MenuItem
                                     href=home_path
@@ -88,14 +84,12 @@ pub fn ShowParentPage() -> impl IntoView {
                                 />
                             </ul>
 
-                            <div class="grow">
-                                <Outlet />
-                            </div>
-                        </AuthenticatedPage>
+                            <Outlet />
+                        </div>
                     },
                 )
             } else {
-                Either::Right(view! { <NotFoundPage /> })
+                Either::Right(NotFoundPage)
             }
         } />
     }

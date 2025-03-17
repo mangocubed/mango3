@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "ssr")]
@@ -172,5 +174,11 @@ impl From<&WebsiteResp> for WebsitePreviewResp {
 impl From<WebsiteResp> for WebsitePreviewResp {
     fn from(website: WebsiteResp) -> Self {
         Self::from(&website)
+    }
+}
+
+impl From<Arc<WebsiteResp>> for WebsitePreviewResp {
+    fn from(website: Arc<WebsiteResp>) -> Self {
+        Self::from(&Arc::into_inner(website).expect("Could not unwrap website"))
     }
 }
