@@ -3156,7 +3156,7 @@ dependencies = [
  "axum",
  "axum-client-ip",
  "chrono",
- "codee 0.2.0",
+ "codee 0.3.0",
  "cookie",
  "default-struct-builder",
  "fred",
