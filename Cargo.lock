@@ -788,15 +788,6 @@ checksum = "f46ad14479a25103f283c0f10005961cf086d8dc42205bb44c46ac563475dca6"
 
 [[package]]
 name = "codee"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5d3ad3122b0001c7f140cf4d605ef9a9e2c24d96ab0b4fb4347b76de2425f445"
-dependencies = [
- "thiserror 1.0.69",
-]
-
-[[package]]
-name = "codee"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0f18d705321923b1a9358e3fc3c57c3b50171196827fc7f5f10b053242aca627"
@@ -2673,7 +2664,7 @@ checksum = "e612389629007497d1e90deecf5bddd790e59e32358546fa7beaf88a68d2067b"
 dependencies = [
  "cfg-if",
  "chrono",
- "codee 0.3.0",
+ "codee",
  "cookie",
  "default-struct-builder",
  "futures-util",
@@ -2764,11 +2755,10 @@ dependencies = [
 [[package]]
 name = "leptos_i18n"
 version = "0.5.10"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eb426225383487567f4592fafcd8e5f24306fd1c5c3aaa8c385289c28727ca4b"
+source = "git+https://github.com/Baptistemontan/leptos_i18n?rev=bb46f4c9de629600b15fb8a16d96524a213160f5#bb46f4c9de629600b15fb8a16d96524a213160f5"
 dependencies = [
  "async-once-cell",
- "codee 0.2.0",
+ "codee",
  "default-struct-builder",
  "futures",
  "icu_locid",
@@ -2787,8 +2777,7 @@ dependencies = [
 [[package]]
 name = "leptos_i18n_macro"
 version = "0.5.10"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "51fd543900103a81af6cdef4662c1a42caa7a47e11ac4f845f562d09271d1e87"
+source = "git+https://github.com/Baptistemontan/leptos_i18n?rev=bb46f4c9de629600b15fb8a16d96524a213160f5#bb46f4c9de629600b15fb8a16d96524a213160f5"
 dependencies = [
  "fixed_decimal",
  "icu_locid",
@@ -2807,8 +2796,7 @@ dependencies = [
 [[package]]
 name = "leptos_i18n_parser"
 version = "0.5.10"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7181dba83a952593964e6c9c0a289ab6f047d0e69a287c65038650251bfc0c80"
+source = "git+https://github.com/Baptistemontan/leptos_i18n?rev=bb46f4c9de629600b15fb8a16d96524a213160f5#bb46f4c9de629600b15fb8a16d96524a213160f5"
 dependencies = [
  "fixed_decimal",
  "icu_locid",
@@ -2922,7 +2910,7 @@ checksum = "4fee9ed4526484b17561bc8ce1532c613e37be2c01788fed3d1c4104db674dd9"
 dependencies = [
  "any_spawner",
  "base64",
- "codee 0.3.0",
+ "codee",
  "futures",
  "hydration_context",
  "or_poisoned",
@@ -3156,7 +3144,7 @@ dependencies = [
  "axum",
  "axum-client-ip",
  "chrono",
- "codee 0.3.0",
+ "codee",
  "cookie",
  "default-struct-builder",
  "fred",
