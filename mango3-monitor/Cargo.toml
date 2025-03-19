@@ -14,4 +14,4 @@ lettre = { version = "0.11.15", features = [
 ] }
 log = "0.4.26"
 tokio = { workspace = true, features = ["signal"] }
-mango3-core = { workspace = true }
+mango3-core = { workspace = true, features = ["blob_delete"] }
