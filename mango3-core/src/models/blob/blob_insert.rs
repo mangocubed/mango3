@@ -34,6 +34,15 @@ impl Blob {
             md5_hasher.update(chunk);
         }
 
+        #[cfg(feature = "website_storage")]
+        {
+            if let Some(website) = website {
+                if website.available_storage(core_context).await.bytes() < byte_size {
+                    return Err(ValidationErrors::default());
+                }
+            }
+        }
+
         let md5_checksum = format!("{:x}", md5_hasher.finalize());
         let content_type = field.content_type().unwrap_or(&APPLICATION_OCTET_STREAM).to_string();
 

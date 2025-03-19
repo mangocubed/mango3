@@ -13,10 +13,8 @@ pub fn WebsiteCard(
 ) -> impl IntoView {
     let i18n = use_i18n();
 
-    let website_url = website.url.clone();
-
     let href = if website.is_published {
-        Some(website_url.clone())
+        Some(website.url.clone())
     } else {
         None
     };

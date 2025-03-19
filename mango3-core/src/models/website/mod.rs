@@ -37,6 +37,8 @@ mod website_delete;
 mod website_description;
 #[cfg(feature = "website_write")]
 mod website_insert;
+#[cfg(feature = "website_storage")]
+mod website_storage;
 #[cfg(feature = "website_write")]
 mod website_update;
 

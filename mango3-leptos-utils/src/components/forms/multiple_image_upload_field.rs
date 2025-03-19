@@ -8,7 +8,7 @@ use super::ImageUploadField;
 #[component]
 pub fn MultipleImageUploadField(
     #[prop(into, optional)] id: &'static str,
-    #[prop(into)] label: ViewFn,
+    #[prop(into, optional)] label: ViewFn,
     #[prop(into, optional)] name: &'static str,
     #[prop(into, optional)] value: RwSignal<Vec<BlobResp>>,
     #[prop(into, optional)] website_id: TextProp,

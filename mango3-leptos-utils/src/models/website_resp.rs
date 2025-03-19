@@ -37,6 +37,24 @@ pub struct WebsiteResp {
     pub is_published: bool,
     pub host: String,
     pub url: String,
+
+    #[cfg(feature = "website_storage")]
+    pub available_storage_str: String,
+
+    #[cfg(feature = "website_storage")]
+    pub max_storage_str: String,
+
+    #[cfg(feature = "website_storage")]
+    pub used_storage_str: String,
+
+    #[cfg(feature = "website_storage")]
+    pub available_storage: i64,
+
+    #[cfg(feature = "website_storage")]
+    pub max_storage: i64,
+
+    #[cfg(feature = "website_storage")]
+    pub used_storage: i64,
 }
 
 impl WebsiteResp {
@@ -63,6 +81,13 @@ impl FromCore<Website> for WebsiteResp {
             None
         };
 
+        #[cfg(feature = "website_storage")]
+        let (available_storage, max_storage, used_storage) = (
+            website.available_storage(core_context).await,
+            website.max_storage(),
+            website.used_storage(core_context).await,
+        );
+
         Self {
             id: website.id.to_string(),
             name: website.name.clone(),
@@ -88,6 +113,24 @@ impl FromCore<Website> for WebsiteResp {
             is_published: website.is_published(),
             host: website.host(),
             url: website.url().to_string(),
+
+            #[cfg(feature = "website_storage")]
+            available_storage_str: available_storage.to_string(),
+
+            #[cfg(feature = "website_storage")]
+            max_storage_str: max_storage.to_string(),
+
+            #[cfg(feature = "website_storage")]
+            used_storage_str: used_storage.to_string(),
+
+            #[cfg(feature = "website_storage")]
+            available_storage: available_storage.bytes(),
+
+            #[cfg(feature = "website_storage")]
+            max_storage: max_storage.bytes(),
+
+            #[cfg(feature = "website_storage")]
+            used_storage: used_storage.bytes(),
         }
     }
 }

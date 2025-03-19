@@ -16,6 +16,7 @@ failed_to_update_post: Falha ao atualizar postagem
 failed_to_update_website: Falha ao atualizar website
 files: Arquivos
 description: Descrição
+go_to_website: Ir a website
 icon_image: Imagem do ícone
 light_theme: Tema claro
 my_websites: Meus websites
@@ -28,9 +29,11 @@ post_updated_successfully: Postagem atualizada com sucesso
 preview: Visualizar
 publish: Publicar
 slug: Slug
+storage: Armazenamento
 subdomain: Subdomínio
 title: Título
 upload_files: Subir arquivos
+uploaded_files: Arquivos subidos
 url: URL
 variables: Variáveis
 website_created_successfully: Website criado com sucesso
