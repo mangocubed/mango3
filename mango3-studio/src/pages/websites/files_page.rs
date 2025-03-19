@@ -8,7 +8,7 @@ use mango3_leptos_utils::components::{
 use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::models::BlobResp;
 
-use crate::components::MyWebsitePageWrapper;
+use crate::components::{MyWebsitePageWrapper, WebsiteStorageProgress};
 use crate::server_functions::{get_my_blobs, AttemptToDeleteBlob};
 
 #[component]
@@ -41,41 +41,19 @@ pub fn FilesPage() -> impl IntoView {
             view! {
                 <h2 class="h2">{t!(i18n, studio.files)}</h2>
 
-                <ConfirmationModal
-                    is_open=show_delete_confirmation
-                    on_accept={
-                        let controller = controller.clone();
-                        let website_id = website_id.clone();
-                        move || {
-                            let id = delete_blob.get().map(|b: BlobResp| b.id).unwrap();
-                            server_action
-                                .dispatch(AttemptToDeleteBlob {
-                                    website_id: website_id.clone(),
-                                    id: id.clone(),
-                                });
-                            controller
-                                .nodes
-                                .update(|blobs| {
-                                    blobs.retain(|b: &BlobResp| b.id != id);
-                                });
-                            delete_blob.set(None);
-                        }
-                    }
-                >
-                    {t!(i18n, studio.are_you_sure_you_want_to_delete_this_file)}
-                </ConfirmationModal>
+                <WebsiteStorageProgress website=website.clone() />
 
-                <section class="flex max-w-[720px] w-full mb-5 mx-auto">
-                    <MultipleImageUploadField
-                        label=move || t!(i18n, studio.upload_files)
-                        website_id=website_id.clone()
-                        value=uploaded_files
-                    />
+                <section class="max-w-[720px] w-full mx-auto mt-4">
+                    <h3 class="h3">{t!(i18n, studio.upload_files)}</h3>
+
+                    <MultipleImageUploadField website_id=website_id.clone() value=uploaded_files />
                 </section>
 
-                <section class="max-w-[720px] w-full mx-auto">
+                <section class="max-w-[720px] w-full mx-auto mt-4">
+                    <h3 class="h3">{t!(i18n, studio.uploaded_files)}</h3>
+
                     <InfiniteScroll
-                        controller=controller
+                        controller=controller.clone()
                         key=|blob: &BlobResp| blob.id.clone()
                         children=move |blob| {
                             view! {
@@ -129,6 +107,29 @@ pub fn FilesPage() -> impl IntoView {
                         }
                     />
                 </section>
+
+                <ConfirmationModal
+                    is_open=show_delete_confirmation
+                    on_accept={
+                        let website_id = website_id.clone();
+                        move || {
+                            let id = delete_blob.get().map(|b: BlobResp| b.id).unwrap();
+                            server_action
+                                .dispatch(AttemptToDeleteBlob {
+                                    website_id: website_id.clone(),
+                                    id: id.clone(),
+                                });
+                            controller
+                                .nodes
+                                .update(|blobs| {
+                                    blobs.retain(|b: &BlobResp| b.id != id);
+                                });
+                            delete_blob.set(None);
+                        }
+                    }
+                >
+                    {t!(i18n, studio.are_you_sure_you_want_to_delete_this_file)}
+                </ConfirmationModal>
             }
         } />
     }

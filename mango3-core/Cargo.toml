@@ -32,6 +32,7 @@ regex = { workspace = true }
 rust_iso3166 = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
+size = { version = "0.5.0", features = ["serde"], optional = true }
 sqlx = { version = "0.8.3", features = ["chrono", "ipnetwork", "postgres", "runtime-tokio", "tls-rustls", "uuid"] }
 strum = { version = "0.27.1", features = ["derive"] }
 unic-langid = { version = "0.9.5", features = ["serde"] }
@@ -64,4 +65,5 @@ user_cache_remove = ["user_bio_html", "user_bio_preview_html"]
 website_cache_remove = ["website_description_html", "website_description_preview_html"]
 website_description_html = ["markdown"]
 website_description_preview_html = ["markdown"]
+website_storage = ["size"]
 website_write = ["website_cache_remove"]

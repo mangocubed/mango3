@@ -16,6 +16,7 @@ failed_to_update_post: Failed to update post
 failed_to_update_website: Failed to update website
 files: Files
 description: Description
+go_to_website: Go to website
 icon_image: Icon image
 light_theme: Light theme
 my_websites: My websites
@@ -29,8 +30,10 @@ preview: Preview
 publish: Publish
 slug: Slug
 subdomain: Subdomain
+storage: Storage
 title: Title
 upload_files: Upload files
+uploaded_files: Uploaded files
 url: URL
 variables: Variables
 website_created_successfully: Website created successfully

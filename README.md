@@ -67,6 +67,7 @@ A free and open source website builder and content management system platform wr
 | SESSIONS_REDIS_URL              | String  | redis://127.0.0.1:6379/1                                         |
 | USER_DEFAULT_DISABLED           | Boolean | false                                                            |
 | USER_DEFAULT_ROLE               | String  | user                                                             |
+| WEBSITE_MAX_STORAGE             | Integer | 1 GiB                                                            |
 
 ### Installation and setup
 

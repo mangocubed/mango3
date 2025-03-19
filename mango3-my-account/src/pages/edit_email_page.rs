@@ -36,7 +36,7 @@ pub fn EditEmailPage() -> impl IntoView {
         <AuthenticatedPage title=text_title>
             <h2 class="h2">{move || text_title.get()}</h2>
 
-            <section class="max-w-[640px] w-full ml-auto mr-auto">
+            <section class="max-w-[640px] w-full mx-auto">
                 <h3 class="h3">{t!(i18n, my_account.current_email)}</h3>
 
                 <div class="flex items-center justify-between">
@@ -50,7 +50,7 @@ pub fn EditEmailPage() -> impl IntoView {
                 </div>
             </section>
 
-            <section class="max-w-[640px] w-full ml-auto mr-auto mt-4">
+            <section class="max-w-[640px] w-full mx-auto mt-4">
                 <h3 class="h3">{t!(i18n, my_account.change_email)}</h3>
 
                 <ActionForm
