@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.0.0-alpha.17] - 2025-03-19
+
+### Added
+
+- Limit websites storage. (https://github.com/mangocubed/mango3/pull/305)
+- Schedule orphaned blobs removal. (https://github.com/mangocubed/mango3/pull/306)
+
+### Changed
+
+- Bump daisyui from 5.0.4 to 5.0.6. (https://github.com/mangocubed/mango3/pull/301)
+- Bump @playwright/test from 1.51.0 to 1.51.1. (https://github.com/mangocubed/mango3/pull/302)
+- Bump leptos-use from 0.15.6 to 0.15.7. (https://github.com/mangocubed/mango3/pull/303)
+- Bump codee from 0.2.0 to 0.3.0. (https://github.com/mangocubed/mango3/pull/119)
+- Bump time from 0.3.39 to 0.3.40. (https://github.com/mangocubed/mango3/pull/304)
+
 ## [0.0.0-alpha.16] - 2025-03-17
 
 ### Added
