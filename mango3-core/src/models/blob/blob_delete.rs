@@ -1,7 +1,7 @@
 use std::fs;
 
 use cached::IOCachedAsync;
-use sqlx::query;
+use sqlx::{query, query_as};
 
 use crate::validator::ValidationErrors;
 use crate::CoreContext;
@@ -20,6 +20,34 @@ impl Blob {
 
         if let Some(cache) = GET_BLOB_BY_ID.get() {
             let _ = cache.cache_remove(&self.id).await;
+        }
+
+        Ok(())
+    }
+
+    pub async fn delete_all_orphaned(core_context: &CoreContext) -> Result<(), ValidationErrors> {
+        let result = query_as!(
+            Self,
+            "SELECT *
+            FROM blobs AS b
+            WHERE
+                website_id IS NULL AND (
+                    SELECT id FROM users AS u WHERE u.avatar_image_blob_id = b.id LIMIT 1
+                ) IS NULL AND (
+                    SELECT id FROM websites AS w WHERE w.cover_image_blob_id = b.id OR w.icon_image_blob_id = b.id
+                    LIMIT 1
+                ) IS NULL AND (
+                    SELECT id FROM posts AS p WHERE p.cover_image_blob_id = b.id OR b.id = ANY(p.blob_ids) LIMIT 1
+                ) IS NULL
+            LIMIT 1",
+        )
+        .fetch_all(&core_context.db_pool)
+        .await;
+
+        if let Ok(blobs) = result {
+            for blob in blobs {
+                let _ = blob.delete(core_context).await;
+            }
         }
 
         Ok(())
