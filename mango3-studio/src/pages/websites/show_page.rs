@@ -11,6 +11,8 @@ pub fn ShowPage() -> impl IntoView {
 
     view! {
         <MyWebsitePageWrapper let:website>
+            <h2 class="h2">{t!(i18n, shared.home)}</h2>
+
             <WebsiteStorageProgress website=website.clone() />
 
             <section class="max-w-[720px] w-full mx-auto mt-4">
