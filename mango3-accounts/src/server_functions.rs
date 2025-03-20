@@ -6,16 +6,20 @@ use uuid::Uuid;
 use mango3_leptos_utils::models::FormResp;
 
 #[cfg(feature = "ssr")]
+use mango3_core::commands::{InvitationCodeDelete, InvitationCodeGet};
+#[cfg(feature = "ssr")]
 use mango3_core::config::BASIC_CONFIG;
 #[cfg(feature = "ssr")]
 use mango3_core::enums::ConfirmationCodeAction;
 #[cfg(feature = "ssr")]
-use mango3_core::models::{InvitationCode, User, UserSession};
+use mango3_core::models::{User, UserSession};
 #[cfg(feature = "ssr")]
 use mango3_leptos_utils::ssr::{
     expect_core_context, extract_confirmation_code, extract_i18n, finish_confirmation_code, require_no_authentication,
     start_confirmation_code, start_user_session,
 };
+#[cfg(feature = "ssr")]
+use mango3_utils::models::InvitationCode;
 
 #[server]
 pub async fn attempt_to_confirm_login(code: String) -> Result<FormResp, ServerFnError> {

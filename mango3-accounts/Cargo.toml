@@ -16,8 +16,11 @@ serde = { workspace = true }
 tokio = { workspace = true, optional = true }
 uuid = { workspace = true, optional = true }
 wasm-bindgen = { workspace = true }
-mango3-core = { workspace = true, features = ["user_cache_remove"], optional = true }
+mango3-core = { workspace = true, features = [
+    "user_cache_remove", "invitation_code_delete", "invitation_code_get"
+], optional = true }
 mango3-leptos-utils = { workspace = true, features = ["forms"] }
+mango3-utils = { workspace = true }
 
 [features]
 hydrate = ["leptos/hydrate", "leptos_i18n/hydrate", "mango3-leptos-utils/hydrate"]
@@ -30,6 +33,7 @@ ssr = [
     "leptos_meta/ssr",
     "leptos_router/ssr",
     "mango3-leptos-utils/ssr",
+    "mango3-utils/invitation_code"
 ]
 
 [package.metadata.leptos]
