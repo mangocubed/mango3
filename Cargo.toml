@@ -27,6 +27,7 @@ axum = "0.7.9"
 chrono = {version = "0.4.40", features = ["serde"] }
 console_error_panic_hook = "0.1.7"
 futures = "0.3.31"
+ipnetwork = "0.20.0"
 leptos = "0.7.7"
 leptos_axum = "0.7.7"
 # TODO: Change to leptos_i18n v0.5.11 when released

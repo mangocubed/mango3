@@ -23,6 +23,7 @@ handlebars_misc_helpers = { version = "0.17.0", default-features = false, featur
 ], optional = true }
 image = { version = "0.25.5", optional = true }
 imageproc = { version = "0.25.0", optional = true }
+ipnetwork = { workspace = true, optional = true }
 md-5 = "0.10.6"
 mime = "0.3.17"
 multer = { version = "3.1.0", optional = true }
@@ -33,7 +34,7 @@ rust_iso3166 = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 size = { version = "0.5.0", features = ["serde"], optional = true }
-sqlx = { version = "0.8.3", features = ["chrono", "ipnetwork", "postgres", "runtime-tokio", "tls-rustls", "uuid"] }
+sqlx = { version = "0.8.3", features = ["chrono", "postgres", "runtime-tokio", "tls-rustls", "uuid"] }
 strum = { version = "0.27.1", features = ["derive"] }
 unic-langid = { version = "0.9.5", features = ["serde"] }
 url = { version = "2.5.4", features = ["serde"] }
@@ -61,6 +62,8 @@ post_reaction_count = ["mango3-utils/post_reaction"]
 post_reaction_delete = ["mango3-utils/post_reaction"]
 post_reaction_get = ["mango3-utils/post_reaction"]
 post_reaction_insert = ["mango3-utils/post_reaction"]
+post_view_count = ["mango3-utils/post_view"]
+post_view_insert = ["dep:ipnetwork", "sqlx/ipnetwork", "mango3-utils/post_view"]
 post_content_html = ["handlebars", "markdown"]
 post_content_preview_html = ["markdown"]
 post_write = ["post_cache_remove"]

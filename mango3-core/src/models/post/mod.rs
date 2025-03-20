@@ -12,11 +12,15 @@ use sqlx::query;
 
 #[cfg(feature = "post_reaction_count")]
 use mango3_utils::models::PostReaction;
+#[cfg(feature = "post_view_count")]
+use mango3_utils::models::PostView;
 
 use crate::CoreContext;
 
 #[cfg(feature = "post_reaction_count")]
 use crate::commands::PostReactionCount;
+#[cfg(feature = "post_view_count")]
+use crate::commands::PostViewCount;
 #[cfg(feature = "post_write")]
 use crate::config::MISC_CONFIG;
 #[cfg(feature = "post_cache_remove")]
@@ -32,7 +36,7 @@ use crate::validator::{Validator, ValidatorTrait};
 #[cfg(feature = "post_cache_remove")]
 use super::AsyncRedisCacheTrait;
 
-use super::{Blob, Hashtag, PostComment, PostView, User, Website};
+use super::{Blob, Hashtag, PostComment, User, Website};
 
 mod post_get;
 mod post_paginate;
@@ -141,6 +145,7 @@ impl Post {
         User::get_by_id(core_context, self.user_id).await
     }
 
+    #[cfg(feature = "post_view_count")]
     pub async fn views_count(&self, core_context: &CoreContext) -> i64 {
         PostView::count(core_context, self).await
     }
