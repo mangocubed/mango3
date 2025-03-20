@@ -5,8 +5,10 @@ edition.workspace = true
 
 [dependencies]
 chrono = { workspace = true }
+ipnetwork = { workspace = true, optional = true }
 serde = { workspace = true }
 uuid = { workspace = true, optional = true }
 
 [features]
-post_reaction = ["uuid"]
+post_reaction = ["dep:uuid"]
+post_view = ["dep:ipnetwork", "dep:uuid"]

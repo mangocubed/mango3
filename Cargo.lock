@@ -3102,6 +3102,7 @@ dependencies = [
  "handlebars_misc_helpers",
  "image",
  "imageproc",
+ "ipnetwork",
  "mango3-utils",
  "md-5",
  "mime",
@@ -3242,6 +3243,7 @@ name = "mango3-utils"
 version = "0.0.0-alpha.17"
 dependencies = [
  "chrono",
+ "ipnetwork",
  "serde",
  "uuid",
 ]

@@ -27,7 +27,6 @@ pub struct PostResp {
     pub blobs: Vec<BlobResp>,
     pub is_published: bool,
     pub url: String,
-    pub views_count: i64,
     pub comments_count: i64,
     pub published_at: Option<DateTime<Utc>>,
     pub modified_at: Option<DateTime<Utc>>,
@@ -39,6 +38,9 @@ pub struct PostResp {
 
     #[cfg(feature = "post_reaction_count")]
     pub reactions_count: i64,
+
+    #[cfg(feature = "post_view_count")]
+    pub views_count: i64,
 }
 
 #[cfg(feature = "ssr")]
@@ -78,7 +80,6 @@ impl FromCore<Post> for PostResp {
             blobs,
             is_published: post.is_published(core_context).await,
             url: post.url(&core_context).await.to_string(),
-            views_count: post.views_count(&core_context).await,
             comments_count: post.comments_count(&core_context).await,
             published_at: post.published_at,
             modified_at: post.modified_at,
@@ -90,6 +91,9 @@ impl FromCore<Post> for PostResp {
 
             #[cfg(feature = "post_reaction_count")]
             reactions_count: post.reactions_count(&core_context).await,
+
+            #[cfg(feature = "post_view_count")]
+            views_count: post.views_count(&core_context).await,
         }
     }
 }
@@ -104,7 +108,6 @@ pub struct PostPreviewResp {
     pub hashtags: Vec<HashtagResp>,
     pub cover_image_blob: Option<BlobResp>,
     pub is_published: bool,
-    pub views_count: i64,
     pub comments_count: i64,
     pub url: String,
     pub modified_at: Option<DateTime<Utc>>,
@@ -116,6 +119,9 @@ pub struct PostPreviewResp {
 
     #[cfg(feature = "post_reaction_count")]
     pub reactions_count: i64,
+
+    #[cfg(feature = "post_view_count")]
+    pub views_count: i64,
 }
 
 #[cfg(feature = "ssr")]
@@ -150,7 +156,6 @@ impl FromCore<Post> for PostPreviewResp {
                 .collect(),
             cover_image_blob,
             is_published: post.is_published(core_context).await,
-            views_count: post.views_count(&core_context).await,
             comments_count: post.comments_count(&core_context).await,
             url: post.url(&core_context).await.to_string(),
             modified_at: post.modified_at,
@@ -162,6 +167,9 @@ impl FromCore<Post> for PostPreviewResp {
 
             #[cfg(feature = "post_reaction_count")]
             reactions_count: post.reactions_count(&core_context).await,
+
+            #[cfg(feature = "post_view_count")]
+            views_count: post.views_count(&core_context).await,
         }
     }
 }
