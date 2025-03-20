@@ -3102,6 +3102,7 @@ dependencies = [
  "handlebars_misc_helpers",
  "image",
  "imageproc",
+ "mango3-utils",
  "md-5",
  "mime",
  "multer",
@@ -3237,6 +3238,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "mango3-utils"
+version = "0.0.0-alpha.17"
+dependencies = [
+ "chrono",
+ "serde",
+ "uuid",
+]
+
+[[package]]
 name = "mango3-websites"
 version = "0.0.0-alpha.17"
 dependencies = [
@@ -3249,6 +3259,7 @@ dependencies = [
  "leptos_router",
  "mango3-core",
  "mango3-leptos-utils",
+ "mango3-utils",
  "tokio",
  "uuid",
  "wasm-bindgen",

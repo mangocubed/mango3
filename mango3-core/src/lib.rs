@@ -2,6 +2,7 @@ use regex::Match;
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
 
+pub mod commands;
 pub mod config;
 pub mod constants;
 pub mod enums;
