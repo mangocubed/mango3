@@ -17,10 +17,13 @@ leptos-use = { workspace = true, features = ["use_color_mode"] }
 tokio = { workspace = true, optional = true }
 uuid = { workspace = true, optional = true }
 wasm-bindgen = { workspace = true }
-mango3-core = { workspace = true, features = ["post_comment_cache_remove"], optional = true }
+mango3-core = { workspace = true, features = [
+    "post_comment_cache_remove", "post_reaction_delete", "post_reaction_get", "post_reaction_insert"
+], optional = true }
 mango3-leptos-utils = { workspace = true, features = [
     "markdown_editor", "post_card", "post_comment_content_html", "post_content_html", "website_description_html"
 ] }
+mango3-utils = { workspace = true }
 
 [features]
 hydrate = ["leptos/hydrate", "leptos_i18n/hydrate", "mango3-leptos-utils/hydrate"]
@@ -33,6 +36,7 @@ ssr = [
     "leptos_meta/ssr",
     "leptos_router/ssr",
     "mango3-leptos-utils/ssr",
+    "mango3-utils/post_reaction"
 ]
 
 [package.metadata.leptos]

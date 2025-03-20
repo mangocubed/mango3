@@ -38,6 +38,7 @@ strum = { version = "0.27.1", features = ["derive"] }
 unic-langid = { version = "0.9.5", features = ["serde"] }
 url = { version = "2.5.4", features = ["serde"] }
 uuid = { workspace = true }
+mango3-utils = { workspace = true }
 
 [dev-dependencies]
 chrono = { workspace = true }
@@ -56,6 +57,10 @@ blob_read = ["dep:ab_glyph", "dep:image", "dep:imageproc"]
 post_cache_remove = ["post_content_html", "post_content_preview_html"]
 post_comment_content_html = ["markdown"]
 post_comment_cache_remove = ["post_comment_content_html"]
+post_reaction_count = ["mango3-utils/post_reaction"]
+post_reaction_delete = ["mango3-utils/post_reaction"]
+post_reaction_get = ["mango3-utils/post_reaction"]
+post_reaction_insert = ["mango3-utils/post_reaction"]
 post_content_html = ["handlebars", "markdown"]
 post_content_preview_html = ["markdown"]
 post_write = ["post_cache_remove"]

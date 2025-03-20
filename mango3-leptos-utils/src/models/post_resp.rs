@@ -22,10 +22,6 @@ pub struct PostResp {
     pub user: UserPreviewResp,
     pub title: String,
     pub slug: String,
-
-    #[cfg(feature = "post_content_html")]
-    pub content_html: String,
-
     pub hashtags: Vec<HashtagResp>,
     pub cover_image_blob: Option<BlobResp>,
     pub blobs: Vec<BlobResp>,
@@ -33,11 +29,16 @@ pub struct PostResp {
     pub url: String,
     pub views_count: i64,
     pub comments_count: i64,
-    pub reactions_count: i64,
     pub published_at: Option<DateTime<Utc>>,
     pub modified_at: Option<DateTime<Utc>>,
     pub created_at: DateTime<Utc>,
     pub updated_at: Option<DateTime<Utc>>,
+
+    #[cfg(feature = "post_content_html")]
+    pub content_html: String,
+
+    #[cfg(feature = "post_reaction_count")]
+    pub reactions_count: i64,
 }
 
 #[cfg(feature = "ssr")]
@@ -67,9 +68,6 @@ impl FromCore<Post> for PostResp {
             title: post.title.clone(),
             slug: post.slug.clone(),
 
-            #[cfg(feature = "post_content_html")]
-            content_html: post.content_html().await,
-
             hashtags: post
                 .hashtags(&core_context)
                 .await
@@ -82,11 +80,16 @@ impl FromCore<Post> for PostResp {
             url: post.url(&core_context).await.to_string(),
             views_count: post.views_count(&core_context).await,
             comments_count: post.comments_count(&core_context).await,
-            reactions_count: post.reactions_count(&core_context).await,
             published_at: post.published_at,
             modified_at: post.modified_at,
             created_at: post.created_at,
             updated_at: post.updated_at,
+
+            #[cfg(feature = "post_content_html")]
+            content_html: post.content_html().await,
+
+            #[cfg(feature = "post_reaction_count")]
+            reactions_count: post.reactions_count(&core_context).await,
         }
     }
 }
@@ -98,20 +101,21 @@ pub struct PostPreviewResp {
     pub user: UserPreviewResp,
     pub title: String,
     pub slug: String,
-
-    #[cfg(feature = "post_content_preview_html")]
-    pub content_preview_html: String,
-
     pub hashtags: Vec<HashtagResp>,
     pub cover_image_blob: Option<BlobResp>,
     pub is_published: bool,
     pub views_count: i64,
     pub comments_count: i64,
-    pub reactions_count: i64,
     pub url: String,
     pub modified_at: Option<DateTime<Utc>>,
     pub created_at: DateTime<Utc>,
     pub updated_at: Option<DateTime<Utc>>,
+
+    #[cfg(feature = "post_content_preview_html")]
+    pub content_preview_html: String,
+
+    #[cfg(feature = "post_reaction_count")]
+    pub reactions_count: i64,
 }
 
 #[cfg(feature = "ssr")]
@@ -138,10 +142,6 @@ impl FromCore<Post> for PostPreviewResp {
             .await,
             title: post.title.clone(),
             slug: post.slug.clone(),
-
-            #[cfg(feature = "post_content_preview_html")]
-            content_preview_html: post.content_preview_html().await,
-
             hashtags: post
                 .hashtags(&core_context)
                 .await
@@ -152,11 +152,16 @@ impl FromCore<Post> for PostPreviewResp {
             is_published: post.is_published(core_context).await,
             views_count: post.views_count(&core_context).await,
             comments_count: post.comments_count(&core_context).await,
-            reactions_count: post.reactions_count(&core_context).await,
             url: post.url(&core_context).await.to_string(),
             modified_at: post.modified_at,
             created_at: post.created_at,
             updated_at: post.updated_at,
+
+            #[cfg(feature = "post_content_preview_html")]
+            content_preview_html: post.content_preview_html().await,
+
+            #[cfg(feature = "post_reaction_count")]
+            reactions_count: post.reactions_count(&core_context).await,
         }
     }
 }

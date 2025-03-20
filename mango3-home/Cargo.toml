@@ -15,8 +15,7 @@ leptos_router = { workspace = true }
 tokio = { workspace = true, optional = true }
 uuid = { workspace = true, optional = true }
 wasm-bindgen = { workspace = true }
-mango3-core = { workspace = true, features = ["user_bio_html"
-], optional = true }
+mango3-core = { workspace = true, features = ["user_bio_html"], optional = true }
 mango3-leptos-utils = { workspace = true, features = ["post_card", "user_bio_html", "website_card"] }
 
 [features]

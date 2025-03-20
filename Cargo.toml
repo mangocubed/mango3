@@ -11,6 +11,7 @@ members = [
     "mango3-monitor",
     "mango3-studio",
     "mango3-uploads",
+    "mango3-utils",
     "mango3-websites",
 ]
 
@@ -49,6 +50,7 @@ uuid = { version = "1.16.0", features = ["serde", "v4"] }
 wasm-bindgen = "0.2.100"
 web-sys = "0.3.77"
 mango3-core = { path = "mango3-core", default-features = false, features = ["validator"] }
+mango3-utils = { path = "mango3-utils" }
 mango3-leptos-utils = { path = "mango3-leptos-utils" }
 
 [profile.wasm-release]
