@@ -2,7 +2,10 @@
 
 @config "../tailwind.config.js";
 
-@plugin "daisyui";
+@plugin "daisyui" {
+    themes: all;
+}
+
 @plugin "@tailwindcss/typography";
 
 @layer components {
