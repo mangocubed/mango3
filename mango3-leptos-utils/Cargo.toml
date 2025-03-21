@@ -37,7 +37,8 @@ tokio = { workspace = true, optional = true }
 uuid = { workspace = true, optional = true }
 wasm-bindgen = { workspace = true }
 web-sys = { workspace = true }
-mango3-core = { workspace = true, optional = true }
+mango3-core = { workspace = true, optional = true, features = ["user_session_get"] }
+mango3-utils = { workspace = true }
 
 [features]
 forms = ["leptos-use/use_textarea_autosize"]
@@ -54,6 +55,8 @@ post_view_count = ["mango3-core?/post_view_count"]
 user_bio_html = ["mango3-core?/user_bio_html"]
 user_bio_preview_html = ["mango3-core?/user_bio_preview_html"]
 user_card = ["user_bio_preview_html"]
+user_session_delete = ["mango3-core?/user_session_delete"]
+user_session_insert = ["mango3-core?/user_session_insert"]
 website_card = ["website_description_preview_html"]
 website_description_html = ["mango3-core?/website_description_html"]
 website_description_preview_html = ["mango3-core?/website_description_preview_html"]

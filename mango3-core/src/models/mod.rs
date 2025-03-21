@@ -19,7 +19,6 @@ mod navigation_item;
 mod post;
 mod post_comment;
 mod user;
-mod user_session;
 mod website;
 
 pub use blob::Blob;
@@ -29,12 +28,11 @@ pub use navigation_item::NavigationItem;
 pub use post::Post;
 pub use post_comment::PostComment;
 pub use user::User;
-pub use user_session::UserSession;
 pub use website::Website;
 
 use crate::config::CACHE_CONFIG;
 
-trait AsyncRedisCacheTrait<K> {
+pub(crate) trait AsyncRedisCacheTrait<K> {
     async fn cache_remove(&self, prefix: &str, key: &K);
 }
 
@@ -52,7 +50,7 @@ where
     }
 }
 
-async fn async_redis_cache<K, V>(prefix: &str) -> AsyncRedisCache<K, V>
+pub(crate) async fn async_redis_cache<K, V>(prefix: &str) -> AsyncRedisCache<K, V>
 where
     K: Display + Send + Sync,
     V: DeserializeOwned + Display + Send + Serialize + Sync,

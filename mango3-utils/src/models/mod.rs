@@ -4,6 +4,8 @@ mod invitation_code;
 mod post_reaction;
 #[cfg(feature = "post_view")]
 mod post_view;
+#[cfg(feature = "user_session")]
+mod user_session;
 
 #[cfg(feature = "invitation_code")]
 pub use invitation_code::InvitationCode;
@@ -11,3 +13,5 @@ pub use invitation_code::InvitationCode;
 pub use post_reaction::PostReaction;
 #[cfg(feature = "post_view")]
 pub use post_view::PostView;
+#[cfg(feature = "user_session")]
+pub use user_session::UserSession;

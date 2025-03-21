@@ -13,3 +13,4 @@ uuid = { workspace = true, optional = true }
 invitation_code = ["dep:uuid"]
 post_reaction = ["dep:uuid"]
 post_view = ["dep:ipnetwork", "dep:uuid"]
+user_session = ["dep:uuid"]

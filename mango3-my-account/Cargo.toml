@@ -16,7 +16,7 @@ tokio = { workspace = true, optional = true }
 uuid = { workspace = true, optional = true }
 wasm-bindgen = { workspace = true }
 web-sys = { workspace = true }
-mango3-core = { workspace = true, features = ["user_cache_remove"], optional = true }
+mango3-core = { workspace = true, features = ["user_cache_remove", "user_session_delete"], optional = true }
 mango3-leptos-utils = { workspace = true, features = ["image_upload", "markdown_editor"] }
 
 [features]
@@ -29,6 +29,7 @@ ssr = [
     "leptos_i18n/axum",
     "leptos_meta/ssr",
     "leptos_router/ssr",
+    "mango3-leptos-utils/user_session_delete",
     "mango3-leptos-utils/ssr",
 ]
 

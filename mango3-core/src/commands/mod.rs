@@ -16,6 +16,14 @@ mod post_reaction_insert;
 mod post_view_count;
 #[cfg(feature = "post_view_insert")]
 mod post_view_insert;
+#[cfg(feature = "user_session_all")]
+mod user_session_all;
+#[cfg(feature = "user_session_delete")]
+mod user_session_delete;
+#[cfg(feature = "user_session_get")]
+mod user_session_get;
+#[cfg(feature = "user_session_insert")]
+mod user_session_insert;
 
 #[cfg(feature = "invitation_code_delete")]
 pub use invitation_code_delete::InvitationCodeDelete;
@@ -35,3 +43,13 @@ pub use post_reaction_insert::PostReactionInsert;
 pub(crate) use post_view_count::PostViewCount;
 #[cfg(feature = "post_view_insert")]
 pub use post_view_insert::PostViewInsert;
+#[cfg(feature = "user_session_all")]
+pub(crate) use user_session_all::UserSessionAll;
+#[cfg(feature = "user_session_delete")]
+pub use user_session_delete::UserSessionDelete;
+#[cfg(feature = "user_session_get")]
+pub use user_session_get::UserSessionGet;
+#[cfg(all(feature = "user_session_get", feature = "user_session_delete"))]
+pub(crate) use user_session_get::GET_USER_SESSION_BY_ID;
+#[cfg(feature = "user_session_insert")]
+pub use user_session_insert::UserSessionInsert;

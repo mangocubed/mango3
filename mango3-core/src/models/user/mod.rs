@@ -24,7 +24,6 @@ use super::{Blob, Hashtag, Website};
 use super::AsyncRedisCacheTrait;
 
 mod user_all;
-mod user_disable;
 mod user_email;
 mod user_get;
 mod user_insert;
@@ -34,6 +33,8 @@ mod user_password;
 
 #[cfg(any(feature = "user_bio_html", feature = "user_bio_preview_html"))]
 mod user_bio;
+#[cfg(feature = "user_cache_remove")]
+mod user_disable;
 #[cfg(feature = "user_cache_remove")]
 mod user_profile;
 #[cfg(feature = "user_cache_remove")]
@@ -120,6 +121,10 @@ impl User {
             .filter_map(|word| word.chars().next())
             .collect::<String>()
             .to_uppercase()
+    }
+
+    pub fn is_disabled(&self) -> bool {
+        self.disabled_at.is_some()
     }
 
     pub fn text_avatar_url(&self) -> Url {
