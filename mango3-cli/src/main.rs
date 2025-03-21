@@ -1,8 +1,10 @@
 use clap::{value_parser, Arg, Command};
 
+use mango3_core::commands::InvitationCodeInsert;
 use mango3_core::config::load_config;
-use mango3_core::models::{InvitationCode, User};
+use mango3_core::models::User;
 use mango3_core::CoreContext;
+use mango3_utils::models::InvitationCode;
 
 const ARG_EMAIL: &str = "Email";
 const ARG_ROLE: &str = "role";

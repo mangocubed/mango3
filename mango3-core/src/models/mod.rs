@@ -15,7 +15,6 @@ use sqlx::types::chrono::NaiveDate;
 mod blob;
 mod confirmation_code;
 mod hashtag;
-mod invitation_code;
 mod navigation_item;
 mod post;
 mod post_comment;
@@ -26,7 +25,6 @@ mod website;
 pub use blob::Blob;
 pub use confirmation_code::ConfirmationCode;
 pub use hashtag::Hashtag;
-pub use invitation_code::InvitationCode;
 pub use navigation_item::NavigationItem;
 pub use post::Post;
 pub use post_comment::PostComment;
@@ -77,7 +75,7 @@ fn find_country(query: &str) -> Option<&CountryCode> {
     rust_iso3166::ALL.iter().find(|c| c.alpha2 == query || c.name == query)
 }
 
-fn generate_random_string(length: u8) -> String {
+pub fn generate_random_string(length: u8) -> String {
     rng()
         .sample_iter(&Alphanumeric)
         .take(length as usize)

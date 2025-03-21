@@ -3047,6 +3047,7 @@ dependencies = [
  "leptos_router",
  "mango3-core",
  "mango3-leptos-utils",
+ "mango3-utils",
  "serde",
  "tokio",
  "uuid",
@@ -3076,6 +3077,7 @@ version = "0.0.0-alpha.17"
 dependencies = [
  "clap",
  "mango3-core",
+ "mango3-utils",
  "tokio",
 ]
 
