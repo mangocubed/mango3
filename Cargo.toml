@@ -28,8 +28,8 @@ chrono = {version = "0.4.40", features = ["serde"] }
 console_error_panic_hook = "0.1.7"
 futures = "0.3.31"
 ipnetwork = "0.20.0"
-leptos = "0.7.7"
-leptos_axum = "0.7.7"
+leptos = "0.7.8"
+leptos_axum = "0.7.8"
 # TODO: Change to leptos_i18n v0.5.11 when released
 leptos_i18n = { git = "https://github.com/Baptistemontan/leptos_i18n", rev = "bb46f4c9de629600b15fb8a16d96524a213160f5", default-features = false, features = [
     "cookie",
@@ -38,14 +38,14 @@ leptos_i18n = { git = "https://github.com/Baptistemontan/leptos_i18n", rev = "bb
     "track_locale_files",
     "yaml_files",
 ] }
-leptos_meta = "0.7.7"
-leptos_router = "0.7.7"
+leptos_meta = "0.7.8"
+leptos_router = "0.7.8"
 leptos-use = { version = "0.15.7", default-features = false }
 regex = "1.11.1"
 rust_iso3166 = "0.1.14"
 serde_json = "1.0.140"
 serde = { version = "1.0.219", features = ["derive"] }
-server_fn = "0.7.7"
+server_fn = "0.7.8"
 tokio = { version = "1.44.1", features = ["macros", "rt-multi-thread"] }
 uuid = { version = "1.16.0", features = ["serde", "v4"] }
 wasm-bindgen = "0.2.100"
