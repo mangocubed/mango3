@@ -17,7 +17,7 @@ tokio = { workspace = true, optional = true }
 uuid = { workspace = true, optional = true }
 wasm-bindgen = { workspace = true }
 mango3-core = { workspace = true, features = [
-    "user_cache_remove", "invitation_code_delete", "invitation_code_get"
+    "user_cache_remove", "invitation_code_delete", "invitation_code_get", "user_session_insert"
 ], optional = true }
 mango3-leptos-utils = { workspace = true, features = ["forms"] }
 mango3-utils = { workspace = true }
@@ -32,6 +32,7 @@ ssr = [
     "leptos_i18n/axum",
     "leptos_meta/ssr",
     "leptos_router/ssr",
+    "mango3-leptos-utils/user_session_insert",
     "mango3-leptos-utils/ssr",
     "mango3-utils/invitation_code"
 ]

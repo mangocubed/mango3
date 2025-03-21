@@ -3162,6 +3162,7 @@ dependencies = [
  "leptos_meta",
  "leptos_router",
  "mango3-core",
+ "mango3-utils",
  "regex",
  "rust_iso3166",
  "serde",

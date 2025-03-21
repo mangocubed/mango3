@@ -1,15 +1,27 @@
+#[cfg(feature = "user_session_insert")]
 use std::str::FromStr;
 
-use codee::string::FromToStringCodec;
 use leptos::prelude::*;
 use uuid::Uuid;
 
+#[cfg(any(feature = "user_session_delete", feature = "user_session_insert"))]
+use codee::string::FromToStringCodec;
+
+use mango3_core::commands::UserSessionGet;
 use mango3_core::config::BASIC_CONFIG;
-use mango3_core::models::{User, UserSession};
+use mango3_core::models::User;
+use mango3_utils::models::UserSession;
+
+#[cfg(feature = "user_session_delete")]
+use mango3_core::commands::UserSessionDelete;
+#[cfg(any(feature = "user_session_delete", feature = "user_session_insert"))]
 use mango3_core::CoreContext;
 
 use crate::constants::KEY_USER_SESSION_ID;
+
+#[cfg(any(feature = "user_session_delete", feature = "user_session_insert"))]
 use crate::context::use_language_cookie;
+#[cfg(feature = "user_session_insert")]
 use crate::i18n::Locale;
 
 use super::{extract_session, try_core_context};
@@ -18,7 +30,7 @@ pub async fn extract_user() -> Result<Option<User>, ServerFnError> {
     if let Some(user_session) = extract_user_session().await? {
         let core_context = try_core_context()?;
 
-        Ok(user_session.user(&core_context).await.ok())
+        Ok(User::get_by_id(&core_context, user_session.user_id).await.ok())
     } else {
         Ok(None)
     }
@@ -36,6 +48,7 @@ pub async fn extract_user_session() -> Result<Option<UserSession>, ServerFnError
     Ok(UserSession::get_by_id(&core_context, id).await.ok())
 }
 
+#[cfg(feature = "user_session_delete")]
 pub async fn finish_and_delete_user_session(core_context: &CoreContext) -> Result<(), ServerFnError> {
     let Some(user_session) = extract_user_session().await? else {
         return Ok(());
@@ -81,8 +94,9 @@ pub async fn require_no_authentication() -> Result<bool, ServerFnError> {
     Ok(true)
 }
 
+#[cfg(feature = "user_session_insert")]
 pub async fn start_user_session(core_context: &CoreContext, user_session: &UserSession) -> Result<(), ServerFnError> {
-    let user = user_session.user(core_context).await?;
+    let user = User::get_by_id(core_context, user_session.user_id).await?;
 
     let session = extract_session().await?;
     let (_, set_cookie_lang) = use_language_cookie::<FromToStringCodec>();
