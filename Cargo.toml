@@ -28,7 +28,7 @@ chrono = {version = "0.4.40", features = ["serde"] }
 console_error_panic_hook = "0.1.7"
 futures = "0.3.31"
 ipnetwork = "0.20.0"
-leptos = "0.7.7"
+leptos = "0.7.8"
 leptos_axum = "0.7.7"
 # TODO: Change to leptos_i18n v0.5.11 when released
 leptos_i18n = { git = "https://github.com/Baptistemontan/leptos_i18n", rev = "bb46f4c9de629600b15fb8a16d96524a213160f5", default-features = false, features = [
