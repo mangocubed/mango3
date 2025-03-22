@@ -8,6 +8,10 @@
 
 @plugin "@tailwindcss/typography";
 
+@utility card {
+    word-break: break-word;
+}
+
 @layer components {
     .card-text-preview {
         @apply max-h-[3.5rem] relative overflow-y-hidden;

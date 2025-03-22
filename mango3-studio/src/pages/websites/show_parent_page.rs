@@ -84,7 +84,9 @@ pub fn ShowParentPage() -> impl IntoView {
                                 />
                             </ul>
 
-                            <Outlet />
+                            <div class="grow">
+                                <Outlet />
+                            </div>
                         </div>
                     },
                 )

@@ -61,16 +61,16 @@ pub fn FilesPage() -> impl IntoView {
                                     <div class="card-body">
                                         <div class="flex flex-row gap-3 items-center">
                                             <div class="avatar">
-                                                <div class="rounded" style:width="64px" style:height="64px">
+                                                <div class="rounded" style:width="82px" style:height="82px">
                                                     <img
                                                         alt=blob.file_name.clone()
-                                                        src=blob.variant_url(64, 64, true)
+                                                        src=blob.variant_url(82, 82, true)
                                                     />
                                                 </div>
                                             </div>
 
                                             <div class="flex flex-col gap-4 w-full">
-                                                <div class="card-title">
+                                                <div class="card-title break-words">
                                                     <div class="font-bold">{blob.file_name.clone()}</div>
                                                 </div>
 
