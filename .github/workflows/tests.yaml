@@ -37,7 +37,7 @@ env:
     CARGO_TERM_COLOR: always
     DATABASE_URL: postgres://mango3:mango3@localhost:5432/mango3_test
     JOBS_REDIS_URL: redis://127.0.0.1:6379/10
-    LEPTOS_TAILWIND_VERSION: v4.0.14
+    LEPTOS_TAILWIND_VERSION: v4.0.15
     SESSIONS_REDIS_URL: redis://127.0.0.1:6379/11
     USER_DEFAULT_ROLE: creator
 
