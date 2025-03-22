@@ -19,14 +19,14 @@ where
     let children_store = StoredValue::new(children);
 
     view! {
-        <Suspense fallback=LoadingSpinner>
+        <Transition fallback=LoadingSpinner>
             {move || Suspend::new(async move {
                 match my_website_resource.get().map(|resource| resource.take()) {
                     Some(Ok(website_opt)) => Either::Left(children_store.with_value(|store| store(website_opt))),
                     _ => Either::Right(()),
                 }
             })}
-        </Suspense>
+        </Transition>
     }
 }
 
@@ -60,11 +60,7 @@ where
                             website_name.clone(),
                         )
                     });
-                    view! {
-                        <Page class="grow" title=text_title>
-                            {children(website)}
-                        </Page>
-                    }
+                    view! { <Page title=text_title>{children(website)}</Page> }
                 })
         } />
     }

@@ -50,7 +50,7 @@ pub fn IndexParentPage() -> impl IntoView {
                 </li>
             </ul>
 
-            <div class="grow ml-4">
+            <div class="grow">
                 <Outlet />
             </div>
         </div>
