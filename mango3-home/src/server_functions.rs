@@ -1,12 +1,13 @@
 use leptos::prelude::*;
-
-#[cfg(feature = "ssr")]
 use uuid::Uuid;
 
-use mango3_leptos_utils::models::{CursorPageResp, HashtagResp, PostPreviewResp, UserProfileResp, WebsitePreviewResp};
+use mango3_leptos_utils::models::{CursorPageResp, PostPreviewResp, UserProfileResp, WebsitePreviewResp};
+use mango3_utils::models::Hashtag;
 
 #[cfg(feature = "ssr")]
-use mango3_core::models::{Hashtag, Post, User, Website};
+use mango3_core::commands::HashtagGet;
+#[cfg(feature = "ssr")]
+use mango3_core::models::{Post, User, Website};
 #[cfg(feature = "ssr")]
 use mango3_core::pagination::CursorPageParams;
 #[cfg(feature = "ssr")]
@@ -15,18 +16,15 @@ use mango3_leptos_utils::models::FromCore;
 use mango3_leptos_utils::ssr::expect_core_context;
 
 #[server]
-pub async fn get_hashtag(name: String) -> Result<Option<HashtagResp>, ServerFnError> {
+pub async fn get_hashtag(name: String) -> Result<Option<Hashtag>, ServerFnError> {
     let core_context = expect_core_context();
 
-    Ok(Hashtag::get_by_name(&core_context, &name)
-        .await
-        .map(|hashtag| (&hashtag).into())
-        .ok())
+    Ok(Hashtag::get_by_name(&core_context, &name).await.ok())
 }
 
 #[server]
 pub async fn get_hashtag_posts(
-    id: String,
+    id: Uuid,
     after: Option<String>,
 ) -> Result<CursorPageResp<PostPreviewResp>, ServerFnError> {
     let core_context = expect_core_context();
@@ -36,7 +34,7 @@ pub async fn get_hashtag_posts(
         first: 10,
     };
 
-    let hashtag = Hashtag::get_by_id(&core_context, Uuid::try_parse(&id)?).await?;
+    let hashtag = Hashtag::get_by_id(&core_context, id).await?;
 
     let page =
         Post::paginate_by_created_at_desc(&core_context, &page_params, None, None, Some(&hashtag), Some(true)).await;

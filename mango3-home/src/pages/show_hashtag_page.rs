@@ -23,10 +23,7 @@ pub fn ShowHashtagPage() -> impl IntoView {
                     Some(Ok(Some(hashtag))) => {
                         let controller = InfiniteScrollResourceController::new(|after| {
                             Resource::new_blocking(
-                                {
-                                    let hashtag_id = hashtag.id.clone();
-                                    move || (hashtag_id.clone(), after.get())
-                                },
+                                { move || (hashtag.id, after.get()) },
                                 move |(hashtag_id, after)| async move { get_hashtag_posts(hashtag_id, after).await },
                             )
                         });

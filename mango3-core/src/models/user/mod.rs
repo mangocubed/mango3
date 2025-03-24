@@ -6,19 +6,24 @@ use sqlx::types::chrono::{DateTime, NaiveDate, Utc};
 use sqlx::types::Uuid;
 use url::Url;
 
+#[cfg(feature = "hashtag_all")]
+use mango3_utils::models::Hashtag;
+
 use crate::config::BASIC_CONFIG;
 use crate::enums::{Input, InputError, UserRole};
 use crate::locales::I18n;
 use crate::validator::{Validator, ValidatorTrait};
 use crate::CoreContext;
 
+#[cfg(feature = "hashtag_all")]
+use crate::commands::HashtagAll;
 #[cfg(feature = "user_cache_remove")]
 use crate::constants::{
     PREFIX_GET_USER_BY_ID, PREFIX_GET_USER_BY_USERNAME, PREFIX_GET_USER_BY_USERNAME_OR_EMAIL, PREFIX_USER_BIO_HTML,
     PREFIX_USER_BIO_PREVIEW_HTML,
 };
 
-use super::{Blob, Hashtag, Website};
+use super::{Blob, Website};
 
 #[cfg(feature = "user_cache_remove")]
 use super::AsyncRedisCacheTrait;
@@ -35,7 +40,7 @@ mod user_password;
 mod user_bio;
 #[cfg(feature = "user_cache_remove")]
 mod user_disable;
-#[cfg(feature = "user_cache_remove")]
+#[cfg(feature = "user_profile")]
 mod user_profile;
 #[cfg(feature = "user_cache_remove")]
 mod user_role;
@@ -107,6 +112,7 @@ impl User {
         rust_iso3166::from_alpha2(&self.country_alpha2).unwrap()
     }
 
+    #[cfg(feature = "hashtag_all")]
     pub async fn hashtags(&self, core_context: &CoreContext) -> Vec<Hashtag> {
         Hashtag::all_by_ids(core_context, &self.hashtag_ids).await
     }

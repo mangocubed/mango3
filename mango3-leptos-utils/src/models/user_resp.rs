@@ -3,12 +3,14 @@ use serde::{Deserialize, Serialize};
 #[cfg(feature = "ssr")]
 use async_trait::async_trait;
 
+use mango3_utils::models::Hashtag;
+
 #[cfg(feature = "ssr")]
 use mango3_core::models::User;
 #[cfg(feature = "ssr")]
 use mango3_core::CoreContext;
 
-use super::{BlobResp, HashtagResp, UserProfileResp};
+use super::{BlobResp, UserProfileResp};
 
 #[cfg(feature = "ssr")]
 use super::FromCore;
@@ -19,16 +21,15 @@ pub struct UserPreviewResp {
     pub username: String,
     pub display_name: String,
     pub initials: String,
-
-    #[cfg(feature = "user_bio_preview_html")]
-    pub bio_preview_html: String,
-
-    pub hashtags: Vec<HashtagResp>,
+    pub hashtags: Vec<Hashtag>,
     pub avatar_image_blob: Option<BlobResp>,
     pub text_avatar_url: String,
     pub url: String,
     pub role: String,
     pub is_disabled: bool,
+
+    #[cfg(feature = "user_bio_preview_html")]
+    pub bio_preview_html: String,
 }
 
 impl UserPreviewResp {
@@ -59,21 +60,15 @@ impl FromCore<User> for UserPreviewResp {
             username: user.username.clone(),
             display_name: user.display_name.clone(),
             initials: user.initials(),
-            hashtags: user
-                .hashtags(&core_context)
-                .await
-                .iter()
-                .map(|hashtag| hashtag.into())
-                .collect(),
-
-            #[cfg(feature = "user_bio_preview_html")]
-            bio_preview_html: user.bio_preview_html().await,
-
+            hashtags: user.hashtags(&core_context).await,
             avatar_image_blob,
             text_avatar_url: user.text_avatar_url().to_string(),
             url: user.url().to_string(),
             role: user.role.to_string(),
             is_disabled: user.is_disabled(),
+
+            #[cfg(feature = "user_bio_preview_html")]
+            bio_preview_html: user.bio_preview_html().await,
         }
     }
 }
@@ -85,16 +80,15 @@ impl From<UserResp> for UserPreviewResp {
             username: value.username,
             display_name: value.display_name,
             initials: value.initials,
-
-            #[cfg(feature = "user_bio_preview_html")]
-            bio_preview_html: value.bio_preview_html,
-
             hashtags: value.hashtags,
             avatar_image_blob: value.avatar_image_blob,
             url: value.url,
             text_avatar_url: value.text_avatar_url,
             role: value.role,
             is_disabled: value.is_disabled,
+
+            #[cfg(feature = "user_bio_preview_html")]
+            bio_preview_html: value.bio_preview_html,
         }
     }
 }
@@ -106,16 +100,15 @@ impl From<UserProfileResp> for UserPreviewResp {
             username: value.username,
             display_name: value.display_name,
             initials: value.initials,
-
-            #[cfg(feature = "user_bio_preview_html")]
-            bio_preview_html: value.bio_preview_html,
-
             hashtags: value.hashtags,
             avatar_image_blob: value.avatar_image_blob,
             url: value.url,
             text_avatar_url: value.text_avatar_url,
             role: value.role,
             is_disabled: value.is_disabled,
+
+            #[cfg(feature = "user_bio_preview_html")]
+            bio_preview_html: value.bio_preview_html,
         }
     }
 }
@@ -132,7 +125,7 @@ pub struct UserResp {
     #[cfg(feature = "user_bio_preview_html")]
     pub bio_preview_html: String,
 
-    pub hashtags: Vec<HashtagResp>,
+    pub hashtags: Vec<Hashtag>,
     pub avatar_image_blob: Option<BlobResp>,
     pub can_insert_website: bool,
     pub url: String,
@@ -171,22 +164,16 @@ impl FromCore<User> for UserResp {
             initials: user.initials(),
             email: user.email.clone(),
             email_is_confirmed: user.email_is_confirmed(),
-
-            #[cfg(feature = "user_bio_preview_html")]
-            bio_preview_html: user.bio_preview_html().await,
-
-            hashtags: user
-                .hashtags(&core_context)
-                .await
-                .iter()
-                .map(|hashtag| hashtag.into())
-                .collect(),
+            hashtags: user.hashtags(&core_context).await,
             avatar_image_blob,
             can_insert_website: user.can_insert_website(&core_context).await,
             url: user.url().to_string(),
             text_avatar_url: user.text_avatar_url().to_string(),
             role: user.role.to_string(),
             is_disabled: user.is_disabled(),
+
+            #[cfg(feature = "user_bio_preview_html")]
+            bio_preview_html: user.bio_preview_html().await,
         }
     }
 }

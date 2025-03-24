@@ -7,9 +7,10 @@ edition.workspace = true
 chrono = { workspace = true }
 ipnetwork = { workspace = true, optional = true }
 serde = { workspace = true }
-uuid = { workspace = true, optional = true }
+uuid = { workspace = true, optional = true, features = ["js"] }
 
 [features]
+hashtag = ["dep:uuid"]
 invitation_code = ["dep:uuid"]
 post_reaction = ["dep:uuid"]
 post_view = ["dep:ipnetwork", "dep:uuid"]

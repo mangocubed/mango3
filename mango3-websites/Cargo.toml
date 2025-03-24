@@ -18,12 +18,19 @@ tokio = { workspace = true, optional = true }
 uuid = { workspace = true, optional = true }
 wasm-bindgen = { workspace = true }
 mango3-core = { workspace = true, features = [
-    "post_comment_cache_remove", "post_reaction_delete", "post_reaction_get", "post_reaction_insert", "post_view_insert"
+    "hashtag_all",
+    "hashtag_get",
+    "post_comment_cache_remove",
+    "post_paginate",
+    "post_reaction_delete",
+    "post_reaction_get",
+    "post_reaction_insert",
+    "post_view_insert",
 ], optional = true }
 mango3-leptos-utils = { workspace = true, features = [
     "markdown_editor", "post_card", "post_comment_content_html", "post_content_html", "website_description_html"
 ] }
-mango3-utils = { workspace = true }
+mango3-utils = { workspace = true, features = ["hashtag"] }
 
 [features]
 hydrate = ["leptos/hydrate", "leptos_i18n/hydrate", "mango3-leptos-utils/hydrate"]

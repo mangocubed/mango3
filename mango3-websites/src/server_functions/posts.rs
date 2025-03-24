@@ -6,15 +6,17 @@ use uuid::Uuid;
 use mango3_leptos_utils::models::{CursorPageResp, PostPreviewResp, PostResp};
 
 #[cfg(feature = "ssr")]
-use mango3_core::commands::PostViewInsert;
+use mango3_core::commands::{HashtagGet, PostViewInsert};
 #[cfg(feature = "ssr")]
-use mango3_core::models::{Hashtag, Post};
+use mango3_core::models::Post;
 #[cfg(feature = "ssr")]
 use mango3_core::pagination::CursorPageParams;
 #[cfg(feature = "ssr")]
 use mango3_leptos_utils::models::FromCore;
 #[cfg(feature = "ssr")]
 use mango3_leptos_utils::ssr::{expect_core_context, extract_client_ip, extract_user};
+#[cfg(feature = "ssr")]
+use mango3_utils::models::Hashtag;
 #[cfg(feature = "ssr")]
 use mango3_utils::models::PostView;
 

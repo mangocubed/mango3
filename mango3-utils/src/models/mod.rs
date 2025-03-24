@@ -1,3 +1,5 @@
+#[cfg(feature = "hashtag")]
+mod hashtag;
 #[cfg(feature = "invitation_code")]
 mod invitation_code;
 #[cfg(feature = "post_reaction")]
@@ -7,6 +9,8 @@ mod post_view;
 #[cfg(feature = "user_session")]
 mod user_session;
 
+#[cfg(feature = "hashtag")]
+pub use hashtag::Hashtag;
 #[cfg(feature = "invitation_code")]
 pub use invitation_code::InvitationCode;
 #[cfg(feature = "post_reaction")]

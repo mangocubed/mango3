@@ -150,11 +150,12 @@ pub(crate) static REGEX_EMAIL: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\
 pub static REGEX_FIND_HASHTAGS: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"#(?<name>[a-zA-Z0-9]+(?:[-_][a-zA-Z0-9]+)*)").unwrap());
 pub static REGEX_HANDLEBARS: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"(^|[^\\])\{\{(?s:.)*?\}\}").unwrap());
-pub(crate) static REGEX_HASHTAG: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"\A[[:alnum:]]+(?:[-_][[:alnum:]]+)*\z").unwrap());
 pub(crate) static REGEX_USERNAME: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"\A[-_.]?([[:alnum:]]+[-_.]?)+\z").unwrap());
 
+#[cfg(feature = "hashtag_insert")]
+pub(crate) static REGEX_HASHTAG: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"\A[[:alnum:]]+(?:[-_][[:alnum:]]+)*\z").unwrap());
 #[cfg(feature = "post_write")]
 pub(crate) static REGEX_SLUG: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"\A[[:alnum:]]+(?:-[[:alnum:]]+)*\z").unwrap());

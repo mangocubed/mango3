@@ -6,12 +6,14 @@ use async_trait::async_trait;
 #[cfg(feature = "ssr")]
 use futures::future;
 
+use mango3_utils::models::Hashtag;
+
 #[cfg(feature = "ssr")]
 use mango3_core::models::Post;
 #[cfg(feature = "ssr")]
 use mango3_core::CoreContext;
 
-use super::{BlobResp, HashtagResp, UserPreviewResp, WebsitePreviewResp};
+use super::{BlobResp, UserPreviewResp, WebsitePreviewResp};
 
 #[cfg(feature = "ssr")]
 use super::FromCore;
@@ -22,7 +24,7 @@ pub struct PostResp {
     pub user: UserPreviewResp,
     pub title: String,
     pub slug: String,
-    pub hashtags: Vec<HashtagResp>,
+    pub hashtags: Vec<Hashtag>,
     pub cover_image_blob: Option<BlobResp>,
     pub blobs: Vec<BlobResp>,
     pub is_published: bool,
@@ -70,12 +72,7 @@ impl FromCore<Post> for PostResp {
             title: post.title.clone(),
             slug: post.slug.clone(),
 
-            hashtags: post
-                .hashtags(&core_context)
-                .await
-                .iter()
-                .map(|hashtag| hashtag.into())
-                .collect(),
+            hashtags: post.hashtags(&core_context).await,
             cover_image_blob,
             blobs,
             is_published: post.is_published(core_context).await,
@@ -105,7 +102,7 @@ pub struct PostPreviewResp {
     pub user: UserPreviewResp,
     pub title: String,
     pub slug: String,
-    pub hashtags: Vec<HashtagResp>,
+    pub hashtags: Vec<Hashtag>,
     pub cover_image_blob: Option<BlobResp>,
     pub is_published: bool,
     pub comments_count: i64,
@@ -116,10 +113,8 @@ pub struct PostPreviewResp {
 
     #[cfg(feature = "post_content_preview_html")]
     pub content_preview_html: String,
-
     #[cfg(feature = "post_reaction_count")]
     pub reactions_count: i64,
-
     #[cfg(feature = "post_view_count")]
     pub views_count: i64,
 }
@@ -148,12 +143,7 @@ impl FromCore<Post> for PostPreviewResp {
             .await,
             title: post.title.clone(),
             slug: post.slug.clone(),
-            hashtags: post
-                .hashtags(&core_context)
-                .await
-                .iter()
-                .map(|hashtag| hashtag.into())
-                .collect(),
+            hashtags: post.hashtags(&core_context).await,
             cover_image_blob,
             is_published: post.is_published(core_context).await,
             comments_count: post.comments_count(&core_context).await,
@@ -164,10 +154,8 @@ impl FromCore<Post> for PostPreviewResp {
 
             #[cfg(feature = "post_content_preview_html")]
             content_preview_html: post.content_preview_html().await,
-
             #[cfg(feature = "post_reaction_count")]
             reactions_count: post.reactions_count(&core_context).await,
-
             #[cfg(feature = "post_view_count")]
             views_count: post.views_count(&core_context).await,
         }
