@@ -20,9 +20,11 @@ use mango3_core::pagination::CursorPageParams;
 #[cfg(feature = "ssr")]
 use mango3_core::utils::{parse_html, render_handlebars};
 #[cfg(feature = "ssr")]
-use mango3_leptos_utils::models::{BlobResp, FromCore, HashtagResp, UserPreviewResp};
+use mango3_leptos_utils::models::{BlobResp, FromCore, UserPreviewResp};
 #[cfg(feature = "ssr")]
 use mango3_leptos_utils::ssr::{expect_core_context, extract_i18n, extract_user};
+#[cfg(feature = "ssr")]
+use mango3_utils::models::Hashtag;
 
 use crate::models::EditPostResp;
 
@@ -62,11 +64,13 @@ pub async fn preview_post(
 
     let hashtags = hashtag_names
         .iter()
-        .map(|name| HashtagResp {
-            id: String::new(),
+        .map(|name| Hashtag {
+            id: Uuid::new_v4(),
             name: (*name).to_owned(),
+            created_at: Utc::now(),
+            updated_at: None,
         })
-        .collect::<Vec<HashtagResp>>();
+        .collect::<Vec<Hashtag>>();
 
     let cover_image_blob = if let Some(id) = cover_image_blob_id.and_then(|id| Uuid::try_parse(&id).ok()) {
         if let Ok(blob) = Blob::get_by_id(&core_context, id, None, Some(&user)).await {

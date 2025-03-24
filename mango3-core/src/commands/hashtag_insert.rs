@@ -1,58 +1,31 @@
+use std::future::Future;
+
 use futures::future;
 use sqlx::query_as;
-use sqlx::types::chrono::{DateTime, Utc};
-use sqlx::types::Uuid;
+use uuid::Uuid;
+
+use mango3_utils::models::Hashtag;
 
 use crate::constants::{BLACKLISTED_HASHTAGS, REGEX_FIND_HASHTAGS, REGEX_HASHTAG};
 use crate::enums::{Input, InputError};
 use crate::validator::{ValidationErrors, Validator, ValidatorTrait};
 use crate::{hashtag_has_lookaround, CoreContext};
 
-#[derive(Clone)]
-pub struct Hashtag {
-    pub id: Uuid,
-    pub name: String,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: Option<DateTime<Utc>>,
+use super::HashtagGet;
+
+trait HashtagInsert {
+    async fn get_or_insert(core_context: &CoreContext, name: &str) -> Result<Hashtag, ValidationErrors>;
 }
 
-impl Hashtag {
-    pub async fn all_by_ids(core_context: &CoreContext, ids: &Vec<Uuid>) -> Vec<Self> {
-        if ids.is_empty() {
-            return vec![];
-        }
+pub trait HashtagInsertAll {
+    fn get_or_insert_all(
+        core_context: &CoreContext,
+        content: &str,
+    ) -> impl Future<Output = Result<Vec<Hashtag>, ValidationErrors>>;
+}
 
-        query_as!(
-            Self,
-            "SELECT * FROM hashtags WHERE id = ANY($1)",
-            ids // $1
-        )
-        .fetch_all(&core_context.db_pool)
-        .await
-        .unwrap_or_default()
-    }
-
-    pub async fn get_by_id(core_context: &CoreContext, id: Uuid) -> sqlx::Result<Self> {
-        query_as!(
-            Self,
-            "SELECT * FROM hashtags WHERE id = $1 LIMIT 1",
-            id, // $1
-        )
-        .fetch_one(&core_context.db_pool)
-        .await
-    }
-
-    pub async fn get_by_name(core_context: &CoreContext, name: &str) -> sqlx::Result<Self> {
-        query_as!(
-            Self,
-            "SELECT * FROM hashtags WHERE name = $1 LIMIT 1",
-            name, // $1
-        )
-        .fetch_one(&core_context.db_pool)
-        .await
-    }
-
-    async fn get_or_insert(core_context: &CoreContext, name: &str) -> Result<Self, ValidationErrors> {
+impl HashtagInsert for Hashtag {
+    async fn get_or_insert(core_context: &CoreContext, name: &str) -> Result<Hashtag, ValidationErrors> {
         let name = name.trim().to_lowercase();
 
         if let Ok(hashtag) = Self::get_by_name(core_context, &name).await {
@@ -80,8 +53,13 @@ impl Hashtag {
         .await
         .map_err(|_| ValidationErrors::default())
     }
+}
 
-    pub async fn get_or_insert_all(core_context: &CoreContext, content: &str) -> Result<Vec<Self>, ValidationErrors> {
+impl HashtagInsertAll for Hashtag {
+    fn get_or_insert_all(
+        core_context: &CoreContext,
+        content: &str,
+    ) -> impl Future<Output = Result<Vec<Self>, ValidationErrors>> {
         let mut hashtag_names = REGEX_FIND_HASHTAGS
             .captures_iter(content)
             .filter_map(|captures| {
@@ -98,17 +76,19 @@ impl Hashtag {
 
         hashtag_names.dedup();
 
-        if hashtag_names.is_empty() {
-            return Ok(vec![]);
-        }
+        async move {
+            if hashtag_names.is_empty() {
+                return Ok(vec![]);
+            }
 
-        Ok(
-            future::join_all(hashtag_names.iter().map(|name| Self::get_or_insert(core_context, name)))
-                .await
-                .iter()
-                .filter_map(|hashtag| hashtag.as_ref().ok().cloned())
-                .collect(),
-        )
+            Ok(
+                future::join_all(hashtag_names.iter().map(|name| Self::get_or_insert(core_context, name)))
+                    .await
+                    .iter()
+                    .filter_map(|hashtag| hashtag.as_ref().ok().cloned())
+                    .collect(),
+            )
+        }
     }
 }
 
@@ -116,16 +96,7 @@ impl Hashtag {
 mod tests {
     use crate::test_utils::{fake_slug, setup_core_context};
 
-    use super::Hashtag;
-
-    #[tokio::test]
-    async fn should_return_all_by_ids() {
-        let core_context = setup_core_context().await;
-
-        let result = Hashtag::all_by_ids(&core_context, &vec![]).await;
-
-        assert!(result.is_empty());
-    }
+    use super::{Hashtag, HashtagInsert, HashtagInsertAll};
 
     #[tokio::test]
     async fn should_get_or_insert() {

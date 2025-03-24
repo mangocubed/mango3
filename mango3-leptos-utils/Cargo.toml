@@ -37,8 +37,8 @@ tokio = { workspace = true, optional = true }
 uuid = { workspace = true, optional = true }
 wasm-bindgen = { workspace = true }
 web-sys = { workspace = true }
-mango3-core = { workspace = true, optional = true, features = ["user_session_get"] }
-mango3-utils = { workspace = true }
+mango3-core = { workspace = true, optional = true, features = ["hashtag_all", "user_session_get"] }
+mango3-utils = { workspace = true, features = ["hashtag"] }
 
 [features]
 forms = ["leptos-use/use_textarea_autosize"]

@@ -9,9 +9,14 @@ use url::Url;
 #[cfg(feature = "website_cache_remove")]
 use futures::future;
 
+#[cfg(feature = "hashtag_all")]
+use mango3_utils::models::Hashtag;
+
 use crate::config::BASIC_CONFIG;
 use crate::CoreContext;
 
+#[cfg(feature = "hashtag_all")]
+use crate::commands::HashtagAll;
 #[cfg(feature = "website_cache_remove")]
 use crate::constants::{
     PREFIX_GET_WEBSITE_BY_ID, PREFIX_GET_WEBSITE_BY_SUBDOMAIN, PREFIX_WEBSITE_DESCRIPTION_HTML,
@@ -22,7 +27,7 @@ use crate::enums::{Input, InputError};
 #[cfg(feature = "website_write")]
 use crate::validator::{Validator, ValidatorTrait};
 
-use super::{Blob, Hashtag, User};
+use super::{Blob, User};
 
 #[cfg(feature = "website_cache_remove")]
 use super::AsyncRedisCacheTrait;
@@ -104,6 +109,7 @@ impl Website {
         }
     }
 
+    #[cfg(feature = "hashtag_all")]
     pub async fn hashtags(&self, core_context: &CoreContext) -> Vec<Hashtag> {
         Hashtag::all_by_ids(core_context, &self.hashtag_ids).await
     }

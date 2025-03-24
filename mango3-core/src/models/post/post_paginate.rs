@@ -1,6 +1,8 @@
 use sqlx::query_as;
 
-use crate::models::{Hashtag, User, Website};
+use mango3_utils::models::Hashtag;
+
+use crate::models::{User, Website};
 use crate::pagination::{CursorPage, CursorPageParams};
 use crate::CoreContext;
 

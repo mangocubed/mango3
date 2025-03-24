@@ -5,12 +5,14 @@ use serde::{Deserialize, Serialize};
 #[cfg(feature = "ssr")]
 use async_trait::async_trait;
 
+use mango3_utils::models::Hashtag;
+
 #[cfg(feature = "ssr")]
 use mango3_core::models::Website;
 #[cfg(feature = "ssr")]
 use mango3_core::CoreContext;
 
-use super::{BlobResp, HashtagResp};
+use super::BlobResp;
 
 #[cfg(feature = "ssr")]
 use super::FromCore;
@@ -27,7 +29,7 @@ pub struct WebsiteResp {
     #[cfg(feature = "website_description_preview_html")]
     pub description_preview_html: String,
 
-    pub hashtags: Vec<HashtagResp>,
+    pub hashtags: Vec<Hashtag>,
     pub initials: String,
     pub icon_image_blob: Option<BlobResp>,
     pub text_icon_url: String,
@@ -40,19 +42,14 @@ pub struct WebsiteResp {
 
     #[cfg(feature = "website_storage")]
     pub available_storage_str: String,
-
     #[cfg(feature = "website_storage")]
     pub max_storage_str: String,
-
     #[cfg(feature = "website_storage")]
     pub used_storage_str: String,
-
     #[cfg(feature = "website_storage")]
     pub available_storage: i64,
-
     #[cfg(feature = "website_storage")]
     pub max_storage: i64,
-
     #[cfg(feature = "website_storage")]
     pub used_storage: i64,
 }
@@ -92,18 +89,7 @@ impl FromCore<Website> for WebsiteResp {
             id: website.id.to_string(),
             name: website.name.clone(),
             description: website.description.clone(),
-
-            #[cfg(feature = "website_description_html")]
-            description_html: website.description_html().await,
-
-            #[cfg(feature = "website_description_preview_html")]
-            description_preview_html: website.description_preview_html().await,
-            hashtags: website
-                .hashtags(&core_context)
-                .await
-                .iter()
-                .map(|hashtag| hashtag.into())
-                .collect(),
+            hashtags: website.hashtags(&core_context).await,
             initials: website.initials(),
             icon_image_blob,
             text_icon_url: website.text_icon_url().to_string(),
@@ -114,21 +100,20 @@ impl FromCore<Website> for WebsiteResp {
             host: website.host(),
             url: website.url().to_string(),
 
+            #[cfg(feature = "website_description_html")]
+            description_html: website.description_html().await,
+            #[cfg(feature = "website_description_preview_html")]
+            description_preview_html: website.description_preview_html().await,
             #[cfg(feature = "website_storage")]
             available_storage_str: available_storage.to_string(),
-
             #[cfg(feature = "website_storage")]
             max_storage_str: max_storage.to_string(),
-
             #[cfg(feature = "website_storage")]
             used_storage_str: used_storage.to_string(),
-
             #[cfg(feature = "website_storage")]
             available_storage: available_storage.bytes(),
-
             #[cfg(feature = "website_storage")]
             max_storage: max_storage.bytes(),
-
             #[cfg(feature = "website_storage")]
             used_storage: used_storage.bytes(),
         }
@@ -139,17 +124,16 @@ impl FromCore<Website> for WebsiteResp {
 pub struct WebsitePreviewResp {
     pub id: String,
     pub name: String,
-
-    #[cfg(feature = "website_description_preview_html")]
-    pub description_preview_html: String,
-
-    pub hashtags: Vec<HashtagResp>,
+    pub hashtags: Vec<Hashtag>,
     pub initials: String,
     pub icon_image_blob: Option<BlobResp>,
     pub text_icon_url: String,
     pub is_published: bool,
     pub host: String,
     pub url: String,
+
+    #[cfg(feature = "website_description_preview_html")]
+    pub description_preview_html: String,
 }
 
 impl WebsitePreviewResp {
@@ -174,22 +158,16 @@ impl FromCore<Website> for WebsitePreviewResp {
         Self {
             id: website.id.to_string(),
             name: website.name.clone(),
-
-            #[cfg(feature = "website_description_preview_html")]
-            description_preview_html: website.description_preview_html().await,
-
-            hashtags: website
-                .hashtags(&core_context)
-                .await
-                .iter()
-                .map(|hashtag| hashtag.into())
-                .collect(),
+            hashtags: website.hashtags(&core_context).await,
             initials: website.initials(),
             icon_image_blob,
             text_icon_url: website.text_icon_url().to_string(),
             is_published: website.is_published(),
             host: website.host(),
             url: website.url().to_string(),
+
+            #[cfg(feature = "website_description_preview_html")]
+            description_preview_html: website.description_preview_html().await,
         }
     }
 }
@@ -199,10 +177,6 @@ impl From<&WebsiteResp> for WebsitePreviewResp {
         Self {
             id: website.id.clone(),
             name: website.name.clone(),
-
-            #[cfg(feature = "website_description_preview_html")]
-            description_preview_html: website.description_preview_html.clone(),
-
             hashtags: website.hashtags.clone(),
             initials: website.initials.clone(),
             icon_image_blob: website.icon_image_blob.clone(),
@@ -210,6 +184,9 @@ impl From<&WebsiteResp> for WebsitePreviewResp {
             is_published: website.is_published,
             host: website.host.clone(),
             url: website.url.clone(),
+
+            #[cfg(feature = "website_description_preview_html")]
+            description_preview_html: website.description_preview_html.clone(),
         }
     }
 }

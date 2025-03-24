@@ -12,7 +12,6 @@ use mango3_core::CoreContext;
 
 mod basic_config_resp;
 mod blob_resp;
-mod hashtag_resp;
 mod info_resp;
 mod navigation_item_resp;
 mod post_comment_resp;
@@ -26,7 +25,6 @@ mod form_resp;
 
 pub use basic_config_resp::BasicConfigResp;
 pub use blob_resp::BlobResp;
-pub use hashtag_resp::HashtagResp;
 pub use info_resp::InfoResp;
 pub use navigation_item_resp::NavigationItemResp;
 pub use post_comment_resp::PostCommentResp;

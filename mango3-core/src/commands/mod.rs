@@ -1,3 +1,9 @@
+#[cfg(feature = "hashtag_all")]
+mod hashtag_all;
+#[cfg(feature = "hashtag_get")]
+mod hashtag_get;
+#[cfg(feature = "hashtag_insert")]
+mod hashtag_insert;
 #[cfg(feature = "invitation_code_delete")]
 mod invitation_code_delete;
 #[cfg(feature = "invitation_code_get")]
@@ -25,6 +31,12 @@ mod user_session_get;
 #[cfg(feature = "user_session_insert")]
 mod user_session_insert;
 
+#[cfg(feature = "hashtag_all")]
+pub use hashtag_all::HashtagAll;
+#[cfg(feature = "hashtag_get")]
+pub use hashtag_get::HashtagGet;
+#[cfg(feature = "hashtag_insert")]
+pub use hashtag_insert::HashtagInsertAll;
 #[cfg(feature = "invitation_code_delete")]
 pub use invitation_code_delete::InvitationCodeDelete;
 #[cfg(feature = "invitation_code_get")]

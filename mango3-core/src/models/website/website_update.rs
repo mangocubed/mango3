@@ -1,9 +1,12 @@
 use sqlx::query_as;
 use sqlx::types::uuid::Uuid;
 
+use mango3_utils::models::Hashtag;
+
+use crate::commands::HashtagInsertAll;
 use crate::constants::{DARK_THEMES, LIGHT_THEMES};
 use crate::enums::{Input, InputError};
-use crate::models::{Blob, Hashtag};
+use crate::models::Blob;
 use crate::validator::{ValidationErrors, Validator};
 use crate::CoreContext;
 

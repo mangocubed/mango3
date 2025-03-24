@@ -10,6 +10,8 @@ use futures::future;
 #[cfg(feature = "post_write")]
 use sqlx::query;
 
+#[cfg(feature = "hashtag_all")]
+use mango3_utils::models::Hashtag;
 #[cfg(feature = "post_reaction_count")]
 use mango3_utils::models::PostReaction;
 #[cfg(feature = "post_view_count")]
@@ -17,6 +19,8 @@ use mango3_utils::models::PostView;
 
 use crate::CoreContext;
 
+#[cfg(feature = "hashtag_all")]
+use crate::commands::HashtagAll;
 #[cfg(feature = "post_reaction_count")]
 use crate::commands::PostReactionCount;
 #[cfg(feature = "post_view_count")]
@@ -36,10 +40,9 @@ use crate::validator::{Validator, ValidatorTrait};
 #[cfg(feature = "post_cache_remove")]
 use super::AsyncRedisCacheTrait;
 
-use super::{Blob, Hashtag, PostComment, User, Website};
+use super::{Blob, PostComment, User, Website};
 
 mod post_get;
-mod post_paginate;
 mod post_search;
 
 #[cfg(any(feature = "post_content_html", feature = "post_content_preview_html"))]
@@ -48,6 +51,8 @@ mod post_content;
 mod post_delete;
 #[cfg(feature = "post_write")]
 mod post_insert;
+#[cfg(feature = "post_paginate")]
+mod post_paginate;
 #[cfg(feature = "post_write")]
 mod post_update;
 
@@ -119,6 +124,7 @@ impl Post {
         }
     }
 
+    #[cfg(feature = "hashtag_all")]
     pub async fn hashtags(&self, core_context: &CoreContext) -> Vec<Hashtag> {
         Hashtag::all_by_ids(core_context, &self.hashtag_ids).await
     }

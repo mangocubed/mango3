@@ -3,12 +3,14 @@ use serde::{Deserialize, Serialize};
 #[cfg(feature = "ssr")]
 use async_trait::async_trait;
 
+use mango3_utils::models::Hashtag;
+
 #[cfg(feature = "ssr")]
 use mango3_core::models::User;
 #[cfg(feature = "ssr")]
 use mango3_core::CoreContext;
 
-use super::{BlobResp, HashtagResp};
+use super::BlobResp;
 
 #[cfg(feature = "ssr")]
 use super::FromCore;
@@ -25,18 +27,17 @@ pub struct UserProfileResp {
     pub country_name: String,
     pub bio: String,
 
-    #[cfg(feature = "user_bio_html")]
-    pub bio_html: String,
-
-    #[cfg(feature = "user_bio_preview_html")]
-    pub bio_preview_html: String,
-
-    pub hashtags: Vec<HashtagResp>,
+    pub hashtags: Vec<Hashtag>,
     pub avatar_image_blob: Option<BlobResp>,
     pub text_avatar_url: String,
     pub url: String,
     pub role: String,
     pub is_disabled: bool,
+
+    #[cfg(feature = "user_bio_html")]
+    pub bio_html: String,
+    #[cfg(feature = "user_bio_preview_html")]
+    pub bio_preview_html: String,
 }
 
 impl UserProfileResp {
@@ -72,24 +73,17 @@ impl FromCore<User> for UserProfileResp {
             country_alpha2: user.country_alpha2.clone(),
             country_name: user.country().name.to_owned(),
             bio: user.bio.clone(),
-
-            #[cfg(feature = "user_bio_html")]
-            bio_html: user.bio_html().await,
-
-            #[cfg(feature = "user_bio_preview_html")]
-            bio_preview_html: user.bio_preview_html().await,
-
-            hashtags: user
-                .hashtags(&core_context)
-                .await
-                .iter()
-                .map(|hashtag| hashtag.into())
-                .collect(),
+            hashtags: user.hashtags(&core_context).await,
             avatar_image_blob,
             text_avatar_url: user.text_avatar_url().to_string(),
             url: user.url().to_string(),
             role: user.role.to_string(),
             is_disabled: user.is_disabled(),
+
+            #[cfg(feature = "user_bio_html")]
+            bio_html: user.bio_html().await,
+            #[cfg(feature = "user_bio_preview_html")]
+            bio_preview_html: user.bio_preview_html().await,
         }
     }
 }

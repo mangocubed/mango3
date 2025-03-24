@@ -1,9 +1,12 @@
 use leptos::prelude::*;
 
-use mango3_leptos_utils::models::{HashtagResp, NavigationItemResp, WebsiteResp};
+use mango3_leptos_utils::models::{NavigationItemResp, WebsiteResp};
+use mango3_utils::models::Hashtag;
 
 #[cfg(feature = "ssr")]
-use mango3_core::models::{Hashtag, NavigationItem, Website};
+use mango3_core::commands::HashtagGet;
+#[cfg(feature = "ssr")]
+use mango3_core::models::{NavigationItem, Website};
 #[cfg(feature = "ssr")]
 use mango3_leptos_utils::models::FromCore;
 #[cfg(feature = "ssr")]
@@ -54,15 +57,12 @@ pub async fn get_current_website() -> Result<Option<WebsiteResp>, ServerFnError>
 }
 
 #[server]
-pub async fn get_hashtag(name: String) -> Result<Option<HashtagResp>, ServerFnError> {
+pub async fn get_hashtag(name: String) -> Result<Option<Hashtag>, ServerFnError> {
     if current_website().await?.is_none() {
         return Ok(None);
     };
 
     let core_context = expect_core_context();
 
-    Ok(Hashtag::get_by_name(&core_context, &name)
-        .await
-        .map(|hashtag| (&hashtag).into())
-        .ok())
+    Ok(Hashtag::get_by_name(&core_context, &name).await.ok())
 }

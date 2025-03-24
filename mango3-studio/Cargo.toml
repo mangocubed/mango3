@@ -23,7 +23,7 @@ tokio = { workspace = true, optional = true }
 uuid = { workspace = true, optional = true }
 wasm-bindgen = { workspace = true }
 mango3-core = { workspace = true, features = [
-    "blob_delete", "blob_paginate", "post_write", "website_storage", "website_write"
+    "blob_delete", "blob_paginate", "post_write", "post_paginate", "website_storage", "website_write"
 ], optional = true }
 mango3-leptos-utils = { workspace = true, features = [
     "blob_delete",
@@ -34,6 +34,7 @@ mango3-leptos-utils = { workspace = true, features = [
     "website_card",
     "website_storage",
 ] }
+mango3-utils = { workspace = true }
 
 [features]
 hydrate = ["leptos/hydrate", "leptos_i18n/hydrate", "mango3-leptos-utils/hydrate"]
