@@ -1,12 +1,12 @@
 use leptos::prelude::*;
 
-use mango3_leptos_utils::models::{NavigationItemResp, WebsiteResp};
-use mango3_utils::models::Hashtag;
+use mango3_leptos_utils::models::WebsiteResp;
+use mango3_utils::models::{Hashtag, NavigationItem};
 
 #[cfg(feature = "ssr")]
-use mango3_core::commands::HashtagGet;
+use mango3_core::commands::{HashtagGet, NavigationItemAll};
 #[cfg(feature = "ssr")]
-use mango3_core::models::{NavigationItem, Website};
+use mango3_core::models::Website;
 #[cfg(feature = "ssr")]
 use mango3_leptos_utils::models::FromCore;
 #[cfg(feature = "ssr")]
@@ -34,15 +34,14 @@ async fn current_website() -> Result<Option<Website>, ServerFnError> {
 }
 
 #[server]
-pub async fn get_all_navigation_items() -> Result<Vec<NavigationItemResp>, ServerFnError> {
+pub async fn get_all_navigation_items() -> Result<Vec<NavigationItem>, ServerFnError> {
     let Some(website) = current_website().await? else {
         return Ok(vec![]);
     };
 
     let core_context = expect_core_context();
-    let items = NavigationItem::all_by_website(&core_context, &website).await;
 
-    Ok(items.iter().map(|item| item.into()).collect())
+    Ok(NavigationItem::all_by_website(&core_context, &website).await)
 }
 
 #[server]

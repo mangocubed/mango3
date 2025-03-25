@@ -12,6 +12,7 @@ uuid = { workspace = true, optional = true, features = ["js"] }
 [features]
 hashtag = ["dep:uuid"]
 invitation_code = ["dep:uuid"]
+navigation_item = ["dep:uuid"]
 post_reaction = ["dep:uuid"]
 post_view = ["dep:ipnetwork", "dep:uuid"]
 user_session = ["dep:uuid"]

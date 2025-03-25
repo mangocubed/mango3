@@ -53,7 +53,7 @@ pub fn WebsiteTopBar() -> impl IntoView {
                                 .map(|items| {
                                     view! {
                                         <ul class="menu gap-1 md:menu-horizontal flex-nowrap">
-                                            <For each=move || items.clone() key=|item| item.id.clone() let:item>
+                                            <For each=move || items.clone() key=|item| item.id let:item>
                                                 <li>
                                                     <a href=item.url>{item.title}</a>
                                                 </li>

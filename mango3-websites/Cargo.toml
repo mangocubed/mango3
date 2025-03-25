@@ -20,6 +20,7 @@ wasm-bindgen = { workspace = true }
 mango3-core = { workspace = true, features = [
     "hashtag_all",
     "hashtag_get",
+    "navigation_item_all",
     "post_comment_cache_remove",
     "post_paginate",
     "post_reaction_delete",
@@ -30,7 +31,7 @@ mango3-core = { workspace = true, features = [
 mango3-leptos-utils = { workspace = true, features = [
     "markdown_editor", "post_card", "post_comment_content_html", "post_content_html", "website_description_html"
 ] }
-mango3-utils = { workspace = true, features = ["hashtag"] }
+mango3-utils = { workspace = true, features = ["hashtag", "navigation_item"] }
 
 [features]
 hydrate = ["leptos/hydrate", "leptos_i18n/hydrate", "mango3-leptos-utils/hydrate"]

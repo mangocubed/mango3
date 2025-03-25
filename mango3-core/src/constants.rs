@@ -174,8 +174,9 @@ pub(crate) const PREFIX_GET_USER_BY_USERNAME_OR_EMAIL: &str = "get_user_by_usern
 pub(crate) const PREFIX_GET_USER_SESSION_BY_ID: &str = "get_user_session_by_id";
 pub(crate) const PREFIX_GET_WEBSITE_BY_ID: &str = "get_website_by_id";
 pub(crate) const PREFIX_GET_WEBSITE_BY_SUBDOMAIN: &str = "get_website_by_subdomain";
-pub(crate) const PREFIX_NAVIGATION_ITEM_ALL_BY_WEBSITE: &str = "navigation_item_all_by_website";
 
+#[cfg(any(feature = "navigation_item_all", feature = "navigation_item_write"))]
+pub(crate) const PREFIX_NAVIGATION_ITEM_ALL_BY_WEBSITE: &str = "navigation_item_all_by_website";
 #[cfg(feature = "post_comment_content_html")]
 pub(crate) const PREFIX_POST_COMMENT_CONTENT_HTML: &str = "post_comment_content_html";
 #[cfg(feature = "post_content_html")]

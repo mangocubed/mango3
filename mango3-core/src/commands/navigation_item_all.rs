@@ -1,20 +1,28 @@
+use std::future::Future;
+
 use cached::proc_macro::io_cached;
 use cached::AsyncRedisCache;
 use sqlx::query_as;
 use sqlx::types::Uuid;
 
+use mango3_utils::models::{NavigationItem, NavigationItems};
+
 use crate::constants::PREFIX_NAVIGATION_ITEM_ALL_BY_WEBSITE;
 use crate::models::{async_redis_cache, Website};
 use crate::CoreContext;
 
-use super::{NavigationItem, NavigationItems};
+pub trait NavigationItemAll {
+    fn all_by_website(core_context: &CoreContext, website: &Website) -> impl Future<Output = Vec<NavigationItem>>;
+}
 
-impl NavigationItem {
-    pub async fn all_by_website(core_context: &CoreContext, website: &Website) -> Vec<Self> {
-        navigation_item_all_by_website(core_context, website)
-            .await
-            .map(|items| items.into())
-            .unwrap_or_default()
+impl NavigationItemAll for NavigationItem {
+    fn all_by_website(core_context: &CoreContext, website: &Website) -> impl Future<Output = Vec<Self>> {
+        async {
+            navigation_item_all_by_website(core_context, website)
+                .await
+                .map(|items| items.into())
+                .unwrap_or_default()
+        }
     }
 }
 
@@ -42,7 +50,7 @@ pub(crate) async fn navigation_item_all_by_website(
 mod tests {
     use crate::test_utils::{insert_test_navigation_item, insert_test_website, setup_core_context};
 
-    use super::NavigationItem;
+    use super::{NavigationItem, NavigationItemAll};
 
     #[tokio::test]
     async fn should_get_zero_navigation_items() {

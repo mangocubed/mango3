@@ -5,10 +5,9 @@ use leptos_router::hooks::use_navigate;
 use mango3_leptos_utils::components::forms::{FormErrorAlert, FormSuccessModal, SubmitButton};
 use mango3_leptos_utils::i18n::{t, use_i18n};
 use mango3_leptos_utils::icons::{PlusOutlined, TrashOutlined};
-use mango3_leptos_utils::models::NavigationItemResp;
 
 use crate::components::MyWebsitePageWrapper;
-use crate::server_functions::{get_all_my_navigation_items, AttemptToSaveNavigation};
+use crate::server_functions::{get_all_my_navigation_items, AttemptToSaveNavigation, NavigationItemParam};
 
 #[component]
 pub fn NavigationPage() -> impl IntoView {
@@ -22,7 +21,7 @@ pub fn NavigationPage() -> impl IntoView {
         event.prevent_default();
 
         items.update(|items| {
-            items.push(NavigationItemResp {
+            items.push(NavigationItemParam {
                 id: temp_id.to_string(),
                 position: 0,
                 title: String::new(),
@@ -44,7 +43,7 @@ pub fn NavigationPage() -> impl IntoView {
             });
             Effect::new(move || {
                 if let Some(Ok(nav_items)) = items_resource.get().map(|resource| resource.take()) {
-                    items.set(nav_items);
+                    items.set(nav_items.iter().map(|item| item.into()).collect());
                 }
             });
             view! {
