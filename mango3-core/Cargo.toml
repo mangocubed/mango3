@@ -43,8 +43,7 @@ mango3-utils = { workspace = true }
 
 [dev-dependencies]
 chrono = { workspace = true }
-fake = { version = "4.0.0", features = ["chrono", "url"] }
-mango3-utils = { workspace = true, features = ["navigation_item"] }
+fake = { version = "4.2.0", features = ["chrono", "url"] }
 tokio = { workspace = true }
 
 [features]
