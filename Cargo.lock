@@ -192,9 +192,9 @@ checksum = "dcfed56ad506cb2c684a14971b8861fdc3baaaae314b9e5f9bb532cbe3ba7a4f"
 
 [[package]]
 name = "apalis"
-version = "0.6.4"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "703ea57243268f2f84c09ad0c06fac49448b341b906a2f5ee01546600c329960"
+checksum = "4f3c13b1a2646be21cfd231fc8835dedbc7d5d648d68297fd2e97d75758bee97"
 dependencies = [
  "apalis-core",
  "futures",
@@ -208,9 +208,9 @@ dependencies = [
 
 [[package]]
 name = "apalis-core"
-version = "0.6.4"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ade84ea7d39131db019fb646ebff22a11ab3445c9e9deac026413980d2a9b924"
+checksum = "b88bff4c16a47ab5d8907985957f31b0a937aa1b212dd4d6ab57a8706cf1d9c0"
 dependencies = [
  "futures",
  "futures-timer",
@@ -224,9 +224,9 @@ dependencies = [
 
 [[package]]
 name = "apalis-cron"
-version = "0.6.4"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "10a4f1693932680587901f2b07f9dbdd599909cc7e7c8844f68cc19d699d801f"
+checksum = "1d63c29635c96e90f40f302eec0a51d0839cdfa380d58e7cca60284235aa488b"
 dependencies = [
  "apalis-core",
  "async-stream",
@@ -238,15 +238,15 @@ dependencies = [
 
 [[package]]
 name = "apalis-redis"
-version = "0.6.4"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d085ac6b5cf00445d45b2e1b2cfee7e1cdc3ddcb5a79db8066528a02fd85cfda"
+checksum = "0db0e957f182f7d863dc0734241e6a9b0dffe0366ab68fa7a1581614bb57e7c5"
 dependencies = [
  "apalis-core",
  "chrono",
  "futures",
  "log",
- "redis 0.27.6",
+ "redis",
  "serde",
  "thiserror 2.0.11",
  "tokio",
@@ -516,9 +516,9 @@ dependencies = [
 
 [[package]]
 name = "backon"
-version = "1.3.0"
+version = "1.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ba5289ec98f68f28dd809fd601059e6aa908bb8f6108620930828283d4ee23d7"
+checksum = "970d91570c01a8a5959b36ad7dd1c30642df24b6b3068710066f6809f7033bb7"
 dependencies = [
  "fastrand",
 ]
@@ -665,7 +665,7 @@ dependencies = [
  "hashbrown 0.14.5",
  "once_cell",
  "r2d2",
- "redis 0.29.1",
+ "redis",
  "serde",
  "serde_json",
  "thiserror 2.0.11",
@@ -4422,38 +4422,15 @@ dependencies = [
 
 [[package]]
 name = "redis"
-version = "0.27.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "09d8f99a4090c89cc489a94833c901ead69bfbf3877b4867d5482e321ee875bc"
-dependencies = [
- "arc-swap",
- "async-trait",
- "backon",
- "bytes",
- "combine",
- "futures",
- "futures-util",
- "itertools 0.13.0",
- "itoa",
- "num-bigint",
- "percent-encoding",
- "pin-project-lite",
- "ryu",
- "sha1_smol",
- "tokio",
- "tokio-util",
- "url",
-]
-
-[[package]]
-name = "redis"
 version = "0.29.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8034fb926579ff49d3fe58d288d5dcb580bf11e9bccd33224b45adebf0fd0c23"
 dependencies = [
  "arc-swap",
+ "backon",
  "bytes",
  "combine",
+ "futures-channel",
  "futures-util",
  "itoa",
  "native-tls",

@@ -5,7 +5,7 @@ use mango3_core::models::{Blob, ConfirmationCode};
 use mango3_core::CoreContext;
 
 #[allow(dead_code)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct Reminder(DateTime<Utc>);
 
 impl From<DateTime<Utc>> for Reminder {
