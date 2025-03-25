@@ -14,7 +14,6 @@ use sqlx::types::chrono::NaiveDate;
 
 mod blob;
 mod confirmation_code;
-mod navigation_item;
 mod post;
 mod post_comment;
 mod user;
@@ -22,7 +21,6 @@ mod website;
 
 pub use blob::Blob;
 pub use confirmation_code::ConfirmationCode;
-pub use navigation_item::NavigationItem;
 pub use post::Post;
 pub use post_comment::PostComment;
 pub use user::User;

@@ -2,6 +2,8 @@
 mod hashtag;
 #[cfg(feature = "invitation_code")]
 mod invitation_code;
+#[cfg(feature = "navigation_item")]
+mod navigation_item;
 #[cfg(feature = "post_reaction")]
 mod post_reaction;
 #[cfg(feature = "post_view")]
@@ -13,6 +15,8 @@ mod user_session;
 pub use hashtag::Hashtag;
 #[cfg(feature = "invitation_code")]
 pub use invitation_code::InvitationCode;
+#[cfg(feature = "navigation_item")]
+pub use navigation_item::{NavigationItem, NavigationItems};
 #[cfg(feature = "post_reaction")]
 pub use post_reaction::PostReaction;
 #[cfg(feature = "post_view")]

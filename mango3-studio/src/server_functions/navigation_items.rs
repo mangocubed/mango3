@@ -4,10 +4,11 @@ use serde::{Deserialize, Serialize};
 #[cfg(feature = "ssr")]
 use uuid::Uuid;
 
-use mango3_leptos_utils::models::{FormResp, NavigationItemResp};
+use mango3_leptos_utils::models::FormResp;
+use mango3_utils::models::NavigationItem;
 
 #[cfg(feature = "ssr")]
-use mango3_core::models::NavigationItem;
+use mango3_core::commands::{NavigationItemAll, NavigationItemBulkWrite};
 #[cfg(feature = "ssr")]
 use mango3_leptos_utils::ssr::{expect_core_context, extract_i18n};
 
@@ -16,21 +17,32 @@ use crate::server_functions::my_website;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct NavigationItemParam {
-    id: String,
-    title: String,
-    url: String,
+    pub id: String,
+    pub position: i16,
+    pub title: String,
+    pub url: String,
+}
+
+impl From<&NavigationItem> for NavigationItemParam {
+    fn from(value: &NavigationItem) -> Self {
+        Self {
+            id: value.id.to_string(),
+            position: value.position,
+            title: value.title.clone(),
+            url: value.url.clone(),
+        }
+    }
 }
 
 #[server]
-pub async fn get_all_my_navigation_items(website_id: String) -> Result<Vec<NavigationItemResp>, ServerFnError> {
+pub async fn get_all_my_navigation_items(website_id: String) -> Result<Vec<NavigationItem>, ServerFnError> {
     let Some(website) = my_website(&website_id).await? else {
         return Ok(vec![]);
     };
 
     let core_context = expect_core_context();
-    let items = NavigationItem::all_by_website(&core_context, &website).await;
 
-    Ok(items.iter().map(|item| item.into()).collect())
+    Ok(NavigationItem::all_by_website(&core_context, &website).await)
 }
 
 #[server]

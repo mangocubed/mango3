@@ -10,7 +10,10 @@ use rand::rngs::ThreadRng;
 use url::Url;
 use uuid::Uuid;
 
-use crate::models::{NavigationItem, User, Website};
+use mango3_utils::models::NavigationItem;
+
+use crate::commands::NavigationItemWrite;
+use crate::models::{User, Website};
 use crate::CoreContext;
 
 mod test_blob;
