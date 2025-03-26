@@ -42,6 +42,7 @@ mango3-utils = { workspace = true, features = ["hashtag"] }
 
 [features]
 forms = ["leptos-use/use_textarea_autosize"]
+infinite_scroll = ["dep:uuid", "mango3-utils/cursor_page"]
 image_upload = ["forms", "web-sys/File", "web-sys/FileList", "server_fn/multipart", "mango3-core?/blob_insert"]
 markdown_editor = ["forms", "web-sys/HtmlDocument", "web-sys/HtmlTextAreaElement", "web-sys/KeyboardEvent"]
 multiple_image_upload = ["image_upload"]

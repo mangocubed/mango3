@@ -6,8 +6,9 @@ use mango3_leptos_utils::components::{
     InfiniteScroll, InfiniteScrollControllerTrait, InfiniteScrollResourceController, LoadingSpinner, PostCard,
 };
 use mango3_leptos_utils::context::param_name;
-use mango3_leptos_utils::models::{CursorPageResp, PostPreviewResp};
+use mango3_leptos_utils::models::PostPreviewResp;
 use mango3_leptos_utils::pages::{NotFoundPage, Page};
+use mango3_utils::models::CursorPage;
 
 use crate::server_functions::{get_hashtag, get_posts};
 
@@ -33,7 +34,7 @@ pub fn ShowHashtagPage() -> impl IntoView {
                 if let Some(name) = hashtag_name {
                     get_posts(Some(name), after).await
                 } else {
-                    Ok(CursorPageResp::default())
+                    Ok(CursorPage::default())
                 }
             },
         )

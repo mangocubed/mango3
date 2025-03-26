@@ -9,35 +9,43 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 console_error_panic_hook = { workspace = true }
 chrono = { workspace = true }
+futures = { workspace = true, optional = true }
 leptos = { workspace = true }
 leptos_i18n = { workspace = true }
 leptos_meta = { workspace = true }
 leptos_router = { workspace = true }
 leptos-use = { workspace = true, features = ["use_color_mode"] }
 tokio = { workspace = true, optional = true }
-uuid = { workspace = true, optional = true }
+uuid = { workspace = true }
 wasm-bindgen = { workspace = true }
 mango3-core = { workspace = true, features = [
     "hashtag_all",
     "hashtag_get",
     "navigation_item_all",
     "post_comment_cache_remove",
+    "post_comment_paginate",
     "post_paginate",
     "post_reaction_delete",
     "post_reaction_get",
     "post_reaction_insert",
+    "post_search",
     "post_view_insert",
 ], optional = true }
 mango3-leptos-utils = { workspace = true, features = [
-    "markdown_editor", "post_card", "post_comment_content_html", "post_content_html", "website_description_html"
+    "infinite_scroll",
+    "markdown_editor",
+    "post_card",
+    "post_comment_content_html",
+    "post_content_html",
+    "website_description_html",
 ] }
-mango3-utils = { workspace = true, features = ["hashtag", "navigation_item"] }
+mango3-utils = { workspace = true, features = ["cursor_page", "hashtag", "navigation_item"] }
 
 [features]
 hydrate = ["leptos/hydrate", "leptos_i18n/hydrate", "mango3-leptos-utils/hydrate"]
 ssr = [
+    "dep:futures",
     "dep:tokio",
-    "dep:uuid",
     "dep:mango3-core",
     "leptos/ssr",
     "leptos_i18n/axum",
@@ -45,7 +53,7 @@ ssr = [
     "leptos_router/ssr",
     "mango3-leptos-utils/ssr",
     "mango3-utils/post_reaction",
-    "mango3-utils/post_view"
+    "mango3-utils/post_view",
 ]
 
 [package.metadata.leptos]

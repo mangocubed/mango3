@@ -9,8 +9,10 @@ pub mod enums;
 pub mod info;
 pub mod jobs;
 pub mod models;
-pub mod pagination;
 pub mod utils;
+
+#[cfg(feature = "pagination")]
+mod pagination;
 
 #[cfg(feature = "locales")]
 pub mod locales;

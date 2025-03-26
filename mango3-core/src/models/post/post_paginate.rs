@@ -1,9 +1,9 @@
 use sqlx::query_as;
 
-use mango3_utils::models::Hashtag;
+use mango3_utils::models::{CursorPage, CursorPageParams, Hashtag};
 
+use crate::create_cursor_page;
 use crate::models::{User, Website};
-use crate::pagination::{CursorPage, CursorPageParams};
 use crate::CoreContext;
 
 use super::Post;
@@ -17,7 +17,7 @@ impl Post {
         hashtag: Option<&'a Hashtag>,
         is_published: Option<bool>,
     ) -> CursorPage<Self> {
-        CursorPage::new(
+        create_cursor_page!(
             core_context,
             cursor_page_params,
             |node: Self| node.id,
@@ -79,10 +79,9 @@ impl Post {
 
 #[cfg(test)]
 mod tests {
-    use crate::pagination::CursorPageParams;
     use crate::test_utils::{insert_test_post, insert_test_user, insert_test_website, setup_core_context};
 
-    use super::Post;
+    use super::{CursorPageParams, Post};
 
     #[tokio::test]
     async fn should_get_zero_posts() {

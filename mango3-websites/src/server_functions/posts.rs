@@ -1,20 +1,22 @@
 use leptos::prelude::*;
-
-#[cfg(feature = "ssr")]
 use uuid::Uuid;
 
-use mango3_leptos_utils::models::{CursorPageResp, PostPreviewResp, PostResp};
+#[cfg(feature = "ssr")]
+use futures::future;
+
+use mango3_leptos_utils::models::{PostPreviewResp, PostResp};
+use mango3_utils::models::CursorPage;
 
 #[cfg(feature = "ssr")]
 use mango3_core::commands::{HashtagGet, PostViewInsert};
 #[cfg(feature = "ssr")]
 use mango3_core::models::Post;
 #[cfg(feature = "ssr")]
-use mango3_core::pagination::CursorPageParams;
-#[cfg(feature = "ssr")]
 use mango3_leptos_utils::models::FromCore;
 #[cfg(feature = "ssr")]
 use mango3_leptos_utils::ssr::{expect_core_context, extract_client_ip, extract_user};
+#[cfg(feature = "ssr")]
+use mango3_utils::models::CursorPageParams;
 #[cfg(feature = "ssr")]
 use mango3_utils::models::Hashtag;
 #[cfg(feature = "ssr")]
@@ -37,21 +39,18 @@ pub async fn current_post(id: String) -> Result<Post, ServerFnError> {
 #[server]
 pub async fn get_posts(
     hashtag: Option<String>,
-    after: Option<String>,
-) -> Result<CursorPageResp<PostPreviewResp>, ServerFnError> {
+    after: Option<Uuid>,
+) -> Result<CursorPage<PostPreviewResp>, ServerFnError> {
     let Some(website) = current_website().await? else {
-        return Ok(CursorPageResp::default());
+        return Ok(CursorPage::default());
     };
 
     let core_context = expect_core_context();
-    let page_params = CursorPageParams {
-        after: after.as_ref().and_then(|id| Uuid::try_parse(id).ok()),
-        first: 10,
-    };
+    let page_params = CursorPageParams { after, first: 10 };
 
     let hashtag = if let Some(name) = hashtag {
         let Ok(hashtag) = Hashtag::get_by_name(&core_context, &name).await else {
-            return Ok(CursorPageResp::default());
+            return Ok(CursorPage::default());
         };
 
         Some(hashtag)
@@ -69,26 +68,41 @@ pub async fn get_posts(
     )
     .await;
 
-    Ok(CursorPageResp::from_core(&core_context, &page).await)
+    Ok(CursorPage {
+        end_cursor: page.end_cursor,
+        has_next_page: page.has_next_page,
+        nodes: future::join_all(
+            page.nodes
+                .iter()
+                .map(|post| PostPreviewResp::from_core(&core_context, post)),
+        )
+        .await,
+    })
 }
 
 #[server]
 pub async fn get_posts_search(
     query: String,
-    after: Option<String>,
-) -> Result<CursorPageResp<PostPreviewResp>, ServerFnError> {
+    after: Option<Uuid>,
+) -> Result<CursorPage<PostPreviewResp>, ServerFnError> {
     let Some(website) = current_website().await? else {
-        return Ok(CursorPageResp::default());
+        return Ok(CursorPage::default());
     };
 
     let core_context = expect_core_context();
-    let page_params = CursorPageParams {
-        after: after.as_ref().and_then(|id| Uuid::try_parse(id).ok()),
-        first: 10,
-    };
+    let page_params = CursorPageParams { after, first: 10 };
     let page = Post::search(&core_context, &page_params, Some(&website), None, Some(true), &query).await;
 
-    Ok(CursorPageResp::from_core(&core_context, &page).await)
+    Ok(CursorPage {
+        end_cursor: page.end_cursor,
+        has_next_page: page.has_next_page,
+        nodes: future::join_all(
+            page.nodes
+                .iter()
+                .map(|post| PostPreviewResp::from_core(&core_context, post)),
+        )
+        .await,
+    })
 }
 
 #[server]

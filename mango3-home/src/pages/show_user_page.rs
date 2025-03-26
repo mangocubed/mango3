@@ -6,8 +6,9 @@ use mango3_leptos_utils::components::{
     Hashtags, InfiniteScroll, InfiniteScrollControllerTrait, InfiniteScrollResourceController, LoadingSpinner,
     PostCard, UserAvatar, UserLabels,
 };
-use mango3_leptos_utils::models::{CursorPageResp, PostPreviewResp};
+use mango3_leptos_utils::models::PostPreviewResp;
 use mango3_leptos_utils::pages::{NotFoundPage, Page};
+use mango3_utils::models::CursorPage;
 
 use crate::context::param_username;
 use crate::server_functions::{get_user, get_user_posts};
@@ -30,7 +31,7 @@ pub fn ShowUserPage() -> impl IntoView {
                                     if let Some(user_id) = user_id {
                                         get_user_posts(user_id, after).await
                                     } else {
-                                        Ok(CursorPageResp::default())
+                                        Ok(CursorPage::default())
                                     }
                                 },
                             )

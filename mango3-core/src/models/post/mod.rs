@@ -43,7 +43,6 @@ use super::AsyncRedisCacheTrait;
 use super::{Blob, PostComment, User, Website};
 
 mod post_get;
-mod post_search;
 
 #[cfg(any(feature = "post_content_html", feature = "post_content_preview_html"))]
 mod post_content;
@@ -53,6 +52,8 @@ mod post_delete;
 mod post_insert;
 #[cfg(feature = "post_paginate")]
 mod post_paginate;
+#[cfg(feature = "post_search")]
+mod post_search;
 #[cfg(feature = "post_write")]
 mod post_update;
 

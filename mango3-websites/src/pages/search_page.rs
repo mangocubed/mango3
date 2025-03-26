@@ -24,7 +24,7 @@ pub fn SearchPage() -> impl IntoView {
                     let query_map = use_query_map();
                     let controller = InfiniteScrollResourceController::new(|after| Resource::new_blocking(
                         move || (param_query(query_map), after.get()),
-                        |(query, after)| async { get_posts_search(query, after).await },
+                        |(query, after)| async move { get_posts_search(query, after).await },
                     ));
                     Effect::new({
                         let controller = controller.clone();

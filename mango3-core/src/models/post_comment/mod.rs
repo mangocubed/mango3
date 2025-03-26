@@ -18,10 +18,10 @@ use super::{Post, User};
 #[cfg(feature = "post_comment_cache_remove")]
 use super::AsyncRedisCacheTrait;
 
-mod post_comment_paginate;
-
 #[cfg(feature = "post_comment_content_html")]
 mod post_comment_content;
+#[cfg(feature = "post_comment_paginate")]
+mod post_comment_paginate;
 #[cfg(feature = "post_comment_cache_remove")]
 use post_comment_content::POST_COMMENT_CONTENT_HTML;
 

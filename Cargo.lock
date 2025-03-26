@@ -3079,6 +3079,7 @@ name = "mango3-admin"
 version = "0.0.0-alpha.17"
 dependencies = [
  "console_error_panic_hook",
+ "futures",
  "leptos",
  "leptos_axum",
  "leptos_i18n",
@@ -3086,6 +3087,7 @@ dependencies = [
  "leptos_router",
  "mango3-core",
  "mango3-leptos-utils",
+ "mango3-utils",
  "tokio",
  "uuid",
  "wasm-bindgen",
@@ -3149,6 +3151,7 @@ name = "mango3-home"
 version = "0.0.0-alpha.17"
 dependencies = [
  "console_error_panic_hook",
+ "futures",
  "leptos",
  "leptos_i18n",
  "leptos_meta",
@@ -3279,6 +3282,7 @@ version = "0.0.0-alpha.17"
 dependencies = [
  "chrono",
  "console_error_panic_hook",
+ "futures",
  "leptos",
  "leptos-use",
  "leptos_i18n",
