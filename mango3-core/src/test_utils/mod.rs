@@ -1,3 +1,7 @@
+use std::collections::HashSet;
+use std::fmt::Display;
+use std::sync::{LazyLock, Mutex};
+
 use chrono::{DateTime, Utc};
 use fake::faker::address::en::CountryCode;
 use fake::faker::chrono::en::DateTimeBefore;
@@ -6,7 +10,6 @@ use fake::faker::lorem::en::{Paragraph, Sentence};
 use fake::faker::name::en::Name;
 use fake::{Fake, Faker};
 use rand::rng;
-use rand::rngs::ThreadRng;
 use url::Url;
 use uuid::Uuid;
 
@@ -24,6 +27,23 @@ pub use test_blob::insert_test_blob;
 pub use test_post::insert_test_post;
 pub use test_post_comment::insert_test_post_comment;
 
+static FAKE_CACHE: LazyLock<Mutex<HashSet<String>>> = LazyLock::new(|| Mutex::new(HashSet::new()));
+
+fn unique_fake<T, F>(prefix: &str, fake_fn: F) -> T
+where
+    F: Fn() -> T,
+    T: Display,
+{
+    let mut fake = fake_fn();
+    let mut cache = FAKE_CACHE.lock().expect("Could not lock FAKE_CACHE");
+
+    while !cache.insert(format!("{prefix}_{fake}")) {
+        fake = fake_fn();
+    }
+
+    fake
+}
+
 fn fake_birthdate() -> String {
     DateTimeBefore(Utc::now())
         .fake::<DateTime<Utc>>()
@@ -36,7 +56,7 @@ fn fake_country_alpha2() -> String {
 }
 
 fn fake_email() -> String {
-    SafeEmail().fake_with_rng(&mut rng())
+    unique_fake("email", || SafeEmail().fake_with_rng(&mut rng()))
 }
 
 pub fn fake_ipv4() -> String {
@@ -44,9 +64,11 @@ pub fn fake_ipv4() -> String {
 }
 
 pub fn fake_name() -> String {
-    let mut name = Name().fake_with_rng::<String, ThreadRng>(&mut rng());
-    name.truncate(256);
-    name
+    unique_fake("name", || {
+        let mut name: String = Name().fake_with_rng(&mut rng());
+        name.truncate(256);
+        name
+    })
 }
 
 pub fn fake_paragraph() -> String {
@@ -62,15 +84,19 @@ pub fn fake_sentence() -> String {
 }
 
 pub fn fake_slug() -> String {
-    let mut slug = Username().fake_with_rng::<String, ThreadRng>(&mut rng());
-    slug.truncate(256);
-    slug.replace("_", "-").replace(".", "-")
+    unique_fake("slug", || {
+        let mut slug: String = Username().fake_with_rng(&mut rng());
+        slug.truncate(256);
+        slug.replace("_", "-").replace(".", "-")
+    })
 }
 
 pub fn fake_username() -> String {
-    let mut username = Username().fake_with_rng::<String, ThreadRng>(&mut rng());
-    username.truncate(16);
-    username
+    unique_fake("username", || {
+        let mut username: String = Username().fake_with_rng(&mut rng());
+        username.truncate(16);
+        username
+    })
 }
 
 pub fn fake_uuid() -> Uuid {
