@@ -1,7 +1,9 @@
 use sqlx::query_as;
 
+use mango3_utils::models::{CursorPage, CursorPageParams};
+
+use crate::create_cursor_page;
 use crate::models::{Post, User};
-use crate::pagination::{CursorPage, CursorPageParams};
 use crate::CoreContext;
 
 use super::PostComment;
@@ -13,7 +15,7 @@ impl PostComment {
         post: Option<&'a Post>,
         user: Option<&'a User>,
     ) -> CursorPage<Self> {
-        CursorPage::new(
+        create_cursor_page!(
             core_context,
             cursor_page_params,
             |node: Self| node.id,
@@ -49,10 +51,9 @@ impl PostComment {
 
 #[cfg(test)]
 mod tests {
-    use crate::pagination::CursorPageParams;
     use crate::test_utils::{insert_test_post, insert_test_post_comment, insert_test_user, setup_core_context};
 
-    use super::PostComment;
+    use super::{CursorPageParams, PostComment};
 
     #[tokio::test]
     async fn should_get_zero_posts() {

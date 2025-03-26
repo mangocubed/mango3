@@ -1,10 +1,12 @@
 use leptos::prelude::*;
-
-#[cfg(feature = "ssr")]
 use uuid::Uuid;
 
+#[cfg(feature = "ssr")]
+use futures::future;
+
 use mango3_leptos_utils::models::FormResp;
-use mango3_leptos_utils::models::{CursorPageResp, UserPreviewResp};
+use mango3_leptos_utils::models::UserPreviewResp;
+use mango3_utils::models::CursorPage;
 
 #[cfg(feature = "ssr")]
 use mango3_core::config::BASIC_CONFIG;
@@ -13,11 +15,11 @@ use mango3_core::enums::UserRole;
 #[cfg(feature = "ssr")]
 use mango3_core::models::User;
 #[cfg(feature = "ssr")]
-use mango3_core::pagination::CursorPageParams;
-#[cfg(feature = "ssr")]
 use mango3_leptos_utils::models::FromCore;
 #[cfg(feature = "ssr")]
 use mango3_leptos_utils::ssr::{expect_core_context, extract_i18n, extract_user};
+#[cfg(feature = "ssr")]
+use mango3_utils::models::CursorPageParams;
 
 #[cfg(feature = "ssr")]
 const ALLOWED_ROLES: [UserRole; 2] = [UserRole::Admin, UserRole::Superuser];
@@ -75,17 +77,23 @@ pub async fn is_admin() -> Result<bool, ServerFnError> {
 }
 
 #[server]
-pub async fn get_users(after: Option<String>) -> Result<CursorPageResp<UserPreviewResp>, ServerFnError> {
+pub async fn get_users(after: Option<Uuid>) -> Result<CursorPage<UserPreviewResp>, ServerFnError> {
     if !require_admin().await? {
-        return Ok(CursorPageResp::default());
+        return Ok(CursorPage::default());
     }
 
     let core_context = expect_core_context();
-    let page_params = CursorPageParams {
-        after: after.as_ref().and_then(|id| Uuid::try_parse(id).ok()),
-        first: 10,
-    };
+    let page_params = CursorPageParams { after, first: 10 };
     let page = User::paginate_by_username_asc(&core_context, &page_params).await;
 
-    Ok(CursorPageResp::from_core(&core_context, &page).await)
+    Ok(CursorPage {
+        end_cursor: page.end_cursor,
+        has_next_page: page.has_next_page,
+        nodes: future::join_all(
+            page.nodes
+                .iter()
+                .map(|user| UserPreviewResp::from_core(&core_context, user)),
+        )
+        .await,
+    })
 }

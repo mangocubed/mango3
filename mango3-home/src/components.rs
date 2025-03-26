@@ -14,7 +14,7 @@ pub fn SearchPostsTab(params_map: Memo<ParamsMap>) -> impl IntoView {
     let controller = InfiniteScrollResourceController::new(move |after| {
         Resource::new_blocking(
             move || (param_query(params_map), after.get()),
-            |(query, after)| async { get_posts_search(query, after).await },
+            |(query, after)| async move { get_posts_search(query, after).await },
         )
     });
 
@@ -38,7 +38,7 @@ pub fn SearchWebsitesTab(params_map: Memo<ParamsMap>) -> impl IntoView {
     let controller = InfiniteScrollResourceController::new(move |after| {
         Resource::new_blocking(
             move || (param_query(params_map), after.get()),
-            |(query, after)| async { get_websites_search(query, after).await },
+            |(query, after)| async move { get_websites_search(query, after).await },
         )
     });
 

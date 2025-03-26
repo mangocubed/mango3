@@ -3,14 +3,18 @@ use std::fmt::Display;
 use argon2::password_hash::rand_core::OsRng;
 use argon2::password_hash::SaltString;
 use argon2::{Argon2, PasswordHash, PasswordHasher, PasswordVerifier};
-use cached::async_sync::OnceCell;
-use cached::{AsyncRedisCache, IOCachedAsync};
+use cached::AsyncRedisCache;
 use rand::distr::Alphanumeric;
 use rand::{rng, Rng};
 use rust_iso3166::CountryCode;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
 use sqlx::types::chrono::NaiveDate;
+
+#[cfg(feature = "cache_remove")]
+use cached::async_sync::OnceCell;
+#[cfg(feature = "cache_remove")]
+use cached::IOCachedAsync;
 
 mod blob;
 mod confirmation_code;
@@ -28,10 +32,12 @@ pub use website::Website;
 
 use crate::config::CACHE_CONFIG;
 
+#[cfg(feature = "cache_remove")]
 pub(crate) trait AsyncRedisCacheTrait<K> {
     async fn cache_remove(&self, prefix: &str, key: &K);
 }
 
+#[cfg(feature = "cache_remove")]
 impl<K, V> AsyncRedisCacheTrait<K> for OnceCell<AsyncRedisCache<K, V>>
 where
     K: Display + Send + Sync,

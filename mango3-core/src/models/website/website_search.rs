@@ -1,7 +1,9 @@
 use sqlx::query_as;
 
+use mango3_utils::models::{CursorPage, CursorPageParams};
+
+use crate::create_cursor_page;
 use crate::models::User;
-use crate::pagination::{CursorPage, CursorPageParams};
 use crate::CoreContext;
 
 use super::Website;
@@ -14,7 +16,7 @@ impl Website {
         is_published: Option<bool>,
         query: &'a str,
     ) -> CursorPage<Self> {
-        CursorPage::new(
+        create_cursor_page!(
             core_context,
             cursor_page_params,
             |node: Self| node.id,
@@ -85,10 +87,9 @@ impl Website {
 
 #[cfg(test)]
 mod tests {
-    use crate::pagination::CursorPageParams;
     use crate::test_utils::{insert_test_user, insert_test_website, setup_core_context};
 
-    use super::Website;
+    use super::{CursorPageParams, Website};
 
     #[tokio::test]
     async fn should_get_zero_websites() {

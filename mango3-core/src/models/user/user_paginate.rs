@@ -1,7 +1,9 @@
 use sqlx::query_as;
 
+use mango3_utils::models::{CursorPage, CursorPageParams};
+
+use crate::create_cursor_page;
 use crate::enums::UserRole;
-use crate::pagination::{CursorPage, CursorPageParams};
 use crate::CoreContext;
 
 use super::User;
@@ -11,7 +13,7 @@ impl User {
         core_context: &CoreContext,
         cursor_page_params: &CursorPageParams,
     ) -> CursorPage<Self> {
-        CursorPage::new(
+        create_cursor_page!(
             core_context,
             cursor_page_params,
             |node: Self| node.id,
@@ -54,10 +56,9 @@ impl User {
 
 #[cfg(test)]
 mod tests {
-    use crate::pagination::CursorPageParams;
     use crate::test_utils::{insert_test_user, setup_core_context};
 
-    use super::User;
+    use super::{CursorPageParams, User};
 
     #[tokio::test]
     async fn should_get_some_users() {

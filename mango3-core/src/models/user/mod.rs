@@ -33,13 +33,14 @@ mod user_email;
 mod user_get;
 mod user_insert;
 mod user_login;
-mod user_paginate;
 mod user_password;
 
 #[cfg(any(feature = "user_bio_html", feature = "user_bio_preview_html"))]
 mod user_bio;
 #[cfg(feature = "user_cache_remove")]
 mod user_disable;
+#[cfg(feature = "user_paginate")]
+mod user_paginate;
 #[cfg(feature = "user_profile")]
 mod user_profile;
 #[cfg(feature = "user_cache_remove")]

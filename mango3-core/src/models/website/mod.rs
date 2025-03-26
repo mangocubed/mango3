@@ -33,8 +33,6 @@ use super::{Blob, User};
 use super::AsyncRedisCacheTrait;
 
 mod website_get;
-mod website_paginate;
-mod website_search;
 
 #[cfg(feature = "website_write")]
 mod website_delete;
@@ -42,6 +40,10 @@ mod website_delete;
 mod website_description;
 #[cfg(feature = "website_write")]
 mod website_insert;
+#[cfg(feature = "website_paginate")]
+mod website_paginate;
+#[cfg(feature = "website_search")]
+mod website_search;
 #[cfg(feature = "website_storage")]
 mod website_storage;
 #[cfg(feature = "website_write")]

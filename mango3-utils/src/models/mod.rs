@@ -1,3 +1,5 @@
+#[cfg(feature = "cursor_page")]
+mod cursor_page;
 #[cfg(feature = "hashtag")]
 mod hashtag;
 #[cfg(feature = "invitation_code")]
@@ -11,6 +13,8 @@ mod post_view;
 #[cfg(feature = "user_session")]
 mod user_session;
 
+#[cfg(feature = "cursor_page")]
+pub use cursor_page::{CursorPage, CursorPageParams};
 #[cfg(feature = "hashtag")]
 pub use hashtag::Hashtag;
 #[cfg(feature = "invitation_code")]

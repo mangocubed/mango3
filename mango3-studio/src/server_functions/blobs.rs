@@ -1,18 +1,20 @@
 use leptos::prelude::*;
-
-#[cfg(feature = "ssr")]
 use uuid::Uuid;
 
-use mango3_leptos_utils::models::{BlobResp, CursorPageResp, FormResp};
+#[cfg(feature = "ssr")]
+use futures::future;
+
+use mango3_leptos_utils::models::{BlobResp, FormResp};
+use mango3_utils::models::CursorPage;
 
 #[cfg(feature = "ssr")]
 use mango3_core::models::{Blob, User, Website};
 #[cfg(feature = "ssr")]
-use mango3_core::pagination::CursorPageParams;
-#[cfg(feature = "ssr")]
 use mango3_leptos_utils::models::FromCore;
 #[cfg(feature = "ssr")]
 use mango3_leptos_utils::ssr::{expect_core_context, extract_i18n, extract_user};
+#[cfg(feature = "ssr")]
+use mango3_utils::models::CursorPageParams;
 
 #[cfg(feature = "ssr")]
 use super::my_website;
@@ -50,23 +52,21 @@ pub async fn get_blobs_by_ids(website: &Website, user: &User, ids: Option<Vec<St
 }
 
 #[server]
-pub async fn get_my_blobs(
-    website_id: String,
-    after: Option<String>,
-) -> Result<CursorPageResp<BlobResp>, ServerFnError> {
+pub async fn get_my_blobs(website_id: String, after: Option<Uuid>) -> Result<CursorPage<BlobResp>, ServerFnError> {
     let Some(website) = my_website(&website_id).await? else {
-        return Ok(CursorPageResp::default());
+        return Ok(CursorPage::default());
     };
 
     let core_context = expect_core_context();
     let user = extract_user().await?.unwrap();
-    let page_params = CursorPageParams {
-        after: after.as_ref().and_then(|id| Uuid::try_parse(id).ok()),
-        first: 10,
-    };
+    let page_params = CursorPageParams { after, first: 10 };
     let page = Blob::paginate_by_created_at_desc(&core_context, &page_params, Some(&website), Some(&user)).await;
 
-    Ok(CursorPageResp::from_core(&core_context, &page).await)
+    Ok(CursorPage {
+        end_cursor: page.end_cursor,
+        has_next_page: page.has_next_page,
+        nodes: future::join_all(page.nodes.iter().map(|blob| BlobResp::from_core(&core_context, blob))).await,
+    })
 }
 
 #[cfg(feature = "ssr")]

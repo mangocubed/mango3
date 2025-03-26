@@ -10,6 +10,7 @@ serde = { workspace = true }
 uuid = { workspace = true, optional = true, features = ["js"] }
 
 [features]
+cursor_page = ["dep:uuid"]
 hashtag = ["dep:uuid"]
 invitation_code = ["dep:uuid"]
 navigation_item = ["dep:uuid"]

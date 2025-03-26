@@ -8,6 +8,7 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 console_error_panic_hook = { workspace = true }
+futures = { workspace = true, optional = true }
 leptos = { workspace = true }
 leptos_i18n = { workspace = true }
 leptos_meta = { workspace = true }
@@ -16,14 +17,21 @@ tokio = { workspace = true, optional = true }
 uuid = { workspace = true }
 wasm-bindgen = { workspace = true }
 mango3-core = { workspace = true, features = [
-    "hashtag_all", "hashtag_get", "post_paginate", "user_bio_html"
+    "hashtag_all",
+    "hashtag_get",
+    "post_paginate",
+    "post_search",
+    "user_bio_html",
+    "website_paginate",
+    "website_search",
 ], optional = true }
-mango3-leptos-utils = { workspace = true, features = ["post_card", "user_bio_html", "website_card"] }
-mango3-utils = { workspace = true, features = ["hashtag"] }
+mango3-leptos-utils = { workspace = true, features = ["infinite_scroll", "post_card", "user_bio_html", "website_card"] }
+mango3-utils = { workspace = true, features = ["cursor_page", "hashtag"] }
 
 [features]
 hydrate = ["leptos/hydrate", "leptos_i18n/hydrate", "mango3-leptos-utils/hydrate"]
 ssr = [
+    "dep:futures",
     "dep:tokio",
     "dep:mango3-core",
     "leptos/ssr",

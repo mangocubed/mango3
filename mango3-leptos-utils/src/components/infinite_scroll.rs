@@ -7,9 +7,11 @@ use leptos::prelude::*;
 use leptos_use::use_element_visibility;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
+use uuid::Uuid;
+
+use mango3_utils::models::CursorPage;
 
 use crate::i18n::{t, use_i18n};
-use crate::models::CursorPageResp;
 
 use super::LoadingSpinner;
 
@@ -19,11 +21,11 @@ where
 {
     fn new<RF>(resource_fn: RF) -> Arc<Self>
     where
-        RF: Fn(RwSignal<Option<String>>) -> R;
+        RF: Fn(RwSignal<Option<Uuid>>) -> R;
 
-    fn after(&self) -> RwSignal<Option<String>>;
+    fn after(&self) -> RwSignal<Option<Uuid>>;
 
-    fn end_cursor(&self) -> RwSignal<Option<String>>;
+    fn end_cursor(&self) -> RwSignal<Option<Uuid>>;
 
     fn has_next_page(&self) -> RwSignal<bool>;
 
@@ -31,7 +33,7 @@ where
 
     fn nodes(&self) -> RwSignal<Vec<T>>;
 
-    fn resource_get(&self) -> Option<CursorPageResp<T>>;
+    fn resource_get(&self) -> Option<CursorPage<T>>;
 
     fn resource_refetch(&self);
 
@@ -42,22 +44,22 @@ pub struct InfiniteScrollLocalResourceController<T>
 where
     T: Clone + DeserializeOwned + Send + Serialize + Sync + 'static,
 {
-    after: RwSignal<Option<String>>,
-    end_cursor: RwSignal<Option<String>>,
+    after: RwSignal<Option<Uuid>>,
+    end_cursor: RwSignal<Option<Uuid>>,
     has_next_page: RwSignal<bool>,
     is_loading: RwSignal<bool>,
     pub nodes: RwSignal<Vec<T>>,
-    resource: LocalResource<Result<CursorPageResp<T>, ServerFnError>>,
+    resource: LocalResource<Result<CursorPage<T>, ServerFnError>>,
 }
 
-impl<T> InfiniteScrollControllerTrait<LocalResource<Result<CursorPageResp<T>, ServerFnError>>, T>
+impl<T> InfiniteScrollControllerTrait<LocalResource<Result<CursorPage<T>, ServerFnError>>, T>
     for InfiniteScrollLocalResourceController<T>
 where
     T: Clone + DeserializeOwned + Send + Serialize + Sync + 'static,
 {
     fn new<RF>(resource_fn: RF) -> Arc<Self>
     where
-        RF: Fn(RwSignal<Option<String>>) -> LocalResource<Result<CursorPageResp<T>, ServerFnError>>,
+        RF: Fn(RwSignal<Option<Uuid>>) -> LocalResource<Result<CursorPage<T>, ServerFnError>>,
     {
         let after = RwSignal::new(None);
         Arc::new(Self {
@@ -70,11 +72,11 @@ where
         })
     }
 
-    fn after(&self) -> RwSignal<Option<String>> {
+    fn after(&self) -> RwSignal<Option<Uuid>> {
         self.after
     }
 
-    fn end_cursor(&self) -> RwSignal<Option<String>> {
+    fn end_cursor(&self) -> RwSignal<Option<Uuid>> {
         self.end_cursor
     }
 
@@ -90,7 +92,7 @@ where
         self.nodes
     }
 
-    fn resource_get(&self) -> Option<CursorPageResp<T>> {
+    fn resource_get(&self) -> Option<CursorPage<T>> {
         let resource = self.resource.get()?;
 
         resource.take().ok()
@@ -113,22 +115,22 @@ pub struct InfiniteScrollResourceController<T>
 where
     T: Clone + DeserializeOwned + Send + Serialize + Sync + 'static,
 {
-    after: RwSignal<Option<String>>,
-    end_cursor: RwSignal<Option<String>>,
+    after: RwSignal<Option<Uuid>>,
+    end_cursor: RwSignal<Option<Uuid>>,
     has_next_page: RwSignal<bool>,
     is_loading: RwSignal<bool>,
     pub nodes: RwSignal<Vec<T>>,
-    resource: Resource<Result<CursorPageResp<T>, ServerFnError>>,
+    resource: Resource<Result<CursorPage<T>, ServerFnError>>,
 }
 
-impl<T> InfiniteScrollControllerTrait<Resource<Result<CursorPageResp<T>, ServerFnError>>, T>
+impl<T> InfiniteScrollControllerTrait<Resource<Result<CursorPage<T>, ServerFnError>>, T>
     for InfiniteScrollResourceController<T>
 where
     T: Clone + DeserializeOwned + Send + Serialize + Sync + 'static,
 {
     fn new<RF>(resource_fn: RF) -> Arc<Self>
     where
-        RF: Fn(RwSignal<Option<String>>) -> Resource<Result<CursorPageResp<T>, ServerFnError>>,
+        RF: Fn(RwSignal<Option<Uuid>>) -> Resource<Result<CursorPage<T>, ServerFnError>>,
     {
         let after = RwSignal::new(None);
         Arc::new(Self {
@@ -141,11 +143,11 @@ where
         })
     }
 
-    fn after(&self) -> RwSignal<Option<String>> {
+    fn after(&self) -> RwSignal<Option<Uuid>> {
         self.after
     }
 
-    fn end_cursor(&self) -> RwSignal<Option<String>> {
+    fn end_cursor(&self) -> RwSignal<Option<Uuid>> {
         self.end_cursor
     }
 
@@ -161,7 +163,7 @@ where
         self.nodes
     }
 
-    fn resource_get(&self) -> Option<CursorPageResp<T>> {
+    fn resource_get(&self) -> Option<CursorPage<T>> {
         self.resource.get().and_then(|result| result.clone().ok())
     }
 

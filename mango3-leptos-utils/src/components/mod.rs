@@ -14,7 +14,6 @@ mod confirmation_modal;
 mod copyable_text;
 mod current_user;
 mod hashtags;
-mod infinite_scroll;
 mod loading_overlay;
 mod loading_spinner;
 mod menu;
@@ -26,6 +25,8 @@ mod top_bar;
 mod unconfirmed_email_alert;
 mod user_tag;
 
+#[cfg(feature = "infinite_scroll")]
+mod infinite_scroll;
 #[cfg(feature = "post_card")]
 mod post_card;
 #[cfg(feature = "user_card")]
@@ -45,10 +46,6 @@ pub use confirmation_modal::ConfirmationModal;
 pub use copyable_text::CopyableText;
 pub use current_user::{CurrentUser, CurrentUserOpt};
 pub use hashtags::Hashtags;
-pub use infinite_scroll::{
-    InfiniteScroll, InfiniteScrollControllerTrait, InfiniteScrollLocalResourceController,
-    InfiniteScrollResourceController,
-};
 pub use loading_overlay::LoadingOverlay;
 pub use loading_spinner::LoadingSpinner;
 pub use menu::{Menu, MenuItem};
@@ -60,6 +57,11 @@ pub use top_bar::TopBar;
 pub use unconfirmed_email_alert::UnconfirmedEmailAlert;
 pub use user_tag::{UserAvatar, UserLabels, UserTag, UserTagLink};
 
+#[cfg(feature = "infinite_scroll")]
+pub use infinite_scroll::{
+    InfiniteScroll, InfiniteScrollControllerTrait, InfiniteScrollLocalResourceController,
+    InfiniteScrollResourceController,
+};
 #[cfg(feature = "post_card")]
 pub use post_card::PostCard;
 #[cfg(feature = "user_card")]

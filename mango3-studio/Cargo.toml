@@ -20,7 +20,7 @@ serde = { workspace = true }
 serde_json = { workspace = true, optional = true }
 slug = "0.1.6"
 tokio = { workspace = true, optional = true }
-uuid = { workspace = true, optional = true }
+uuid = { workspace = true }
 wasm-bindgen = { workspace = true }
 mango3-core = { workspace = true, features = [
     "blob_delete",
@@ -29,11 +29,13 @@ mango3-core = { workspace = true, features = [
     "navigation_item_write",
     "post_write",
     "post_paginate",
+    "website_paginate",
     "website_storage",
     "website_write",
 ], optional = true }
 mango3-leptos-utils = { workspace = true, features = [
     "blob_delete",
+    "infinite_scroll",
     "markdown_editor",
     "multiple_image_upload",
     "post_card",
@@ -41,7 +43,7 @@ mango3-leptos-utils = { workspace = true, features = [
     "website_card",
     "website_storage",
 ] }
-mango3-utils = { workspace = true, features = ["navigation_item"] }
+mango3-utils = { workspace = true, features = ["cursor_page", "navigation_item"] }
 
 [features]
 hydrate = ["leptos/hydrate", "leptos_i18n/hydrate", "mango3-leptos-utils/hydrate"]
@@ -51,7 +53,6 @@ ssr = [
     "dep:futures",
     "dep:serde_json",
     "dep:tokio",
-    "dep:uuid",
     "dep:mango3-core",
     "leptos/ssr",
     "leptos_i18n/axum",
