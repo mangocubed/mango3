@@ -4,7 +4,7 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
-clap = "4.5.32"
+clap = "4.5.34"
 tokio = { workspace = true }
 mango3-core = { workspace = true, features = ["invitation_code_insert", "user_cache_remove"] }
 mango3-utils = { workspace = true }
