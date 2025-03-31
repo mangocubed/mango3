@@ -1,18 +1,18 @@
 [workspace]
 resolver = "2"
 members = [
-    "mango3-accounts",
-    "mango3-admin",
-    "mango3-cli",
-    "mango3-core",
-    "mango3-home",
-    "mango3-leptos-utils",
-    "mango3-my-account",
-    "mango3-monitor",
-    "mango3-studio",
-    "mango3-uploads",
-    "mango3-utils",
-    "mango3-websites",
+    "packs/mango3-core",
+    "packs/mango3-cli",
+    "packs/mango3-monitor",
+    "packs/mango3-uploads",
+    "webpacks/mango3-admin",
+    "webpacks/mango3-accounts",
+    "webpacks/mango3-home",
+    "webpacks/mango3-my-account",
+    "webpacks/mango3-studio",
+    "webpacks/mango3-web-utils",
+    "webpacks/mango3-websites",
+
 ]
 
 [workspace.package]
@@ -47,11 +47,17 @@ serde = { version = "1.0.219", features = ["derive"] }
 server_fn = "0.7.8"
 tokio = { version = "1.44.1", features = ["macros", "rt-multi-thread"] }
 uuid = { version = "1.16.0", features = ["serde", "v4"] }
+url = { version = "2.5.4", features = ["serde"] }
 wasm-bindgen = "0.2.100"
 web-sys = "0.3.77"
-mango3-core = { path = "mango3-core", default-features = false, features = ["validator"] }
-mango3-utils = { path = "mango3-utils" }
-mango3-leptos-utils = { path = "mango3-leptos-utils" }
+mango3-core = { path = "packs/mango3-core", default-features = false, features = ["validator"] }
+mango3-web-utils = { path = "webpacks/mango3-web-utils" }
+
+[profile.dev]
+opt-level = 1
+
+[profile.dev.package."*"]
+opt-level = 3
 
 [profile.wasm-release]
 inherits = "release"

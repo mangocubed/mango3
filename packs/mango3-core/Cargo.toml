@@ -1,0 +1,107 @@
+[package]
+name = "mango3-core"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+ab_glyph = { version = "0.2.29", optional = true }
+argon2 = "0.5.3"
+apalis = { workspace = true }
+apalis-redis = { workspace = true }
+attohttpc = { version = "0.29.2", features = ["charsets",  "json"], optional = true }
+cached = { version = "0.55.1", features = ["async", "redis_store", "redis_tokio"] }
+chrono = { workspace = true }
+dotenvy = "0.15.7"
+figment = { version = "0.10.19", features = ["env"] }
+fluent-templates = { version = "0.13.0", optional = true }
+fluent-bundle = { version = "0.15.3", optional = true }
+futures-util = "0.3.31"
+futures = { workspace = true }
+env_logger = "0.11.7"
+handlebars = { version = "6.3.2", features = ["no_logging"], optional = true}
+handlebars_misc_helpers = { version = "0.17.0", default-features = false, features = [
+    "json", "jsontype", "string"
+], optional = true }
+image = { version = "0.25.6", optional = true }
+imageproc = { version = "0.25.0", optional = true }
+ipnetwork = { workspace = true, optional = true }
+md-5 = "0.10.6"
+mime = "0.3.17"
+multer = { version = "3.1.0", optional = true }
+pulldown-cmark = { version = "0.13.0", optional = true }
+rand = "0.9.0"
+regex = { workspace = true }
+rust_iso3166 = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+size = { version = "0.5.0", features = ["serde"], optional = true }
+sqlx = { version = "0.8.3", features = ["chrono", "postgres", "runtime-tokio", "tls-rustls", "uuid"] }
+strum = { version = "0.27.1", features = ["derive"] }
+unic-langid = { version = "0.9.5", features = ["serde"] }
+url = { workspace = true }
+uuid = { workspace = true }
+
+[dev-dependencies]
+chrono = { workspace = true }
+fake = { version = "4.2.0", features = ["chrono", "url"] }
+tokio = { workspace = true }
+
+[features]
+# Commands
+all-blobs-by-ids = ["blob", "get-blob-by-id"]
+all-hashtags-by-ids = ["hashtag"]
+all-navigation-items-by-website = ["navigation-item"]
+delete-blob = ["blob"]
+delete-invitation-code = ["invitation-code"]
+delete-orphaned-blobs = ["blob", "delete-blob"]
+get-blob-by-id = ["blob"]
+get-hashtag-by-id = ["hashtag"]
+get-hashtag-by-name = ["hashtag"]
+get-invitation-code = ["invitation-code"]
+get-invitation-code-by-id = ["invitation-code"]
+get-or-insert-hashtag = ["hashtag"]
+get-or-insert-many-hashtags = ["get-or-insert-hashtag"]
+get-post-comments-count = []
+get-post-reactions-count = []
+get-post-views-count = []
+insert-blob = ["blob"]
+insert-user = ["jobs", "user"]
+paginate-blobs = ["blob", "pagination"]
+paginate-posts = ["hashtag", "post"]
+paginate-websites = ["hashtag", "website"]
+search-posts = ["hashtag", "post"]
+search-websites = ["hashtag", "website"]
+# Models
+blob = []
+hashtag = []
+invitation-code = []
+navigation-item = []
+post = [
+    "all-blobs-by-ids",
+    "all-hashtags-by-ids",
+    "get-blob-by-id",
+    "get-post-comments-count",
+    "get-post-reactions-count",
+    "get-post-views-count",
+    "handlebars",
+    "markdown",
+]
+post-comment = []
+user = ["all-hashtags-by-ids", "get-blob-by-id"]
+website = ["all-hashtags-by-ids", "get-blob-by-id", "markdown"]
+# Model attributes
+blob-is-removable = []
+blob-read = []
+user-bio-html = ["markdown"]
+user-bio-preview-html = ["markdown"]
+website-storage = []
+# Utils
+cache-remove = []
+handlebars = ["dep:attohttpc", "dep:handlebars", "dep:handlebars_misc_helpers"]
+jobs = []
+locales = ["dep:fluent-templates", "dep:fluent-bundle"]
+markdown = ["dep:pulldown-cmark"]
+mutation = []
+pagination  = []
+text-icon = []
+validator = ["locales"]
