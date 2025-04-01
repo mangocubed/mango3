@@ -4,6 +4,13 @@ use uuid::Uuid;
 
 use mango3_web_utils::presenters::{BlobPresenter, HashtagPresenter, UserMinPresenter};
 
+#[cfg(feature = "ssr")]
+use mango3_core::models::User;
+#[cfg(feature = "ssr")]
+use mango3_core::CoreContext;
+#[cfg(feature = "ssr")]
+use mango3_web_utils::presenters::FromModel;
+
 #[derive(Clone, Deserialize, Serialize)]
 pub struct UserProfilePresenter {
     pub id: Uuid,
@@ -39,30 +46,39 @@ impl UserProfilePresenter {
 }
 
 #[cfg(feature = "ssr")]
-impl ToPresenter<UserProfilePresenter> for User {
-    fn to_presenter(&self, core_context: &CoreContext) -> impl Future<Output = UserProfilePresenter> {
-        let avatar_image_blob = if let Some(Ok(blob)) = self.avatar_image_blob(&core_context).await {
-            Some(blob.to_presenter(core_context).await)
-        } else {
-            None
-        };
+impl FromModel<User> for UserProfilePresenter {
+    fn from_model(core_context: &CoreContext, user: &User) -> impl std::future::Future<Output = UserProfilePresenter> {
+        async move {
+            let hashtags = futures::future::join_all(
+                user.hashtags(&core_context)
+                    .await
+                    .iter()
+                    .map(|hashtag| HashtagPresenter::from_model(core_context, hashtag)),
+            )
+            .await;
+            let avatar_image_blob = if let Some(Ok(blob)) = user.avatar_image_blob(&core_context).await {
+                Some(BlobPresenter::from_model(core_context, &blob).await)
+            } else {
+                None
+            };
 
-        Self {
-            id: self.id,
-            username: self.username.clone(),
-            display_name: self.display_name.clone(),
-            full_name: self.full_name.clone(),
-            initials: self.initials(),
-            birthdate: self.birthdate.to_string(),
-            country_alpha2: self.country_alpha2.clone(),
-            country_name: self.country().name.to_owned(),
-            bio_html: self.bio_html().await,
-            hashtags: self.hashtags(&core_context).await,
-            avatar_image_blob,
-            text_avatar_url: self.text_avatar_url(),
-            url: self.url(),
-            role: self.role.to_string(),
-            is_disabled: self.is_disabled(),
+            Self {
+                id: user.id,
+                username: user.username.clone(),
+                display_name: user.display_name.clone(),
+                full_name: user.full_name.clone(),
+                initials: user.initials(),
+                birthdate: user.birthdate.to_string(),
+                country_alpha2: user.country_alpha2.clone(),
+                country_name: user.country().name.to_owned(),
+                bio_html: user.bio_html().await,
+                hashtags,
+                avatar_image_blob,
+                text_avatar_url: user.text_avatar_url(),
+                url: user.url(),
+                role: user.role.to_string(),
+                is_disabled: user.is_disabled(),
+            }
         }
     }
 }

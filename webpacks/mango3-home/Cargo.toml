@@ -19,11 +19,14 @@ url = { workspace = true }
 uuid = { workspace = true }
 wasm-bindgen = { workspace = true }
 mango3-core = { workspace = true, features = [
+    "get-hashtag-by-id",
+    "get-hashtag-by-name",
+    "get-user-by-username",
     "paginate-posts",
-    "search-posts",
-    "user-bio-html",
     "paginate-websites",
+    "search-posts",
     "search-websites",
+    "user-bio-html",
 ], optional = true }
 mango3-web-utils = { workspace = true, features = [
     "blob-presenter",
@@ -31,6 +34,7 @@ mango3-web-utils = { workspace = true, features = [
     "infinite-scroll",
     "post-card",
     "post-presenter",
+    "unconfirmed-email-alert",
     "user-bio-html",
     "website-card",
     "website-presenter",

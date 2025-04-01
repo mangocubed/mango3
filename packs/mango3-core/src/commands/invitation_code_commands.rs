@@ -47,7 +47,7 @@ pub async fn insert_invitation_code(core_context: &CoreContext, email: &str) -> 
     }
 
     if !validator.is_valid {
-        return crate::mut_error!(validator.errors);
+        return crate::mut_error_result!(validator.errors);
     }
 
     let code = crate::utils::generate_random_string(crate::config::MISC_CONFIG.invitation_code_length);
@@ -68,8 +68,8 @@ pub async fn insert_invitation_code(core_context: &CoreContext, email: &str) -> 
                 .guest_mailer(&email, crate::enums::GuestMailerJobCommand::InvitationCode(code))
                 .await;
 
-            crate::mut_success!(invitation_code)
+            crate::mut_success_result!(invitation_code)
         }
-        Err(_) => crate::mut_error!(),
+        Err(_) => crate::mut_error_result!(),
     }
 }

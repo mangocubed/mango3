@@ -37,18 +37,19 @@ url = { workspace = true }
 uuid = { workspace = true, features = ["js"] }
 wasm-bindgen = { workspace = true }
 web-sys = { workspace = true }
-mango3-core = { workspace = true, optional = true, features = [] }
+mango3-core = { workspace = true, optional = true, features = ["get-user-session-by-id", "user", "user-session"] }
 
 [features]
-default = ["current-user"]
+default = ["current-user", "user-tag"]
 # Components
 current-user = ["user-presenter"]
-forms = ["leptos-use/use_textarea_autosize"]
+forms = ["mutation-presenter", "leptos-use/use_textarea_autosize"]
 image-upload = ["forms", "web-sys/File", "web-sys/FileList", "server_fn/multipart"]
 infinite-scroll = ["cursor-page-presenter"]
 markdown-editor = ["forms", "web-sys/HtmlDocument", "web-sys/HtmlTextAreaElement", "web-sys/KeyboardEvent"]
 multiple-image-upload = ["image-upload"]
 post-card = ["post-presenter", "user-tag"]
+unconfirmed-email-alert = ["user-email-is-confirmed"]
 user-card = ["user-bio-preview-html", "user-presenter"]
 user-tag = ["user-presenter"]
 website-card = ["website-icon", "website-presenter"]
@@ -63,11 +64,18 @@ post-presenter = ["mango3-core?/post"]
 user-presenter = ["mango3-core?/user", "blob-presenter", "hashtag-presenter"]
 website-presenter = ["mango3-core?/website"]
 # Presenter attributes
-blob-is-removable = ["blob-presenter"]
-user-bio-html = ["user-presenter"]
-user-bio-preview-html = ["user-presenter"]
-website-storage = ["website-presenter"]
+blob-is-removable = ["blob-presenter", "mango3-core?/blob-is-removable"]
+post-content-html = ["post-presenter", "mango3-core?/post-content-html"]
+user-bio-html = ["user-presenter", "mango3-core?/user-bio-html"]
+user-bio-preview-html = ["user-presenter", "mango3-core?/user-bio-preview-html"]
+user-email-is-confirmed = ["user-presenter", "mango3-core?/user-email-is-confirmed"]
+website-description-html = ["website-presenter", "mango3-core?/website-description-html"]
+website-storage = ["website-presenter", "mango3-core?/website-storage"]
 # Misc
+confirmation-codes = ["mango3-core?/confirmation-code"]
+extract-user = []
+finish-and-delete-user-session = []
+start-user-session = []
 hydrate = ["leptos/hydrate", "leptos_i18n/hydrate"]
 ssr = [
     "dep:accept-language",

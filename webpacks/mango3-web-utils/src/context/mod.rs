@@ -44,9 +44,7 @@ pub fn provide_info() {
     let info = SharedValue::<InfoPresenter>::new(move || {
         #[cfg(feature = "ssr")]
         {
-            use mango3_core::info::INFO;
-
-            INFO.clone().into()
+            mango3_core::utils::INFO.clone().into()
         }
 
         #[cfg(not(feature = "ssr"))]
@@ -84,9 +82,7 @@ pub fn use_current_user_resource() -> Resource<Result<Option<UserPresenter>, Ser
 pub fn use_info() -> InfoPresenter {
     #[cfg(feature = "ssr")]
     {
-        use mango3_core::info::INFO;
-
-        INFO.clone().into()
+        mango3_core::utils::INFO.clone().into()
     }
 
     #[cfg(not(feature = "ssr"))]

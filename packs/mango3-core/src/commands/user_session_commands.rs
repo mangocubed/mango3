@@ -1,8 +1,8 @@
-use crate::models::{User, UserSession};
+use crate::models::UserSession;
 use crate::CoreContext;
 
 #[cfg(feature = "all-user-sessions-by-user")]
-pub async fn all_user_sessions_by_user(core_context: &CoreContext, user: &User) -> Vec<UserSession> {
+pub async fn all_user_sessions_by_user(core_context: &CoreContext, user: &crate::models::User) -> Vec<UserSession> {
     sqlx::query_as!(UserSession, "SELECT * FROM user_sessions WHERE user_id = $1", user.id)
         .fetch_all(&core_context.db_pool)
         .await
@@ -21,11 +21,14 @@ pub async fn delete_user_session(core_context: &CoreContext, user_session: &User
         .cache_remove(crate::constants::PREFIX_GET_USER_SESSION_BY_ID, &user_session.id)
         .await;
 
-    crate::mut_success!()
+    crate::mut_success_result!()
 }
 
 #[cfg(feature = "delete-all-user-sessions")]
-pub async fn delete_all_user_sessions(core_context: &CoreContext, user: &User) -> crate::utils::MutResult {
+pub async fn delete_all_user_sessions(
+    core_context: &CoreContext,
+    user: &crate::models::User,
+) -> crate::utils::MutResult {
     futures::future::join_all(
         all_user_sessions_by_user(core_context, user)
             .await
@@ -34,7 +37,7 @@ pub async fn delete_all_user_sessions(core_context: &CoreContext, user: &User) -
     )
     .await;
 
-    crate::mut_success!()
+    crate::mut_success_result!()
 }
 
 #[cfg(feature = "get-user-session-by-id")]

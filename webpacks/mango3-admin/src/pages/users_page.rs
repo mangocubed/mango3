@@ -8,7 +8,7 @@ use mango3_web_utils::components::{
 };
 use mango3_web_utils::context::use_basic_config;
 use mango3_web_utils::i18n::{t, use_i18n};
-use mango3_web_utils::models::{FormResp, UserPreviewResp};
+use mango3_web_utils::presenters::{MutPresenter, UserMinPresenter};
 use mango3_web_utils::utils::ToSignalTrait;
 
 use crate::components::AdminPageContainer;
@@ -26,15 +26,15 @@ pub fn UsersPage() -> impl IntoView {
     let action_value_disable_user = server_action_disable_user.value();
     let server_action_enable_user = ServerAction::<AttemptToEnableUser>::new();
     let action_value_enable_user = server_action_enable_user.value();
-    let disable_user = RwSignal::<Option<UserPreviewResp>>::new(None);
-    let enable_user = RwSignal::<Option<UserPreviewResp>>::new(None);
+    let disable_user = RwSignal::<Option<UserMinPresenter>>::new(None);
+    let enable_user = RwSignal::<Option<UserMinPresenter>>::new(None);
     let show_disable_confirmation = RwSignal::new(false);
     let show_enable_confirmation = RwSignal::new(false);
 
     Effect::new({
         let controller = controller.clone();
         move || {
-            let response = FormResp::from(action_value_disable_user);
+            let response = MutPresenter::from(action_value_disable_user);
 
             if let Some(true) = response.success {
                 controller.clear_and_refetch();
@@ -46,7 +46,7 @@ pub fn UsersPage() -> impl IntoView {
     Effect::new({
         let controller = controller.clone();
         move || {
-            let response = FormResp::from(action_value_enable_user);
+            let response = MutPresenter::from(action_value_enable_user);
 
             if let Some(true) = response.success {
                 controller.clear_and_refetch();
@@ -90,10 +90,10 @@ pub fn UsersPage() -> impl IntoView {
                     {move || enable_user.get().map(|user| view! { <UserTag class="justify-center my-3" user=user /> })}
                 </ConfirmationModal>
 
-                <InfiniteScroll controller=controller key=|user: &UserPreviewResp| user.id.clone() let:user>
+                <InfiniteScroll controller=controller key=|user: &UserMinPresenter| user.id.clone() let:user>
                     <UserCard
                         user=user.clone()
-                        hashtags_base_url=basic_config.home_url.clone()
+                        hashtags_base_url=basic_config.home_url.to_string()
                         actions=move || {
                             let user = user.clone();
                             if user.is_disabled {

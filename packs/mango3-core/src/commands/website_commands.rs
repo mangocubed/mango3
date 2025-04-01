@@ -139,7 +139,7 @@ pub async fn get_website_by_id_with_search_rank(
     let user_id = user.map(|user| user.id);
 
     sqlx::query_as!(
-        Self,
+        Website,
         r#"SELECT
                 id,
                 user_id,
@@ -244,11 +244,199 @@ pub async fn insert_website(
     .await
 }
 
+#[cfg(feature = "paginate-websites-sorted-by-name-asc")]
+pub async fn paginate_websites_sorted_by_name_asc<'a>(
+    core_context: &'a CoreContext,
+    page_params: &CursorPageParams,
+    user: Option<&'a User>,
+    is_published: Option<bool>,
+) -> CursorPage<Website> {
+    crate::cursor_page!(
+        core_context,
+        page_params,
+        |node: Website| node.id,
+        move |core_context, after| async move { get_website_by_id(core_context, after, user).await.ok() },
+        move |core_context, cursor_resource, limit| async move {
+            let user_id = user.map(|u| u.id);
+            let cursor_name = cursor_resource.map(|c| c.name.clone());
+
+            sqlx::query_as!(
+                Website,
+                r#"SELECT
+                    id,
+                    user_id,
+                    name,
+                    subdomain,
+                    description,
+                    hashtag_ids,
+                    icon_image_blob_id,
+                    cover_image_blob_id,
+                    light_theme,
+                    dark_theme,
+                    language::varchar AS "language!",
+                    published_at,
+                    NULL::real AS search_rank,
+                    created_at,
+                    updated_at
+                FROM websites WHERE ($1::uuid IS NULL OR user_id = $1)
+                    AND (
+                        $2::bool IS NULL OR ($2 IS TRUE AND published_at IS NOT NULL)
+                        OR ($2 IS FALSE AND published_at IS NULL)
+                    ) AND ($3::text IS NULL OR name > $3)
+                ORDER BY name ASC LIMIT $4"#,
+                user_id,      // $1
+                is_published, // $2
+                cursor_name,  // $3
+                limit,        // $4
+            )
+            .fetch_all(&core_context.db_pool)
+            .await
+            .unwrap_or_default()
+        },
+    )
+    .await
+}
+
+#[cfg(feature = "paginate-websites")]
+pub async fn paginate_websites<'a>(
+    core_context: &'a CoreContext,
+    page_params: &crate::utils::CursorPageParams,
+    user: Option<&'a User>,
+    is_published: Option<bool>,
+) -> crate::utils::CursorPage<Website> {
+    crate::cursor_page!(
+        core_context,
+        page_params,
+        |node: Website| node.id,
+        move |core_context, after| async move { get_website_by_id(core_context, after, user).await.ok() },
+        move |core_context, cursor_resource, limit| async move {
+            let user_id = user.map(|u| u.id);
+            let (cursor_id, cursor_created_at) = cursor_resource
+                .map(|c| (Some(c.id), Some(c.created_at)))
+                .unwrap_or_default();
+
+            sqlx::query_as!(
+                Website,
+                r#"SELECT
+                    id,
+                    user_id,
+                    name,
+                    subdomain,
+                    description,
+                    hashtag_ids,
+                    icon_image_blob_id,
+                    cover_image_blob_id,
+                    light_theme,
+                    dark_theme,
+                    language::varchar AS "language!",
+                    published_at,
+                    NULL::real AS search_rank,
+                    created_at,
+                    updated_at
+                FROM websites WHERE ($1::uuid IS NULL OR user_id = $1)
+                    AND (
+                        $2::bool IS NULL OR ($2 IS TRUE AND published_at IS NOT NULL)
+                        OR ($2 IS FALSE AND published_at IS NULL)
+                    ) AND ($4::timestamptz IS NULL OR created_at < $4 OR (created_at = $4 AND id < $3))
+                ORDER BY created_at DESC, id DESC LIMIT $5"#,
+                user_id,           // $1
+                is_published,      // $2
+                cursor_id,         // $3
+                cursor_created_at, // $4
+                limit,             // $5
+            )
+            .fetch_all(&core_context.db_pool)
+            .await
+            .unwrap_or_default()
+        },
+    )
+    .await
+}
+
+#[cfg(feature = "search-websites")]
+pub async fn search_websites<'a>(
+    core_context: &'a CoreContext,
+    cursor_page_params: &crate::utils::CursorPageParams,
+    user: Option<&'a User>,
+    is_published: Option<bool>,
+    query: &'a str,
+) -> crate::utils::CursorPage<Website> {
+    crate::cursor_page!(
+        core_context,
+        cursor_page_params,
+        |node: Website| node.id,
+        move |core_context, after| async move {
+            get_website_by_id_with_search_rank(core_context, after, user, query)
+                .await
+                .ok()
+        },
+        move |core_context, cursor_resource, limit| async move {
+            let user_id = user.map(|u| u.id);
+            let (cursor_id, cursor_search_rank, cursor_created_at) = cursor_resource
+                .map(|c| (Some(c.id), c.search_rank, Some(c.created_at)))
+                .unwrap_or_default();
+
+            sqlx::query_as!(
+                Website,
+                r#"SELECT
+                    id,
+                    user_id,
+                    name,
+                    subdomain,
+                    description,
+                    hashtag_ids,
+                    icon_image_blob_id,
+                    cover_image_blob_id,
+                    light_theme,
+                    dark_theme,
+                    language::varchar as "language!",
+                    published_at,
+                    ts_rank(search, websearch_to_tsquery($3)) AS search_rank,
+                    created_at,
+                    updated_at
+                FROM websites
+                WHERE ($1::uuid IS NULL OR user_id = $1)
+                    AND (
+                        $2::bool IS NULL OR ($2 IS TRUE AND published_at IS NOT NULL)
+                        OR ($2 IS FALSE AND published_at IS NULL)
+                    ) AND (
+                        search @@ websearch_to_tsquery($3)
+                        OR name ILIKE '%' || $3 || '%'
+                        OR subdomain ILIKE '%' || $3 || '%'
+                        OR description ILIKE '%' || $3 || '%'
+                    ) AND (
+                        ($4::uuid IS NULL OR $5::real IS NULL OR $6::timestamptz IS NULL)
+                        OR ts_rank(search, websearch_to_tsquery($3)) < $5 OR (
+                            ts_rank(search, websearch_to_tsquery($3)) = $5 AND (
+                                created_at < $6 OR (created_at = $6 AND id < $4)
+                            )
+                        )
+                    )
+                ORDER BY search_rank DESC, created_at DESC, id DESC LIMIT $7"#,
+                user_id,            // $1
+                is_published,       // $2
+                query,              // $3
+                cursor_id,          // $4
+                cursor_search_rank, // $5
+                cursor_created_at,  // $6
+                limit,              // $7
+            )
+            .fetch_all(&core_context.db_pool)
+            .await
+            .unwrap_or_default()
+        },
+    )
+    .await
+}
+
 #[cfg(test)]
 mod tests {
     use crate::test_utils::{fake_uuid, insert_test_user, insert_test_website, setup_core_context};
 
-    use super::Website;
+    use super::{
+        get_website_by_id, get_website_by_id_with_search_rank, get_website_by_subdomain, paginate_websites,
+        paginate_websites_sorted_by_name_asc, search_websites,
+    };
 
     #[tokio::test]
     async fn should_get_website_by_id() {
@@ -256,7 +444,7 @@ mod tests {
         let user = insert_test_user(&core_context).await;
         let website = insert_test_website(&core_context, Some(&user)).await;
 
-        let result = Website::get_by_id(&core_context, website.id, Some(&user)).await;
+        let result = get_website_by_id(&core_context, website.id, Some(&user)).await;
 
         assert!(result.is_ok());
     }
@@ -267,7 +455,7 @@ mod tests {
         let user = insert_test_user(&core_context).await;
         let website = insert_test_website(&core_context, None).await;
 
-        let result = Website::get_by_id(&core_context, website.id, Some(&user)).await;
+        let result = get_website_by_id(&core_context, website.id, Some(&user)).await;
 
         assert!(result.is_err());
     }
@@ -277,7 +465,7 @@ mod tests {
         let core_context = setup_core_context().await;
         let id = fake_uuid();
 
-        let result = Website::get_by_id(&core_context, id, None).await;
+        let result = get_website_by_id(&core_context, id, None).await;
 
         assert!(result.is_err());
     }
@@ -287,7 +475,7 @@ mod tests {
         let core_context = setup_core_context().await;
         let website = insert_test_website(&core_context, None).await;
 
-        let result = Website::get_by_id_with_search_rank(&core_context, website.id, None, &website.name).await;
+        let result = get_website_by_id_with_search_rank(&core_context, website.id, None, &website.name).await;
 
         assert!(result.is_ok());
     }
@@ -297,7 +485,7 @@ mod tests {
         let core_context = setup_core_context().await;
         let id = fake_uuid();
 
-        let result = Website::get_by_id_with_search_rank(&core_context, id, None, "").await;
+        let result = get_website_by_id_with_search_rank(&core_context, id, None, "").await;
 
         assert!(result.is_err());
     }
@@ -307,8 +495,80 @@ mod tests {
         let core_context = setup_core_context().await;
         let website = insert_test_website(&core_context, None).await;
 
-        let result = Website::get_by_subdomain(&core_context, &website.subdomain).await;
+        let result = get_website_by_subdomain(&core_context, &website.subdomain).await;
 
         assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn should_get_zero_websites_sorted_by_created_at_desc() {
+        let core_context = setup_core_context().await;
+        let user = insert_test_user(&core_context).await;
+
+        let cursor_page = paginate_websites(&core_context, &CursorPageParams::default(), Some(&user), None).await;
+
+        assert!(cursor_page.nodes.is_empty());
+    }
+
+    #[tokio::test]
+    async fn should_get_one_website_sorted_by_created_at_desc() {
+        let core_context = setup_core_context().await;
+        let user = insert_test_user(&core_context).await;
+        insert_test_website(&core_context, Some(&user)).await;
+
+        let cursor_page = paginate_websites(&core_context, &CursorPageParams::default(), Some(&user), None).await;
+
+        assert_eq!(cursor_page.nodes.len(), 1);
+    }
+
+    #[tokio::test]
+    async fn should_get_zero_websites_sorted_by_name_asc() {
+        let core_context = setup_core_context().await;
+        let user = insert_test_user(&core_context).await;
+
+        let cursor_page =
+            paginate_websites_sorted_by_name_asc(&core_context, &CursorPageParams::default(), Some(&user), None).await;
+
+        assert!(cursor_page.nodes.is_empty());
+    }
+
+    #[tokio::test]
+    async fn should_get_one_website_sorted_by_name_asc() {
+        let core_context = setup_core_context().await;
+        let user = insert_test_user(&core_context).await;
+        insert_test_website(&core_context, Some(&user)).await;
+
+        let cursor_page =
+            paginate_websites_sorted_by_name_asc(&core_context, &CursorPageParams::default(), Some(&user), None).await;
+
+        assert_eq!(cursor_page.nodes.len(), 1);
+    }
+
+    #[tokio::test]
+    async fn should_get_zero_websites() {
+        let core_context = setup_core_context().await;
+        let user = insert_test_user(&core_context).await;
+
+        let cursor_page = search_websites(&core_context, &CursorPageParams::default(), Some(&user), None, "").await;
+
+        assert!(cursor_page.nodes.is_empty());
+    }
+
+    #[tokio::test]
+    async fn should_get_one_website() {
+        let core_context = setup_core_context().await;
+        let user = insert_test_user(&core_context).await;
+        let website = insert_test_website(&core_context, Some(&user)).await;
+
+        let cursor_page = search_websites(
+            &core_context,
+            &CursorPageParams::default(),
+            Some(&user),
+            None,
+            &website.name,
+        )
+        .await;
+
+        assert_eq!(cursor_page.nodes.len(), 1);
     }
 }

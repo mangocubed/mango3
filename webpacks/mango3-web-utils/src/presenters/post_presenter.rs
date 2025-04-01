@@ -19,7 +19,6 @@ pub struct PostPresenter {
     pub user: UserMinPresenter,
     pub title: String,
     pub slug: String,
-    pub content_html: String,
     pub hashtags: Vec<HashtagPresenter>,
     pub cover_image_blob: Option<BlobPresenter>,
     pub blobs: Vec<BlobPresenter>,
@@ -32,6 +31,9 @@ pub struct PostPresenter {
     pub modified_at: Option<DateTime<Utc>>,
     pub created_at: DateTime<Utc>,
     pub updated_at: Option<DateTime<Utc>>,
+
+    #[cfg(feature = "post-content-html")]
+    pub content_html: String,
 }
 
 #[cfg(feature = "ssr")]
@@ -68,7 +70,6 @@ impl FromModel<Post> for PostPresenter {
                 user,
                 title: post.title.clone(),
                 slug: post.slug.clone(),
-                content_html: post.content_html().await,
                 hashtags,
                 cover_image_blob,
                 blobs,
@@ -81,6 +82,9 @@ impl FromModel<Post> for PostPresenter {
                 modified_at: post.modified_at,
                 created_at: post.created_at,
                 updated_at: post.updated_at,
+
+                #[cfg(feature = "post-content-html")]
+                content_html: post.content_html().await,
             }
         }
     }

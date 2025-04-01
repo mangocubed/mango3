@@ -27,6 +27,7 @@ pub async fn get_hashtag_by_id(core_context: &CoreContext, id: Uuid) -> sqlx::Re
         id, // $1
     )
     .fetch_one(&core_context.db_pool)
+    .await
 }
 
 #[cfg(feature = "get-hashtag-by-name")]
@@ -37,6 +38,7 @@ pub async fn get_hashtag_by_name(core_context: &CoreContext, name: &str) -> sqlx
         name, // $1
     )
     .fetch_one(&core_context.db_pool)
+    .await
 }
 
 #[cfg(feature = "get-or-insert-hashtag")]

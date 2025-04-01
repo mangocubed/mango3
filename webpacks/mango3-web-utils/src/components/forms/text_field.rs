@@ -3,13 +3,13 @@ use leptos::prelude::*;
 use leptos_use::use_event_listener;
 
 use crate::constants::KEY_CODE_ENTER;
-use crate::models::ActionValue;
+use crate::presenters::MutPresenterActionValue;
 
 use super::{EventFn, FormField};
 
 #[component]
 pub fn TextField<D>(
-    action_value: ActionValue<D>,
+    action_value: MutPresenterActionValue<D>,
     #[prop(optional)] error: RwSignal<Option<String>>,
     #[prop(into, optional)] id: &'static str,
     #[prop(default = "text", into)] input_type: &'static str,

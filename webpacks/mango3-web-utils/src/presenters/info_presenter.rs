@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "ssr")]
-use mango3_core::info::Info;
+use mango3_core::utils::Info;
 
 #[derive(Clone, Default, Deserialize, Serialize)]
 pub struct InfoPresenter {

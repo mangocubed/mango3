@@ -1,5 +1,4 @@
-use rand::distr::Alphanumeric;
-use rand::{rng, Rng};
+mod info;
 
 #[cfg(feature = "cache")]
 mod cache_utils;
@@ -20,12 +19,14 @@ mod text_icon;
 #[cfg(feature = "validator")]
 mod validator;
 
+pub use info::{Info, INFO};
+
 #[cfg(feature = "cache")]
 pub(crate) use cache_utils::{async_redis_cache, AsyncRedisCacheTrait};
 #[cfg(feature = "handlebars")]
 pub use handlebars_utils::render_handlebars;
 #[cfg(feature = "jobs")]
-pub use jobs::Jobs;
+pub use jobs::{AdminMailerJob, GuestMailerJob, Jobs, MailerJob};
 #[cfg(feature = "locales")]
 pub use locales::I18n;
 #[cfg(feature = "markdown")]
@@ -39,7 +40,11 @@ pub use text_icon::text_icon;
 #[cfg(feature = "validator")]
 pub use validator::{ValidationErrors, Validator, ValidatorTrait};
 
+#[cfg(feature = "generate-random-string")]
 pub(crate) fn generate_random_string(length: u8) -> String {
+    use rand::distr::Alphanumeric;
+    use rand::{rng, Rng};
+
     rng()
         .sample_iter(&Alphanumeric)
         .take(length as usize)

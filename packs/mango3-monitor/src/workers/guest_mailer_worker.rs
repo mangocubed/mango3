@@ -1,8 +1,7 @@
 use apalis::prelude::Error;
 
 use mango3_core::enums::GuestMailerJobCommand;
-use mango3_core::jobs::GuestMailerJob;
-use mango3_core::locales::I18n;
+use mango3_core::utils::*;
 
 use crate::constants::{KEY_TEXT_HELLO, KEY_TEXT_INVITATION_CODE, KEY_TEXT_USE_THIS_CODE_TO_CREATE_YOUR_ACCOUNT};
 

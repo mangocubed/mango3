@@ -172,9 +172,13 @@ pub(crate) static REGEX_SUBDOMAIN: LazyLock<Regex> =
 
 pub(crate) const HASHTAG_LOOKAROUND: [Option<&str>; 3] = [Some(" "), Some("\n"), None];
 
-pub(crate) const PREFIX_NAVIGATION_ITEM_ALL_BY_WEBSITE: &str = "navigation_item_all_by_website";
+#[cfg(feature = "get-blob-by-id")]
+pub(crate) const PREFIX_GET_BLOB_BY_ID: &str = "get_blob_by_id";
+#[cfg(any(feature = "clear-post-cache", feature = "get-post-by-id"))]
+pub(crate) const PREFIX_GET_POST_BY_ID: &str = "get_post_by_id";
 #[cfg(any(feature = "clear-post-cache", feature = "get-post-by-slug"))]
 pub(crate) const PREFIX_GET_POST_BY_SLUG: &str = "get_post_by_slug";
+pub(crate) const PREFIX_NAVIGATION_ITEM_ALL_BY_WEBSITE: &str = "navigation_item_all_by_website";
 pub(crate) const PREFIX_POST_COMMENT_CONTENT_HTML: &str = "post_comment_content_html";
 pub(crate) const PREFIX_GET_USER_SESSION_BY_ID: &str = "get_user_session_by_id";
 #[cfg(any(feature = "clear-user-cache", feature = "get-user-by-id"))]

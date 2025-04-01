@@ -1,7 +1,9 @@
 use uuid::Uuid;
 
+use crate::constants::*;
 use crate::enums::UserRole;
-use crate::models::User;
+use crate::models::*;
+use crate::utils::*;
 use crate::CoreContext;
 
 #[cfg(feature = "insert-user")]
@@ -51,18 +53,16 @@ pub async fn authenticate_user(core_context: &CoreContext, username_or_email: &s
 
 #[cfg(feature = "clear-user-cache")]
 pub async fn clear_user_cache(user: &User) {
-    use crate::utils::AsyncRedisCacheTrait;
-
     let email = user.email.to_lowercase();
     let username = user.username.to_lowercase();
 
     futures::join!(
-        crate::models::USER_BIO_HTML.cache_remove(crate::constants::PREFIX_USER_BIO_HTML, &user.id),
-        crate::models::USER_BIO_PREVIEW_HTML.cache_remove(crate::constants::PREFIX_USER_BIO_PREVIEW_HTML, &user.id),
-        GET_USER_BY_ID.cache_remove(crate::constants::PREFIX_GET_USER_BY_ID, &user.id),
-        GET_USER_BY_USERNAME.cache_remove(crate::constants::PREFIX_GET_USER_BY_USERNAME, &username),
-        GET_USER_BY_USERNAME_OR_EMAIL.cache_remove(crate::constants::PREFIX_GET_USER_BY_USERNAME_OR_EMAIL, &username),
-        GET_USER_BY_USERNAME_OR_EMAIL.cache_remove(crate::constants::PREFIX_GET_USER_BY_USERNAME_OR_EMAIL, &email),
+        USER_BIO_HTML.cache_remove(PREFIX_USER_BIO_HTML, &user.id),
+        USER_BIO_PREVIEW_HTML.cache_remove(PREFIX_USER_BIO_PREVIEW_HTML, &user.id),
+        GET_USER_BY_ID.cache_remove(PREFIX_GET_USER_BY_ID, &user.id),
+        GET_USER_BY_USERNAME.cache_remove(PREFIX_GET_USER_BY_USERNAME, &username),
+        GET_USER_BY_USERNAME_OR_EMAIL.cache_remove(PREFIX_GET_USER_BY_USERNAME_OR_EMAIL, &username),
+        GET_USER_BY_USERNAME_OR_EMAIL.cache_remove(PREFIX_GET_USER_BY_USERNAME_OR_EMAIL, &email),
     );
 }
 
@@ -105,7 +105,7 @@ pub async fn confirm_user_email(&self, core_context: &CoreContext) -> MutResult<
 }
 
 #[cfg(feature = "disable-user")]
-pub async fn disable_user(core_context: &CoreContext, user: &User) -> crate::utils::MutResult {
+pub async fn disable_user(core_context: &CoreContext, user: &User) -> MutResult {
     let result = sqlx::query!(
         "UPDATE users SET disabled_at = current_timestamp WHERE role = 'user' AND disabled_at IS NULL AND id = $1",
         user.id
@@ -126,9 +126,33 @@ pub async fn disable_user(core_context: &CoreContext, user: &User) -> crate::uti
 
             clear_user_cache(user).await;
 
-            crate::mut_success!()
+            crate::mut_success_result!()
         }
-        Err(_) => crate::mut_error!(),
+        Err(_) => crate::mut_error_result!(),
+    }
+}
+
+#[cfg(feature = "enable-user")]
+pub async fn enable_user(core_context: &CoreContext, user: &User) -> MutResult {
+    let result = sqlx::query!(
+        "UPDATE users SET disabled_at = NULL WHERE disabled_at IS NOT NULL AND id = $1",
+        user.id
+    )
+    .execute(&core_context.db_pool)
+    .await;
+
+    match result {
+        Ok(_) => {
+            core_context
+                .jobs
+                .mailer(user, crate::enums::MailerJobCommand::Enabled)
+                .await;
+
+            clear_user_cache(user).await;
+
+            crate::mut_success_result!()
+        }
+        Err(_) => crate::mut_error_result!(),
     }
 }
 
@@ -382,6 +406,48 @@ pub async fn insert_user(
     }
 }
 
+#[cfg(feature = "paginate-users")]
+pub async fn paginate_users(core_context: &CoreContext, cursor_page_params: &CursorPageParams) -> CursorPage<User> {
+    crate::cursor_page!(
+        core_context,
+        cursor_page_params,
+        |node: User| node.id,
+        move |core_context, after| async move { get_user_by_id(core_context, after).await.ok() },
+        move |core_context, cursor_resource, limit| async move {
+            let cursor_username = cursor_resource.map(|c| c.username);
+
+            sqlx::query_as!(
+                User,
+                r#"SELECT
+                    id,
+                    username,
+                    email,
+                    email_confirmed_at,
+                    encrypted_password,
+                    display_name,
+                    full_name,
+                    birthdate,
+                    language_code,
+                    country_alpha2,
+                    bio,
+                    hashtag_ids,
+                    avatar_image_blob_id,
+                    role as "role!: UserRole",
+                    disabled_at,
+                    created_at,
+                    updated_at
+                FROM users WHERE $1::citext IS NULL OR username > $1 ORDER BY username ASC LIMIT $2"#,
+                cursor_username, // $1
+                limit,           // $2
+            )
+            .fetch_all(&core_context.db_pool)
+            .await
+            .unwrap_or_default()
+        },
+    )
+    .await
+}
+
 #[cfg(feature = "reset-user-password")]
 pub async fn reset_user_password(core_context: &CoreContext, user: &User, new_password: &str) -> MutResult<User> {
     let mut validator = validator!();
@@ -601,11 +667,7 @@ pub async fn update_user_password(
 }
 
 #[cfg(feature = "update-user-role")]
-pub async fn update_user_role(
-    core_context: &CoreContext,
-    user: &User,
-    role: UserRole,
-) -> crate::utils::MutResult<User> {
+pub async fn update_user_role(core_context: &CoreContext, user: &User, role: UserRole) -> MutResult<User> {
     if role == UserRole::Superuser {
         let _ = sqlx::query!(
             r#"UPDATE users SET role = 'admin' WHERE role = 'superuser' AND id != $1"#,
@@ -645,9 +707,9 @@ pub async fn update_user_role(
         Ok(user) => {
             clear_user_cache(&user).await;
 
-            crate::mut_success!(user)
+            crate::mut_success_result!(user)
         }
-        Err(_) => crate::mut_error!(),
+        Err(_) => crate::mut_error_result!(),
     }
 }
 
@@ -727,6 +789,17 @@ mod tests {
         let result = get_user_by_username_or_email(&core_context, &user.email).await;
 
         assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn should_get_some_users() {
+        let core_context = setup_core_context().await;
+
+        insert_test_user(&core_context).await;
+
+        let cursor_page = User::paginate_by_username_asc(&core_context, &CursorPageParams::default()).await;
+
+        assert!(!cursor_page.nodes.is_empty());
     }
 
     #[tokio::test]

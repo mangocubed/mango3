@@ -20,7 +20,6 @@ mod post_bottom_bar;
 mod search_bar;
 mod time_ago;
 mod top_bar;
-mod unconfirmed_email_alert;
 
 #[cfg(feature = "current-user")]
 mod current_user;
@@ -28,6 +27,8 @@ mod current_user;
 mod infinite_scroll;
 #[cfg(feature = "post-card")]
 mod post_card;
+#[cfg(feature = "unconfirmed-email-alert")]
+mod unconfirmed_email_alert;
 #[cfg(feature = "user-card")]
 mod user_card;
 #[cfg(feature = "user-tag")]
@@ -54,7 +55,6 @@ pub use post_bottom_bar::PostBottomBar;
 pub use search_bar::SearchBar;
 pub use time_ago::TimeAgo;
 pub use top_bar::TopBar;
-pub use unconfirmed_email_alert::UnconfirmedEmailAlert;
 
 #[cfg(feature = "current-user")]
 pub use current_user::{CurrentUser, CurrentUserOpt};
@@ -65,6 +65,8 @@ pub use infinite_scroll::{
 };
 #[cfg(feature = "post-card")]
 pub use post_card::PostCard;
+#[cfg(feature = "unconfirmed-email-alert")]
+pub use unconfirmed_email_alert::UnconfirmedEmailAlert;
 #[cfg(feature = "user-card")]
 pub use user_card::UserCard;
 #[cfg(feature = "user-tag")]

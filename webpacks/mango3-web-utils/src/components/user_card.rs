@@ -9,10 +9,8 @@ pub fn UserCard(
     #[prop(into, optional)] actions: ViewFn,
     #[prop(default = "/".to_owned())] hashtags_base_url: String,
 ) -> impl IntoView {
-    let user_url = user.url.clone();
-
     let href = if !user.is_disabled {
-        Some(user_url.clone())
+        Some(user.url.to_string())
     } else {
         None
     };

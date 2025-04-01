@@ -2,7 +2,7 @@ use leptos::ev::Event;
 use leptos::prelude::*;
 
 use crate::components::Modal;
-use crate::models::{ActionValue, FormResp};
+use crate::presenters::{MutPresenter, MutPresenterActionValue};
 
 mod country_field;
 mod password_field;
@@ -59,7 +59,7 @@ fn FieldLabel(id: String, children: Children) -> impl IntoView {
 
 #[component]
 pub fn FormErrorAlert<D>(
-    #[prop(optional)] action_value: ActionValue<D>,
+    #[prop(optional)] action_value: MutPresenterActionValue<D>,
     #[prop(into, optional)] is_active: RwSignal<bool>,
     #[prop(into)] message: ViewFn,
 ) -> impl IntoView
@@ -67,7 +67,7 @@ where
     D: Clone + Default + Send + Sync + 'static,
 {
     Effect::new(move || {
-        let response = FormResp::from(action_value);
+        let response = MutPresenter::from(action_value);
 
         is_active.set(response.is_invalid());
     });
@@ -85,7 +85,7 @@ where
 
 #[component]
 pub fn FormField<D>(
-    #[prop(optional)] action_value: ActionValue<D>,
+    #[prop(optional)] action_value: MutPresenterActionValue<D>,
     children: Children,
     #[prop(optional)] error: RwSignal<Option<String>>,
     #[prop(into, optional)] id: String,
@@ -96,7 +96,7 @@ where
     D: Clone + Default + Send + Sync + 'static,
 {
     Effect::new(move || {
-        let response = FormResp::from(action_value);
+        let response = MutPresenter::from(action_value);
         let name = name.clone();
 
         if !name.is_empty() {
@@ -117,13 +117,13 @@ where
 
 #[component]
 pub fn FormSuccessModal(
-    #[prop(optional)] action_value: ActionValue,
+    #[prop(optional)] action_value: MutPresenterActionValue,
     #[prop(into, optional)] is_open: RwSignal<bool>,
     #[prop(into)] message: ViewFn,
     #[prop(optional, into)] on_close: Option<Callback<()>>,
 ) -> impl IntoView {
     Effect::new(move || {
-        let response = FormResp::from(action_value);
+        let response = MutPresenter::from(action_value);
 
         is_open.set(response.is_success());
     });

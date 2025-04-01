@@ -1,8 +1,8 @@
 use apalis::prelude::Error;
 
 use mango3_core::enums::AdminMailerJobCommand;
-use mango3_core::jobs::AdminMailerJob;
 use mango3_core::models::User;
+use mango3_core::utils::*;
 use mango3_core::CoreContext;
 
 use crate::constants::{

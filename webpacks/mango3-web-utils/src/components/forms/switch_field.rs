@@ -1,12 +1,12 @@
 use leptos::prelude::*;
 
-use crate::models::{ActionValue, FormResp};
+use crate::presenters::{MutPresenter, MutPresenterActionValue};
 
 use super::FieldError;
 
 #[component]
 pub fn SwitchField(
-    #[prop(optional)] action_value: ActionValue,
+    #[prop(optional)] action_value: MutPresenterActionValue,
     #[prop(into, optional)] error: RwSignal<Option<String>>,
     #[prop(into, optional)] id: &'static str,
     #[prop(optional, into)] is_checked: Signal<bool>,
@@ -14,7 +14,7 @@ pub fn SwitchField(
     #[prop(into, optional)] name: &'static str,
 ) -> impl IntoView {
     Effect::new(move || {
-        let response = FormResp::from(action_value);
+        let response = MutPresenter::from(action_value);
 
         if !name.is_empty() {
             error.set(response.error(name.to_owned()));

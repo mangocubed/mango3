@@ -22,7 +22,6 @@ pub struct UserPresenter {
     pub display_name: String,
     pub initials: String,
     pub email: String,
-    pub email_is_confirmed: bool,
     pub hashtags: Vec<HashtagPresenter>,
     pub avatar_image_blob: Option<BlobPresenter>,
     pub can_insert_website: bool,
@@ -30,6 +29,11 @@ pub struct UserPresenter {
     pub text_avatar_url: Url,
     pub role: String,
     pub is_disabled: bool,
+
+    #[cfg(feature = "user-bio-preview-html")]
+    pub bio_preview_html: String,
+    #[cfg(feature = "user-email-is-confirmed")]
+    pub email_is_confirmed: bool,
 }
 
 impl UserPresenter {
@@ -70,7 +74,6 @@ impl FromModel<User> for UserPresenter {
                 display_name: user.display_name.clone(),
                 initials: user.initials(),
                 email: user.email.clone(),
-                email_is_confirmed: user.email_is_confirmed(),
                 hashtags,
                 avatar_image_blob,
                 can_insert_website: user.can_insert_website(&core_context).await,
@@ -78,6 +81,11 @@ impl FromModel<User> for UserPresenter {
                 text_avatar_url: user.text_avatar_url(),
                 role: user.role.to_string(),
                 is_disabled: user.is_disabled(),
+
+                #[cfg(feature = "user-bio-preview-html")]
+                bio_preview_html: user.bio_preview_html().await,
+                #[cfg(feature = "user-email-is-confirmed")]
+                email_is_confirmed: user.email_is_confirmed(),
             }
         }
     }
@@ -95,6 +103,9 @@ pub struct UserMinPresenter {
     pub url: Url,
     pub role: String,
     pub is_disabled: bool,
+
+    #[cfg(feature = "user-bio-preview-html")]
+    pub bio_preview_html: String,
 }
 
 impl UserMinPresenter {
@@ -140,6 +151,9 @@ impl FromModel<User> for UserMinPresenter {
                 url: user.url(),
                 role: user.role.to_string(),
                 is_disabled: user.is_disabled(),
+
+                #[cfg(feature = "user-bio-preview-html")]
+                bio_preview_html: user.bio_preview_html().await,
             }
         }
     }
@@ -158,6 +172,9 @@ impl From<UserPresenter> for UserMinPresenter {
             text_avatar_url: value.text_avatar_url,
             role: value.role,
             is_disabled: value.is_disabled,
+
+            #[cfg(feature = "user-bio-preview-html")]
+            bio_preview_html: value.bio_preview_html,
         }
     }
 }

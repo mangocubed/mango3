@@ -5,16 +5,20 @@ use http::header::{HeaderMap, ACCEPT_LANGUAGE};
 use leptos::prelude::*;
 use tower_sessions::Session;
 
-use mango3_core::locales::I18n;
+use mango3_core::utils::I18n;
 use mango3_core::CoreContext;
 
 use crate::context::use_language_cookie;
 
-mod confirmation_codes;
 mod user_sessions;
 
-pub use confirmation_codes::*;
+#[cfg(feature = "confirmation-codes")]
+mod confirmation_codes;
+
 pub use user_sessions::*;
+
+#[cfg(feature = "confirmation-codes")]
+pub use confirmation_codes::*;
 
 pub async fn extract_client_ip() -> Result<String, ServerFnError> {
     let InsecureClientIp(client_ip) = leptos_axum::extract::<InsecureClientIp>().await?;

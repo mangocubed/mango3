@@ -7,6 +7,8 @@ mod blob_presenter;
 mod cursor_page_presenter;
 #[cfg(feature = "hashtag-presenter")]
 mod hashtag_presenter;
+#[cfg(feature = "mutation-presenter")]
+mod mutation_presenter;
 #[cfg(feature = "post-comment-presenter")]
 mod post_comment_presenter;
 #[cfg(feature = "post-presenter")]
@@ -25,6 +27,8 @@ pub use blob_presenter::BlobPresenter;
 pub use cursor_page_presenter::CursorPagePresenter;
 #[cfg(feature = "hashtag-presenter")]
 pub use hashtag_presenter::HashtagPresenter;
+#[cfg(feature = "mutation-presenter")]
+pub use mutation_presenter::{MutPresenter, MutPresenterActionValue, MutPresenterResult};
 #[cfg(feature = "post-comment-presenter")]
 pub use post_comment_presenter::PostCommentPresenter;
 #[cfg(feature = "post-presenter")]
@@ -37,4 +41,11 @@ pub use website_presenter::{WebsiteMinPresenter, WebsitePresenter};
 #[cfg(feature = "ssr")]
 pub trait FromModel<T> {
     fn from_model(core_context: &mango3_core::CoreContext, model: &T) -> impl std::future::Future<Output = Self>;
+}
+
+#[cfg(feature = "ssr")]
+impl FromModel<()> for () {
+    async fn from_model(_: &mango3_core::CoreContext, _: &()) -> Self {
+        ()
+    }
 }

@@ -1,17 +1,17 @@
 use super::ValidationErrors;
 
 #[macro_export]
-macro_rules! mut_success {
+macro_rules! mut_success_result {
     () => {
         Ok(crate::utils::MutSuccess {
             data: (),
-            message: "Record saved successfully".to_owned(),
+            message: "Record saved successfully.".to_owned(),
         })
     };
     ($data:expr) => {
         Ok(crate::utils::MutSuccess {
             data: $data,
-            message: "Record saved successfully".to_owned(),
+            message: "Record saved successfully.".to_owned(),
         })
     };
     ($data:expr, $message:expr) => {
@@ -23,17 +23,17 @@ macro_rules! mut_success {
 }
 
 #[macro_export]
-macro_rules! mut_error {
+macro_rules! mut_error_result {
     () => {
         Err(crate::utils::MutError {
             errors: crate::utils::ValidationErrors::default(),
-            message: "Failed to save record".to_owned(),
+            message: "Failed to save record.".to_owned(),
         })
     };
     ($errors:expr) => {
         Err(crate::utils::MutError {
             errors: $errors,
-            message: "Failed to save record".to_owned(),
+            message: "Failed to save record.".to_owned(),
         })
     };
     ($errors:expr, $message:expr) => {
@@ -59,9 +59,9 @@ pub struct MutError {
 
 impl From<sqlx::Error> for MutError {
     fn from(error: sqlx::Error) -> Self {
-        MutError {
+        Self {
             errors: ValidationErrors::default(),
-            message: format!("Failed to save record: {}", error),
+            message: format!("Failed to save record: {}.", error),
         }
     }
 }

@@ -4,9 +4,8 @@ use apalis::prelude::Error;
 
 use mango3_core::config::{BASIC_CONFIG, USER_CONFIG};
 use mango3_core::enums::{ConfirmationCodeAction, MailerJobCommand};
-use mango3_core::jobs::MailerJob;
-use mango3_core::locales::I18n;
 use mango3_core::models::User;
+use mango3_core::utils::*;
 
 use crate::constants::{
     KEY_TEXT_ARG_ACTION, KEY_TEXT_ARG_TITLE,

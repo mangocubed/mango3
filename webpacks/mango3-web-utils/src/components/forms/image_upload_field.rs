@@ -7,20 +7,20 @@ use web_sys::{FormData, HtmlInputElement};
 
 use crate::components::{CopyableText, LoadingSpinner};
 use crate::icons::TrashOutlined;
-use crate::models::{ActionValue, BlobResp};
+use crate::presenters::{BlobPresenter, MutPresenterActionValue};
 use crate::server_functions::attempt_to_upload_image;
 
 use super::FormField;
 
 #[component]
 pub fn ImageUploadField(
-    #[prop(optional)] action_value: ActionValue,
+    #[prop(optional)] action_value: MutPresenterActionValue,
     #[prop(into, optional)] error: RwSignal<Option<String>>,
     #[prop(default = 48)] height: u16,
     #[prop(into, optional)] id: String,
     #[prop(into, optional)] label: ViewFn,
     #[prop(into, optional)] name: String,
-    #[prop(into, optional)] value: RwSignal<Option<BlobResp>>,
+    #[prop(into, optional)] value: RwSignal<Option<BlobPresenter>>,
     #[prop(default = 48)] width: u16,
     #[prop(into, optional)] website_id: TextProp,
 ) -> impl IntoView {

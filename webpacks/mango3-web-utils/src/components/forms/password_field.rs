@@ -5,20 +5,20 @@ use leptos_use::use_event_listener;
 
 use crate::constants::KEY_CODE_ENTER;
 use crate::icons::{EyeMini, EyeSlashMini};
-use crate::models::ActionValue;
+use crate::presenters::MutPresenterActionValue;
 
 use super::FormField;
 
 #[component]
-pub fn PasswordField<D>(
-    action_value: ActionValue<D>,
+pub fn PasswordField<T>(
+    action_value: MutPresenterActionValue<T>,
     #[prop(into, optional)] error: RwSignal<Option<String>>,
     #[prop(into, optional)] id: &'static str,
     #[prop(into, optional)] label: ViewFn,
     #[prop(into, optional)] name: &'static str,
 ) -> impl IntoView
 where
-    D: Clone + Default + Send + Sync + 'static,
+    T: Clone + Default + Send + Sync + 'static,
 {
     let node_ref = NodeRef::new();
     let input_type = RwSignal::new("password".to_owned());

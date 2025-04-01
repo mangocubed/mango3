@@ -17,7 +17,6 @@ pub struct WebsitePresenter {
     pub id: Uuid,
     pub name: String,
     pub description: String,
-    pub description_html: String,
     pub description_preview_html: String,
     pub hashtags: Vec<HashtagPresenter>,
     pub initials: String,
@@ -30,6 +29,8 @@ pub struct WebsitePresenter {
     pub host: String,
     pub url: Url,
 
+    #[cfg(feature = "website-description-html")]
+    pub description_html: String,
     #[cfg(feature = "website-storage")]
     pub available_storage_str: String,
     #[cfg(feature = "website-storage")]
@@ -80,7 +81,7 @@ impl FromModel<Website> for WebsitePresenter {
                 None
             };
 
-            #[cfg(feature = "website_storage")]
+            #[cfg(feature = "website-storage")]
             let (available_storage, max_storage, used_storage) = (
                 website.available_storage(core_context).await,
                 website.max_storage(),
@@ -91,7 +92,6 @@ impl FromModel<Website> for WebsitePresenter {
                 id: website.id,
                 name: website.name.clone(),
                 description: website.description.clone(),
-                description_html: website.description_html().await,
                 description_preview_html: website.description_preview_html().await,
                 hashtags,
                 initials: website.initials(),
@@ -104,6 +104,8 @@ impl FromModel<Website> for WebsitePresenter {
                 host: website.host(),
                 url: website.url(),
 
+                #[cfg(feature = "website-description-html")]
+                description_html: website.description_html().await,
                 #[cfg(feature = "website-storage")]
                 available_storage_str: available_storage.to_string(),
                 #[cfg(feature = "website-storage")]

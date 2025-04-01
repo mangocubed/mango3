@@ -2,11 +2,11 @@ use cached::proc_macro::io_cached;
 use cached::AsyncRedisCache;
 use sqlx::types::Uuid;
 
+use crate::constants::*;
+use crate::models::*;
+#[allow(unused_imports)]
+use crate::utils::*;
 use crate::CoreContext;
-
-use crate::models::{Blob, User, Website};
-
-const PREFIX_GET_BLOB_BY_ID: &str = "get_blob_by_id";
 
 #[cfg(feature = "all-blobs-by-ids")]
 pub async fn all_blobs_by_ids(
@@ -29,23 +29,25 @@ pub async fn all_blobs_by_ids(
 
 #[cfg(feature = "delete-blob")]
 pub async fn delete_blob(core_context: &CoreContext, blob: &Blob) -> MutResult {
+    use cached::IOCachedAsync;
+
     sqlx::query!("DELETE FROM blobs WHERE id = $1", blob.id)
         .execute(&core_context.db_pool)
         .await?;
 
-    let _ = std::fs::remove_dir_all(self.directory());
+    let _ = std::fs::remove_dir_all(blob.directory());
 
-    if let Some(cache) = GET_BLOB_BY_ID.get() {
-        let _ = cache.cache_remove(&self.id).await;
+    if let Some(cache) = GET_CACHED_BLOB_BY_ID.get() {
+        let _ = cache.cache_remove(&blob.id).await;
     }
 
-    Ok(())
+    crate::mut_success_result!()
 }
 
 #[cfg(feature = "delete-orphaned-blobs")]
 pub async fn delete_orphaned_blobs(core_context: &CoreContext) -> MutResult {
     let result = sqlx::query_as!(
-        Self,
+        Blob,
         "SELECT *
         FROM blobs AS b
         WHERE
@@ -64,11 +66,11 @@ pub async fn delete_orphaned_blobs(core_context: &CoreContext) -> MutResult {
 
     if let Ok(blobs) = result {
         for blob in blobs {
-            let _ = blob.delete(core_context).await;
+            let _ = delete_blob(core_context, &blob).await;
         }
     }
 
-    Ok(())
+    crate::mut_success_result!()
 }
 
 #[cfg(feature = "get-blob-by-id")]

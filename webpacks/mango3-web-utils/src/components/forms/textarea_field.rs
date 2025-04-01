@@ -1,13 +1,13 @@
 use leptos::prelude::*;
 use leptos_use::{use_textarea_autosize_with_options, UseTextareaAutosizeOptions, UseTextareaAutosizeReturn};
 
-use crate::models::ActionValue;
+use crate::presenters::MutPresenterActionValue;
 
 use super::FormField;
 
 #[component]
 pub fn TextareaField(
-    #[prop(optional)] action_value: ActionValue,
+    #[prop(optional)] action_value: MutPresenterActionValue,
     #[prop(into, optional)] error: RwSignal<Option<String>>,
     #[prop(into, optional)] id: &'static str,
     #[prop(into, optional)] label: ViewFn,

@@ -34,7 +34,7 @@ pub(crate) static DATABASE_CONFIG: LazyLock<DatabaseConfig> = LazyLock::new(Data
 pub static MAILER_CONFIG: LazyLock<MailerConfig> = LazyLock::new(MailerConfig::load);
 pub static MISC_CONFIG: LazyLock<MiscConfig> = LazyLock::new(MiscConfig::load);
 pub static SESSIONS_CONFIG: LazyLock<SessionsConfig> = LazyLock::new(SessionsConfig::load);
-pub(crate) static USER_CONFIG: LazyLock<UserConfig> = LazyLock::new(UserConfig::load);
+pub static USER_CONFIG: LazyLock<UserConfig> = LazyLock::new(UserConfig::load);
 
 #[cfg(feature = "jobs")]
 pub(crate) static JOBS_CONFIG: LazyLock<JobsConfig> = LazyLock::new(JobsConfig::load);
