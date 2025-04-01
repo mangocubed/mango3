@@ -14,9 +14,6 @@ use sqlx::query;
 
 use crate::config::{BASIC_CONFIG, MISC_CONFIG};
 
-#[cfg(feature = "blob-read")]
-mod blob_read;
-
 #[derive(Clone, Deserialize, Serialize)]
 pub struct Blob {
     pub id: Uuid,
@@ -132,13 +129,18 @@ impl Blob {
 
             let variant_path = self.image_variant_path(width, height, fill);
 
-            if !Path::new(&variant_path).exists() {
-                let mut image_decoder = ImageReader::open(self.default_path())
+            if !std::path::Path::new(&variant_path).exists() {
+                use image::ImageDecoder;
+
+                let mut image_decoder = image::ImageReader::open(self.default_path())
                     .expect("Could not get image")
                     .into_decoder()
                     .expect("Could not convert image into decoder");
-                let orientation = image_decoder.orientation().unwrap_or(Orientation::NoTransforms);
-                let mut dynamic_image = DynamicImage::from_decoder(image_decoder).expect("Could not get dynamic image");
+                let orientation = image_decoder
+                    .orientation()
+                    .unwrap_or(image::metadata::Orientation::NoTransforms);
+                let mut dynamic_image =
+                    image::DynamicImage::from_decoder(image_decoder).expect("Could not get dynamic image");
 
                 dynamic_image.apply_orientation(orientation);
 
@@ -151,10 +153,10 @@ impl Blob {
                 dynamic_image.save(variant_path.clone()).unwrap();
             }
 
-            return fs::read(variant_path).ok();
+            return std::fs::read(variant_path).ok();
         }
 
-        fs::read(self.default_path()).ok()
+        std::fs::read(self.default_path()).ok()
     }
 
     #[cfg(feature = "website-storage")]

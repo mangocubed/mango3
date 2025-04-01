@@ -37,7 +37,7 @@ impl CoreContext {
         Self {
             db_pool: setup_db_pool().await,
             #[cfg(feature = "jobs")]
-            jobs: Jobs::setup().await,
+            jobs: utils::Jobs::setup().await,
         }
     }
 }

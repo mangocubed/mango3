@@ -9,8 +9,8 @@ use serde::Deserialize;
 use tokio::net::TcpListener;
 use uuid::Uuid;
 
+use mango3_core::commands::get_blob_by_id;
 use mango3_core::config::load_config;
-use mango3_core::get_blob_by_id;
 use mango3_core::utils::text_icon;
 use mango3_core::CoreContext;
 
@@ -31,7 +31,7 @@ async fn get_blob(
     Path(id): Path<Uuid>,
     Query(params): Query<BlobQueryParams>,
 ) -> impl IntoResponse {
-    let blob = get_blob_by_id!(&core_context, id)
+    let blob = get_blob_by_id(&core_context, id, None, None)
         .await
         .map_err(|_| (StatusCode::NOT_FOUND, "FILE NOT FOUND"))?;
 

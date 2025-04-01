@@ -9,6 +9,13 @@ use serde_json::Value;
 
 use crate::constants::REGEX_HANDLEBARS;
 
+#[macro_export]
+macro_rules! render_handlebars {
+    ($input:expr, $data:expr) => {
+        $crate::utils::render_handlebars($input, $data)
+    };
+}
+
 fn create_block<'rc>(param: &PathAndJson<'rc>) -> BlockContext<'rc> {
     let mut block = BlockContext::new();
 

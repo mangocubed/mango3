@@ -12,33 +12,31 @@ use crate::models::{async_redis_cache, Website};
 use crate::CoreContext;
 
 impl Validator {
-    fn validate_title(&mut self, value: &str) -> bool {
+    fn validate_navigation_item_title(&mut self, value: &str) -> bool {
         self.validate_presence(Input::Title, value) && self.validate_length(Input::Title, value, None, Some(256))
     }
 }
 
 #[cfg(feature = "all-navigation-items-by-website")]
-fn all_navigation_items_by_website(core_context: &CoreContext, website: &Website) -> impl Future<Output = Vec<Self>> {
-    async {
-        navigation_item_all_by_website(core_context, website)
-            .await
-            .map(|items| items.into())
-            .unwrap_or_default()
-    }
+async fn all_navigation_items_by_website(core_context: &CoreContext, website: &Website) -> Vec<NavigationItem> {
+    navigation_item_all_by_website(core_context, website)
+        .await
+        .map(|items| items.into())
+        .unwrap_or_default()
 }
 
 #[cfg(feature = "all-navigation-items-by-website")]
 #[io_cached(
     map_error = r##"|_| sqlx::Error::RowNotFound"##,
     convert = r#"{ website.id }"#,
-    ty = "AsyncRedisCache<Uuid, NavigationItems>",
-    create = r##" { async_redis_cache(PREFIX_NAVIGATION_ITEM_ALL_BY_WEBSITE).await } "##
+    ty = "cached::AsyncRedisCache<Uuid, NavigationItems>",
+    create = r##" { crate::async_redis_cache!(PREFIX_NAVIGATION_ITEM_ALL_BY_WEBSITE).await } "##
 )]
 async fn all_cached_navigation_items_by_website(
     core_context: &CoreContext,
     website: &Website,
 ) -> sqlx::Result<NavigationItems> {
-    query_as!(
+    sqlx::query_as!(
         NavigationItem,
         "SELECT * FROM navigation_items WHERE website_id = $1 ORDER BY position ASC",
         website.id // $1
@@ -100,7 +98,7 @@ async fn insert_navigation_item(
 
     let mut validator = Validator::default();
 
-    validator.validate_title(title);
+    validator.validate_navigation_item_title(title);
 
     if !validator.is_valid {
         return Err(validator.errors);

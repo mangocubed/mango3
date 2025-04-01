@@ -1,3 +1,8 @@
+use rand::distr::Alphanumeric;
+use rand::{rng, Rng};
+
+#[cfg(feature = "cache")]
+mod cache_utils;
 #[cfg(feature = "handlebars")]
 mod handlebars_utils;
 #[cfg(feature = "jobs")]
@@ -15,6 +20,8 @@ mod text_icon;
 #[cfg(feature = "validator")]
 mod validator;
 
+#[cfg(feature = "cache")]
+pub(crate) use cache_utils::{async_redis_cache, AsyncRedisCacheTrait};
 #[cfg(feature = "handlebars")]
 pub use handlebars_utils::render_handlebars;
 #[cfg(feature = "jobs")]
@@ -24,10 +31,18 @@ pub use locales::I18n;
 #[cfg(feature = "markdown")]
 pub use markdown::parse_html;
 #[cfg(feature = "mutation")]
-pub use mutation::MutResult;
+pub use mutation::{MutError, MutResult, MutSuccess};
 #[cfg(feature = "pagination")]
-pub use pagination::cursor_page;
+pub use pagination::{cursor_page, CursorPage, CursorPageParams};
 #[cfg(feature = "text-icon")]
 pub use text_icon::text_icon;
 #[cfg(feature = "validator")]
-pub use validator::Validator;
+pub use validator::{ValidationErrors, Validator, ValidatorTrait};
+
+pub(crate) fn generate_random_string(length: u8) -> String {
+    rng()
+        .sample_iter(&Alphanumeric)
+        .take(length as usize)
+        .map(char::from)
+        .collect()
+}

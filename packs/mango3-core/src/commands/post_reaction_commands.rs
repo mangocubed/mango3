@@ -52,8 +52,8 @@ pub async fn get_post_reactions_count(core_context: &CoreContext, post: &Post) -
     .unwrap_or_default()
 }
 
-#[cfg(feature = "save-post-reaction")]
-pub async fn save_post_reaction(
+#[cfg(feature = "insert-or-update-post-reaction")]
+pub async fn insert_or_update_post_reaction(
     core_context: &CoreContext,
     post: &Post,
     user: &User,
@@ -107,7 +107,7 @@ pub async fn save_post_reaction(
 mod tests {
     use crate::test_utils::{insert_test_post, insert_test_user, setup_core_context};
 
-    use super::{get_post_reaction_by_post_and_user, get_post_reactions_count, save_post_reaction};
+    use super::{get_post_reaction_by_post_and_user, get_post_reactions_count, insert_or_update_post_reaction};
 
     #[tokio::test]
     async fn should_count_post_reactions() {
@@ -136,7 +136,7 @@ mod tests {
         let post = insert_test_post(&core_context, None, None).await;
         let user = insert_test_user(&core_context).await;
 
-        let result = save_post_reaction(&core_context, &post, &user, "🙂").await;
+        let result = insert_or_update_post_reaction(&core_context, &post, &user, "🙂").await;
 
         assert!(result.is_ok());
     }

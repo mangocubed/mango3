@@ -24,51 +24,52 @@ pub async fn get_invitation_code_by_id(core_context: &CoreContext, id: Uuid) -> 
 }
 
 #[cfg(feature = "insert-invitation-code")]
-pub async fn insert(core_context: &CoreContext, email: &str) -> MutResult<InvitationCode> {
-    let mut validator = validator!();
+pub async fn insert_invitation_code(core_context: &CoreContext, email: &str) -> MutResult<InvitationCode> {
+    use crate::enums::{Input, InputError};
+    use crate::utils::ValidatorTrait;
+
+    let mut validator = crate::validator!();
 
     let email = email.trim().to_lowercase();
 
-    async move {
-        if validator.validate_presence(Input::Email, &email)
-            && validator.validate_length(Input::Email, &email, Some(5), Some(256))
-            && validator.validate_format(Input::Email, &email, &REGEX_EMAIL)
-        {
-            let email_exists = query!(
-                "SELECT id FROM users WHERE LOWER(email) = $1 LIMIT 1",
-                email // $1
-            )
-            .fetch_one(&core_context.db_pool)
-            .await
-            .is_ok();
-            validator.custom_validation(Input::Email, InputError::AlreadyInUse, &|| !email_exists);
-        }
-
-        if !validator.is_valid {
-            return Err(validator.errors);
-        }
-
-        let code = generate_random_string(MISC_CONFIG.invitation_code_length);
-
-        let result = sqlx::query_as!(
-            Self,
-            "INSERT INTO invitation_codes (email, code) VALUES ($1, $2) RETURNING *",
-            email, // $1
-            code,  // $2
+    if validator.validate_presence(Input::Email, &email)
+        && validator.validate_length(Input::Email, &email, Some(5), Some(256))
+        && validator.validate_format(Input::Email, &email, &crate::constants::REGEX_EMAIL)
+    {
+        let email_exists = sqlx::query!(
+            "SELECT id FROM users WHERE LOWER(email) = $1 LIMIT 1",
+            email // $1
         )
         .fetch_one(&core_context.db_pool)
-        .await;
+        .await
+        .is_ok();
+        validator.custom_validation(Input::Email, InputError::AlreadyInUse, &|| !email_exists);
+    }
 
-        match result {
-            Ok(invitation_code) => {
-                core_context
-                    .jobs
-                    .guest_mailer(&email, GuestMailerJobCommand::InvitationCode(code))
-                    .await;
+    if !validator.is_valid {
+        return crate::mut_error!(validator.errors);
+    }
 
-                Ok(invitation_code)
-            }
-            Err(_) => Err(ValidationErrors::default()),
+    let code = crate::utils::generate_random_string(crate::config::MISC_CONFIG.invitation_code_length);
+
+    let result = sqlx::query_as!(
+        InvitationCode,
+        "INSERT INTO invitation_codes (email, code) VALUES ($1, $2) RETURNING *",
+        email, // $1
+        code,  // $2
+    )
+    .fetch_one(&core_context.db_pool)
+    .await;
+
+    match result {
+        Ok(invitation_code) => {
+            core_context
+                .jobs
+                .guest_mailer(&email, crate::enums::GuestMailerJobCommand::InvitationCode(code))
+                .await;
+
+            crate::mut_success!(invitation_code)
         }
+        Err(_) => crate::mut_error!(),
     }
 }

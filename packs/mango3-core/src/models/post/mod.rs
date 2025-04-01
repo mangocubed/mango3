@@ -5,46 +5,12 @@ use sqlx::types::chrono::{DateTime, Utc};
 use sqlx::types::{JsonValue, Uuid};
 use url::Url;
 
-#[cfg(feature = "post_cache_remove")]
-use futures::future;
-#[cfg(feature = "post_write")]
-use sqlx::query;
-
 use crate::CoreContext;
-
-#[cfg(feature = "post_write")]
-use crate::config::MISC_CONFIG;
-#[cfg(feature = "post_cache_remove")]
-use crate::constants::{
-    BLACKLISTED_SLUGS, PREFIX_GET_POST_BY_ID, PREFIX_GET_POST_BY_SLUG, PREFIX_POST_CONTENT_HTML,
-    PREFIX_POST_CONTENT_PREVIEW_HTML, REGEX_SLUG,
-};
-#[cfg(feature = "post_write")]
-use crate::enums::{Input, InputError};
-#[cfg(feature = "post_write")]
-use crate::validator::{Validator, ValidatorTrait};
-
-#[cfg(feature = "post_cache_remove")]
-use super::AsyncRedisCacheTrait;
 
 use super::{Blob, Hashtag, User, Website};
 
-mod post_content;
-mod post_get;
-
-#[cfg(feature = "post_write")]
-mod post_delete;
-#[cfg(feature = "post_write")]
-mod post_insert;
-#[cfg(feature = "post_search")]
-mod post_search;
-#[cfg(feature = "post_write")]
-mod post_update;
-
-#[cfg(feature = "post_cache_remove")]
-use post_content::{POST_CONTENT_HTML, POST_CONTENT_PREVIEW_HTML};
-#[cfg(feature = "post_cache_remove")]
-use post_get::{GET_POST_BY_ID, GET_POST_BY_SLUG};
+const PREFIX_POST_CONTENT_HTML: &str = "post_content_html";
+const PREFIX_POST_CONTENT_PREVIEW_HTML: &str = "post_content_preview_html";
 
 #[derive(Clone, Deserialize, Serialize)]
 pub struct Post {
@@ -77,28 +43,17 @@ impl Post {
         crate::commands::all_blobs_by_ids(core_context, self.blob_ids.clone(), None, None).await
     }
 
-    #[cfg(feature = "post_cache_remove")]
-    async fn cache_remove(&self, core_context: &CoreContext) {
-        future::join4(
-            POST_CONTENT_HTML.cache_remove(PREFIX_POST_CONTENT_HTML, &self.id),
-            POST_CONTENT_PREVIEW_HTML.cache_remove(PREFIX_POST_CONTENT_PREVIEW_HTML, &self.id),
-            GET_POST_BY_ID.cache_remove(PREFIX_GET_POST_BY_ID, &self.id),
-            async {
-                let website = self.website(core_context).await.expect("Could not get website");
-
-                GET_POST_BY_SLUG
-                    .cache_remove(
-                        PREFIX_GET_POST_BY_SLUG,
-                        &Self::cache_key_get_by_slug(&self.slug, &website),
-                    )
-                    .await
-            },
-        )
-        .await;
+    pub async fn comments_count(&self, core_context: &CoreContext) -> i64 {
+        crate::commands::get_post_comments_count(core_context, self).await
     }
 
-    pub async fn comments_count(&self, core_context: &CoreContext) -> i64 {
-        crate::commands::count_post_comments(core_context, self).await
+    #[cfg(feature = "post-content-html")]
+    pub async fn content_html(&self) -> String {
+        post_cached_content_html(self).await.unwrap_or_default()
+    }
+
+    pub async fn content_preview_html(&self) -> String {
+        post_cached_content_preview_html(self).await.unwrap_or_default()
     }
 
     pub async fn cover_image_blob(&self, core_context: &CoreContext) -> Option<sqlx::Result<Blob>> {
@@ -135,7 +90,7 @@ impl Post {
     }
 
     pub async fn views_count(&self, core_context: &CoreContext) -> i64 {
-        crate::commands::post_views_count(core_context, self).await
+        crate::commands::get_post_views_count(core_context, self).await
     }
 
     pub async fn website(&self, core_context: &CoreContext) -> sqlx::Result<Website> {
@@ -143,50 +98,35 @@ impl Post {
     }
 }
 
-#[cfg(feature = "post_write")]
-impl Validator {
-    fn validate_post_title(&mut self, value: &str) -> bool {
-        self.validate_presence(Input::Title, value)
-            && self.validate_length(Input::Title, value, None, Some(256))
-            && self.custom_validation(Input::Title, InputError::IsInvalid, &|| Uuid::try_parse(value).is_err())
-    }
+#[cfg(feature = "post-content-html")]
+#[cached::proc_macro::io_cached(
+    map_error = r##"|err| err"##,
+    convert = r#"{ post.id }"#,
+    ty = "cached::AsyncRedisCache<Uuid, String>",
+    create = r##" { crate::async_redis_cache!(PREFIX_POST_CONTENT_HTML).await } "##
+)]
+pub(crate) async fn post_cached_content_html(post: &Post) -> Result<String, cached::RedisCacheError> {
+    Ok(crate::parse_html!(
+        &crate::render_handlebars!(&post.content, &post.variables).unwrap_or_default(),
+        true
+    ))
+}
 
-    async fn validate_post_slug(
-        &mut self,
-        core_context: &CoreContext,
-        post: Option<&Post>,
-        website: &Website,
-        slug: &str,
-    ) -> bool {
-        if self.validate_presence(Input::Slug, slug)
-            && self.validate_format(Input::Slug, slug, &REGEX_SLUG)
-            && self.validate_length(Input::Slug, slug, None, Some(256))
-            && self.custom_validation(Input::Slug, InputError::IsInvalid, &|| Uuid::try_parse(slug).is_err())
-            && self.custom_validation(Input::Slug, InputError::IsInvalid, &|| {
-                !BLACKLISTED_SLUGS.contains(&slug)
-            })
-        {
-            let id = post.map(|p| p.id);
-            let slug_exists = query!(
-                "SELECT id FROM posts WHERE ($1::uuid IS NULL OR id != $1) AND LOWER(slug) = $2 AND website_id = $3 LIMIT 1",
-                id,         // $1
-                slug,       // $2
-                website.id  // $3
-            )
-            .fetch_one(&core_context.db_pool)
-            .await
-            .is_ok();
-            self.custom_validation(Input::Slug, InputError::AlreadyInUse, &|| !slug_exists)
-        } else {
-            false
-        }
-    }
-
-    fn validate_post_content(&mut self, value: &str) -> bool {
-        self.validate_length(Input::Content, value, None, Some(MISC_CONFIG.max_post_content_length))
-    }
-
-    fn validate_post_variables(&mut self, value: Option<&JsonValue>) -> bool {
-        self.custom_validation(Input::Variables, InputError::IsInvalid, &|| value.is_some())
-    }
+#[cached::proc_macro::io_cached(
+    map_error = r##"|err| err"##,
+    convert = r#"{ post.id }"#,
+    ty = "cached::AsyncRedisCache<Uuid, String>",
+    create = r##" { crate::async_redis_cache!(PREFIX_POST_CONTENT_PREVIEW_HTML).await } "##
+)]
+pub(crate) async fn post_cached_content_preview_html(post: &Post) -> Result<String, cached::RedisCacheError> {
+    Ok(crate::parse_html!(
+        &crate::constants::REGEX_HANDLEBARS
+            .replace_all(&post.content, "")
+            .trim()
+            .lines()
+            .next()
+            .map(|line| line.get(..256).unwrap_or(line).trim().to_owned())
+            .unwrap_or_default(),
+        false
+    ))
 }

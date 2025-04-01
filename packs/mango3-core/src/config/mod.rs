@@ -12,7 +12,9 @@ mod mailer_config;
 mod misc_config;
 mod user_config;
 
-#[cfg(feature = "website_storage")]
+#[cfg(feature = "jobs")]
+mod jobs_config;
+#[cfg(feature = "website-storage")]
 mod website_config;
 
 pub use basic_config::BasicConfig;
@@ -21,19 +23,22 @@ pub use mailer_config::MailerConfig;
 pub use misc_config::MiscConfig;
 pub(crate) use user_config::UserConfig;
 
-#[cfg(feature = "website_storage")]
+#[cfg(feature = "jobs")]
+pub(crate) use jobs_config::JobsConfig;
+#[cfg(feature = "website-storage")]
 pub(crate) use website_config::WebsiteConfig;
 
 pub static BASIC_CONFIG: LazyLock<BasicConfig> = LazyLock::new(BasicConfig::load);
 pub(crate) static CACHE_CONFIG: LazyLock<CacheConfig> = LazyLock::new(CacheConfig::load);
 pub(crate) static DATABASE_CONFIG: LazyLock<DatabaseConfig> = LazyLock::new(DatabaseConfig::load);
-pub(crate) static JOBS_CONFIG: LazyLock<JobsConfig> = LazyLock::new(JobsConfig::load);
 pub static MAILER_CONFIG: LazyLock<MailerConfig> = LazyLock::new(MailerConfig::load);
 pub static MISC_CONFIG: LazyLock<MiscConfig> = LazyLock::new(MiscConfig::load);
 pub static SESSIONS_CONFIG: LazyLock<SessionsConfig> = LazyLock::new(SessionsConfig::load);
-pub static USER_CONFIG: LazyLock<UserConfig> = LazyLock::new(UserConfig::load);
+pub(crate) static USER_CONFIG: LazyLock<UserConfig> = LazyLock::new(UserConfig::load);
 
-#[cfg(feature = "website_storage")]
+#[cfg(feature = "jobs")]
+pub(crate) static JOBS_CONFIG: LazyLock<JobsConfig> = LazyLock::new(JobsConfig::load);
+#[cfg(feature = "website-storage")]
 pub(crate) static WEBSITE_CONFIG: LazyLock<WebsiteConfig> = LazyLock::new(WebsiteConfig::load);
 
 pub fn load_config() {
@@ -74,27 +79,6 @@ impl Default for DatabaseConfig {
 impl DatabaseConfig {
     fn load() -> Self {
         extract_from_env("DATABASE_")
-    }
-}
-
-#[derive(Deserialize, Serialize)]
-pub(crate) struct JobsConfig {
-    pub(crate) redis_url: String,
-}
-
-impl Default for JobsConfig {
-    fn default() -> Self {
-        let db_number = if cfg!(test) { "10" } else { "0" };
-
-        Self {
-            redis_url: format!("redis://127.0.0.1:6379/{db_number}"),
-        }
-    }
-}
-
-impl JobsConfig {
-    fn load() -> Self {
-        extract_from_env("JOBS_")
     }
 }
 

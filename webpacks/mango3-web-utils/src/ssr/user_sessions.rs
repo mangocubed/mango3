@@ -26,11 +26,16 @@ use crate::i18n::Locale;
 
 use super::{extract_session, try_core_context};
 
+#[cfg(feature = "extract_user")]
 pub async fn extract_user() -> Result<Option<User>, ServerFnError> {
     if let Some(user_session) = extract_user_session().await? {
         let core_context = try_core_context()?;
 
-        Ok(User::get_by_id(&core_context, user_session.user_id).await.ok())
+        Ok(
+            mango3_core::commands::get_user_by_id(&core_context, user_session.user_id)
+                .await
+                .ok(),
+        )
     } else {
         Ok(None)
     }

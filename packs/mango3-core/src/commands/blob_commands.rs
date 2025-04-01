@@ -2,11 +2,11 @@ use cached::proc_macro::io_cached;
 use cached::AsyncRedisCache;
 use sqlx::types::Uuid;
 
-use crate::constants::PREFIX_GET_BLOB_BY_ID;
-use crate::models::{async_redis_cache, User, Website};
 use crate::CoreContext;
 
-use crate::models::Blob;
+use crate::models::{Blob, User, Website};
+
+const PREFIX_GET_BLOB_BY_ID: &str = "get_blob_by_id";
 
 #[cfg(feature = "all-blobs-by-ids")]
 pub async fn all_blobs_by_ids(
@@ -76,7 +76,7 @@ pub async fn delete_orphaned_blobs(core_context: &CoreContext) -> MutResult {
     map_error = r##"|_| sqlx::Error::RowNotFound"##,
     convert = r#"{ id }"#,
     ty = "AsyncRedisCache<Uuid, Blob>",
-    create = r##" { async_redis_cache(PREFIX_GET_BLOB_BY_ID).await } "##
+    create = r##" { crate::async_redis_cache!(PREFIX_GET_BLOB_BY_ID).await } "##
 )]
 async fn get_cached_blob_by_id(core_context: &CoreContext, id: Uuid) -> sqlx::Result<Blob> {
     sqlx::query_as!(
@@ -92,8 +92,8 @@ async fn get_cached_blob_by_id(core_context: &CoreContext, id: Uuid) -> sqlx::Re
 pub async fn get_blob_by_id(
     core_context: &CoreContext,
     id: Uuid,
-    website: Option<&Website>,
-    user: Option<&User>,
+    website: Option<&crate::models::Website>,
+    user: Option<&crate::models::User>,
 ) -> sqlx::Result<Blob> {
     let blob = get_cached_blob_by_id(core_context, id).await?;
     if let Some(website) = website {

@@ -43,17 +43,6 @@ impl PostComment {
             .await;
     }
 
-    pub async fn count(core_context: &CoreContext, post: &Post) -> i64 {
-        query!(
-            "SELECT COUNT(*) FROM post_comments WHERE post_id = $1 LIMIT 1",
-            post.id, // $1
-        )
-        .fetch_one(&core_context.db_pool)
-        .await
-        .map(|record| record.count.unwrap_or_default())
-        .unwrap_or_default()
-    }
-
     #[cfg(feature = "post_comment_cache_remove")]
     pub async fn delete(&self, core_context: &CoreContext) -> Result<(), ValidationErrors> {
         query!("DELETE FROM post_comments WHERE id = $1", self.id)

@@ -1,5 +1,253 @@
-use crate::modals::User;
+use uuid::Uuid;
+
+use crate::enums::UserRole;
+use crate::models::User;
 use crate::CoreContext;
+
+#[cfg(feature = "insert-user")]
+impl Validator {
+    fn validate_full_name(&mut self, value: &str) -> bool {
+        self.validate_presence(Input::FullName, value)
+            && self.validate_length(Input::FullName, value, Some(2), Some(256))
+    }
+
+    fn validate_birthdate(&mut self, value: Option<NaiveDate>) -> bool {
+        self.validate_presence(Input::Birthdate, value)
+            && self.custom_validation(Input::Birthdate, InputError::IsInvalid, &|| {
+                value.unwrap() <= Utc::now().date_naive()
+            })
+    }
+
+    fn validate_country(&mut self, value: Option<&CountryCode>) -> bool {
+        self.validate_presence(Input::CountryAlpha2, value)
+    }
+
+    fn validate_password(&mut self, input: Input, value: &str) -> bool {
+        self.validate_presence(input.clone(), value) && self.validate_length(input, value, Some(6), Some(128))
+    }
+}
+
+#[cfg(feature = "authenticate-user")]
+pub async fn authenticate_user(core_context: &CoreContext, username_or_email: &str, password: &str) -> MutResult<User> {
+    let mut validator = crate::validator!();
+
+    validator.validate_presence(Input::UsernameOrEmail, username_or_email);
+    validator.validate_presence(Input::Password, password);
+
+    if !validator.is_valid {
+        return Err(validator.errors);
+    }
+
+    let user = Self::get_by_username_or_email(core_context, username_or_email)
+        .await
+        .map_err(|_| ValidationErrors::default())?;
+
+    if user.verify_password(password) {
+        Ok(user)
+    } else {
+        Err(ValidationErrors::default())
+    }
+}
+
+#[cfg(feature = "clear-user-cache")]
+pub async fn clear_user_cache(user: &User) {
+    use crate::utils::AsyncRedisCacheTrait;
+
+    let email = user.email.to_lowercase();
+    let username = user.username.to_lowercase();
+
+    futures::join!(
+        crate::models::USER_BIO_HTML.cache_remove(crate::constants::PREFIX_USER_BIO_HTML, &user.id),
+        crate::models::USER_BIO_PREVIEW_HTML.cache_remove(crate::constants::PREFIX_USER_BIO_PREVIEW_HTML, &user.id),
+        GET_USER_BY_ID.cache_remove(crate::constants::PREFIX_GET_USER_BY_ID, &user.id),
+        GET_USER_BY_USERNAME.cache_remove(crate::constants::PREFIX_GET_USER_BY_USERNAME, &username),
+        GET_USER_BY_USERNAME_OR_EMAIL.cache_remove(crate::constants::PREFIX_GET_USER_BY_USERNAME_OR_EMAIL, &username),
+        GET_USER_BY_USERNAME_OR_EMAIL.cache_remove(crate::constants::PREFIX_GET_USER_BY_USERNAME_OR_EMAIL, &email),
+    );
+}
+
+#[cfg(feature = "confirm-user-email")]
+pub async fn confirm_user_email(&self, core_context: &CoreContext) -> MutResult<Self> {
+    let result = sqlx::query_as!(
+        User,
+        r#"UPDATE users SET email_confirmed_at = current_timestamp
+        WHERE disabled_at IS NULL AND email_confirmed_at IS NULL AND id = $1 RETURNING
+            id,
+            username,
+            email,
+            email_confirmed_at,
+            encrypted_password,
+            display_name,
+            full_name,
+            birthdate,
+            language_code,
+            country_alpha2,
+            bio,
+            hashtag_ids,
+            avatar_image_blob_id,
+            role as "role!: UserRole",
+            disabled_at,
+            created_at,
+            updated_at"#,
+        self.id, // $1
+    )
+    .fetch_one(&core_context.db_pool)
+    .await;
+
+    match result {
+        Ok(user) => {
+            clear_user_cache(user).await;
+
+            Ok(user)
+        }
+        Err(_) => Err(ValidationErrors::default()),
+    }
+}
+
+#[cfg(feature = "disable-user")]
+pub async fn disable_user(core_context: &CoreContext, user: &User) -> crate::utils::MutResult {
+    let result = sqlx::query!(
+        "UPDATE users SET disabled_at = current_timestamp WHERE role = 'user' AND disabled_at IS NULL AND id = $1",
+        user.id
+    )
+    .execute(&core_context.db_pool)
+    .await;
+
+    match result {
+        Ok(_) => {
+            super::delete_all_user_sessions(core_context, user)
+                .await
+                .expect("Could not delete user sessions");
+
+            core_context
+                .jobs
+                .mailer(user, crate::enums::MailerJobCommand::Disabled)
+                .await;
+
+            clear_user_cache(user).await;
+
+            crate::mut_success!()
+        }
+        Err(_) => crate::mut_error!(),
+    }
+}
+
+#[cfg(feature = "get-user-by-id")]
+#[cached::proc_macro::io_cached(
+    map_error = r##"|_| sqlx::Error::RowNotFound"##,
+    convert = r#"{ id }"#,
+    ty = "cached::AsyncRedisCache<Uuid, User>",
+    create = r##" { crate::async_redis_cache!(crate::constants::PREFIX_GET_USER_BY_ID).await } "##
+)]
+pub async fn get_user_by_id(core_context: &CoreContext, id: Uuid) -> sqlx::Result<User> {
+    sqlx::query_as!(
+        User,
+        r#"SELECT
+            id,
+            username,
+            email,
+            email_confirmed_at,
+            encrypted_password,
+            display_name,
+            full_name,
+            birthdate,
+            language_code,
+            country_alpha2,
+            bio,
+            hashtag_ids,
+            avatar_image_blob_id,
+            role as "role!: UserRole",
+            disabled_at,
+            created_at,
+            updated_at
+        FROM users WHERE id = $1 LIMIT 1"#,
+        id
+    )
+    .fetch_one(&core_context.db_pool)
+    .await
+}
+
+#[cfg(feature = "get-user-by-username")]
+#[cached::proc_macro::io_cached(
+    map_error = r##"|_| sqlx::Error::RowNotFound"##,
+    convert = r#"{ username.to_lowercase() }"#,
+    ty = "cached::AsyncRedisCache<String, User>",
+    create = r##" { crate::async_redis_cache!(crate::constants::PREFIX_GET_USER_BY_USERNAME).await } "##
+)]
+pub async fn get_user_by_username(core_context: &CoreContext, username: &str) -> sqlx::Result<User> {
+    if username.is_empty() {
+        return Err(sqlx::Error::RowNotFound);
+    }
+
+    sqlx::query_as!(
+        User,
+        r#"SELECT
+            id,
+            username,
+            email,
+            email_confirmed_at,
+            encrypted_password,
+            display_name,
+            full_name,
+            birthdate,
+            language_code,
+            country_alpha2,
+            bio,
+            hashtag_ids,
+            avatar_image_blob_id,
+            role as "role!: UserRole",
+            disabled_at,
+            created_at,
+            updated_at
+        FROM users WHERE LOWER(username) = $1 LIMIT 1"#,
+        username.to_lowercase()
+    )
+    .fetch_one(&core_context.db_pool)
+    .await
+}
+
+#[cfg(feature = "get-user-by-username-or-email")]
+#[cached::proc_macro::io_cached(
+    map_error = r##"|_| sqlx::Error::RowNotFound"##,
+    convert = r#"{ username_or_email.to_lowercase() }"#,
+    ty = "cached::AsyncRedisCache<String, User>",
+    create = r##" { crate::async_redis_cache!(crate::constants::PREFIX_GET_USER_BY_USERNAME_OR_EMAIL).await } "##
+)]
+pub async fn get_user_by_username_or_email(core_context: &CoreContext, username_or_email: &str) -> sqlx::Result<User> {
+    if username_or_email.is_empty() {
+        return Err(sqlx::Error::RowNotFound);
+    }
+
+    sqlx::query_as!(
+        User,
+        r#"SELECT
+            id,
+            username,
+            email,
+            email_confirmed_at,
+            encrypted_password,
+            display_name,
+            full_name,
+            birthdate,
+            language_code,
+            country_alpha2,
+            bio,
+            hashtag_ids,
+            avatar_image_blob_id,
+            role as "role!: UserRole",
+            disabled_at,
+            created_at,
+            updated_at
+        FROM users
+        WHERE
+            disabled_at IS NULL
+            AND (LOWER(username) = $1 OR (email_confirmed_at IS NOT NULL AND LOWER(email) = $1))
+        LIMIT 1"#,
+        username_or_email.to_lowercase()
+    )
+    .fetch_one(&core_context.db_pool)
+    .await
+}
 
 #[cfg(feature = "insert-user")]
 pub async fn insert_user(
@@ -11,7 +259,7 @@ pub async fn insert_user(
     birthdate: &str,
     language_code: &str,
     country_alpha2: &str,
-) -> Result<User, ValidationErrors> {
+) -> MutResult<User> {
     let mut validator = Validator::default();
 
     let username = username.trim();
@@ -131,5 +379,367 @@ pub async fn insert_user(
             Ok(user)
         }
         Err(_) => Err(ValidationErrors::default()),
+    }
+}
+
+#[cfg(feature = "reset-user-password")]
+pub async fn reset_user_password(core_context: &CoreContext, user: &User, new_password: &str) -> MutResult<User> {
+    let mut validator = validator!();
+
+    validator.validate_password(Input::NewPassword, new_password);
+
+    if !validator.is_valid {
+        return Err(validator.errors);
+    }
+
+    let encrypted_password = encrypt_password(new_password);
+
+    let result = sqlx::query_as!(
+        Self,
+        r#"UPDATE users SET encrypted_password = $2 WHERE disabled_at IS NULL AND id = $1
+            RETURNING
+                id,
+                username,
+                email,
+                email_confirmed_at,
+                encrypted_password,
+                display_name,
+                full_name,
+                birthdate,
+                language_code,
+                country_alpha2,
+                bio,
+                hashtag_ids,
+                avatar_image_blob_id,
+                role as "role!: UserRole",
+                disabled_at,
+                created_at,
+                updated_at"#,
+        self.id,            // $1
+        encrypted_password, // $2
+    )
+    .fetch_one(&core_context.db_pool)
+    .await;
+
+    match result {
+        Ok(user) => {
+            user.cache_remove().await;
+
+            Ok(user)
+        }
+        Err(_) => Err(ValidationErrors::default()),
+    }
+}
+
+#[cfg(feature = "send-user-email-confirmation-code")]
+pub async fn send_user_email_confirmation_code(core_context: &CoreContext, user: &User) -> MutResult<ConfirmationCode> {
+    if user.email_is_confirmed() {
+        return Err(ValidationErrors::default());
+    }
+
+    ConfirmationCode::insert(core_context, self, ConfirmationCodeAction::EmailConfirmation)
+        .await
+        .map_err(|_| ValidationErrors::default())
+}
+
+#[cfg(feature = "send-user-login-confirmation-code")]
+pub async fn send_user_login_confirmation_code(core_context: &CoreContext) -> MutResult<ConfirmationCode> {
+    if !user.email_is_confirmed() {
+        return Err(ValidationErrors::default());
+    }
+
+    ConfirmationCode::insert(core_context, user, ConfirmationCodeAction::LoginConfirmation).await
+}
+
+#[cfg(feature = "send-user-password-reset-code")]
+pub async fn send_user_password_reset_code(core_context: &CoreContext, user: &User) -> MutResult<ConfirmationCode> {
+    if !user.email_is_confirmed() {
+        return Err(ValidationErrors::default());
+    }
+
+    ConfirmationCode::insert(core_context, self, ConfirmationCodeAction::PasswordReset).await
+}
+
+#[cfg(feature = "update-user-email")]
+pub async fn update_user_email(
+    core_context: &CoreContext,
+    user: &User,
+    email: &str,
+    password: &str,
+) -> MutResult<Self> {
+    let email = email.trim().to_lowercase();
+
+    let mut validator = validator!();
+
+    if validator.validate_presence(Input::Email, &email)
+        && validator.validate_length(Input::Email, &email, Some(5), Some(256))
+        && validator.validate_format(Input::Email, &email, &REGEX_EMAIL)
+    {
+        let email_exists = query!(
+            "SELECT id FROM users WHERE id != $1 AND LOWER(email) = $2 LIMIT 1",
+            self.id, // $1
+            email,   // $2
+        )
+        .fetch_one(&core_context.db_pool)
+        .await
+        .is_ok();
+        validator.custom_validation(Input::Email, InputError::AlreadyInUse, &|| !email_exists);
+    }
+
+    if validator.validate_presence(Input::Password, password) {
+        validator.custom_validation(Input::Password, InputError::IsInvalid, &|| {
+            self.verify_password(password)
+        });
+    }
+
+    if !validator.is_valid {
+        return Err(validator.errors);
+    }
+
+    if self.email == email {
+        return Ok(self.clone());
+    }
+
+    let result = query_as!(
+        Self,
+        r#"UPDATE users SET email = $2::text, email_confirmed_at = NULL WHERE disabled_at IS NULL AND id = $1
+        RETURNING
+            id,
+            username,
+            email,
+            email_confirmed_at,
+            encrypted_password,
+            display_name,
+            full_name,
+            birthdate,
+            language_code,
+            country_alpha2,
+            bio,
+            hashtag_ids,
+            avatar_image_blob_id,
+            role as "role!: UserRole",
+            disabled_at,
+            created_at,
+            updated_at"#,
+        self.id, // $1
+        email,   // $2
+    )
+    .fetch_one(&core_context.db_pool)
+    .await;
+
+    match result {
+        Ok(user) => {
+            user.cache_remove().await;
+
+            Ok(user)
+        }
+        Err(_) => Err(ValidationErrors::default()),
+    }
+}
+
+#[cfg(feature = "update-user-password")]
+pub async fn update_user_password(
+    core_context: &CoreContext,
+    user: &User,
+    current_password: &str,
+    new_password: &str,
+) -> MutResult<User> {
+    let mut validator = Validator::default();
+
+    if validator.validate_presence(Input::CurrentPassword, current_password) {
+        validator.custom_validation(Input::CurrentPassword, InputError::IsInvalid, &|| {
+            self.verify_password(current_password)
+        });
+    }
+
+    validator.validate_password(Input::NewPassword, new_password);
+
+    if !validator.is_valid {
+        return Err(validator.errors);
+    }
+
+    if self.verify_password(new_password) {
+        return Ok(self.clone());
+    }
+
+    let encrypted_password = encrypt_password(new_password);
+
+    let result = query_as!(
+        Self,
+        r#"UPDATE users SET encrypted_password = $2 WHERE disabled_at IS NULL AND id = $1 RETURNING
+            id,
+            username,
+            email,
+            email_confirmed_at,
+            encrypted_password,
+            display_name,
+            full_name,
+            birthdate,
+            language_code,
+            country_alpha2,
+            bio,
+            hashtag_ids,
+            avatar_image_blob_id,
+            role as "role!: UserRole",
+            disabled_at,
+            created_at,
+            updated_at"#,
+        self.id,            // $1
+        encrypted_password, // $2
+    )
+    .fetch_one(&core_context.db_pool)
+    .await;
+
+    match result {
+        Ok(user) => {
+            user.cache_remove().await;
+
+            Ok(user)
+        }
+        Err(_) => Err(ValidationErrors::default()),
+    }
+}
+
+#[cfg(feature = "update-user-role")]
+pub async fn update_user_role(
+    core_context: &CoreContext,
+    user: &User,
+    role: UserRole,
+) -> crate::utils::MutResult<User> {
+    if role == UserRole::Superuser {
+        let _ = sqlx::query!(
+            r#"UPDATE users SET role = 'admin' WHERE role = 'superuser' AND id != $1"#,
+            user.id
+        )
+        .execute(&core_context.db_pool)
+        .await;
+    }
+
+    let result = sqlx::query_as!(
+        User,
+        r#"UPDATE users SET role = $2 WHERE id = $1 RETURNING
+                id,
+                username,
+                email,
+                email_confirmed_at,
+                encrypted_password,
+                display_name,
+                full_name,
+                birthdate,
+                language_code,
+                country_alpha2,
+                bio,
+                hashtag_ids,
+                avatar_image_blob_id,
+                role as "role!: UserRole",
+                disabled_at,
+                created_at,
+                updated_at"#,
+        user.id,          // $1
+        role as UserRole, // $2
+    )
+    .fetch_one(&core_context.db_pool)
+    .await;
+
+    match result {
+        Ok(user) => {
+            clear_user_cache(&user).await;
+
+            crate::mut_success!(user)
+        }
+        Err(_) => crate::mut_error!(),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::test_utils::{fake_username, fake_uuid, insert_test_user, setup_core_context};
+
+    use super::{
+        disable_user, get_user_by_id, get_user_by_username, get_user_by_username_or_email, update_user_role, UserRole,
+    };
+
+    #[tokio::test]
+    async fn should_disable_user() {
+        let core_context = setup_core_context().await;
+        let user = insert_test_user(&core_context).await;
+
+        let result = disable_user(&core_context, &user).await;
+
+        assert!(result.is_ok());
+    }
+
+    #[tokio::test]
+    async fn should_get_by_id() {
+        let core_context = setup_core_context().await;
+        let user = insert_test_user(&core_context).await;
+
+        let result = get_user_by_id(&core_context, user.id).await;
+
+        assert!(result.is_ok());
+    }
+
+    #[tokio::test]
+    async fn should_not_get_by_id_when_is_invalid() {
+        let core_context = setup_core_context().await;
+        let id = fake_uuid();
+
+        let result = get_user_by_id(&core_context, id).await;
+
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn should_get_by_username() {
+        let core_context = setup_core_context().await;
+        let user = insert_test_user(&core_context).await;
+
+        let result = get_user_by_username(&core_context, &user.username).await;
+
+        assert!(result.is_ok());
+    }
+
+    #[tokio::test]
+    async fn should_not_get_by_username_when_is_invalid() {
+        let core_context = setup_core_context().await;
+        let username = fake_username();
+
+        let result = get_user_by_username(&core_context, &username).await;
+
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn should_get_by_username_or_email() {
+        let core_context = setup_core_context().await;
+        let user = insert_test_user(&core_context).await;
+
+        let result = get_user_by_username_or_email(&core_context, &user.username).await;
+
+        assert!(result.is_ok());
+    }
+
+    #[tokio::test]
+    async fn should_not_get_by_email_when_is_unverified() {
+        let core_context = setup_core_context().await;
+        let user = insert_test_user(&core_context).await;
+
+        let result = get_user_by_username_or_email(&core_context, &user.email).await;
+
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn should_update_user_role() {
+        let core_context = setup_core_context().await;
+        let user = insert_test_user(&core_context).await;
+
+        let result = update_user_role(&core_context, &user, UserRole::Admin).await;
+
+        assert!(result.is_ok());
+
+        let user = result.unwrap();
+
+        assert_eq!(user.role, UserRole::Admin);
     }
 }

@@ -1,10 +1,8 @@
 use clap::{value_parser, Arg, Command};
 
-use mango3_core::commands::InvitationCodeInsert;
+use mango3_core::commands::{disable_user, get_user_by_username, insert_invitation_code, update_user_role};
 use mango3_core::config::load_config;
-use mango3_core::models::User;
 use mango3_core::CoreContext;
-use mango3_utils::models::InvitationCode;
 
 const ARG_EMAIL: &str = "Email";
 const ARG_ROLE: &str = "role";
@@ -55,10 +53,10 @@ async fn main() {
             let username = matches
                 .get_one::<String>(ARG_USERNAME)
                 .expect("argument username is missing");
-            let user = User::get_by_username(&core_context, username)
+            let user = get_user_by_username(&core_context, username)
                 .await
                 .expect("could not get user");
-            let result = user.disable(&core_context).await;
+            let result = disable_user(&core_context, &user).await;
 
             match result {
                 Ok(_) => {
@@ -69,7 +67,7 @@ async fn main() {
         }
         Some((COMMAND_NEW_INVITATION_CODE, matches)) => {
             let email = matches.get_one::<String>(ARG_EMAIL).expect("argument email is missing");
-            let result = InvitationCode::insert(&core_context, email).await;
+            let result = insert_invitation_code(&core_context, email).await;
 
             match result {
                 Ok(_) => {
@@ -83,10 +81,10 @@ async fn main() {
                 .get_one::<String>(ARG_USERNAME)
                 .expect("Argument username is missing");
             let role = matches.get_one::<String>(ARG_ROLE).expect("Role is missing").into();
-            let user = User::get_by_username(&core_context, username)
+            let user = get_user_by_username(&core_context, username)
                 .await
                 .expect("Could not get user");
-            let result = user.update_role(&core_context, role).await;
+            let result = update_user_role(&core_context, &user, role).await;
 
             match result {
                 Ok(_) => {

@@ -1,20 +1,8 @@
-use std::fmt::Display;
-
 use argon2::password_hash::rand_core::OsRng;
 use argon2::password_hash::SaltString;
 use argon2::{Argon2, PasswordHash, PasswordHasher, PasswordVerifier};
-use cached::AsyncRedisCache;
-use rand::distr::Alphanumeric;
-use rand::{rng, Rng};
 use rust_iso3166::CountryCode;
-use serde::de::DeserializeOwned;
-use serde::Serialize;
 use sqlx::types::chrono::NaiveDate;
-
-#[cfg(feature = "cache_remove")]
-use cached::async_sync::OnceCell;
-#[cfg(feature = "cache_remove")]
-use cached::IOCachedAsync;
 
 #[cfg(feature = "blob")]
 mod blob;
@@ -35,6 +23,9 @@ mod user_session;
 #[cfg(feature = "website")]
 mod website;
 
+#[cfg(feature = "clear-user-cache")]
+pub(crate) use user::{USER_BIO_HTML, USER_BIO_PREVIEW_HTML};
+
 #[cfg(feature = "blob")]
 pub use blob::Blob;
 #[cfg(feature = "confirmation-code")]
@@ -54,41 +45,6 @@ pub use user_session::UserSession;
 #[cfg(feature = "website")]
 pub use website::Website;
 
-use crate::config::CACHE_CONFIG;
-
-#[cfg(feature = "cache_remove")]
-pub(crate) trait AsyncRedisCacheTrait<K> {
-    async fn cache_remove(&self, prefix: &str, key: &K);
-}
-
-#[cfg(feature = "cache_remove")]
-impl<K, V> AsyncRedisCacheTrait<K> for OnceCell<AsyncRedisCache<K, V>>
-where
-    K: Display + Send + Sync,
-    V: DeserializeOwned + Display + Send + Serialize + Sync,
-{
-    async fn cache_remove(&self, prefix: &str, key: &K) {
-        let _ = self
-            .get_or_init(|| async { async_redis_cache(prefix).await })
-            .await
-            .cache_remove(key)
-            .await;
-    }
-}
-
-pub(crate) async fn async_redis_cache<K, V>(prefix: &str) -> AsyncRedisCache<K, V>
-where
-    K: Display + Send + Sync,
-    V: DeserializeOwned + Display + Send + Serialize + Sync,
-{
-    AsyncRedisCache::new(format!("{prefix}:"), CACHE_CONFIG.ttl)
-        .set_connection_string(&CACHE_CONFIG.redis_url)
-        .set_refresh(true)
-        .build()
-        .await
-        .expect("Could not get redis cache")
-}
-
 fn encrypt_password(password: &str) -> String {
     let salt = SaltString::generate(&mut OsRng);
     let argon2 = Argon2::default();
@@ -97,14 +53,6 @@ fn encrypt_password(password: &str) -> String {
 
 fn find_country(query: &str) -> Option<&CountryCode> {
     rust_iso3166::ALL.iter().find(|c| c.alpha2 == query || c.name == query)
-}
-
-pub fn generate_random_string(length: u8) -> String {
-    rng()
-        .sample_iter(&Alphanumeric)
-        .take(length as usize)
-        .map(char::from)
-        .collect()
 }
 
 fn parse_date(value: &str) -> Option<NaiveDate> {

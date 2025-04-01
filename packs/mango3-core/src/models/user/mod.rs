@@ -7,44 +7,13 @@ use sqlx::types::Uuid;
 use url::Url;
 
 use crate::config::BASIC_CONFIG;
-use crate::enums::{Input, InputError, UserRole};
-use crate::locales::I18n;
-use crate::validator::{Validator, ValidatorTrait};
+use crate::enums::UserRole;
 use crate::CoreContext;
-
-#[cfg(feature = "user_cache_remove")]
-use crate::constants::{
-    PREFIX_GET_USER_BY_ID, PREFIX_GET_USER_BY_USERNAME, PREFIX_GET_USER_BY_USERNAME_OR_EMAIL, PREFIX_USER_BIO_HTML,
-    PREFIX_USER_BIO_PREVIEW_HTML,
-};
 
 use super::{Blob, Hashtag, Website};
 
-#[cfg(feature = "user_cache_remove")]
-use super::AsyncRedisCacheTrait;
-
 mod user_all;
-mod user_email;
-mod user_get;
-mod user_insert;
-mod user_login;
 mod user_password;
-
-#[cfg(any(feature = "user_bio_html", feature = "user_bio_preview_html"))]
-mod user_bio;
-#[cfg(feature = "user_cache_remove")]
-mod user_disable;
-#[cfg(feature = "user_paginate")]
-mod user_paginate;
-#[cfg(feature = "user_profile")]
-mod user_profile;
-#[cfg(feature = "user_cache_remove")]
-mod user_role;
-
-#[cfg(feature = "user_cache_remove")]
-use user_bio::{USER_BIO_HTML, USER_BIO_PREVIEW_HTML};
-#[cfg(feature = "user_cache_remove")]
-use user_get::{GET_USER_BY_ID, GET_USER_BY_USERNAME, GET_USER_BY_USERNAME_OR_EMAIL};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct User {
@@ -52,7 +21,7 @@ pub struct User {
     pub username: String,
     pub email: String,
     pub email_confirmed_at: Option<DateTime<Utc>>,
-    encrypted_password: String,
+    pub(crate) encrypted_password: String,
     pub display_name: String,
     pub full_name: String,
     pub birthdate: NaiveDate,
@@ -76,24 +45,20 @@ impl Display for User {
 impl User {
     pub async fn avatar_image_blob(&self, core_context: &CoreContext) -> Option<sqlx::Result<Blob>> {
         if let Some(id) = self.avatar_image_blob_id {
-            Some(crate::get_blob_by_id!(core_context, id, None, Some(self)).await)
+            Some(crate::commands::get_blob_by_id(core_context, id, None, Some(self)).await)
         } else {
             None
         }
     }
 
-    #[cfg(feature = "user_cache_remove")]
-    async fn cache_remove(&self) {
-        let email = self.email.to_lowercase();
-        let username = self.username.to_lowercase();
-        futures::join!(
-            USER_BIO_HTML.cache_remove(PREFIX_USER_BIO_HTML, &self.id),
-            USER_BIO_PREVIEW_HTML.cache_remove(PREFIX_USER_BIO_PREVIEW_HTML, &self.id),
-            GET_USER_BY_ID.cache_remove(PREFIX_GET_USER_BY_ID, &self.id),
-            GET_USER_BY_USERNAME.cache_remove(PREFIX_GET_USER_BY_USERNAME, &username),
-            GET_USER_BY_USERNAME_OR_EMAIL.cache_remove(PREFIX_GET_USER_BY_USERNAME_OR_EMAIL, &username),
-            GET_USER_BY_USERNAME_OR_EMAIL.cache_remove(PREFIX_GET_USER_BY_USERNAME_OR_EMAIL, &email),
-        );
+    #[cfg(feature = "user-bio-html")]
+    pub async fn bio_html(&self) -> String {
+        user_bio_html(self).await.unwrap_or_default()
+    }
+
+    #[cfg(feature = "user-bio-preview-html")]
+    pub async fn bio_preview_html(&self) -> String {
+        user_bio_preview_html(self).await.unwrap_or_default()
     }
 
     pub async fn can_insert_website(&self, core_context: &CoreContext) -> bool {
@@ -108,12 +73,18 @@ impl User {
         rust_iso3166::from_alpha2(&self.country_alpha2).unwrap()
     }
 
-    pub async fn hashtags(&self, core_context: &CoreContext) -> Vec<Hashtag> {
-        crate::all_hashtags_by_ids!(core_context, &self.hashtag_ids).await
+    #[cfg(feature = "user-email-is-confirmed")]
+    pub fn email_is_confirmed(&self) -> bool {
+        self.email_confirmed_at.is_some()
     }
 
-    pub fn i18n(&self) -> I18n {
-        I18n::from(self.language_code.as_str())
+    pub async fn hashtags(&self, core_context: &CoreContext) -> Vec<Hashtag> {
+        crate::commands::all_hashtags_by_ids(core_context, &self.hashtag_ids).await
+    }
+
+    #[cfg(feature = "user-i18n")]
+    pub fn i18n(&self) -> crate::utils::I18n {
+        crate::utils::I18n::from(self.language_code.as_str())
     }
 
     pub fn initials(&self) -> String {
@@ -137,24 +108,32 @@ impl User {
     }
 }
 
-impl Validator {
-    fn validate_full_name(&mut self, value: &str) -> bool {
-        self.validate_presence(Input::FullName, value)
-            && self.validate_length(Input::FullName, value, Some(2), Some(256))
-    }
+#[cfg(feature = "user-bio-html")]
+#[cached::proc_macro::io_cached(
+    map_error = r##"|err| err"##,
+    convert = r#"{ user.id }"#,
+    ty = "cached::AsyncRedisCache<Uuid, String>",
+    create = r##" { crate::async_redis_cache!(crate::constants::PREFIX_USER_BIO_HTML).await } "##
+)]
+pub(crate) async fn user_bio_html(user: &User) -> Result<String, cached::RedisCacheError> {
+    Ok(crate::parse_html!(&user.bio, true))
+}
 
-    fn validate_birthdate(&mut self, value: Option<NaiveDate>) -> bool {
-        self.validate_presence(Input::Birthdate, value)
-            && self.custom_validation(Input::Birthdate, InputError::IsInvalid, &|| {
-                value.unwrap() <= Utc::now().date_naive()
-            })
-    }
-
-    fn validate_country(&mut self, value: Option<&CountryCode>) -> bool {
-        self.validate_presence(Input::CountryAlpha2, value)
-    }
-
-    fn validate_password(&mut self, input: Input, value: &str) -> bool {
-        self.validate_presence(input.clone(), value) && self.validate_length(input, value, Some(6), Some(128))
-    }
+#[cfg(feature = "user-bio-preview-html")]
+#[cached::proc_macro::io_cached(
+    map_error = r##"|err| err"##,
+    convert = r#"{ user.id }"#,
+    ty = "cached::AsyncRedisCache<Uuid, String>",
+    create = r##" { crate::async_redis_cache!(crate::constants::PREFIX_USER_BIO_PREVIEW_HTML).await } "##
+)]
+pub(crate) async fn user_bio_preview_html(user: &User) -> Result<String, cached::RedisCacheError> {
+    Ok(crate::parse_html!(
+        &user
+            .bio
+            .lines()
+            .next()
+            .map(|line| line.get(..256).unwrap_or(line).trim().to_owned())
+            .unwrap_or_default(),
+        false
+    ))
 }

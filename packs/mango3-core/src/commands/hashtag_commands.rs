@@ -91,13 +91,15 @@ async fn get_or_insert_many_hashtags(core_context: &CoreContext, content: &str) 
         return Ok(vec![]);
     }
 
-    Ok(
-        future::join_all(hashtag_names.iter().map(|name| Self::get_or_insert(core_context, name)))
-            .await
+    Ok(future::join_all(
+        hashtag_names
             .iter()
-            .filter_map(|hashtag| hashtag.as_ref().ok().cloned())
-            .collect(),
+            .map(|name| get_or_insert_hashtag(core_context, name)),
     )
+    .await
+    .iter()
+    .filter_map(|hashtag| hashtag.as_ref().ok().cloned())
+    .collect())
 }
 
 #[cfg(test)]

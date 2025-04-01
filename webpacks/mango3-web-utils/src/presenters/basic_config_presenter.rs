@@ -53,13 +53,13 @@ impl Default for BasicConfigPresenter {
 impl From<BasicConfig> for BasicConfigPresenter {
     fn from(basic_config: BasicConfig) -> Self {
         Self {
-            about_url: basic_config.about_url,
-            assets_url: basic_config.assets_url(),
+            about_url: basic_config.about_url.clone(),
+            assets_url: basic_config.assets_url().clone(),
             copyright: basic_config.copyright.clone(),
             description: basic_config.description.clone(),
-            domain: basic_config.domain,
+            domain: basic_config.domain.clone(),
             enable_register: basic_config.enable_register,
-            home_url: basic_config.home_url(),
+            home_url: basic_config.home_url().clone(),
             login_url: basic_config.login_url(),
             my_account_url: basic_config.my_account_url(),
             new_website_url: basic_config.new_website_url(),

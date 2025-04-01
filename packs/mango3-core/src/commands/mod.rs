@@ -18,32 +18,47 @@ mod hashtag_commands;
     feature = "delete-invitation-code",
     feature = "get-invitation-code",
     feature = "get-invitation-code-by-id",
+    feature = "insert-invitation-code",
 ))]
 mod invitation_code_commands;
 #[cfg(any(
     feature = "all-navigation-items-by-website",
     feature = "get-navigation-item-by-id",
-    feature = "save-all-navigation-items"
+    feature = "insert-or-update-many-navigation-items"
 ))]
 mod navigation_item_commands;
-#[cfg(feature = "paginate-posts")]
+#[cfg(any(feature = "get-post-by-id", feature = "paginate-posts"))]
 mod post_commands;
+#[cfg(feature = "get-post-comments-count")]
+mod post_comment_commands;
 #[cfg(any(
     feature = "delete-post-reaction",
     feature = "get-post-reaction-emojis-count",
     feature = "get-post-reaction-by-post-and-user",
-    feature = "post-reactions-count",
-    feature = "save-post-reaction"
+    feature = "get-post-reactions-count",
+    feature = "insert-or-update-post-reaction"
 ))]
 mod post_reaction_commands;
-#[cfg(feature = "post_reaction_insert")]
-mod post_reaction_insert;
-#[cfg(any(feature = "post-views-count", feature = "save-post-view"))]
+#[cfg(any(feature = "get-post-views-count", feature = "get-or-insert-post-view"))]
 mod post_view_commands;
-#[cfg(feature = "insert-user")]
+#[cfg(any(
+    feature = "clear-user-cache",
+    feature = "disable-user",
+    feature = "get-user-by-id",
+    feature = "get-user-by-username",
+    feature = "insert-user",
+    feature = "update-user-role"
+))]
 mod user_commands;
-#[cfg(feature = "all-user-sessions-by-user")]
+#[cfg(any(
+    feature = "all-user-sessions-by-user",
+    feature = "delete-user-session",
+    feature = "delete-all-user-sessions",
+    feature = "get-user-session-by-id"
+))]
 mod user_session_commands;
+#[cfg(any(feature = "clear-website-cache", feature = "get-website-by-id"))]
+mod website_commands;
 
 #[cfg(feature = "all-blobs-by-ids")]
 pub use blob_commands::all_blobs_by_ids;
@@ -71,14 +86,18 @@ pub use invitation_code_commands::delete_invitation_code;
 pub use invitation_code_commands::get_invitation_code;
 #[cfg(feature = "get-invitation-code-by-id")]
 pub use invitation_code_commands::get_invitation_code_by_id;
+#[cfg(feature = "insert-invitation-code")]
+pub use invitation_code_commands::insert_invitation_code;
 #[cfg(feature = "all-navigation-items-by-website")]
 pub use navigation_item_commands::all_navigation_items_by_website;
 #[cfg(feature = "get-navigation-item-by-id")]
 pub use navigation_item_commands::get_navigation_item_by_id;
-#[cfg(feature = "save-all-navigation-items")]
-pub use navigation_item_commands::save_all_navigation_items;
+#[cfg(feature = "insert-or-update-many-navigation-items")]
+pub use navigation_item_commands::insert_or_update_many_navigation_items;
 #[cfg(feature = "paginate-posts")]
 pub use post_commands::paginate_posts;
+#[cfg(feature = "get-post-comments-count")]
+pub use post_comment_commands::get_post_comments_count;
 #[cfg(feature = "delete-post-reaction")]
 pub use post_reaction_commands::delete_post_reaction;
 #[cfg(feature = "get-post-reaction-by-post-and-user")]
@@ -87,15 +106,33 @@ pub use post_reaction_commands::get_post_reaction_by_post_and_user;
 pub use post_reaction_commands::get_post_reaction_emojis_count;
 #[cfg(feature = "get-post-reactions-count")]
 pub use post_reaction_commands::get_post_reactions_count;
-#[cfg(feature = "save-post-reaction")]
-pub use post_reaction_commands::save_post_reaction;
+#[cfg(feature = "insert-or-update-post-reaction")]
+pub use post_reaction_commands::insert_or_update_post_reaction;
+#[cfg(feature = "get-or-insert-post-view")]
+pub use post_view_commands::get_or_insert_post_view;
 #[cfg(feature = "get-post-views-count")]
 pub use post_view_commands::get_post_views_count;
-#[cfg(feature = "save-post-view")]
-pub use post_view_commands::save_post_view;
-#[cfg(feature = "post_view_insert")]
-pub use post_view_insert::PostViewInsert;
+#[cfg(feature = "clear-user-cache")]
+pub use user_commands::clear_user_cache;
+#[cfg(feature = "disable-user")]
+pub use user_commands::disable_user;
+#[cfg(feature = "get-user-by-id")]
+pub use user_commands::get_user_by_id;
+#[cfg(feature = "get-user-by-username")]
+pub use user_commands::get_user_by_username;
 #[cfg(feature = "insert-user")]
 pub use user_commands::insert_user;
+#[cfg(feature = "update-user-role")]
+pub use user_commands::update_user_role;
 #[cfg(feature = "all-user-sessions-by-user")]
 pub use user_session_commands::all_user_sessions_by_user;
+#[cfg(feature = "delete-all-user-sessions")]
+pub use user_session_commands::delete_all_user_sessions;
+#[cfg(feature = "delete-user-session")]
+pub use user_session_commands::delete_user_session;
+#[cfg(feature = "get-user-session-by-id")]
+pub use user_session_commands::get_user_session_by_id;
+#[cfg(feature = "clear-website-cache")]
+pub use website_commands::clear_website_cache;
+#[cfg(feature = "get-website-by-id")]
+pub use website_commands::get_website_by_id;

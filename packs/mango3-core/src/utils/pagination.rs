@@ -4,6 +4,7 @@ use uuid::Uuid;
 
 use crate::CoreContext;
 
+#[macro_export]
 macro_rules! cursor_page {
     ($($tt:tt)*) => {
         $crate::utils::cursor_page($($tt)*)

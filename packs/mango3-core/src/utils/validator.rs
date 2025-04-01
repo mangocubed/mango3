@@ -6,6 +6,7 @@ use crate::enums::{Input, InputError};
 
 use super::I18n;
 
+#[macro_export]
 macro_rules! validator {
     () => {
         $crate::utils::Validator::default()

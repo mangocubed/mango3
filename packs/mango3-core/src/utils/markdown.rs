@@ -5,6 +5,13 @@ use regex::Captures;
 use crate::constants::{BLACKLISTED_HASHTAGS, REGEX_FIND_HASHTAGS};
 use crate::hashtag_has_lookaround;
 
+#[macro_export]
+macro_rules! parse_html {
+    ($input:expr, $enable_links:expr) => {
+        $crate::utils::parse_html($input, $enable_links)
+    };
+}
+
 pub fn parse_html(input: &str, enable_links: bool) -> String {
     let mut options = Options::empty();
 

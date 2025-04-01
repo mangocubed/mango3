@@ -9,40 +9,7 @@ use url::Url;
 use crate::config::BASIC_CONFIG;
 use crate::CoreContext;
 
-use crate::constants::{
-    PREFIX_GET_WEBSITE_BY_ID, PREFIX_GET_WEBSITE_BY_SUBDOMAIN, PREFIX_WEBSITE_DESCRIPTION_HTML,
-    PREFIX_WEBSITE_DESCRIPTION_PREVIEW_HTML,
-};
-#[cfg(feature = "website_write")]
-use crate::enums::{Input, InputError};
-#[cfg(feature = "website_write")]
-use crate::validator::{Validator, ValidatorTrait};
-
 use super::{Blob, Hashtag, User};
-
-#[cfg(feature = "website_cache_remove")]
-use super::AsyncRedisCacheTrait;
-
-mod website_description;
-mod website_get;
-
-#[cfg(feature = "website_write")]
-mod website_delete;
-#[cfg(feature = "website_write")]
-mod website_insert;
-#[cfg(feature = "website_paginate")]
-mod website_paginate;
-#[cfg(feature = "website_search")]
-mod website_search;
-#[cfg(feature = "website_storage")]
-mod website_storage;
-#[cfg(feature = "website_write")]
-mod website_update;
-
-#[cfg(feature = "website_cache_remove")]
-use website_description::{WEBSITE_DESCRIPTION_HTML, WEBSITE_DESCRIPTION_PREVIEW_HTML};
-#[cfg(feature = "website_cache_remove")]
-use website_get::{GET_WEBSITE_BY_ID, GET_WEBSITE_BY_SUBDOMAIN};
 
 #[derive(Clone, Deserialize, Serialize)]
 pub struct Website {
@@ -70,17 +37,6 @@ impl Display for Website {
 }
 
 impl Website {
-    #[cfg(feature = "website_cache_remove")]
-    async fn cache_remove(&self) {
-        future::join4(
-            WEBSITE_DESCRIPTION_HTML.cache_remove(PREFIX_WEBSITE_DESCRIPTION_HTML, &self.id),
-            WEBSITE_DESCRIPTION_PREVIEW_HTML.cache_remove(PREFIX_WEBSITE_DESCRIPTION_PREVIEW_HTML, &self.id),
-            GET_WEBSITE_BY_ID.cache_remove(PREFIX_GET_WEBSITE_BY_ID, &self.id),
-            GET_WEBSITE_BY_SUBDOMAIN.cache_remove(PREFIX_GET_WEBSITE_BY_SUBDOMAIN, &self.subdomain.to_lowercase()),
-        )
-        .await;
-    }
-
     pub async fn count(core_context: &CoreContext, user: Option<&User>) -> sqlx::Result<i64> {
         let user_id = user.map(|u| u.id);
 
@@ -101,6 +57,15 @@ impl Website {
         }
     }
 
+    #[cfg(feature = "website-description-html")]
+    pub async fn description_html(&self) -> String {
+        website_description_html(self).await.unwrap_or_default()
+    }
+
+    pub async fn description_preview_html(&self) -> String {
+        website_description_preview_html(self).await.unwrap_or_default()
+    }
+
     pub async fn hashtags(&self, core_context: &CoreContext) -> Vec<Hashtag> {
         crate::commands::all_hashtags_by_ids(core_context, &self.hashtag_ids).await
     }
@@ -109,7 +74,6 @@ impl Website {
         self.url().host().unwrap().to_string()
     }
 
-    #[cfg(feature = "get-blob-by-id")]
     pub async fn icon_image_blob(&self, core_context: &CoreContext) -> Option<sqlx::Result<Blob>> {
         if let Some(id) = self.icon_image_blob_id {
             Some(crate::commands::get_blob_by_id(core_context, id, None, None).await)
@@ -139,29 +103,31 @@ impl Website {
     }
 }
 
-#[cfg(feature = "website_write")]
-impl Validator {
-    async fn validate_name(&mut self, core_context: &CoreContext, website: Option<&Website>, value: &str) -> bool {
-        if self.validate_presence(Input::Name, value)
-            && self.validate_length(Input::Name, value, Some(3), Some(256))
-            && self.custom_validation(Input::Name, InputError::IsInvalid, &|| Uuid::try_parse(value).is_err())
-        {
-            let id = website.map(|w| w.id);
-            let name_exists = query!(
-                "SELECT id FROM websites WHERE ($1::uuid IS NULL OR id != $1) AND LOWER(name) = $2 LIMIT 1",
-                id,                   // $1
-                value.to_lowercase()  // $2
-            )
-            .fetch_one(&core_context.db_pool)
-            .await
-            .is_ok();
-            self.custom_validation(Input::Name, InputError::AlreadyInUse, &|| !name_exists)
-        } else {
-            false
-        }
-    }
+#[cfg(feature = "website-description-html")]
+#[cached::proc_macro::io_cached(
+    map_error = r##"|err| err"##,
+    convert = r#"{ website.id }"#,
+    ty = "cached::AsyncRedisCache<Uuid, String>",
+    create = r##" { crate::async_redis_cache!(crate::constants::PREFIX_WEBSITE_DESCRIPTION_HTML).await } "##
+)]
+pub(crate) async fn website_description_html(website: &Website) -> Result<String, cached::RedisCacheError> {
+    Ok(crate::parse_html!(&website.description, true))
+}
 
-    fn validate_description(&mut self, value: &str) -> bool {
-        self.validate_length(Input::Description, value, None, Some(1024))
-    }
+#[cached::proc_macro::io_cached(
+    map_error = r##"|err| err"##,
+    convert = r#"{ website.id }"#,
+    ty = "cached::AsyncRedisCache<Uuid, String>",
+    create = r##" { crate::async_redis_cache!(crate::constants::PREFIX_WEBSITE_DESCRIPTION_PREVIEW_HTML).await } "##
+)]
+pub(crate) async fn website_description_preview_html(website: &Website) -> Result<String, cached::RedisCacheError> {
+    Ok(crate::parse_html!(
+        &website
+            .description
+            .lines()
+            .next()
+            .map(|line| line.get(..256).unwrap_or(line).trim().to_owned())
+            .unwrap_or_default(),
+        false
+    ))
 }
