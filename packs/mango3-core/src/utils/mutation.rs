@@ -1,7 +1,7 @@
 use super::ValidationErrors;
 
 #[macro_export]
-macro_rules! mut_success_result {
+macro_rules! mut_success {
     () => {
         Ok(crate::utils::MutSuccess {
             data: (),
@@ -23,7 +23,7 @@ macro_rules! mut_success_result {
 }
 
 #[macro_export]
-macro_rules! mut_error_result {
+macro_rules! mut_error {
     () => {
         Err(crate::utils::MutError {
             errors: crate::utils::ValidationErrors::default(),

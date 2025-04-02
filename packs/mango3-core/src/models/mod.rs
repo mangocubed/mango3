@@ -58,16 +58,3 @@ fn find_country(query: &str) -> Option<&CountryCode> {
 fn parse_date(value: &str) -> Option<NaiveDate> {
     NaiveDate::parse_from_str(value, "%Y-%m-%d").ok()
 }
-
-fn verify_password(password: &str, encrypted_password: &str) -> bool {
-    let argon2 = Argon2::default();
-    let password_hash = PasswordHash::new(encrypted_password);
-
-    if password_hash.is_err() {
-        return false;
-    }
-
-    let password_hash = password_hash.unwrap();
-
-    argon2.verify_password(password.as_bytes(), &password_hash).is_ok()
-}

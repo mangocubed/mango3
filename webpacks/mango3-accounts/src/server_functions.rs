@@ -3,10 +3,8 @@ use leptos::prelude::*;
 #[cfg(feature = "ssr")]
 use uuid::Uuid;
 
-use mango3_web_utils::models::FormResp;
+use mango3_web_utils::presenters::MutPresenter;
 
-#[cfg(feature = "ssr")]
-use mango3_core::commands::{InvitationCodeDelete, InvitationCodeGet, UserSessionInsert};
 #[cfg(feature = "ssr")]
 use mango3_core::config::BASIC_CONFIG;
 #[cfg(feature = "ssr")]
@@ -22,22 +20,21 @@ use mango3_web_utils::ssr::{
 };
 
 #[server]
-pub async fn attempt_to_confirm_login(code: String) -> Result<FormResp, ServerFnError> {
+pub async fn attempt_to_confirm_login(code: String) -> Result<MutPresenter, ServerFnError> {
     let i18n = extract_i18n().await?;
 
     if !require_no_authentication().await? {
-        return FormResp::new_with_error(&i18n);
+        return mango3_web_utils::mut_presenter_error_result!();
     };
 
     let Some(confirmation_code) = extract_confirmation_code().await? else {
-        return FormResp::new_with_error(&i18n);
+        return mango3_web_utils::mut_presenter_error_result!();
     };
 
     let core_context = expect_core_context();
     let user = confirmation_code.user(&core_context).await?;
 
-    let result = confirmation_code
-        .confirm(
+    let result = mango3_core::commands::confirm_confirmation_code(
             &core_context.clone(),
             ConfirmationCodeAction::LoginConfirmation,
             &code,
@@ -45,7 +42,7 @@ pub async fn attempt_to_confirm_login(code: String) -> Result<FormResp, ServerFn
                 let core_context = core_context.clone();
                 let user = user.clone();
                 async move {
-                    let result = UserSession::insert(&core_context, &user).await;
+                    let result = mango3_core::commands::insert_user_session(&core_context, &user).await;
 
                     match result {
                         Ok(ref user_session) => {
@@ -61,7 +58,7 @@ pub async fn attempt_to_confirm_login(code: String) -> Result<FormResp, ServerFn
         )
         .await;
 
-    FormResp::new(&i18n, result)
+    mango3_web_utils::mut_presenter_result!(result)
 }
 
 #[server]

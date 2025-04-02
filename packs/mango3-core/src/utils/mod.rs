@@ -51,3 +51,21 @@ pub(crate) fn generate_random_string(length: u8) -> String {
         .map(char::from)
         .collect()
 }
+
+#[cfg(feature = "verify-password")]
+pub(crate) fn verify_password(password: &str, encrypted_password: &str) -> bool {
+    use argon2::password_hash::rand_core::OsRng;
+    use argon2::password_hash::SaltString;
+    use argon2::{Argon2, PasswordHash, PasswordHasher, PasswordVerifier};
+
+    let argon2 = Argon2::default();
+    let password_hash = PasswordHash::new(encrypted_password);
+
+    if password_hash.is_err() {
+        return false;
+    }
+
+    let password_hash = password_hash.unwrap();
+
+    argon2.verify_password(password.as_bytes(), &password_hash).is_ok()
+}

@@ -13,7 +13,7 @@ use super::FromModel;
 
 #[cfg(feature = "ssr")]
 #[macro_export]
-macro_rules! mut_presenter_error_result {
+macro_rules! mut_presenter_error {
     () => {
         Ok($crate::presenters::MutPresenter::new_with_error())
     };
@@ -21,7 +21,7 @@ macro_rules! mut_presenter_error_result {
 
 #[cfg(feature = "ssr")]
 #[macro_export]
-macro_rules! mut_presenter_result {
+macro_rules! mut_presenter {
     ($core_context:expr, $i18n:expr, $result:expr) => {
         Ok($crate::presenters::MutPresenter::new($core_context, $i18n, $result).await)
     };
@@ -35,9 +35,7 @@ pub struct MutPresenter<T = ()> {
     pub message: Option<String>,
 }
 
-pub type MutPresenterResult<T = ()> = Result<MutPresenter<T>, ServerFnError>;
-
-pub type MutPresenterActionValue<T = ()> = RwSignal<Option<MutPresenterResult<T>>>;
+pub type MutPresenterActionValue<T = ()> = RwSignal<Option<Result<MutPresenter<T>, ServerFnError>>>;
 
 impl<T> MutPresenter<T> {
     pub fn error(&self, key: String) -> Option<String> {

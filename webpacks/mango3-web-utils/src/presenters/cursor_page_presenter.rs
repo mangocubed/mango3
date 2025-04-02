@@ -9,6 +9,14 @@ use mango3_core::CoreContext;
 #[cfg(feature = "ssr")]
 use super::FromModel;
 
+#[cfg(feature = "ssr")]
+#[macro_export]
+macro_rules! cursor_page_presenter {
+    ($core_context:expr, $page:expr) => {
+        Ok(CursorPagePresenter::new($core_context, $page).await)
+    };
+}
+
 #[derive(Clone, Deserialize, Serialize)]
 pub struct CursorPagePresenter<T> {
     pub end_cursor: Option<Uuid>,
@@ -27,17 +35,15 @@ impl<T> Default for CursorPagePresenter<T> {
 }
 
 #[cfg(feature = "ssr")]
-impl<M, P> FromModel<CursorPage<M>> for CursorPagePresenter<P>
-where
-    P: FromModel<M>,
-{
-    fn from_model(core_context: &CoreContext, page: &CursorPage<M>) -> impl std::future::Future<Output = Self> {
-        async {
-            Self {
-                end_cursor: page.end_cursor,
-                nodes: futures::future::join_all(page.nodes.iter().map(|node| P::from_model(core_context, node))).await,
-                has_next_page: page.has_next_page,
-            }
+impl<T> CursorPagePresenter<T> {
+    pub async fn new<M>(core_context: &CoreContext, page: &CursorPage<M>) -> Self
+    where
+        T: FromModel<M>,
+     {
+        Self {
+            end_cursor: page.end_cursor,
+            nodes: futures::future::join_all(page.nodes.iter().map(|node| T::from_model(core_context, node))).await,
+            has_next_page: page.has_next_page,
         }
     }
 }
