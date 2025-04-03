@@ -32,6 +32,36 @@ impl Validator {
     }
 }
 
+#[cfg(feature = "all-admin-users")]
+pub async fn all_admin_users(core_context: &CoreContext) -> Vec<User> {
+    sqlx::query_as!(
+        User,
+            r#"SELECT
+                id,
+                username,
+                email,
+                email_confirmed_at,
+                encrypted_password,
+                display_name,
+                full_name,
+                birthdate,
+                language_code,
+                country_alpha2,
+                bio,
+                hashtag_ids,
+                avatar_image_blob_id,
+                role as "role!: UserRole",
+                disabled_at,
+                created_at,
+                updated_at
+            FROM users WHERE role IN ('admin', 'superuser')"#,
+        )
+        .fetch_all(&core_context.db_pool)
+        .await
+        .unwrap_or_default()
+}
+
+
 #[cfg(feature = "authenticate-user")]
 pub async fn authenticate_user(core_context: &CoreContext, username_or_email: &str, password: &str) -> MutResult<User> {
     use crate::enums::Input;
@@ -668,6 +698,97 @@ pub async fn update_user_password(
         Err(_) => Err(ValidationErrors::default()),
     }
 }
+
+#[cfg(feature = "update-user-profile)]
+pub async fn update_user_profile(
+        core_context: &CoreContext,
+        user: &User,
+        display_name: &str,
+        full_name: &str,
+        birthdate: &str,
+        country_alpha2: &str,
+        bio: &str,
+        avatar_image_blob: Option<&Blob>,
+    ) -> Result<User, ValidationErrors> {
+        let mut validator = crate::validator!();
+
+        let display_name = display_name.trim();
+        let full_name = full_name.trim();
+        let birthdate = parse_date(birthdate);
+        let country = find_country(country_alpha2);
+        let bio = bio.trim();
+        let avatar_image_blob_id = avatar_image_blob.map(|blob| blob.id);
+
+        if validator.validate_presence(Input::DisplayName, display_name) {
+            validator.validate_length(Input::DisplayName, display_name, Some(2), Some(256));
+        }
+
+        validator.validate_full_name(full_name);
+
+        validator.validate_birthdate(birthdate);
+
+        validator.validate_country(country);
+
+        validator.validate_length(Input::Bio, bio, None, Some(1024));
+
+        if !validator.is_valid {
+            return crate::mut_error!(validator.errors);
+        }
+
+        let hashtags = get_or"_insert_many_hashtags(core_context, bio).await?;
+        let hashtag_ids = hashtags.iter().map(|hashtag| hashtag.id).collect::<Vec<Uuid>>();
+
+        let result = sqlx::query_as!(
+            User,
+            r#"UPDATE users
+            SET
+                display_name = $2,
+                full_name = $3,
+                birthdate = $4,
+                country_alpha2 = $5,
+                bio = $6,
+                hashtag_ids = $7,
+                avatar_image_blob_id = $8
+            WHERE disabled_at IS NULL AND id = $1 RETURNING
+                id,
+                username,
+                email,
+                email_confirmed_at,
+                encrypted_password,
+                display_name,
+                full_name,
+                birthdate,
+                language_code,
+                country_alpha2,
+                bio,
+                hashtag_ids,
+                avatar_image_blob_id,
+                role as "role!: UserRole",
+                disabled_at,
+                created_at,
+                updated_at"#,
+            self.id,                 // $1
+            display_name,            // $2
+            full_name,               // $3
+            birthdate,               // $4
+            country.unwrap().alpha2, // $5
+            bio,                     // $6
+            &hashtag_ids,            // $7
+            avatar_image_blob_id,    // $8
+        )
+        .fetch_one(&core_context.db_pool)
+        .await;
+
+        match result {
+            Ok(user) => {
+                clear_user_cache(user).await;
+
+                crate::mut_success!(user)
+            }
+            Err(_) => crate::mut_error!(),
+    }
+}
+
 
 #[cfg(feature = "update-user-role")]
 pub async fn update_user_role(core_context: &CoreContext, user: &User, role: UserRole) -> MutResult<User> {

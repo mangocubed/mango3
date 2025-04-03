@@ -68,6 +68,7 @@ mod post_view_commands;
 ))]
 mod user_commands;
 #[cfg(any(
+    feature = "all-admin-users",
     feature = "all-user-sessions-by-user",
     feature = "delete-user-session",
     feature = "delete-all-user-sessions",
@@ -148,6 +149,8 @@ pub use post_reaction_commands::insert_or_update_post_reaction;
 pub use post_view_commands::get_or_insert_post_view;
 #[cfg(feature = "get-post-views-count")]
 pub use post_view_commands::get_post_views_count;
+#[cfg(feature = "all-admin-users")]
+pub use user_commands::all_admin_users;
 #[cfg(feature = "authenticate-user")]
 pub use user_commands::authenticate_user;
 #[cfg(feature = "clear-user-cache")]
