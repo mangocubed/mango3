@@ -16,7 +16,7 @@ pub struct NavigationItem {
 }
 
 #[derive(Clone, Deserialize, Serialize)]
-pub struct NavigationItems(Vec<NavigationItem>);
+pub(crate) struct NavigationItems(Vec<NavigationItem>);
 
 impl Display for NavigationItems {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {

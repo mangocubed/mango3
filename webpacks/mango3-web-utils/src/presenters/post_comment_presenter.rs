@@ -1,10 +1,9 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 #[cfg(feature = "ssr")]
 use mango3_core::models::PostComment;
-#[cfg(feature = "ssr")]
-use mango3_core::CoreContext;
 
 use super::UserMinPresenter;
 
@@ -22,15 +21,10 @@ pub struct PostCommentPresenter {
 
 #[cfg(feature = "ssr")]
 impl FromModel<PostComment> for PostCommentPresenter {
-    fn from_model(
-        core_context: &CoreContext,
-        post_comment: &PostComment,
-    ) -> impl std::future::Future<Output = PostCommentPresenter> {
-        let user = UserPreviewPresenter::from_model(
-            core_context,
-            post_comment.user(&core_context).await.expect("Could not get user"),
-        )
-        .await;
+    async fn from_model(post_comment: &PostComment) -> PostCommentPresenter {
+        let core_context = crate::ssr::expect_core_context();
+        let user =
+            UserMinPresenter::from_model(&post_comment.user(&core_context).await.expect("Could not get user")).await;
 
         Self {
             id: post_comment.id,

@@ -24,11 +24,11 @@ pub async fn attempt_to_confirm_login(code: String) -> Result<MutPresenter, Serv
     };
 
     let core_context = expect_core_context();
-    let i18n = extract_i18n().await?;
     let user = confirmation_code.user(&core_context).await?;
 
     let result = mango3_core::commands::confirm_confirmation_code(
         &core_context.clone(),
+        &confirmation_code,
         ConfirmationCodeAction::LoginConfirmation,
         &code,
         || {
@@ -37,15 +37,12 @@ pub async fn attempt_to_confirm_login(code: String) -> Result<MutPresenter, Serv
             async move {
                 let result = mango3_core::commands::insert_user_session(&core_context, &user).await;
 
-                match result {
-                    Ok(ref user_session) => {
-                        let _ = start_user_session(&core_context, &user_session).await;
-                        let _ = finish_confirmation_code().await;
-
-                        Ok(())
-                    }
-                    Err(err) => Err(err),
+                if let Ok(ref success) = result {
+                    let _ = start_user_session(&core_context, &success.data).await;
+                    let _ = finish_confirmation_code().await;
                 }
+
+                result
             }
         },
     )
@@ -69,21 +66,21 @@ pub async fn attempt_to_login(
         return mango3_web_utils::mut_presenter_error!();
     };
 
-    if user.email_is_confirmed() {
-        let result = user.send_login_confirmation_code(&core_context).await;
+    if user.data.email_is_confirmed() {
+        let result = mango3_core::commands::send_user_login_confirmation_code(&core_context, &user.data).await;
 
         if let Ok(ref confirmation_code) = result {
-            let _ = start_confirmation_code(&confirmation_code).await;
+            let _ = start_confirmation_code(&confirmation_code.data).await;
 
-            return mango3_web_utils::mut_presenter!(Ok(false));
+            return mango3_web_utils::mut_presenter!(mango3_core::mut_success!(false));
         }
     } else {
-        let result = mango3_core::commands::insert_user_session(&core_context, &user).await;
+        let result = mango3_core::commands::insert_user_session(&core_context, &user.data).await;
 
         if let Ok(ref user_session) = result {
-            let _ = start_user_session(&core_context, &user_session).await;
+            let _ = start_user_session(&core_context, &user_session.data).await;
 
-            return mango3_web_utils::mut_presenter!(Ok(true));
+            return mango3_web_utils::mut_presenter!(mango3_core::mut_success!(false));
         }
     }
 
@@ -129,13 +126,13 @@ pub async fn attempt_to_register(
     )
     .await;
 
-    if let Ok(ref user) = result {
-        if let Ok(user_session) = mango3_core::commands::insert_user_session(&core_context, &user).await {
-            let _ = start_user_session(&core_context, &user_session).await?;
+    if let Ok(ref success_insert) = result {
+        if let Ok(success) = mango3_core::commands::insert_user_session(&core_context, &success_insert.data).await {
+            let _ = start_user_session(&core_context, &success.data).await?;
         }
 
         if let Some(invitation_code) = invitation_code {
-            let _ = invitation_code.delete(&core_context).await;
+            let _ = mango3_core::commands::delete_invitation_code(&core_context, &invitation_code).await;
         }
     }
 
@@ -157,8 +154,8 @@ pub async fn attempt_to_send_password_reset_code(username_or_email: String) -> R
 
     let result = mango3_core::commands::send_user_password_reset_code(&core_context, &user).await;
 
-    if let Ok(ref confirmation_code) = result {
-        let _ = start_confirmation_code(&confirmation_code).await;
+    if let Ok(ref success_send) = result {
+        let _ = start_confirmation_code(&success_send.data).await;
     }
 
     mango3_web_utils::mut_presenter!(result)
@@ -179,6 +176,7 @@ pub async fn attempt_to_reset_password(code: String, new_password: String) -> Re
 
     let result = mango3_core::commands::confirm_confirmation_code(
         &core_context.clone(),
+        &confirmation_code,
         ConfirmationCodeAction::PasswordReset,
         &code,
         || {
@@ -188,14 +186,11 @@ pub async fn attempt_to_reset_password(code: String, new_password: String) -> Re
             async move {
                 let result = mango3_core::commands::reset_user_password(&core_context, &user, &new_password).await;
 
-                match result {
-                    Ok(_) => {
-                        let _ = finish_confirmation_code().await;
-
-                        Ok(())
-                    }
-                    Err(err) => Err(err),
+                if let Ok(_) = result {
+                    let _ = finish_confirmation_code().await;
                 }
+
+                result
             }
         },
     )
@@ -212,7 +207,10 @@ pub async fn attempt_to_get_invitation_code_id(code: String) -> Result<MutPresen
 
     let core_context = expect_core_context();
 
-    let result = mango3_core::commands::get_invitation_code_by_code(&core_context, &code).await;
+    let result = mango3_core::commands::get_invitation_code(&core_context, &code).await;
 
-    mango3_web_utils::mut_presenter!(invitation_code.map(|invitation_code| invitation_code.id))
+    match result {
+        Ok(invitation_code) => mango3_web_utils::mut_presenter!(mango3_core::mut_success!(invitation_code.id)),
+        Err(_) => mango3_web_utils::mut_presenter_error!(),
+    }
 }

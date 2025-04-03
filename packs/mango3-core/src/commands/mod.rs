@@ -10,6 +10,7 @@ mod blob_commands;
     feature = "confirm-confirmation-code",
     feature = "delete-all-expired-confirmation-codes",
     feature = "get-confirmation-code-by-id",
+    feature = "get-confirmation-code-by-user",
     feature = "insert-confirmation-code",
 ))]
 mod confirmation_code_commands;
@@ -31,17 +32,18 @@ mod invitation_code_commands;
 #[cfg(any(
     feature = "all-navigation-items-by-website",
     feature = "get-navigation-item-by-id",
-    feature = "insert-or-update-many-navigation-items"
+    feature = "insert-or-update-many-navigation-items",
 ))]
 mod navigation_item_commands;
 #[cfg(any(
     feature = "get-post-by-id",
     feature = "get-post-by-id-with-search-rank",
+    feature = "get-post-by-slug",
     feature = "paginate-posts",
     feature = "search-posts"
 ))]
 mod post_commands;
-#[cfg(feature = "get-post-comments-count")]
+#[cfg(any(feature = "delete-post-comment", feature = "get-post-comments-count"))]
 mod post_comment_commands;
 #[cfg(any(
     feature = "delete-post-reaction",
@@ -62,9 +64,11 @@ mod post_view_commands;
     feature = "get-user-by-username",
     feature = "get-user-by-username-or-email",
     feature = "insert-user",
+    feature = "paginate-users",
+    feature = "reset-user-password",
+    feature = "send-user-login-confirmation-code",
     feature = "send-user-password-reset-code",
     feature = "update-user-role",
-    feature = "paginate-users",
 ))]
 mod user_commands;
 #[cfg(any(
@@ -79,6 +83,7 @@ mod user_session_commands;
 #[cfg(any(
     feature = "clear-website-cache",
     feature = "get-website-by-id",
+    feature = "get-website-by-subdomain",
     feature = "paginate-websites",
     feature = "paginate-websites-sorted-by-name-asc",
     feature = "search-websites"
@@ -101,6 +106,8 @@ pub use confirmation_code_commands::confirm_confirmation_code;
 pub use confirmation_code_commands::delete_all_expired_confirmation_codes;
 #[cfg(feature = "get-confirmation-code-by-id")]
 pub use confirmation_code_commands::get_confirmation_code_by_id;
+#[cfg(feature = "get-confirmation-code-by-user")]
+pub use confirmation_code_commands::get_confirmation_code_by_user;
 #[cfg(feature = "insert-confirmation-code")]
 pub use confirmation_code_commands::insert_confirmation_code;
 #[cfg(feature = "all-hashtags-by-ids")]
@@ -129,10 +136,14 @@ pub use navigation_item_commands::get_navigation_item_by_id;
 pub use navigation_item_commands::insert_or_update_many_navigation_items;
 #[cfg(feature = "get-post-by-id-with-search-rank")]
 pub use post_commands::get_post_by_id_with_search_rank;
+#[cfg(feature = "get-post-by-slug")]
+pub use post_commands::get_post_by_slug;
 #[cfg(feature = "paginate-posts")]
 pub use post_commands::paginate_posts;
 #[cfg(feature = "search-posts")]
 pub use post_commands::search_posts;
+#[cfg(feature = "delete-post-comment")]
+pub use post_comment_commands::delete_post_comment;
 #[cfg(feature = "get-post-comments-count")]
 pub use post_comment_commands::get_post_comments_count;
 #[cfg(feature = "delete-post-reaction")]
@@ -169,6 +180,10 @@ pub use user_commands::get_user_by_username_or_email;
 pub use user_commands::insert_user;
 #[cfg(feature = "paginate-users")]
 pub use user_commands::paginate_users;
+#[cfg(feature = "reset-user-password")]
+pub use user_commands::reset_user_password;
+#[cfg(feature = "send-user-login-confirmation-code")]
+pub use user_commands::send_user_login_confirmation_code;
 #[cfg(feature = "send-user-password-reset-code")]
 pub use user_commands::send_user_password_reset_code;
 #[cfg(feature = "update-user-role")]
@@ -187,6 +202,8 @@ pub use user_session_commands::insert_user_session;
 pub use website_commands::clear_website_cache;
 #[cfg(feature = "get-website-by-id")]
 pub use website_commands::get_website_by_id;
+#[cfg(feature = "get-website-by-subdomain")]
+pub use website_commands::get_website_by_subdomain;
 #[cfg(feature = "paginate-websites")]
 pub use website_commands::paginate_websites;
 #[cfg(feature = "paginate-websites-sorted-by-name-asc")]

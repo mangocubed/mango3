@@ -119,7 +119,7 @@ pub fn App() -> impl IntoView {
                                     view! {
                                         <LoadingOverlay
                                             icon_class="rounded-xl"
-                                            icon_url=website.icon_image_url(128)
+                                            icon_url=website.icon_image_url(128).to_string()
                                             pulse_class="rounded"
                                         />
                                     },

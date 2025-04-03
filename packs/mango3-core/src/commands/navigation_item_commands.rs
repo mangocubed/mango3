@@ -1,36 +1,32 @@
-use std::future::Future;
+use uuid::Uuid;
 
-use cached::proc_macro::io_cached;
-use cached::AsyncRedisCache;
-use sqlx::query_as;
-use sqlx::types::Uuid;
-
-use mango3_utils::models::{NavigationItem, NavigationItems};
-
-use crate::constants::PREFIX_NAVIGATION_ITEM_ALL_BY_WEBSITE;
-use crate::models::{async_redis_cache, Website};
+use crate::models::*;
+use crate::utils::*;
 use crate::CoreContext;
 
+#[cfg(feature = "insert-navigation-item")]
 impl Validator {
     fn validate_navigation_item_title(&mut self, value: &str) -> bool {
+        use crate::enums::Input;
+
         self.validate_presence(Input::Title, value) && self.validate_length(Input::Title, value, None, Some(256))
     }
 }
 
 #[cfg(feature = "all-navigation-items-by-website")]
-async fn all_navigation_items_by_website(core_context: &CoreContext, website: &Website) -> Vec<NavigationItem> {
-    navigation_item_all_by_website(core_context, website)
+pub async fn all_navigation_items_by_website(core_context: &CoreContext, website: &Website) -> Vec<NavigationItem> {
+    all_cached_navigation_items_by_website(core_context, website)
         .await
         .map(|items| items.into())
         .unwrap_or_default()
 }
 
 #[cfg(feature = "all-navigation-items-by-website")]
-#[io_cached(
+#[cached::proc_macro::io_cached(
     map_error = r##"|_| sqlx::Error::RowNotFound"##,
     convert = r#"{ website.id }"#,
     ty = "cached::AsyncRedisCache<Uuid, NavigationItems>",
-    create = r##" { crate::async_redis_cache!(PREFIX_NAVIGATION_ITEM_ALL_BY_WEBSITE).await } "##
+    create = r##" { crate::async_redis_cache!(crate::constants::PREFIX_NAVIGATION_ITEM_ALL_BY_WEBSITE).await } "##
 )]
 async fn all_cached_navigation_items_by_website(
     core_context: &CoreContext,
@@ -61,7 +57,7 @@ async fn delete_all_navigation_items(
     .await;
 
     NAVIGATION_ITEM_ALL_BY_WEBSITE
-        .cache_remove(PREFIX_NAVIGATION_ITEM_ALL_BY_WEBSITE, &website.id)
+        .cache_remove(crate::contants::PREFIX_NAVIGATION_ITEM_ALL_BY_WEBSITE, &website.id)
         .await;
 
     Ok(())
@@ -116,8 +112,8 @@ async fn insert_navigation_item(
     .await
 }
 
-#[cfg(feature = "save-all-navigation-items")]
-pub async fn save_all(
+#[cfg(feature = "insert-or-update-many-navigation-items")]
+pub async fn insert_or_update_many_navigation_items(
     core_context: &CoreContext,
     website: &Website,
     items: Vec<(Option<Uuid>, String, String)>,

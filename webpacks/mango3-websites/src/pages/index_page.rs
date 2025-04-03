@@ -6,8 +6,8 @@ use mango3_web_utils::components::{
     Hashtags, InfiniteScroll, InfiniteScrollControllerTrait, InfiniteScrollResourceController, PostCard,
 };
 use mango3_web_utils::i18n::use_i18n;
-use mango3_web_utils::models::PostPreviewResp;
 use mango3_web_utils::pages::{NotFoundPage, Page};
+use mango3_web_utils::presenters::PostMinPresenter;
 use mango3_web_utils::utils::ToSignalTrait;
 
 use crate::components::CurrentWebsiteOpt;
@@ -35,7 +35,12 @@ pub fn IndexPage() -> impl IntoView {
                                             .cover_image_blob
                                             .clone()
                                             .map(|blob| {
-                                                view! { <img class="rounded" src=blob.variant_url(1200, 200, true) /> }
+                                                view! {
+                                                    <img
+                                                        class="rounded"
+                                                        src=blob.variant_url(1200, 200, true).to_string()
+                                                    />
+                                                }
                                             })
                                     }}
                                 </section>
@@ -57,7 +62,7 @@ pub fn IndexPage() -> impl IntoView {
                                     <div class="shrink-0 max-w-[720px] w-full">
                                         <InfiniteScroll
                                             controller=controller
-                                            key=|post: &PostPreviewResp| post.id.clone()
+                                            key=|post: &PostMinPresenter| post.id.clone()
                                             let:post
                                         >
                                             <PostCard post=post />

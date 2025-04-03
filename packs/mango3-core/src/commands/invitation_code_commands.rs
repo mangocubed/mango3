@@ -4,16 +4,22 @@ use crate::CoreContext;
 
 #[cfg(feature = "delete-invitation-code")]
 pub async fn delete_invitation_code(core_context: &CoreContext, invitation_code: &InvitationCode) -> MutResult {
-    sqlx::query!("DELETE FROM invitation_codes WHERE id = $1", self.id)
+    sqlx::query!("DELETE FROM invitation_codes WHERE id = $1", invitation_code.id)
         .execute(&core_context.db_pool)
-        .await
+        .await?;
+
+    crate::mut_success!()
 }
 
 #[cfg(feature = "get-invitation-code")]
 pub async fn get_invitation_code(core_context: &CoreContext, code: &str) -> sqlx::Result<InvitationCode> {
-    sqlx::query_as!(Self, "SELECT * FROM invitation_codes WHERE code = $1 LIMIT 1", code)
-        .fetch_one(&core_context.db_pool)
-        .await
+    sqlx::query_as!(
+        InvitationCode,
+        "SELECT * FROM invitation_codes WHERE code = $1 LIMIT 1",
+        code
+    )
+    .fetch_one(&core_context.db_pool)
+    .await
 }
 
 #[cfg(feature = "get-invitation-code-by-id")]

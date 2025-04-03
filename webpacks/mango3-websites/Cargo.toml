@@ -19,13 +19,23 @@ tokio = { workspace = true, optional = true }
 uuid = { workspace = true }
 wasm-bindgen = { workspace = true }
 mango3-core = { workspace = true, features = [
+    "all-navigation-items-by-website",
+    "get-hashtag-by-name",
+    "get-or-insert-post-view",
+    "get-post-by-slug",
+    "get-website-by-subdomain",
     "paginate-posts",
     "search-posts",
 ], optional = true }
 mango3-web-utils = { workspace = true, features = [
     "infinite-scroll",
     "markdown-editor",
+    "navigation-item-presenter",
     "post-card",
+    "post-comment-presenter",
+    "post-content-html",
+    "unconfirmed-email-alert",
+    "website-description-html",
 ] }
 
 [features]

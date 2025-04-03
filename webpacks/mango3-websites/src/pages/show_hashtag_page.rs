@@ -2,13 +2,13 @@ use leptos::either::EitherOf3;
 use leptos::prelude::*;
 use leptos_router::hooks::use_params_map;
 
-use mango3_utils::models::CursorPage;
 use mango3_web_utils::components::{
     InfiniteScroll, InfiniteScrollControllerTrait, InfiniteScrollResourceController, LoadingSpinner, PostCard,
 };
 use mango3_web_utils::context::param_name;
-use mango3_web_utils::models::PostPreviewResp;
 use mango3_web_utils::pages::{NotFoundPage, Page};
+use mango3_web_utils::presenters::CursorPagePresenter;
+use mango3_web_utils::presenters::PostMinPresenter;
 
 use crate::server_functions::{get_hashtag, get_posts};
 
@@ -34,7 +34,7 @@ pub fn ShowHashtagPage() -> impl IntoView {
                 if let Some(name) = hashtag_name {
                     get_posts(Some(name), after).await
                 } else {
-                    Ok(CursorPage::default())
+                    Ok(CursorPagePresenter::default())
                 }
             },
         )
@@ -64,7 +64,7 @@ pub fn ShowHashtagPage() -> impl IntoView {
                                         <section class="max-w-[720px] w-full mx-auto">
                                             <InfiniteScroll
                                                 controller=controller
-                                                key=|post: &PostPreviewResp| post.id.clone()
+                                                key=|post: &PostMinPresenter| post.id.clone()
                                                 let:post
                                             >
                                                 <PostCard post=post />

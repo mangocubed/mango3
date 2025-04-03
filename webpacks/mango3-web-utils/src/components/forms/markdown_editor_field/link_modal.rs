@@ -4,7 +4,7 @@ use leptos::prelude::*;
 use crate::components::forms::TextField;
 use crate::components::Modal;
 use crate::i18n::{t, use_i18n};
-use crate::models::ActionValue;
+use crate::presenters::MutPresenterActionValue;
 
 #[component]
 pub fn LinkModal<IT, ST>(insert_text: IT, is_open: RwSignal<bool>, selected_text: ST) -> impl IntoView
@@ -13,7 +13,7 @@ where
     ST: Fn() -> String + 'static,
 {
     let i18n = use_i18n();
-    let dummy_action_value = ActionValue::<()>::new(None);
+    let dummy_action_value = MutPresenterActionValue::<()>::new(None);
     let value_url = RwSignal::new("".to_string());
     let value_text = RwSignal::new("".to_string());
 

@@ -9,6 +9,8 @@ mod cursor_page_presenter;
 mod hashtag_presenter;
 #[cfg(feature = "mutation-presenter")]
 mod mutation_presenter;
+#[cfg(feature = "navigation-item-presenter")]
+mod navigation_item_presenter;
 #[cfg(feature = "post-comment-presenter")]
 mod post_comment_presenter;
 #[cfg(feature = "post-presenter")]
@@ -29,6 +31,8 @@ pub use cursor_page_presenter::CursorPagePresenter;
 pub use hashtag_presenter::HashtagPresenter;
 #[cfg(feature = "mutation-presenter")]
 pub use mutation_presenter::{MutPresenter, MutPresenterActionValue};
+#[cfg(feature = "navigation-item-presenter")]
+pub use navigation_item_presenter::NavigationItemPresenter;
 #[cfg(feature = "post-comment-presenter")]
 pub use post_comment_presenter::PostCommentPresenter;
 #[cfg(feature = "post-presenter")]
@@ -51,8 +55,29 @@ impl FromModel<()> for () {
 }
 
 #[cfg(feature = "ssr")]
+impl FromModel<bool> for bool {
+    async fn from_model(value: &bool) -> Self {
+        *value
+    }
+}
+
+#[cfg(feature = "ssr")]
 impl FromModel<uuid::Uuid> for uuid::Uuid {
     async fn from_model(value: &uuid::Uuid) -> Self {
         value.clone()
+    }
+}
+
+#[cfg(all(feature = "ssr", feature = "confirmation-code-presenter"))]
+impl FromModel<mango3_core::models::ConfirmationCode> for () {
+    async fn from_model(_: &mango3_core::models::ConfirmationCode) -> Self {
+        ()
+    }
+}
+
+#[cfg(feature = "ssr")]
+impl FromModel<mango3_core::models::UserSession> for () {
+    async fn from_model(_: &mango3_core::models::UserSession) -> Self {
+        ()
     }
 }

@@ -171,3 +171,10 @@ impl From<UserPresenter> for UserMinPresenter {
         }
     }
 }
+
+#[cfg(feature = "ssr")]
+impl FromModel<User> for () {
+    async fn from_model(_: &User) -> Self {
+        ()
+    }
+}

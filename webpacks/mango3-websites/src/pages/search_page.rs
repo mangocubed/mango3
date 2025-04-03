@@ -7,8 +7,8 @@ use mango3_web_utils::components::{
     InfiniteScroll, InfiniteScrollControllerTrait, InfiniteScrollResourceController, PostCard,
 };
 use mango3_web_utils::i18n::use_i18n;
-use mango3_web_utils::models::PostPreviewResp;
 use mango3_web_utils::pages::{NotFoundPage, Page};
+use mango3_web_utils::presenters::PostMinPresenter;
 
 use crate::components::CurrentWebsiteOpt;
 use crate::server_functions::get_posts_search;
@@ -45,7 +45,7 @@ pub fn SearchPage() -> impl IntoView {
                                 <section class="max-w-[720px] w-full mx-auto">
                                     <InfiniteScroll
                                         controller=controller
-                                        key=|post: &PostPreviewResp| post.id.clone()
+                                        key=|post: &PostMinPresenter| post.id.clone()
                                         let:post
                                     >
                                         <PostCard post=post />

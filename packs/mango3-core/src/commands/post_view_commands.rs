@@ -1,4 +1,5 @@
-use crate::models::Post;
+use crate::models::{Post, PostView, User};
+use crate::utils::*;
 use crate::CoreContext;
 
 #[cfg(feature = "get-post-views-count")]
@@ -20,12 +21,15 @@ pub async fn get_or_insert_post_view(
     user: Option<&User>,
     ip_address: &str,
 ) -> MutResult<PostView> {
+    use ipnetwork::IpNetwork;
+    use std::str::FromStr;
+
     let user_id = user.map(|u| u.id);
 
-    let ip_address = IpNetwork::from_str(ip_address).map_err(|_| ValidationErrors::default())?;
+    let ip_address = IpNetwork::from_str(ip_address).map_err(|_| crate::utils::MutError::default())?;
 
     if let Ok(view) = sqlx::query_as!(
-        Self,
+        PostView,
         "SELECT * FROM post_views
             WHERE post_id = $1 AND (
                 ($2::uuid IS NOT NULL AND user_id = $2) OR ($2 IS NULL AND user_id IS NULL AND ip_address = $3)
@@ -37,18 +41,20 @@ pub async fn get_or_insert_post_view(
     .fetch_one(&core_context.db_pool)
     .await
     {
-        return Ok(view);
+        return crate::mut_success!(view);
     };
 
-    sqlx::query_as!(
-        Self,
+    let result = sqlx::query_as!(
+        PostView,
         "INSERT INTO post_views (post_id, user_id, ip_address) VALUES ($1, $2, $3) RETURNING *",
         post.id,    // $1
         user_id,    // $2
         ip_address, // $3
     )
     .fetch_one(&core_context.db_pool)
-    .await
+    .await;
+
+    crate::mut_result!(result)
 }
 
 #[cfg(test)]

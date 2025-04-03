@@ -1,5 +1,6 @@
 use leptos::either::Either;
 use leptos::prelude::*;
+use uuid::Uuid;
 
 use mango3_web_utils::components::{CurrentUser, LoadingSpinner};
 use mango3_web_utils::context::{use_current_user_resource, use_info};
@@ -12,15 +13,11 @@ use crate::server_functions::{
 };
 
 #[component]
-pub fn PostReactions(post_id: String) -> impl IntoView {
+pub fn PostReactions(post_id: Uuid) -> impl IntoView {
     let i18n = use_i18n();
-    let post_id_store = StoredValue::new(post_id.clone());
-    let my_emoji_resource =
-        LocalResource::new(move || async move { get_my_post_reaction_emoji(post_id_store.read_value().clone()).await });
+    let my_emoji_resource = LocalResource::new(move || async move { get_my_post_reaction_emoji(post_id).await });
     let emojis_count_resource =
-        LocalResource::new(
-            move || async move { get_post_reaction_emojis_count(post_id_store.read_value().clone()).await },
-        );
+        LocalResource::new(move || async move { get_post_reaction_emojis_count(post_id).await });
 
     view! {
         <section>
@@ -36,7 +33,6 @@ pub fn PostReactions(post_id: String) -> impl IntoView {
                                 .map(|emojis_count| {
                                     let info = use_info();
                                     let insert_reaction_action = Action::new(move |emoji: &String| {
-                                        let post_id = post_id_store.read_value().clone();
                                         let emoji = emoji.clone();
                                         async move {
                                             let _ = attempt_to_insert_or_update_post_reaction(post_id, emoji.to_owned())
@@ -104,7 +100,6 @@ pub fn PostReactions(post_id: String) -> impl IntoView {
                                                                 .get()
                                                                 .map(|my_emoji| {
                                                                     let delete_reaction_action = Action::new(move |()| {
-                                                                        let post_id = post_id_store.read_value().clone();
                                                                         async move {
                                                                             let _ = attempt_to_delete_post_reaction(post_id).await;
                                                                             emojis_count_resource.refetch();

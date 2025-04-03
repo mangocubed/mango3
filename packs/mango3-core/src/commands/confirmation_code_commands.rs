@@ -6,16 +6,16 @@ use crate::utils::*;
 use crate::CoreContext;
 
 #[cfg(feature = "confirm-confirmation-code")]
-pub async fn confirm_confirmation_code<F, IF>(
+pub async fn confirm_confirmation_code<F, IF, T>(
     core_context: &CoreContext,
     confirmation_code: &ConfirmationCode,
     action: crate::enums::ConfirmationCodeAction,
     code: &str,
     on_success: F,
-) -> MutResult
+) -> MutResult<T>
 where
     F: Fn() -> IF,
-    IF: std::future::IntoFuture<Output = MutResult<()>>,
+    IF: std::future::IntoFuture<Output = MutResult<T>>,
 {
     use crate::enums::{Input, InputError};
 
@@ -52,12 +52,12 @@ where
     let result = on_success().await;
 
     match result {
-        Ok(_) => {
+        Ok(success) => {
             let _ = delete_confirmation_code(core_context, confirmation_code).await;
 
-            crate::mut_success!()
+            Ok(success)
         }
-        errors => errors,
+        Err(error) => Err(error),
     }
 }
 

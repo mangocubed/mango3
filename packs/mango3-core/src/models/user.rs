@@ -12,8 +12,6 @@ use crate::CoreContext;
 
 use super::{Blob, Hashtag, Website};
 
-mod user_all;
-
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct User {
     pub id: Uuid,

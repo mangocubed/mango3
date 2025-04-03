@@ -83,7 +83,7 @@ async fn get_cached_website_by_id(core_context: &CoreContext, id: Uuid) -> sqlx:
 #[cached::proc_macro::io_cached(
     map_error = r##"|_| sqlx::Error::RowNotFound"##,
     convert = r#"{ subdomain.to_lowercase() }"#,
-    ty = "crate::AsyncRedisCache<String, Website>",
+    ty = "cached::AsyncRedisCache<String, Website>",
     create = r##" { crate::async_redis_cache!(crate::constants::PREFIX_GET_WEBSITE_BY_SUBDOMAIN).await } "##
 )]
 async fn get_cached_website_by_subdomain(core_context: &CoreContext, subdomain: &str) -> sqlx::Result<Website> {

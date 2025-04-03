@@ -1,4 +1,5 @@
 use leptos::prelude::*;
+use uuid::Uuid;
 
 use mango3_web_utils::components::forms::{FormErrorAlert, FormSuccessModal, MarkdownEditorField, SubmitButton};
 use mango3_web_utils::components::{
@@ -6,13 +7,13 @@ use mango3_web_utils::components::{
     UserTag, UserTagLink,
 };
 use mango3_web_utils::i18n::{t, use_i18n};
-use mango3_web_utils::models::PostCommentResp;
+use mango3_web_utils::presenters::PostCommentPresenter;
 
 use crate::server_functions::{get_post_comments, AttemptToCreatePostComment};
 
 #[allow(unused_variables)]
 #[component]
-pub fn PostComments(post_id: String) -> impl IntoView {
+pub fn PostComments(post_id: Uuid) -> impl IntoView {
     let i18n = use_i18n();
     let controller = InfiniteScrollLocalResourceController::new(|after| {
         let post_id = post_id.clone();
@@ -55,7 +56,7 @@ pub fn PostComments(post_id: String) -> impl IntoView {
                                                     message=move || { t!(i18n, websites.failed_to_submit_comment) }
                                                 />
 
-                                                <input type="hidden" name="post_id" value=post_id />
+                                                <input type="hidden" name="post_id" value=post_id.to_string() />
 
                                                 <MarkdownEditorField
                                                     action_value=action_value
@@ -83,7 +84,7 @@ pub fn PostComments(post_id: String) -> impl IntoView {
 
                             <InfiniteScroll
                                 controller=controller
-                                key=|comment: &PostCommentResp| comment.id.clone()
+                                key=|comment: &PostCommentPresenter| comment.id.clone()
                                 let:post_comment
                             >
                                 <div class="card card-sm card-border border-neutral-500 mt-4">

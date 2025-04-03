@@ -1,58 +1,51 @@
 use leptos::prelude::*;
+use uuid::Uuid;
 
-use mango3_web_utils::models::FormResp;
+use mango3_web_utils::presenters::MutPresenter;
 
 #[cfg(feature = "ssr")]
-use mango3_core::commands::{PostReactionDelete, PostReactionGet, PostReactionInsert};
-#[cfg(feature = "ssr")]
-use mango3_web_utils::ssr::{expect_core_context, extract_i18n, extract_user, require_authentication};
-#[cfg(feature = "ssr")]
-use mango3_utils::models::PostReaction;
+use mango3_web_utils::ssr::{expect_core_context, extract_user, require_authentication};
 
 #[cfg(feature = "ssr")]
 use super::posts::current_post;
 
 #[server]
-pub async fn attempt_to_delete_post_reaction(post_id: String) -> Result<FormResp, ServerFnError> {
-    let i18n = extract_i18n().await?;
-
+pub async fn attempt_to_delete_post_reaction(post_id: Uuid) -> Result<MutPresenter, ServerFnError> {
     if !require_authentication().await? {
-        return FormResp::new_with_error(&i18n);
+        return mango3_web_utils::mut_presenter_error!();
     }
 
     let post = current_post(post_id).await?;
     let user = extract_user().await?.unwrap();
     let core_context = expect_core_context();
 
-    let post_reaction = PostReaction::get_by_post_and_user(&core_context, &post, &user).await?;
+    let post_reaction = mango3_core::commands::get_post_reaction_by_post_and_user(&core_context, &post, &user).await?;
 
-    let result = post_reaction.delete(&core_context).await;
+    let result = mango3_core::commands::delete_post_reaction(&core_context).await;
 
-    FormResp::new(&i18n, result)
+    mango3_web_utils::mut_presenter!(result)
 }
 
 #[server]
 pub async fn attempt_to_insert_or_update_post_reaction(
-    post_id: String,
+    post_id: Uuid,
     emoji: String,
-) -> Result<FormResp, ServerFnError> {
-    let i18n = extract_i18n().await?;
-
+) -> Result<MutPresenter, ServerFnError> {
     if !require_authentication().await? {
-        return FormResp::new_with_error(&i18n);
+        return mango3_web_utils::mut_presenter_error!();
     }
 
     let post = current_post(post_id).await?;
     let user = extract_user().await?.unwrap();
     let core_context = expect_core_context();
 
-    let result = PostReaction::insert_or_update(&core_context, &post, &user, &emoji).await;
+    let result = mango3_core::commands::insert_or_update_post_reaction(&core_context, &post, &user, &emoji).await;
 
-    FormResp::new(&i18n, result)
+    mango3_web_utils::mut_presenter!(result)
 }
 
 #[server]
-pub async fn get_my_post_reaction_emoji(post_id: String) -> Result<Option<String>, ServerFnError> {
+pub async fn get_my_post_reaction_emoji(post_id: Uuid) -> Result<Option<String>, ServerFnError> {
     let Some(user) = extract_user().await? else {
         return Ok(None);
     };
@@ -60,7 +53,7 @@ pub async fn get_my_post_reaction_emoji(post_id: String) -> Result<Option<String
     let post = current_post(post_id).await?;
     let core_context = expect_core_context();
 
-    let result = PostReaction::get_by_post_and_user(&core_context, &post, &user).await;
+    let result = mango3_core::commands::get_post_reaction_by_post_and_user(&core_context, &post, &user).await;
 
     match result {
         Ok(reaction) => Ok(Some(reaction.emoji)),
@@ -69,9 +62,9 @@ pub async fn get_my_post_reaction_emoji(post_id: String) -> Result<Option<String
 }
 
 #[server]
-pub async fn get_post_reaction_emojis_count(post_id: String) -> Result<Vec<(String, i64)>, ServerFnError> {
+pub async fn get_post_reaction_emojis_count(post_id: Uuid) -> Result<Vec<(String, i64)>, ServerFnError> {
     let core_context = expect_core_context();
     let post = current_post(post_id).await?;
 
-    Ok(PostReaction::get_emojis_count(&core_context, &post).await?)
+    Ok(mango3_core::commands::get_post_reaction_emojis_count(&core_context, &post).await?)
 }

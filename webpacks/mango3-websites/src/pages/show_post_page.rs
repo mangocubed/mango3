@@ -67,9 +67,15 @@ pub fn ShowPostPage() -> impl IntoView {
                                                         let cover_image_url = cover_image_blob
                                                             .variant_url(1200, 200, true);
                                                         view! {
-                                                            <Meta property="og:image" content=cover_image_url.clone() />
+                                                            <Meta
+                                                                property="og:image"
+                                                                content=cover_image_url.to_string()
+                                                            />
                                                             <figure>
-                                                                <img src=cover_image_url alt=post_title.clone() />
+                                                                <img
+                                                                    src=cover_image_url.to_string()
+                                                                    alt=post_title.clone()
+                                                                />
                                                             </figure>
                                                         }
                                                     })
@@ -98,7 +104,7 @@ pub fn ShowPostPage() -> impl IntoView {
                                                             image_modal_url.set(Some(blob.url.clone()));
                                                         }
                                                     >
-                                                        <img src=blob.variant_url(128, 128, true) />
+                                                        <img src=blob.variant_url(128, 128, true).to_string() />
                                                     </figure>
                                                 </For>
                                             </div>
@@ -111,7 +117,7 @@ pub fn ShowPostPage() -> impl IntoView {
                                                 <figure class="max-w-full">
                                                     <img
                                                         class="max-w-[calc(100vw-120px)] max-h-[calc(100vh-120px)]"
-                                                        src=image_modal_url
+                                                        src=move || image_modal_url.get().map(|url| url.to_string())
                                                     />
                                                 </figure>
                                             </Modal>
@@ -128,7 +134,7 @@ pub fn ShowPostPage() -> impl IntoView {
                                                 modified_at=post.modified_at
                                             />
 
-                                            <PostReactions post_id=post.id.clone() />
+                                            <PostReactions post_id=post.id />
 
                                             <PostComments post_id=post.id />
                                         </div>

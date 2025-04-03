@@ -36,7 +36,7 @@ impl Validator {
 pub async fn all_admin_users(core_context: &CoreContext) -> Vec<User> {
     sqlx::query_as!(
         User,
-            r#"SELECT
+        r#"SELECT
                 id,
                 username,
                 email,
@@ -55,12 +55,11 @@ pub async fn all_admin_users(core_context: &CoreContext) -> Vec<User> {
                 created_at,
                 updated_at
             FROM users WHERE role IN ('admin', 'superuser')"#,
-        )
-        .fetch_all(&core_context.db_pool)
-        .await
-        .unwrap_or_default()
+    )
+    .fetch_all(&core_context.db_pool)
+    .await
+    .unwrap_or_default()
 }
-
 
 #[cfg(feature = "authenticate-user")]
 pub async fn authenticate_user(core_context: &CoreContext, username_or_email: &str, password: &str) -> MutResult<User> {
@@ -100,7 +99,7 @@ pub async fn clear_user_cache(user: &User) {
 }
 
 #[cfg(feature = "confirm-user-email")]
-pub async fn confirm_user_email(&self, core_context: &CoreContext) -> MutResult<Self> {
+pub async fn confirm_user_email(core_context: &CoreContext, user: &User) -> MutResult<Self> {
     let result = sqlx::query_as!(
         User,
         r#"UPDATE users SET email_confirmed_at = current_timestamp
@@ -122,18 +121,18 @@ pub async fn confirm_user_email(&self, core_context: &CoreContext) -> MutResult<
             disabled_at,
             created_at,
             updated_at"#,
-        self.id, // $1
+        user.id, // $1
     )
     .fetch_one(&core_context.db_pool)
     .await;
 
     match result {
-        Ok(user) => {
+        Ok(user1) => {
             clear_user_cache(user).await;
 
-            Ok(user)
+            crate::mut_success!(user1)
         }
-        Err(_) => Err(ValidationErrors::default()),
+        Err(_) => crate::mut_error!(),
     }
 }
 
@@ -485,7 +484,7 @@ pub async fn paginate_users(core_context: &CoreContext, cursor_page_params: &Cur
 
 #[cfg(feature = "reset-user-password")]
 pub async fn reset_user_password(core_context: &CoreContext, user: &User, new_password: &str) -> MutResult<User> {
-    let mut validator = validator!();
+    let mut validator = crate::validator!();
 
     validator.validate_password(Input::NewPassword, new_password);
 
@@ -496,7 +495,7 @@ pub async fn reset_user_password(core_context: &CoreContext, user: &User, new_pa
     let encrypted_password = encrypt_password(new_password);
 
     let result = sqlx::query_as!(
-        Self,
+        User,
         r#"UPDATE users SET encrypted_password = $2 WHERE disabled_at IS NULL AND id = $1
             RETURNING
                 id,
@@ -516,17 +515,17 @@ pub async fn reset_user_password(core_context: &CoreContext, user: &User, new_pa
                 disabled_at,
                 created_at,
                 updated_at"#,
-        self.id,            // $1
+        user.id,            // $1
         encrypted_password, // $2
     )
     .fetch_one(&core_context.db_pool)
     .await;
 
     match result {
-        Ok(user) => {
-            user.cache_remove().await;
+        Ok(user1) => {
+            clear_user_cache(user).await;
 
-            crate::mut_sucess!(user)
+            crate::mut_success!(user1)
         }
         Err(_) => crate::mut_error!(),
     }
@@ -542,12 +541,17 @@ pub async fn send_user_email_confirmation_code(core_context: &CoreContext, user:
 }
 
 #[cfg(feature = "send-user-login-confirmation-code")]
-pub async fn send_user_login_confirmation_code(core_context: &CoreContext) -> MutResult<ConfirmationCode> {
+pub async fn send_user_login_confirmation_code(core_context: &CoreContext, user: &User) -> MutResult<ConfirmationCode> {
     if !user.email_is_confirmed() {
         return crate::mut_error!();
     }
 
-    super::insert_confirmation_code(core_context, user, ConfirmationCodeAction::LoginConfirmation).await
+    super::insert_confirmation_code(
+        core_context,
+        user,
+        crate::enums::ConfirmationCodeAction::LoginConfirmation,
+    )
+    .await
 }
 
 #[cfg(feature = "send-user-password-reset-code")]
@@ -699,48 +703,48 @@ pub async fn update_user_password(
     }
 }
 
-#[cfg(feature = "update-user-profile)]
+#[cfg(feature = "update-user-profile")]
 pub async fn update_user_profile(
-        core_context: &CoreContext,
-        user: &User,
-        display_name: &str,
-        full_name: &str,
-        birthdate: &str,
-        country_alpha2: &str,
-        bio: &str,
-        avatar_image_blob: Option<&Blob>,
-    ) -> Result<User, ValidationErrors> {
-        let mut validator = crate::validator!();
+    core_context: &CoreContext,
+    user: &User,
+    display_name: &str,
+    full_name: &str,
+    birthdate: &str,
+    country_alpha2: &str,
+    bio: &str,
+    avatar_image_blob: Option<&Blob>,
+) -> Result<User, ValidationErrors> {
+    let mut validator = crate::validator!();
 
-        let display_name = display_name.trim();
-        let full_name = full_name.trim();
-        let birthdate = parse_date(birthdate);
-        let country = find_country(country_alpha2);
-        let bio = bio.trim();
-        let avatar_image_blob_id = avatar_image_blob.map(|blob| blob.id);
+    let display_name = display_name.trim();
+    let full_name = full_name.trim();
+    let birthdate = parse_date(birthdate);
+    let country = find_country(country_alpha2);
+    let bio = bio.trim();
+    let avatar_image_blob_id = avatar_image_blob.map(|blob| blob.id);
 
-        if validator.validate_presence(Input::DisplayName, display_name) {
-            validator.validate_length(Input::DisplayName, display_name, Some(2), Some(256));
-        }
+    if validator.validate_presence(Input::DisplayName, display_name) {
+        validator.validate_length(Input::DisplayName, display_name, Some(2), Some(256));
+    }
 
-        validator.validate_full_name(full_name);
+    validator.validate_full_name(full_name);
 
-        validator.validate_birthdate(birthdate);
+    validator.validate_birthdate(birthdate);
 
-        validator.validate_country(country);
+    validator.validate_country(country);
 
-        validator.validate_length(Input::Bio, bio, None, Some(1024));
+    validator.validate_length(Input::Bio, bio, None, Some(1024));
 
-        if !validator.is_valid {
-            return crate::mut_error!(validator.errors);
-        }
+    if !validator.is_valid {
+        return crate::mut_error!(validator.errors);
+    }
 
-        let hashtags = get_or"_insert_many_hashtags(core_context, bio).await?;
-        let hashtag_ids = hashtags.iter().map(|hashtag| hashtag.id).collect::<Vec<Uuid>>();
+    let hashtags = get_or_insert_many_hashtags(core_context, bio).await?;
+    let hashtag_ids = hashtags.iter().map(|hashtag| hashtag.id).collect::<Vec<Uuid>>();
 
-        let result = sqlx::query_as!(
-            User,
-            r#"UPDATE users
+    let result = sqlx::query_as!(
+        User,
+        r#"UPDATE users
             SET
                 display_name = $2,
                 full_name = $3,
@@ -767,28 +771,27 @@ pub async fn update_user_profile(
                 disabled_at,
                 created_at,
                 updated_at"#,
-            self.id,                 // $1
-            display_name,            // $2
-            full_name,               // $3
-            birthdate,               // $4
-            country.unwrap().alpha2, // $5
-            bio,                     // $6
-            &hashtag_ids,            // $7
-            avatar_image_blob_id,    // $8
-        )
-        .fetch_one(&core_context.db_pool)
-        .await;
+        self.id,                 // $1
+        display_name,            // $2
+        full_name,               // $3
+        birthdate,               // $4
+        country.unwrap().alpha2, // $5
+        bio,                     // $6
+        &hashtag_ids,            // $7
+        avatar_image_blob_id,    // $8
+    )
+    .fetch_one(&core_context.db_pool)
+    .await;
 
-        match result {
-            Ok(user) => {
-                clear_user_cache(user).await;
+    match result {
+        Ok(user1) => {
+            clear_user_cache(user).await;
 
-                crate::mut_success!(user)
-            }
-            Err(_) => crate::mut_error!(),
+            crate::mut_success!(user1)
+        }
+        Err(_) => crate::mut_error!(),
     }
 }
-
 
 #[cfg(feature = "update-user-role")]
 pub async fn update_user_role(core_context: &CoreContext, user: &User, role: UserRole) -> MutResult<User> {
@@ -828,10 +831,10 @@ pub async fn update_user_role(core_context: &CoreContext, user: &User, role: Use
     .await;
 
     match result {
-        Ok(user) => {
+        Ok(user1) => {
             clear_user_cache(&user).await;
 
-            crate::mut_success!(user)
+            crate::mut_success!(user1)
         }
         Err(_) => crate::mut_error!(),
     }

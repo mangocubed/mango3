@@ -19,9 +19,13 @@ wasm-bindgen = { workspace = true }
 mango3-core = { workspace = true, features = [
     "authenticate-user",
     "confirm-confirmation-code",
+    "delete-invitation-code",
+    "get-invitation-code",
     "get-invitation-code-by-id",
     "insert-user",
     "insert-user-session",
+    "reset-user-password",
+    "send-user-login-confirmation-code",
     "send-user-password-reset-code",
 ], optional = true }
 mango3-web-utils = { workspace = true, features = ["forms"] }

@@ -113,45 +113,6 @@ async fn get_cached_post_by_id(core_context: &CoreContext, id: Uuid) -> sqlx::Re
     .await
 }
 
-#[cfg(feature = "get-post-by-slug")]
-#[io_cached(
-    map_error = r##"|_| sqlx::Error::RowNotFound"##,
-    convert = r#"{ cache_key_get_post_by_slug(slug, website) }"#,
-    ty = "AsyncRedisCache<String, Post>",
-    create = r##" { async_redis_cache(PREFIX_GET_POST_BY_SLUG).await } "##
-)]
-async fn get_cached_post_by_slug(core_context: &CoreContext, slug: &str, website: &Website) -> sqlx::Result<Post> {
-    if slug.is_empty() {
-        return Err(sqlx::Error::RowNotFound);
-    }
-
-    query_as!(
-        Post,
-        r#"SELECT
-            id,
-            website_id,
-            user_id,
-            language::varchar as "language!",
-            title,
-            slug,
-            content,
-            variables,
-            hashtag_ids,
-            cover_image_blob_id,
-            blob_ids,
-            published_at,
-            modified_at,
-            NULL::real AS search_rank,
-            created_at,
-            updated_at
-        FROM posts WHERE slug = $1 AND website_id = $2 AND published_at IS NOT NULL LIMIT 1"#,
-        slug,       // $1
-        website.id  // $2
-    )
-    .fetch_one(&core_context.db_pool)
-    .await
-}
-
 #[cfg(feature = "get-post-by-id")]
 pub async fn get_post_by_id(
     core_context: &CoreContext,
@@ -233,8 +194,42 @@ pub async fn get_post_by_id_with_search_rank(
 }
 
 #[cfg(feature = "get-post-by-slug")]
+#[cached::proc_macro::io_cached(
+    map_error = r##"|_| sqlx::Error::RowNotFound"##,
+    convert = r#"{ cache_key_get_post_by_slug(slug, website) }"#,
+    ty = "cached::AsyncRedisCache<String, Post>",
+    create = r##" { crate::async_redis_cache!(PREFIX_GET_POST_BY_SLUG).await } "##
+)]
 pub async fn get_post_by_slug(core_context: &CoreContext, slug: &str, website: &Website) -> sqlx::Result<Post> {
-    get_cached_post_by_slug(core_context, slug, website).await
+    if slug.is_empty() {
+        return Err(sqlx::Error::RowNotFound);
+    }
+
+    sqlx::query_as!(
+        Post,
+        r#"SELECT
+            id,
+            website_id,
+            user_id,
+            language::varchar as "language!",
+            title,
+            slug,
+            content,
+            variables,
+            hashtag_ids,
+            cover_image_blob_id,
+            blob_ids,
+            published_at,
+            modified_at,
+            NULL::real AS search_rank,
+            created_at,
+            updated_at
+        FROM posts WHERE slug = $1 AND website_id = $2 AND published_at IS NOT NULL LIMIT 1"#,
+        slug,       // $1
+        website.id  // $2
+    )
+    .fetch_one(&core_context.db_pool)
+    .await
 }
 
 #[cfg(feature = "paginate-posts")]
@@ -477,6 +472,45 @@ mod tests {
 
         let cursor_page =
             paginate_posts(&core_context, &CursorPageParams::default(), Some(&website), Some(&user)).await;
+
+        assert_eq!(cursor_page.nodes.len(), 1);
+    }
+
+    #[tokio::test]
+    async fn should_get_zero_posts() {
+        let core_context = setup_core_context().await;
+        let user = insert_test_user(&core_context).await;
+        let website = insert_test_website(&core_context, Some(&user)).await;
+
+        let cursor_page = Post::search(
+            &core_context,
+            &CursorPageParams::default(),
+            Some(&website),
+            Some(&user),
+            None,
+            "",
+        )
+        .await;
+
+        assert!(cursor_page.nodes.is_empty());
+    }
+
+    #[tokio::test]
+    async fn should_get_one_post() {
+        let core_context = setup_core_context().await;
+        let user = insert_test_user(&core_context).await;
+        let website = insert_test_website(&core_context, Some(&user)).await;
+        let post = insert_test_post(&core_context, Some(&website), Some(&user)).await;
+
+        let cursor_page = Post::search(
+            &core_context,
+            &CursorPageParams::default(),
+            Some(&website),
+            Some(&user),
+            None,
+            &post.title,
+        )
+        .await;
 
         assert_eq!(cursor_page.nodes.len(), 1);
     }

@@ -4,7 +4,7 @@ use leptos::prelude::*;
 use leptos::text_prop::TextProp;
 use leptos_meta::Meta;
 
-use mango3_web_utils::models::WebsiteResp;
+use mango3_web_utils::presenters::WebsitePresenter;
 
 use crate::context::use_current_website_resource;
 
@@ -22,7 +22,7 @@ pub use website_top_bar::WebsiteTopBar;
 pub fn CurrentWebsiteOpt<VF, IV>(children: VF) -> impl IntoView
 where
     IV: IntoView + 'static,
-    VF: Fn(Option<WebsiteResp>) -> IV + Send + Sync + 'static,
+    VF: Fn(Option<WebsitePresenter>) -> IV + Send + Sync + 'static,
 {
     let current_website_resource = use_current_website_resource();
     let children_store = StoredValue::new(children);
@@ -43,7 +43,7 @@ where
 pub fn CurrentWebsite<VF, IV>(children: VF) -> impl IntoView
 where
     IV: IntoView + 'static,
-    VF: Fn(WebsiteResp) -> IV + Send + Sync + 'static,
+    VF: Fn(WebsitePresenter) -> IV + Send + Sync + 'static,
 {
     view! { <CurrentWebsiteOpt children=move |website_opt| { website_opt.map(&children) } /> }
 }

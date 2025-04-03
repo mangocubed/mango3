@@ -11,7 +11,7 @@ use crate::i18n::use_i18n;
 use crate::icons::{
     ArrowUturnLeftMini, ArrowUturnRightMini, BoldMini, ImageMini, ItalicMini, LinkMini, StrikethroughMini,
 };
-use crate::models::ActionValue;
+use crate::presenters::MutPresenterActionValue;
 
 use super::FormField;
 
@@ -27,7 +27,7 @@ const STRIKETHROUGH: &str = "~";
 
 #[component]
 pub fn MarkdownEditorField(
-    #[prop(optional)] action_value: ActionValue,
+    #[prop(optional)] action_value: MutPresenterActionValue,
     #[prop(into, optional)] error: RwSignal<Option<String>>,
     #[prop(into, optional)] id: &'static str,
     #[prop(into, optional)] label: ViewFn,
