@@ -51,9 +51,9 @@ impl Validator {
         self.errors.insert(input, error);
     }
 
-    pub fn custom_validation(&mut self, input: Input, error: InputError, validation: F) -> bool
+    pub fn custom_validation<F>(&mut self, input: Input, error: InputError, validation: F) -> bool
     where
-        F: Fn() -> bool
+        F: Fn() -> bool,
     {
         if !validation() {
             self.add_error(input, error);

@@ -16,11 +16,7 @@ pub async fn get_current_user() -> Result<Option<crate::presenters::UserPresente
 
     use crate::presenters::FromModel;
 
-    let core_context = crate::ssr::expect_core_context();
-
-    Ok(Some(
-        crate::presenters::UserPresenter::from_model(&core_context, &user).await,
-    ))
+    Ok(Some(crate::presenters::UserPresenter::from_model(&user).await))
 }
 
 #[server]

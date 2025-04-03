@@ -28,7 +28,7 @@ pub use cursor_page_presenter::CursorPagePresenter;
 #[cfg(feature = "hashtag-presenter")]
 pub use hashtag_presenter::HashtagPresenter;
 #[cfg(feature = "mutation-presenter")]
-pub use mutation_presenter::{MutPresenter, MutPresenterActionValue, MutPresenterResult};
+pub use mutation_presenter::{MutPresenter, MutPresenterActionValue};
 #[cfg(feature = "post-comment-presenter")]
 pub use post_comment_presenter::PostCommentPresenter;
 #[cfg(feature = "post-presenter")]
@@ -40,12 +40,19 @@ pub use website_presenter::{WebsiteMinPresenter, WebsitePresenter};
 
 #[cfg(feature = "ssr")]
 pub trait FromModel<T> {
-    fn from_model(core_context: &mango3_core::CoreContext, model: &T) -> impl std::future::Future<Output = Self>;
+    fn from_model(model: &T) -> impl std::future::Future<Output = Self>;
 }
 
 #[cfg(feature = "ssr")]
 impl FromModel<()> for () {
-    async fn from_model(_: &mango3_core::CoreContext, _: &()) -> Self {
+    async fn from_model(_: &()) -> Self {
         ()
+    }
+}
+
+#[cfg(feature = "ssr")]
+impl FromModel<uuid::Uuid> for uuid::Uuid {
+    async fn from_model(value: &uuid::Uuid) -> Self {
+        value.clone()
     }
 }

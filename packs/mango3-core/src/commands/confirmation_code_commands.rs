@@ -1,3 +1,6 @@
+use uuid::Uuid;
+
+use crate::enums::ConfirmationCodeAction;
 use crate::models::*;
 use crate::utils::*;
 use crate::CoreContext;
@@ -12,8 +15,10 @@ pub async fn confirm_confirmation_code<F, IF>(
 ) -> MutResult
 where
     F: Fn() -> IF,
-    IF: IntoFuture<Output = Result<(), ValidationErrors>>,
+    IF: std::future::IntoFuture<Output = MutResult<()>>,
 {
+    use crate::enums::{Input, InputError};
+
     let mut validator = crate::validator!();
 
     if action != confirmation_code.action {
@@ -21,12 +26,12 @@ where
     }
 
     if validator.validate_presence(Input::Code, code) {
-        validator.custom_validation(Input::Code, InputError::IsInvalid, &|| async {
+        let code_is_valid = async {
             if confirmation_code.failed_attempts < 3 && verify_password(code, &confirmation_code.encrypted_code) {
                 return true;
             }
 
-            let _ = query!(
+            let _ = sqlx::query!(
                 "UPDATE confirmation_codes SET failed_attempts = failed_attempts + 1 WHERE id = $1",
                 confirmation_code.id
             )
@@ -34,7 +39,10 @@ where
             .await;
 
             false
-        });
+        }
+        .await;
+
+        validator.custom_validation(Input::Code, InputError::IsInvalid, || code_is_valid);
     }
 
     if !validator.is_valid {
@@ -44,7 +52,7 @@ where
     let result = on_success().await;
 
     match result {
-        Ok(()) => {
+        Ok(_) => {
             let _ = delete_confirmation_code(core_context, confirmation_code).await;
 
             crate::mut_success!()
@@ -55,9 +63,11 @@ where
 
 #[cfg(feature = "delete-confirmation-code")]
 pub async fn delete_confirmation_code(core_context: &CoreContext, confirmation_code: &ConfirmationCode) -> MutResult {
-    sqlx::query!("DELETE FROM confirmation_codes WHERE id = $1", self.id)
+    sqlx::query!("DELETE FROM confirmation_codes WHERE id = $1", confirmation_code.id)
         .execute(&core_context.db_pool)
-        .await
+        .await?;
+
+    crate::mut_success!()
 }
 
 #[cfg(feature = "delete-all-expired-confirmation-codes")]
@@ -71,9 +81,9 @@ pub async fn delete_all_expired_confirmation_codes(core_context: &CoreContext) -
 
 #[cfg(feature = "get-confirmation-code-by-id")]
 pub async fn get_confirmation_code_by_id(core_context: &CoreContext, id: Uuid) -> sqlx::Result<ConfirmationCode> {
-        sqlx::query_as!(
-            ConfirmationCode,
-            r#"SELECT
+    sqlx::query_as!(
+        ConfirmationCode,
+        r#"SELECT
                 id,
                 user_id,
                 action as "action!: ConfirmationCodeAction",
@@ -82,21 +92,21 @@ pub async fn get_confirmation_code_by_id(core_context: &CoreContext, id: Uuid) -
                 created_at,
                 updated_at
             FROM confirmation_codes WHERE id = $1 LIMIT 1"#,
-            id, // $1
-        )
-        .fetch_one(&core_context.db_pool)
-        .await
+        id, // $1
+    )
+    .fetch_one(&core_context.db_pool)
+    .await
 }
 
 #[cfg(feature = "get-confirmation-code-by-user")]
 pub async fn get_confirmation_code_by_user(
-        core_context: &CoreContext,
-        user: &User,
-        action: ConfirmationCodeAction,
-    ) -> sqlx::Result<ConfirmationCode> {
-        sqlx::query_as!(
-            ConfirmationCode,
-            r#"SELECT
+    core_context: &CoreContext,
+    user: &User,
+    action: ConfirmationCodeAction,
+) -> sqlx::Result<ConfirmationCode> {
+    sqlx::query_as!(
+        ConfirmationCode,
+        r#"SELECT
                 id,
                 user_id,
                 action as "action!: ConfirmationCodeAction",
@@ -105,11 +115,11 @@ pub async fn get_confirmation_code_by_user(
                 created_at,
                 updated_at
             FROM confirmation_codes WHERE user_id = $1 AND action = $2 LIMIT 1"#,
-            user.id,                          // $1
-            action as ConfirmationCodeAction, // $2
-        )
-        .fetch_one(&core_context.db_pool)
-        .await
+        user.id,                          // $1
+        action as ConfirmationCodeAction, // $2
+    )
+    .fetch_one(&core_context.db_pool)
+    .await
 }
 
 #[cfg(feature = "insert-confirmation-code")]
@@ -148,7 +158,7 @@ pub async fn insert_confirmation_code(
         Ok(confirmation_code) => {
             core_context
                 .jobs
-                .mailer(user, MailerJobCommand::ConfirmationCode { action, code })
+                .mailer(user, crate::enums::MailerJobCommand::ConfirmationCode { action, code })
                 .await;
 
             crate::mut_success!(confirmation_code)

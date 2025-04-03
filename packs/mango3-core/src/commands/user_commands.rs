@@ -7,20 +7,23 @@ use crate::utils::*;
 use crate::CoreContext;
 
 #[cfg(feature = "insert-user")]
+use crate::enums::{Input, InputError};
+
+#[cfg(feature = "insert-user")]
 impl Validator {
     fn validate_full_name(&mut self, value: &str) -> bool {
         self.validate_presence(Input::FullName, value)
             && self.validate_length(Input::FullName, value, Some(2), Some(256))
     }
 
-    fn validate_birthdate(&mut self, value: Option<NaiveDate>) -> bool {
+    fn validate_birthdate(&mut self, value: Option<chrono::NaiveDate>) -> bool {
         self.validate_presence(Input::Birthdate, value)
             && self.custom_validation(Input::Birthdate, InputError::IsInvalid, &|| {
-                value.unwrap() <= Utc::now().date_naive()
+                value.unwrap() <= chrono::Utc::now().date_naive()
             })
     }
 
-    fn validate_country(&mut self, value: Option<&CountryCode>) -> bool {
+    fn validate_country(&mut self, value: Option<&rust_iso3166::CountryCode>) -> bool {
         self.validate_presence(Input::CountryAlpha2, value)
     }
 
@@ -31,23 +34,23 @@ impl Validator {
 
 #[cfg(feature = "authenticate-user")]
 pub async fn authenticate_user(core_context: &CoreContext, username_or_email: &str, password: &str) -> MutResult<User> {
+    use crate::enums::Input;
+
     let mut validator = crate::validator!();
 
     validator.validate_presence(Input::UsernameOrEmail, username_or_email);
     validator.validate_presence(Input::Password, password);
 
     if !validator.is_valid {
-        return Err(validator.errors);
+        return crate::mut_error!(validator.errors);
     }
 
-    let user = Self::get_by_username_or_email(core_context, username_or_email)
-        .await
-        .map_err(|_| ValidationErrors::default())?;
+    let user = get_user_by_username_or_email(core_context, username_or_email).await?;
 
-    if user.verify_password(password) {
-        Ok(user)
+    if verify_user_password(&user, password) {
+        crate::mut_success!(user)
     } else {
-        Err(ValidationErrors::default())
+        crate::mut_error!()
     }
 }
 
@@ -126,9 +129,9 @@ pub async fn disable_user(core_context: &CoreContext, user: &User) -> MutResult 
 
             clear_user_cache(user).await;
 
-            crate::mut_success_result!()
+            crate::mut_success!()
         }
-        Err(_) => crate::mut_error_result!(),
+        Err(_) => crate::mut_error!(),
     }
 }
 
@@ -150,9 +153,9 @@ pub async fn enable_user(core_context: &CoreContext, user: &User) -> MutResult {
 
             clear_user_cache(user).await;
 
-            crate::mut_success_result!()
+            crate::mut_success!()
         }
-        Err(_) => crate::mut_error_result!(),
+        Err(_) => crate::mut_error!(),
     }
 }
 
@@ -284,7 +287,9 @@ pub async fn insert_user(
     language_code: &str,
     country_alpha2: &str,
 ) -> MutResult<User> {
-    let mut validator = Validator::default();
+    use crate::config::USER_CONFIG;
+
+    let mut validator = crate::validator!();
 
     let username = username.trim();
     let email = email.trim().to_lowercase();
@@ -302,7 +307,7 @@ pub async fn insert_user(
             !BLACKLISTED_SLUGS.contains(&username.to_lowercase().as_str())
         })
     {
-        let username_exists = query!(
+        let username_exists = sqlx::query!(
             "SELECT id FROM users WHERE LOWER(username) = $1 LIMIT 1",
             username.to_lowercase() // $1
         )
@@ -316,7 +321,7 @@ pub async fn insert_user(
         && validator.validate_length(Input::Email, &email, Some(5), Some(256))
         && validator.validate_format(Input::Email, &email, &REGEX_EMAIL)
     {
-        let email_exists = query!(
+        let email_exists = sqlx::query!(
             "SELECT id FROM users WHERE LOWER(email) = $1 LIMIT 1",
             email // $1
         )
@@ -335,14 +340,14 @@ pub async fn insert_user(
     validator.validate_country(country);
 
     if !validator.is_valid {
-        return Err(validator.errors);
+        return crate::mut_error!(validator.errors);
     }
 
     let display_name = full_name.split(' ').next().unwrap();
     let encrypted_password = encrypt_password(password);
 
-    let result = query_as!(
-        Self,
+    let result = sqlx::query_as!(
+        User,
         r#"INSERT INTO users (
             username,
             email,
@@ -392,17 +397,17 @@ pub async fn insert_user(
 
     match result {
         Ok(user) => {
-            future::join(
+            futures::future::join(
                 core_context
                     .jobs
-                    .admin_mailer(AdminMailerJobCommand::NewUser(user.clone())),
-                core_context.jobs.mailer(&user, MailerJobCommand::Welcome),
+                    .admin_mailer(crate::enums::AdminMailerJobCommand::NewUser(user.clone())),
+                core_context.jobs.mailer(&user, crate::enums::MailerJobCommand::Welcome),
             )
             .await;
 
-            Ok(user)
+            crate::mut_success!(user)
         }
-        Err(_) => Err(ValidationErrors::default()),
+        Err(_) => crate::mut_error!(),
     }
 }
 
@@ -455,7 +460,7 @@ pub async fn reset_user_password(core_context: &CoreContext, user: &User, new_pa
     validator.validate_password(Input::NewPassword, new_password);
 
     if !validator.is_valid {
-        return Err(validator.errors);
+        return crate::mut_error!(validator.errors);
     }
 
     let encrypted_password = encrypt_password(new_password);
@@ -491,39 +496,37 @@ pub async fn reset_user_password(core_context: &CoreContext, user: &User, new_pa
         Ok(user) => {
             user.cache_remove().await;
 
-            Ok(user)
+            crate::mut_sucess!(user)
         }
-        Err(_) => Err(ValidationErrors::default()),
+        Err(_) => crate::mut_error!(),
     }
 }
 
 #[cfg(feature = "send-user-email-confirmation-code")]
 pub async fn send_user_email_confirmation_code(core_context: &CoreContext, user: &User) -> MutResult<ConfirmationCode> {
     if user.email_is_confirmed() {
-        return Err(ValidationErrors::default());
+        return crate::mut_error!();
     }
 
-    ConfirmationCode::insert(core_context, self, ConfirmationCodeAction::EmailConfirmation)
-        .await
-        .map_err(|_| ValidationErrors::default())
+    super::insert_confirmation_code(core_context, self, ConfirmationCodeAction::EmailConfirmation).await
 }
 
 #[cfg(feature = "send-user-login-confirmation-code")]
 pub async fn send_user_login_confirmation_code(core_context: &CoreContext) -> MutResult<ConfirmationCode> {
     if !user.email_is_confirmed() {
-        return Err(ValidationErrors::default());
+        return crate::mut_error!();
     }
 
-    ConfirmationCode::insert(core_context, user, ConfirmationCodeAction::LoginConfirmation).await
+    super::insert_confirmation_code(core_context, user, ConfirmationCodeAction::LoginConfirmation).await
 }
 
 #[cfg(feature = "send-user-password-reset-code")]
 pub async fn send_user_password_reset_code(core_context: &CoreContext, user: &User) -> MutResult<ConfirmationCode> {
     if !user.email_is_confirmed() {
-        return Err(ValidationErrors::default());
+        return crate::mut_error!();
     }
 
-    ConfirmationCode::insert(core_context, self, ConfirmationCodeAction::PasswordReset).await
+    super::insert_confirmation_code(core_context, user, crate::enums::ConfirmationCodeAction::PasswordReset).await
 }
 
 #[cfg(feature = "update-user-email")]
@@ -707,10 +710,19 @@ pub async fn update_user_role(core_context: &CoreContext, user: &User, role: Use
         Ok(user) => {
             clear_user_cache(&user).await;
 
-            crate::mut_success_result!(user)
+            crate::mut_success!(user)
         }
-        Err(_) => crate::mut_error_result!(),
+        Err(_) => crate::mut_error!(),
     }
+}
+
+#[cfg(feature = "verify-user-password")]
+pub fn verify_user_password(user: &User, password: &str) -> bool {
+    if user.encrypted_password.is_empty() {
+        return false;
+    }
+
+    verify_password(password, &user.encrypted_password)
 }
 
 #[cfg(test)]

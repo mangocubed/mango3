@@ -30,12 +30,12 @@ pub async fn extract_user_session() -> Result<Option<UserSession>, ServerFnError
 }
 
 #[cfg(feature = "finish-and-delete-user-session")]
-pub async fn finish_and_delete_user_session(core_context: &CoreContext) -> Result<(), ServerFnError> {
+pub async fn finish_and_delete_user_session(core_context: &mango3_core::CoreContext) -> Result<(), ServerFnError> {
     let Some(user_session) = extract_user_session().await? else {
         return Ok(());
     };
 
-    let (_, set_cookie_lang) = use_language_cookie::<FromToStringCodec>();
+    let (_, set_cookie_lang) = crate::context::use_language_cookie::<codee::string::FromToStringCodec>();
 
     set_cookie_lang.set(None);
 
@@ -76,15 +76,19 @@ pub async fn require_no_authentication() -> Result<bool, ServerFnError> {
 }
 
 #[cfg(feature = "start-user-session")]
-pub async fn start_user_session(core_context: &CoreContext, user_session: &UserSession) -> Result<(), ServerFnError> {
-    let user = User::get_by_id(core_context, user_session.user_id).await?;
+pub async fn start_user_session(
+    core_context: &mango3_core::CoreContext,
+    user_session: &UserSession,
+) -> Result<(), ServerFnError> {
+    use std::str::FromStr;
 
+    let user = user_session.user(core_context).await?;
     let session = super::extract_session().await?;
-    let (_, set_cookie_lang) = use_language_cookie::<FromToStringCodec>();
+    let (_, set_cookie_lang) = crate::context::use_language_cookie::<codee::string::FromToStringCodec>();
 
     session.insert(KEY_USER_SESSION_ID, user_session.id).await?;
 
-    set_cookie_lang.set(Locale::from_str(&user.language_code).ok());
+    set_cookie_lang.set(crate::i18n::Locale::from_str(&user.language_code).ok());
 
     Ok(())
 }

@@ -4,7 +4,7 @@ use mango3_web_utils::components::forms::{FormErrorAlert, PasswordField, SubmitB
 use mango3_web_utils::components::Modal;
 use mango3_web_utils::i18n::{t, use_i18n};
 use mango3_web_utils::icons::InformationCircleOutlined;
-use mango3_web_utils::models::FormResp;
+use mango3_web_utils::presenters::MutPresenter;
 
 use crate::server_functions::AttemptToResetPassword;
 
@@ -15,7 +15,7 @@ pub fn ResetPasswordModal(is_open: RwSignal<bool>, #[prop(into)] on_success: Cal
     let action_value = server_action.value();
 
     Effect::new(move || {
-        let response = FormResp::from(action_value);
+        let response = MutPresenter::from(action_value);
 
         if response.is_success() {
             is_open.set(false);

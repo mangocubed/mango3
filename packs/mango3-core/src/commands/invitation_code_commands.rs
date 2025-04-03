@@ -1,5 +1,5 @@
 use crate::models::InvitationCode;
-use crate::utils::MutResult;
+use crate::utils::*;
 use crate::CoreContext;
 
 #[cfg(feature = "delete-invitation-code")]
@@ -17,10 +17,14 @@ pub async fn get_invitation_code(core_context: &CoreContext, code: &str) -> sqlx
 }
 
 #[cfg(feature = "get-invitation-code-by-id")]
-pub async fn get_invitation_code_by_id(core_context: &CoreContext, id: Uuid) -> sqlx::Result<InvitationCode> {
-    sqlx::query_as!(Self, "SELECT * FROM invitation_codes WHERE id = $1 LIMIT 1", id)
-        .fetch_one(&core_context.db_pool)
-        .await
+pub async fn get_invitation_code_by_id(core_context: &CoreContext, id: uuid::Uuid) -> sqlx::Result<InvitationCode> {
+    sqlx::query_as!(
+        InvitationCode,
+        "SELECT * FROM invitation_codes WHERE id = $1 LIMIT 1",
+        id
+    )
+    .fetch_one(&core_context.db_pool)
+    .await
 }
 
 #[cfg(feature = "insert-invitation-code")]
@@ -47,7 +51,7 @@ pub async fn insert_invitation_code(core_context: &CoreContext, email: &str) -> 
     }
 
     if !validator.is_valid {
-        return crate::mut_error_result!(validator.errors);
+        return crate::mut_error!(validator.errors);
     }
 
     let code = crate::utils::generate_random_string(crate::config::MISC_CONFIG.invitation_code_length);
@@ -68,8 +72,8 @@ pub async fn insert_invitation_code(core_context: &CoreContext, email: &str) -> 
                 .guest_mailer(&email, crate::enums::GuestMailerJobCommand::InvitationCode(code))
                 .await;
 
-            crate::mut_success_result!(invitation_code)
+            crate::mut_success!(invitation_code)
         }
-        Err(_) => crate::mut_error_result!(),
+        Err(_) => crate::mut_error!(),
     }
 }

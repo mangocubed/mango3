@@ -5,8 +5,6 @@ use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "ssr")]
 use mango3_core::utils::*;
-#[cfg(feature = "ssr")]
-use mango3_core::CoreContext;
 
 #[cfg(feature = "ssr")]
 use super::FromModel;
@@ -22,8 +20,8 @@ macro_rules! mut_presenter_error {
 #[cfg(feature = "ssr")]
 #[macro_export]
 macro_rules! mut_presenter {
-    ($core_context:expr, $i18n:expr, $result:expr) => {
-        Ok($crate::presenters::MutPresenter::new($core_context, $i18n, $result).await)
+    ($result:expr) => {
+        Ok($crate::presenters::MutPresenter::new($result).await)
     };
 }
 
@@ -51,7 +49,7 @@ impl<T> MutPresenter<T> {
     }
 
     #[cfg(feature = "ssr")]
-    pub async fn new<M>(core_context: &CoreContext, i18n: &I18n, result: MutResult<M>) -> Self
+    pub async fn new<M>(result: MutResult<M>) -> Self
     where
         T: FromModel<M>,
     {
@@ -59,21 +57,25 @@ impl<T> MutPresenter<T> {
             Ok(success) => Self {
                 success: Some(true),
                 errors: None,
-                data: Some(T::from_model(core_context, &success.data).await),
+                data: Some(T::from_model(&success.data).await),
                 message: Some(success.message),
             },
-            Err(error) => Self {
-                success: Some(false),
-                errors: Some(
-                    error
-                        .errors
-                        .iter()
-                        .map(|(input, input_error)| (input.to_string(), input_error.text(&i18n)))
-                        .collect(),
-                ),
-                data: None,
-                message: Some(error.message),
-            },
+            Err(error) => {
+                let i18n = crate::ssr::extract_i18n().await.expect("Could not get i18n");
+
+                Self {
+                    success: Some(false),
+                    errors: Some(
+                        error
+                            .errors
+                            .iter()
+                            .map(|(input, input_error)| (input.to_string(), input_error.text(&i18n)))
+                            .collect(),
+                    ),
+                    data: None,
+                    message: Some(error.message),
+                }
+            }
         }
     }
 

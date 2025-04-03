@@ -3,12 +3,7 @@ use url::Url;
 use uuid::Uuid;
 
 #[cfg(feature = "ssr")]
-use std::future::Future;
-
-#[cfg(feature = "ssr")]
 use mango3_core::models::User;
-#[cfg(feature = "ssr")]
-use mango3_core::CoreContext;
 
 use super::{BlobPresenter, HashtagPresenter};
 
@@ -53,40 +48,39 @@ impl UserPresenter {
 
 #[cfg(feature = "ssr")]
 impl FromModel<User> for UserPresenter {
-    fn from_model(core_context: &CoreContext, user: &User) -> impl Future<Output = Self> {
-        async move {
-            let hashtags = futures::future::join_all(
-                user.hashtags(&core_context)
-                    .await
-                    .iter()
-                    .map(|hashtag| HashtagPresenter::from_model(core_context, hashtag)),
-            )
-            .await;
-            let avatar_image_blob = if let Some(Ok(blob)) = user.avatar_image_blob(&core_context).await {
-                Some(BlobPresenter::from_model(core_context, &blob).await)
-            } else {
-                None
-            };
+    async fn from_model(user: &User) -> Self {
+        let core_context = crate::ssr::expect_core_context();
+        let hashtags = futures::future::join_all(
+            user.hashtags(&core_context)
+                .await
+                .iter()
+                .map(|hashtag| HashtagPresenter::from_model(hashtag)),
+        )
+        .await;
+        let avatar_image_blob = if let Some(Ok(blob)) = user.avatar_image_blob(&core_context).await {
+            Some(BlobPresenter::from_model(&blob).await)
+        } else {
+            None
+        };
 
-            Self {
-                id: user.id,
-                username: user.username.clone(),
-                display_name: user.display_name.clone(),
-                initials: user.initials(),
-                email: user.email.clone(),
-                hashtags,
-                avatar_image_blob,
-                can_insert_website: user.can_insert_website(&core_context).await,
-                url: user.url(),
-                text_avatar_url: user.text_avatar_url(),
-                role: user.role.to_string(),
-                is_disabled: user.is_disabled(),
+        Self {
+            id: user.id,
+            username: user.username.clone(),
+            display_name: user.display_name.clone(),
+            initials: user.initials(),
+            email: user.email.clone(),
+            hashtags,
+            avatar_image_blob,
+            can_insert_website: user.can_insert_website(&core_context).await,
+            url: user.url(),
+            text_avatar_url: user.text_avatar_url(),
+            role: user.role.to_string(),
+            is_disabled: user.is_disabled(),
 
-                #[cfg(feature = "user-bio-preview-html")]
-                bio_preview_html: user.bio_preview_html().await,
-                #[cfg(feature = "user-email-is-confirmed")]
-                email_is_confirmed: user.email_is_confirmed(),
-            }
+            #[cfg(feature = "user-bio-preview-html")]
+            bio_preview_html: user.bio_preview_html().await,
+            #[cfg(feature = "user-email-is-confirmed")]
+            email_is_confirmed: user.email_is_confirmed(),
         }
     }
 }
@@ -125,36 +119,35 @@ impl UserMinPresenter {
 
 #[cfg(feature = "ssr")]
 impl FromModel<User> for UserMinPresenter {
-    fn from_model(core_context: &CoreContext, user: &User) -> impl Future<Output = Self> {
-        async move {
-            let hashtags = futures::future::join_all(
-                user.hashtags(&core_context)
-                    .await
-                    .iter()
-                    .map(|hashtag| HashtagPresenter::from_model(core_context, hashtag)),
-            )
-            .await;
-            let avatar_image_blob = if let Some(Ok(blob)) = user.avatar_image_blob(&core_context).await {
-                Some(BlobPresenter::from_model(core_context, &blob).await)
-            } else {
-                None
-            };
+    async fn from_model(user: &User) -> Self {
+        let core_context = crate::ssr::expect_core_context();
+        let hashtags = futures::future::join_all(
+            user.hashtags(&core_context)
+                .await
+                .iter()
+                .map(|hashtag| HashtagPresenter::from_model(hashtag)),
+        )
+        .await;
+        let avatar_image_blob = if let Some(Ok(blob)) = user.avatar_image_blob(&core_context).await {
+            Some(BlobPresenter::from_model(&blob).await)
+        } else {
+            None
+        };
 
-            UserMinPresenter {
-                id: user.id,
-                username: user.username.clone(),
-                display_name: user.display_name.clone(),
-                initials: user.initials(),
-                hashtags,
-                avatar_image_blob,
-                text_avatar_url: user.text_avatar_url(),
-                url: user.url(),
-                role: user.role.to_string(),
-                is_disabled: user.is_disabled(),
+        UserMinPresenter {
+            id: user.id,
+            username: user.username.clone(),
+            display_name: user.display_name.clone(),
+            initials: user.initials(),
+            hashtags,
+            avatar_image_blob,
+            text_avatar_url: user.text_avatar_url(),
+            url: user.url(),
+            role: user.role.to_string(),
+            is_disabled: user.is_disabled(),
 
-                #[cfg(feature = "user-bio-preview-html")]
-                bio_preview_html: user.bio_preview_html().await,
-            }
+            #[cfg(feature = "user-bio-preview-html")]
+            bio_preview_html: user.bio_preview_html().await,
         }
     }
 }

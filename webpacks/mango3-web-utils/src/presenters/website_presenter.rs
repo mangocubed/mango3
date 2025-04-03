@@ -4,8 +4,6 @@ use uuid::Uuid;
 
 #[cfg(feature = "ssr")]
 use mango3_core::models::Website;
-#[cfg(feature = "ssr")]
-use mango3_core::CoreContext;
 
 use super::{BlobPresenter, HashtagPresenter};
 
@@ -60,65 +58,64 @@ impl WebsitePresenter {
 
 #[cfg(feature = "ssr")]
 impl FromModel<Website> for WebsitePresenter {
-    fn from_model(core_context: &CoreContext, website: &Website) -> impl std::future::Future<Output = Self> {
-        async move {
-            let hashtags = futures::future::join_all(
-                website
-                    .hashtags(&core_context)
-                    .await
-                    .iter()
-                    .map(|hashtag| HashtagPresenter::from_model(core_context, hashtag)),
-            )
-            .await;
-            let icon_image_blob = if let Some(Ok(blob)) = website.icon_image_blob(&core_context).await {
-                Some(BlobPresenter::from_model(core_context, &blob).await)
-            } else {
-                None
-            };
-            let cover_image_blob = if let Some(Ok(blob)) = website.cover_image_blob(&core_context).await {
-                Some(BlobPresenter::from_model(core_context, &blob).await)
-            } else {
-                None
-            };
+    async fn from_model(website: &Website) -> Self {
+        let core_context = crate::ssr::expect_core_context();
+        let hashtags = futures::future::join_all(
+            website
+                .hashtags(&core_context)
+                .await
+                .iter()
+                .map(|hashtag| HashtagPresenter::from_model(hashtag)),
+        )
+        .await;
+        let icon_image_blob = if let Some(Ok(blob)) = website.icon_image_blob(&core_context).await {
+            Some(BlobPresenter::from_model(&blob).await)
+        } else {
+            None
+        };
+        let cover_image_blob = if let Some(Ok(blob)) = website.cover_image_blob(&core_context).await {
+            Some(BlobPresenter::from_model(&blob).await)
+        } else {
+            None
+        };
 
+        #[cfg(feature = "website-storage")]
+        let (available_storage, max_storage, used_storage) = (
+            website.available_storage(core_context).await,
+            website.max_storage(),
+            website.used_storage(core_context).await,
+        );
+
+        Self {
+            id: website.id,
+            name: website.name.clone(),
+            description: website.description.clone(),
+            description_preview_html: website.description_preview_html().await,
+            hashtags,
+            initials: website.initials(),
+            icon_image_blob,
+            text_icon_url: website.text_icon_url(),
+            cover_image_blob,
+            light_theme: website.light_theme.clone(),
+            dark_theme: website.dark_theme.clone(),
+            is_published: website.is_published(),
+            host: website.host(),
+            url: website.url(),
+
+            #[cfg(feature = "website-description-html")]
+            description_html: website.description_html().await,
             #[cfg(feature = "website-storage")]
-            let (available_storage, max_storage, used_storage) = (
-                website.available_storage(core_context).await,
-                website.max_storage(),
-                website.used_storage(core_context).await,
-            );
-
-            Self {
-                id: website.id,
-                name: website.name.clone(),
-                description: website.description.clone(),
-                description_preview_html: website.description_preview_html().await,
-                hashtags,
-                initials: website.initials(),
-                icon_image_blob,
-                text_icon_url: website.text_icon_url(),
-                cover_image_blob,
-                light_theme: website.light_theme.clone(),
-                dark_theme: website.dark_theme.clone(),
-                is_published: website.is_published(),
-                host: website.host(),
-                url: website.url(),
-
-                #[cfg(feature = "website-description-html")]
-                description_html: website.description_html().await,
-                #[cfg(feature = "website-storage")]
-                available_storage_str: available_storage.to_string(),
-                #[cfg(feature = "website-storage")]
-                max_storage_str: max_storage.to_string(),
-                #[cfg(feature = "website-storage")]
-                used_storage_str: used_storage.to_string(),
-                #[cfg(feature = "website-storage")]
-                available_storage: available_storage.bytes(),
-                #[cfg(feature = "website-storage")]
-                max_storage: max_storage.bytes(),
-                #[cfg(feature = "website-storage")]
-                used_storage: used_storage.bytes(),
-            }
+            available_storage_str: available_storage.to_string(),
+            #[cfg(feature = "website-storage")]
+            max_storage_str: max_storage.to_string(),
+            #[cfg(feature = "website-storage")]
+            used_storage_str: used_storage.to_string(),
+            #[cfg(feature = "website-storage")]
+            available_storage: available_storage.bytes(),
+            #[cfg(feature = "website-storage")]
+            max_storage: max_storage.bytes(),
+            #[cfg(feature = "website-storage")]
+            used_storage: used_storage.bytes(),
         }
     }
 }
@@ -152,34 +149,33 @@ impl WebsiteMinPresenter {
 
 #[cfg(feature = "ssr")]
 impl FromModel<Website> for WebsiteMinPresenter {
-    fn from_model(core_context: &CoreContext, website: &Website) -> impl std::future::Future<Output = Self> {
-        async move {
-            let hashtags = futures::future::join_all(
-                website
-                    .hashtags(&core_context)
-                    .await
-                    .iter()
-                    .map(|hashtag| HashtagPresenter::from_model(core_context, hashtag)),
-            )
-            .await;
-            let icon_image_blob = if let Some(Ok(blob)) = website.icon_image_blob(&core_context).await {
-                Some(BlobPresenter::from_model(core_context, &blob).await)
-            } else {
-                None
-            };
+    async fn from_model(website: &Website) -> Self {
+        let core_context = crate::ssr::expect_core_context();
+        let hashtags = futures::future::join_all(
+            website
+                .hashtags(&core_context)
+                .await
+                .iter()
+                .map(|hashtag| HashtagPresenter::from_model(hashtag)),
+        )
+        .await;
+        let icon_image_blob = if let Some(Ok(blob)) = website.icon_image_blob(&core_context).await {
+            Some(BlobPresenter::from_model(&blob).await)
+        } else {
+            None
+        };
 
-            Self {
-                id: website.id,
-                name: website.name.clone(),
-                description_preview_html: website.description_preview_html().await,
-                hashtags,
-                initials: website.initials(),
-                icon_image_blob,
-                text_icon_url: website.text_icon_url(),
-                is_published: website.is_published(),
-                host: website.host(),
-                url: website.url(),
-            }
+        Self {
+            id: website.id,
+            name: website.name.clone(),
+            description_preview_html: website.description_preview_html().await,
+            hashtags,
+            initials: website.initials(),
+            icon_image_blob,
+            text_icon_url: website.text_icon_url(),
+            is_published: website.is_published(),
+            host: website.host(),
+            url: website.url(),
         }
     }
 }

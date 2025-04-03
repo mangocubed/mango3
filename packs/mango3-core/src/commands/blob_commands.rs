@@ -41,7 +41,7 @@ pub async fn delete_blob(core_context: &CoreContext, blob: &Blob) -> MutResult {
         let _ = cache.cache_remove(&blob.id).await;
     }
 
-    crate::mut_success_result!()
+    crate::mut_success!()
 }
 
 #[cfg(feature = "delete-orphaned-blobs")]
@@ -70,7 +70,7 @@ pub async fn delete_orphaned_blobs(core_context: &CoreContext) -> MutResult {
         }
     }
 
-    crate::mut_success_result!()
+    crate::mut_success!()
 }
 
 #[cfg(feature = "get-blob-by-id")]

@@ -1,16 +1,17 @@
 use leptos::prelude::*;
+use uuid::Uuid;
 
 use mango3_web_utils::components::forms::{FormErrorAlert, SubmitButton, TextField};
 use mango3_web_utils::components::Modal;
 use mango3_web_utils::context::use_basic_config;
 use mango3_web_utils::i18n::{t, use_i18n};
 use mango3_web_utils::icons::InformationCircleOutlined;
-use mango3_web_utils::models::FormResp;
+use mango3_web_utils::presenters::MutPresenter;
 
 use crate::server_functions::AttemptToGetInvitationCodeId;
 
 #[component]
-pub fn InvitationCodeModal(value: RwSignal<Option<String>>) -> impl IntoView {
+pub fn InvitationCodeModal(value: RwSignal<Option<Uuid>>) -> impl IntoView {
     let basic_config = use_basic_config();
     let i18n = use_i18n();
     let server_action = ServerAction::<AttemptToGetInvitationCodeId>::new();
@@ -19,7 +20,7 @@ pub fn InvitationCodeModal(value: RwSignal<Option<String>>) -> impl IntoView {
     let support_email_address = basic_config.support_email_address;
 
     Effect::new(move || {
-        let response = FormResp::from(action_value);
+        let response = MutPresenter::from(action_value);
 
         if response.is_success() {
             value.set(response.data);

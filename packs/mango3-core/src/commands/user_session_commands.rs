@@ -1,4 +1,5 @@
-use crate::models::UserSession;
+use crate::models::*;
+use crate::utils::*;
 use crate::CoreContext;
 
 #[cfg(feature = "all-user-sessions-by-user")]
@@ -21,7 +22,7 @@ pub async fn delete_user_session(core_context: &CoreContext, user_session: &User
         .cache_remove(crate::constants::PREFIX_GET_USER_SESSION_BY_ID, &user_session.id)
         .await;
 
-    crate::mut_success_result!()
+    crate::mut_success!()
 }
 
 #[cfg(feature = "delete-all-user-sessions")]
@@ -37,7 +38,7 @@ pub async fn delete_all_user_sessions(
     )
     .await;
 
-    crate::mut_success_result!()
+    crate::mut_success!()
 }
 
 #[cfg(feature = "get-user-session-by-id")]
@@ -51,4 +52,27 @@ pub async fn get_user_session_by_id(core_context: &CoreContext, id: uuid::Uuid) 
     sqlx::query_as!(UserSession, "SELECT * FROM user_sessions WHERE id = $1 LIMIT 1", id)
         .fetch_one(&core_context.db_pool)
         .await
+}
+
+#[cfg(feature = "insert-user-session")]
+pub async fn insert_user_session(core_context: &CoreContext, user: &User) -> MutResult<UserSession> {
+    let result = sqlx::query_as!(
+        UserSession,
+        "INSERT INTO user_sessions (user_id) VALUES ($1) RETURNING *",
+        user.id, // $1
+    )
+    .fetch_one(&core_context.db_pool)
+    .await;
+
+    match result {
+        Ok(user_session) => {
+            core_context
+                .jobs
+                .mailer(user, crate::enums::MailerJobCommand::NewUserSession)
+                .await;
+
+            crate::mut_success!(user_session)
+        }
+        Err(_) => crate::mut_error!(),
+    }
 }

@@ -13,7 +13,6 @@ use crate::CoreContext;
 use super::{Blob, Hashtag, Website};
 
 mod user_all;
-mod user_password;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct User {

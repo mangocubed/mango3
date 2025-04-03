@@ -1,6 +1,7 @@
 use leptos::prelude::*;
 use uuid::Uuid;
 
+use mango3_core::commands::get_confirmation_code_by_id;
 use mango3_core::models::ConfirmationCode;
 
 use crate::constants::KEY_CONFIRMATION_CODE_ID;
@@ -16,7 +17,7 @@ pub async fn extract_confirmation_code() -> Result<Option<ConfirmationCode>, Ser
 
     let core_context = expect_core_context();
 
-    Ok(ConfirmationCode::get_by_id(&core_context, id).await.ok())
+    Ok(get_confirmation_code_by_id(&core_context, id).await.ok())
 }
 
 pub async fn finish_confirmation_code() -> Result<(), ServerFnError> {

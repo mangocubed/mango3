@@ -4,8 +4,6 @@ use uuid::Uuid;
 
 #[cfg(feature = "ssr")]
 use mango3_core::models::Blob;
-#[cfg(feature = "ssr")]
-use mango3_core::CoreContext;
 
 #[cfg(feature = "ssr")]
 use super::FromModel;
@@ -22,17 +20,17 @@ pub struct BlobPresenter {
 
 #[cfg(feature = "ssr")]
 impl FromModel<Blob> for BlobPresenter {
-    #[allow(unused_variables)]
-    fn from_model(core_context: &CoreContext, blob: &Blob) -> impl std::future::Future<Output = Self> {
-        async {
-            Self {
-                id: blob.id,
-                file_name: blob.file_name.clone(),
-                url: blob.url(),
+    async fn from_model(blob: &Blob) -> Self {
+        #[cfg(feature = "blob-is-removable")]
+        let core_context = crate::ssr::expect_core_context();
 
-                #[cfg(feature = "blob-is-removable")]
-                is_removable: blob.is_removable(core_context).await,
-            }
+        Self {
+            id: blob.id,
+            file_name: blob.file_name.clone(),
+            url: blob.url(),
+
+            #[cfg(feature = "blob-is-removable")]
+            is_removable: blob.is_removable(&core_context).await,
         }
     }
 }

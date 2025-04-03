@@ -5,8 +5,6 @@ use uuid::Uuid;
 
 #[cfg(feature = "ssr")]
 use mango3_core::models::Post;
-#[cfg(feature = "ssr")]
-use mango3_core::CoreContext;
 
 use super::{BlobPresenter, HashtagPresenter, UserMinPresenter, WebsiteMinPresenter};
 
@@ -38,54 +36,49 @@ pub struct PostPresenter {
 
 #[cfg(feature = "ssr")]
 impl FromModel<Post> for PostPresenter {
-    fn from_model(core_context: &CoreContext, post: &Post) -> impl std::future::Future<Output = Self> {
-        async move {
-            let user = UserMinPresenter::from_model(
-                core_context,
-                &post.user(core_context).await.expect("Could not get user"),
-            )
-            .await;
-            let hashtags = futures::future::join_all(
-                post.hashtags(&core_context)
-                    .await
-                    .iter()
-                    .map(|hashtag| HashtagPresenter::from_model(core_context, hashtag)),
-            )
-            .await;
-            let cover_image_blob = if let Some(Ok(blob)) = post.cover_image_blob(&core_context).await {
-                Some(BlobPresenter::from_model(core_context, &blob).await)
-            } else {
-                None
-            };
-            let blobs = futures::future::join_all(
-                post.blobs(&core_context)
-                    .await
-                    .iter()
-                    .map(|blob| BlobPresenter::from_model(core_context, &blob)),
-            )
-            .await;
+    async fn from_model(post: &Post) -> Self {
+        let core_context = crate::ssr::expect_core_context();
+        let user = UserMinPresenter::from_model(&post.user(&core_context).await.expect("Could not get user")).await;
+        let hashtags = futures::future::join_all(
+            post.hashtags(&core_context)
+                .await
+                .iter()
+                .map(|hashtag| HashtagPresenter::from_model(hashtag)),
+        )
+        .await;
+        let cover_image_blob = if let Some(Ok(blob)) = post.cover_image_blob(&core_context).await {
+            Some(BlobPresenter::from_model(&blob).await)
+        } else {
+            None
+        };
+        let blobs = futures::future::join_all(
+            post.blobs(&core_context)
+                .await
+                .iter()
+                .map(|blob| BlobPresenter::from_model(&blob)),
+        )
+        .await;
 
-            Self {
-                id: post.id,
-                user,
-                title: post.title.clone(),
-                slug: post.slug.clone(),
-                hashtags,
-                cover_image_blob,
-                blobs,
-                is_published: post.is_published(core_context).await,
-                url: post.url(&core_context).await,
-                comments_count: post.comments_count(&core_context).await,
-                reactions_count: post.reactions_count(&core_context).await,
-                views_count: post.views_count(&core_context).await,
-                published_at: post.published_at,
-                modified_at: post.modified_at,
-                created_at: post.created_at,
-                updated_at: post.updated_at,
+        Self {
+            id: post.id,
+            user,
+            title: post.title.clone(),
+            slug: post.slug.clone(),
+            hashtags,
+            cover_image_blob,
+            blobs,
+            is_published: post.is_published(&core_context).await,
+            url: post.url(&core_context).await,
+            comments_count: post.comments_count(&core_context).await,
+            reactions_count: post.reactions_count(&core_context).await,
+            views_count: post.views_count(&core_context).await,
+            published_at: post.published_at,
+            modified_at: post.modified_at,
+            created_at: post.created_at,
+            updated_at: post.updated_at,
 
-                #[cfg(feature = "post-content-html")]
-                content_html: post.content_html().await,
-            }
+            #[cfg(feature = "post-content-html")]
+            content_html: post.content_html().await,
         }
     }
 }
@@ -112,49 +105,41 @@ pub struct PostMinPresenter {
 
 #[cfg(feature = "ssr")]
 impl FromModel<Post> for PostMinPresenter {
-    fn from_model(core_context: &CoreContext, post: &Post) -> impl std::future::Future<Output = Self> {
-        async move {
-            let website = WebsiteMinPresenter::from_model(
-                core_context,
-                &post.website(&core_context).await.expect("Could not get website"),
-            )
-            .await;
-            let user = UserMinPresenter::from_model(
-                core_context,
-                &post.user(core_context).await.expect("Could not get user"),
-            )
-            .await;
-            let hashtags = futures::future::join_all(
-                post.hashtags(&core_context)
-                    .await
-                    .iter()
-                    .map(|hashtag| HashtagPresenter::from_model(core_context, hashtag)),
-            )
-            .await;
-            let cover_image_blob = if let Some(Ok(blob)) = post.cover_image_blob(&core_context).await {
-                Some(BlobPresenter::from_model(core_context, &blob).await)
-            } else {
-                None
-            };
+    async fn from_model(post: &Post) -> Self {
+        let core_context = crate::ssr::expect_core_context();
+        let website =
+            WebsiteMinPresenter::from_model(&post.website(&core_context).await.expect("Could not get website")).await;
+        let user = UserMinPresenter::from_model(&post.user(&core_context).await.expect("Could not get user")).await;
+        let hashtags = futures::future::join_all(
+            post.hashtags(&core_context)
+                .await
+                .iter()
+                .map(|hashtag| HashtagPresenter::from_model(hashtag)),
+        )
+        .await;
+        let cover_image_blob = if let Some(Ok(blob)) = post.cover_image_blob(&core_context).await {
+            Some(BlobPresenter::from_model(&blob).await)
+        } else {
+            None
+        };
 
-            Self {
-                id: post.id,
-                website,
-                user,
-                title: post.title.clone(),
-                slug: post.slug.clone(),
-                content_preview_html: post.content_preview_html().await,
-                hashtags,
-                cover_image_blob,
-                is_published: post.is_published(core_context).await,
-                comments_count: post.comments_count(&core_context).await,
-                reactions_count: post.reactions_count(&core_context).await,
-                views_count: post.views_count(&core_context).await,
-                url: post.url(&core_context).await,
-                modified_at: post.modified_at,
-                created_at: post.created_at,
-                updated_at: post.updated_at,
-            }
+        Self {
+            id: post.id,
+            website,
+            user,
+            title: post.title.clone(),
+            slug: post.slug.clone(),
+            content_preview_html: post.content_preview_html().await,
+            hashtags,
+            cover_image_blob,
+            is_published: post.is_published(&core_context).await,
+            comments_count: post.comments_count(&core_context).await,
+            reactions_count: post.reactions_count(&core_context).await,
+            views_count: post.views_count(&core_context).await,
+            url: post.url(&core_context).await,
+            modified_at: post.modified_at,
+            created_at: post.created_at,
+            updated_at: post.updated_at,
         }
     }
 }

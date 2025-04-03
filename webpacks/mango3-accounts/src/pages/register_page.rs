@@ -1,3 +1,4 @@
+use leptos::either::Either;
 use leptos::prelude::*;
 
 use leptos_router::hooks::use_navigate;
@@ -15,6 +16,54 @@ use crate::components::InvitationCodeModal;
 use crate::server_functions::AttemptToRegister;
 
 #[component]
+fn AgreementAlert() -> impl IntoView {
+    let basic_config = use_basic_config();
+    let i18n = use_i18n();
+    // let privacy_policy_url = basic_config.privacy_policy_url.clone();
+    // let terms_of_service_url = basic_config.terms_of_service_url.clone();
+
+    if basic_config.privacy_policy_url.is_some() || basic_config.terms_of_service_url.is_some() {
+        Either::Left(view! {
+            <div role="alert" class="alert mt-2 mb-5">
+                <InformationCircleOutlined class="self-start my-2" />
+
+                <div>
+                    <div class="font-bold">
+                        {t!(i18n, accounts.by_submitting_this_form_you_agree_to_the_following)} ": "
+                    </div>
+
+                    {basic_config
+                        .privacy_policy_url
+                        .map(|url| {
+                            view! {
+                                <div class="text-sm mt-1">
+                                    <a class="link link-info" href=url.to_string() target="_blank">
+                                        {t!(i18n, shared.privacy_policy)}
+                                    </a>
+                                </div>
+                            }
+                        })}
+
+                    {basic_config
+                        .terms_of_service_url
+                        .map(|url| {
+                            view! {
+                                <div class="text-sm mt-1">
+                                    <a class="link link-info" href=url.to_string() target="_blank">
+                                        {t!(i18n, shared.terms_of_service)}
+                                    </a>
+                                </div>
+                            }
+                        })}
+                </div>
+            </div>
+        })
+    } else {
+        Either::Right(())
+    }
+}
+
+#[component]
 pub fn RegisterPage() -> impl IntoView {
     let navigate = use_navigate();
     let basic_config = use_basic_config();
@@ -23,11 +72,6 @@ pub fn RegisterPage() -> impl IntoView {
     let action_value = server_action.value();
     let value_invitation_code_id = RwSignal::new(None);
     let text_title = async_t_string!(i18n, shared.register).to_signal();
-
-    let privacy_policy_url = basic_config.privacy_policy_url.clone();
-    let terms_of_service_url = basic_config.terms_of_service_url.clone();
-    let has_privacy_policy = !privacy_policy_url.is_empty();
-    let has_terms_of_service = !terms_of_service_url.is_empty();
 
     view! {
         <GuestPage title=text_title>
@@ -39,7 +83,11 @@ pub fn RegisterPage() -> impl IntoView {
                 <FormErrorAlert action_value=action_value message=move || t!(i18n, accounts.failed_to_create_user) />
 
                 <Show when=move || !basic_config.enable_register>
-                    <input type="hidden" name="invitation_code_id" value=value_invitation_code_id />
+                    <input
+                        type="hidden"
+                        name="invitation_code_id"
+                        value=move || value_invitation_code_id.get().map(|id| id.to_string())
+                    />
                 </Show>
 
                 <TextField
@@ -86,50 +134,7 @@ pub fn RegisterPage() -> impl IntoView {
                     name="country_alpha2"
                 />
 
-                <Show when=move || {
-                    has_privacy_policy || has_terms_of_service
-                }>
-                    {
-                        let privacy_policy_url = privacy_policy_url.clone();
-                        let terms_of_service_url = terms_of_service_url.clone();
-                        move || {
-                            let privacy_policy_url = privacy_policy_url.clone();
-                            let terms_of_service_url = terms_of_service_url.clone();
-                            view! {
-                                <div role="alert" class="alert mt-2 mb-5">
-                                    <InformationCircleOutlined class="self-start my-2" />
-                                    <div>
-                                        <div class="font-bold">
-                                            {t!(i18n, accounts.by_submitting_this_form_you_agree_to_the_following)} ": "
-                                        </div>
-                                        <Show when=move || { has_privacy_policy }>
-                                            <div class="text-sm mt-1">
-                                                <a
-                                                    class="link link-info"
-                                                    href=privacy_policy_url.clone()
-                                                    target="_blank"
-                                                >
-                                                    {t!(i18n, shared.privacy_policy)}
-                                                </a>
-                                            </div>
-                                        </Show>
-                                        <Show when=move || has_terms_of_service>
-                                            <div class="text-sm mt-1">
-                                                <a
-                                                    class="link link-info"
-                                                    href=terms_of_service_url.clone()
-                                                    target="_blank"
-                                                >
-                                                    {t!(i18n, shared.terms_of_service)}
-                                                </a>
-                                            </div>
-                                        </Show>
-                                    </div>
-                                </div>
-                            }
-                        }
-                    }
-                </Show>
+                <AgreementAlert />
 
                 <SubmitButton is_loading=server_action.pending() />
             </ActionForm>
@@ -138,7 +143,7 @@ pub fn RegisterPage() -> impl IntoView {
                 action_value=action_value
                 message=move || t!(i18n, accounts.user_created_successfully)
                 on_close=move || {
-                    navigate(&basic_config.home_url.clone(), Default::default());
+                    navigate(&basic_config.home_url.to_string(), Default::default());
                 }
             />
 

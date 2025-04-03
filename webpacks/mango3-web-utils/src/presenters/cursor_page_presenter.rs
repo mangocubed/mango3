@@ -3,8 +3,6 @@ use uuid::Uuid;
 
 #[cfg(feature = "ssr")]
 use mango3_core::utils::CursorPage;
-#[cfg(feature = "ssr")]
-use mango3_core::CoreContext;
 
 #[cfg(feature = "ssr")]
 use super::FromModel;
@@ -12,8 +10,11 @@ use super::FromModel;
 #[cfg(feature = "ssr")]
 #[macro_export]
 macro_rules! cursor_page_presenter {
-    ($core_context:expr, $page:expr) => {
-        Ok(CursorPagePresenter::new($core_context, $page).await)
+    ($page:expr) => {
+        Ok(CursorPagePresenter::new($page).await)
+    };
+    () => {
+        Ok(CursorPagePresenter::default())
     };
 }
 
@@ -36,13 +37,13 @@ impl<T> Default for CursorPagePresenter<T> {
 
 #[cfg(feature = "ssr")]
 impl<T> CursorPagePresenter<T> {
-    pub async fn new<M>(core_context: &CoreContext, page: &CursorPage<M>) -> Self
+    pub async fn new<M>(page: &CursorPage<M>) -> Self
     where
         T: FromModel<M>,
-     {
+    {
         Self {
             end_cursor: page.end_cursor,
-            nodes: futures::future::join_all(page.nodes.iter().map(|node| T::from_model(core_context, node))).await,
+            nodes: futures::future::join_all(page.nodes.iter().map(|node| T::from_model(node))).await,
             has_next_page: page.has_next_page,
         }
     }

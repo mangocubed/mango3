@@ -6,7 +6,12 @@
     feature = "insert-blob",
 ))]
 mod blob_commands;
-#[cfg(feature = "delete-all-expired-confirmation-codes")]
+#[cfg(any(
+    feature = "confirm-confirmation-code",
+    feature = "delete-all-expired-confirmation-codes",
+    feature = "get-confirmation-code-by-id",
+    feature = "insert-confirmation-code",
+))]
 mod confirmation_code_commands;
 #[cfg(any(
     feature = "all-hashtags-by-ids",
@@ -49,12 +54,15 @@ mod post_reaction_commands;
 #[cfg(any(feature = "get-post-views-count", feature = "get-or-insert-post-view"))]
 mod post_view_commands;
 #[cfg(any(
+    feature = "authenticate-user",
     feature = "clear-user-cache",
     feature = "disable-user",
     feature = "enable-user",
     feature = "get-user-by-id",
     feature = "get-user-by-username",
+    feature = "get-user-by-username-or-email",
     feature = "insert-user",
+    feature = "send-user-password-reset-code",
     feature = "update-user-role",
     feature = "paginate-users",
 ))]
@@ -63,7 +71,8 @@ mod user_commands;
     feature = "all-user-sessions-by-user",
     feature = "delete-user-session",
     feature = "delete-all-user-sessions",
-    feature = "get-user-session-by-id"
+    feature = "get-user-session-by-id",
+    feature = "insert-user-session"
 ))]
 mod user_session_commands;
 #[cfg(any(
@@ -85,8 +94,14 @@ pub use blob_commands::delete_orphaned_blobs;
 pub use blob_commands::get_blob_by_id;
 #[cfg(feature = "insert-blob")]
 pub use blob_commands::insert_blob;
+#[cfg(feature = "confirm-confirmation-code")]
+pub use confirmation_code_commands::confirm_confirmation_code;
 #[cfg(feature = "delete-all-expired-confirmation-codes")]
 pub use confirmation_code_commands::delete_all_expired_confirmation_codes;
+#[cfg(feature = "get-confirmation-code-by-id")]
+pub use confirmation_code_commands::get_confirmation_code_by_id;
+#[cfg(feature = "insert-confirmation-code")]
+pub use confirmation_code_commands::insert_confirmation_code;
 #[cfg(feature = "all-hashtags-by-ids")]
 pub use hashtag_commands::all_hashtags_by_ids;
 #[cfg(feature = "get-hashtag-by-id")]
@@ -133,6 +148,8 @@ pub use post_reaction_commands::insert_or_update_post_reaction;
 pub use post_view_commands::get_or_insert_post_view;
 #[cfg(feature = "get-post-views-count")]
 pub use post_view_commands::get_post_views_count;
+#[cfg(feature = "authenticate-user")]
+pub use user_commands::authenticate_user;
 #[cfg(feature = "clear-user-cache")]
 pub use user_commands::clear_user_cache;
 #[cfg(feature = "disable-user")]
@@ -143,10 +160,14 @@ pub use user_commands::enable_user;
 pub use user_commands::get_user_by_id;
 #[cfg(feature = "get-user-by-username")]
 pub use user_commands::get_user_by_username;
+#[cfg(feature = "get-user-by-username-or-email")]
+pub use user_commands::get_user_by_username_or_email;
 #[cfg(feature = "insert-user")]
 pub use user_commands::insert_user;
 #[cfg(feature = "paginate-users")]
 pub use user_commands::paginate_users;
+#[cfg(feature = "send-user-password-reset-code")]
+pub use user_commands::send_user_password_reset_code;
 #[cfg(feature = "update-user-role")]
 pub use user_commands::update_user_role;
 #[cfg(feature = "all-user-sessions-by-user")]
@@ -157,6 +178,8 @@ pub use user_session_commands::delete_all_user_sessions;
 pub use user_session_commands::delete_user_session;
 #[cfg(feature = "get-user-session-by-id")]
 pub use user_session_commands::get_user_session_by_id;
+#[cfg(feature = "insert-user-session")]
+pub use user_session_commands::insert_user_session;
 #[cfg(feature = "clear-website-cache")]
 pub use website_commands::clear_website_cache;
 #[cfg(feature = "get-website-by-id")]

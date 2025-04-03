@@ -3,8 +3,6 @@ use uuid::Uuid;
 
 #[cfg(feature = "ssr")]
 use mango3_core::models::Hashtag;
-#[cfg(feature = "ssr")]
-use mango3_core::CoreContext;
 
 #[cfg(feature = "ssr")]
 use super::FromModel;
@@ -17,12 +15,10 @@ pub struct HashtagPresenter {
 
 #[cfg(feature = "ssr")]
 impl FromModel<Hashtag> for HashtagPresenter {
-    fn from_model(_core_context: &CoreContext, hashtag: &Hashtag) -> impl std::future::Future<Output = Self> {
-        async {
-            Self {
-                id: hashtag.id,
-                name: hashtag.name.clone(),
-            }
+    async fn from_model(hashtag: &Hashtag) -> Self {
+        Self {
+            id: hashtag.id,
+            name: hashtag.name.clone(),
         }
     }
 }

@@ -1,18 +1,16 @@
-use sqlx::types::chrono::{DateTime, Utc};
-use sqlx::types::Uuid;
-use sqlx::{query, query_as};
+use chrono::{DateTime, Utc};
+use uuid::Uuid;
 
-use crate::config::MISC_CONFIG;
-use crate::enums::{ConfirmationCodeAction, MailerJobCommand};
+use crate::enums::ConfirmationCodeAction;
 use crate::CoreContext;
 
-use super::{encrypt_password, verify_password, User};
+use super::User;
 
 pub struct ConfirmationCode {
     pub id: Uuid,
-    user_id: Uuid,
-    action: ConfirmationCodeAction,
-    encrypted_code: String,
+    pub user_id: Uuid,
+    pub action: ConfirmationCodeAction,
+    pub(crate) encrypted_code: String,
     pub failed_attempts: i16,
     pub created_at: DateTime<Utc>,
     pub updated_at: Option<DateTime<Utc>>,

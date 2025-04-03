@@ -14,21 +14,29 @@ leptos_meta = { workspace = true }
 leptos_router = { workspace = true }
 serde = { workspace = true }
 tokio = { workspace = true, optional = true }
-uuid = { workspace = true, optional = true }
+uuid = { workspace = true }
 wasm-bindgen = { workspace = true }
-mango3-core = { workspace = true, features = [], optional = true }
+mango3-core = { workspace = true, features = [
+    "authenticate-user",
+    "confirm-confirmation-code",
+    "get-invitation-code-by-id",
+    "insert-user",
+    "insert-user-session",
+    "send-user-password-reset-code",
+], optional = true }
 mango3-web-utils = { workspace = true, features = ["forms"] }
 
 [features]
 hydrate = ["leptos/hydrate", "leptos_i18n/hydrate", "mango3-web-utils/hydrate"]
 ssr = [
     "dep:tokio",
-    "dep:uuid",
     "dep:mango3-core",
     "leptos/ssr",
     "leptos_i18n/axum",
     "leptos_meta/ssr",
     "leptos_router/ssr",
+    "mango3-web-utils/confirmation-codes",
+    "mango3-web-utils/start-user-session",
     "mango3-web-utils/ssr",
 ]
 

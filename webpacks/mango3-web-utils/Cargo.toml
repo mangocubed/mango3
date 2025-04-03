@@ -72,7 +72,7 @@ user-email-is-confirmed = ["user-presenter", "mango3-core?/user-email-is-confirm
 website-description-html = ["website-presenter", "mango3-core?/website-description-html"]
 website-storage = ["website-presenter", "mango3-core?/website-storage"]
 # Misc
-confirmation-codes = ["mango3-core?/confirmation-code"]
+confirmation-codes = ["mango3-core?/confirmation-code", "mango3-core?/get-confirmation-code-by-id"]
 extract-user = []
 finish-and-delete-user-session = []
 start-user-session = []
