@@ -9,9 +9,6 @@ use crate::CoreContext;
 
 use super::{Blob, Hashtag, User, Website};
 
-const PREFIX_POST_CONTENT_HTML: &str = "post_content_html";
-const PREFIX_POST_CONTENT_PREVIEW_HTML: &str = "post_content_preview_html";
-
 #[derive(Clone, Deserialize, Serialize)]
 pub struct Post {
     pub id: Uuid,

@@ -180,6 +180,8 @@ pub(crate) const PREFIX_GET_POST_BY_ID: &str = "get_post_by_id";
 pub(crate) const PREFIX_GET_POST_BY_SLUG: &str = "get_post_by_slug";
 pub(crate) const PREFIX_NAVIGATION_ITEM_ALL_BY_WEBSITE: &str = "navigation_item_all_by_website";
 pub(crate) const PREFIX_POST_COMMENT_CONTENT_HTML: &str = "post_comment_content_html";
+const PREFIX_POST_CONTENT_HTML: &str = "post_content_html";
+const PREFIX_POST_CONTENT_PREVIEW_HTML: &str = "post_content_preview_html";
 pub(crate) const PREFIX_GET_USER_SESSION_BY_ID: &str = "get_user_session_by_id";
 #[cfg(any(feature = "clear-user-cache", feature = "get-user-by-id"))]
 pub(crate) const PREFIX_GET_USER_BY_ID: &str = "get_user_by_id";
