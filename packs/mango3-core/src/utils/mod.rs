@@ -51,6 +51,13 @@ pub fn encrypt_password(password: &str) -> String {
     argon2.hash_password(password.as_bytes(), &salt).unwrap().to_string()
 }
 
+#[cfg(feature = "hashtag-has-lookaround")]
+pub fn hashtag_has_lookaround(content: &str, match_: regex::Match) -> bool {
+    (match_.start() == 1
+        || crate::constants::HASHTAG_LOOKAROUND.contains(&content.get(match_.start() - 2..match_.start() - 1)))
+        && crate::constants::HASHTAG_LOOKAROUND.contains(&content.get(match_.end()..match_.end() + 1))
+}
+
 #[cfg(feature = "generate-random-string")]
 pub(crate) fn generate_random_string(length: u8) -> String {
     use rand::distr::Alphanumeric;

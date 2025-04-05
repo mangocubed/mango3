@@ -35,3 +35,10 @@ impl FromModel<PostComment> for PostCommentPresenter {
         }
     }
 }
+
+#[cfg(all(feature = "ssr", feature = "post-comment-presenter"))]
+impl FromModel<mango3_core::models::PostComment> for () {
+    async fn from_model(_: &mango3_core::models::PostComment) -> Self {
+        ()
+    }
+}

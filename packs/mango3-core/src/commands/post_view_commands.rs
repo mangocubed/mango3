@@ -1,5 +1,4 @@
-use crate::models::{Post, PostView, User};
-use crate::utils::*;
+use crate::models::*;
 use crate::CoreContext;
 
 #[cfg(feature = "get-post-views-count")]
@@ -20,7 +19,7 @@ pub async fn get_or_insert_post_view(
     post: &Post,
     user: Option<&User>,
     ip_address: &str,
-) -> MutResult<PostView> {
+) -> crate::utils::MutResult<PostView> {
     use ipnetwork::IpNetwork;
     use std::str::FromStr;
 

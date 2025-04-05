@@ -4,8 +4,6 @@ use sqlx::types::Uuid;
 
 use crate::constants::*;
 use crate::models::*;
-#[allow(unused_imports)]
-use crate::utils::*;
 use crate::CoreContext;
 
 #[cfg(feature = "all-blobs-by-ids")]
@@ -28,7 +26,7 @@ pub async fn all_blobs_by_ids(
 }
 
 #[cfg(feature = "delete-blob")]
-pub async fn delete_blob(core_context: &CoreContext, blob: &Blob) -> MutResult {
+pub async fn delete_blob(core_context: &CoreContext, blob: &Blob) -> crate::utils::MutResult {
     use cached::IOCachedAsync;
 
     sqlx::query!("DELETE FROM blobs WHERE id = $1", blob.id)
@@ -45,7 +43,7 @@ pub async fn delete_blob(core_context: &CoreContext, blob: &Blob) -> MutResult {
 }
 
 #[cfg(feature = "delete-orphaned-blobs")]
-pub async fn delete_orphaned_blobs(core_context: &CoreContext) -> MutResult {
+pub async fn delete_orphaned_blobs(core_context: &CoreContext) -> crate::utils::MutResult {
     let result = sqlx::query_as!(
         Blob,
         "SELECT *
@@ -118,34 +116,43 @@ pub async fn insert_blob(
     core_context: &CoreContext,
     user: &User,
     website: Option<&Website>,
-    field: &mut Field<'_>,
-) -> MutResult<Blob> {
-    let website_id = website.map(|w| w.id);
-    let tmp_file_path = MISC_CONFIG.storage_tmp_path().join(Uuid::new_v4().to_string());
-    let mut tmp_file = fs::File::create(&tmp_file_path).map_err(|_| ValidationErrors::default())?;
-    let mut byte_size = 0i64;
-    let mut md5_hasher = Md5::new();
+    field: &mut multer::Field<'_>,
+) -> crate::utils::MutResult<Blob> {
+    use std::io::Write;
 
-    while let Some(chunk) = field.chunk().await.map_err(|_| ValidationErrors::default())? {
-        tmp_file.write(&chunk).map_err(|_| ValidationErrors::default())?;
+    use md5::Digest;
+
+    let website_id = website.map(|w| w.id);
+    let tmp_file_path = crate::config::MISC_CONFIG
+        .storage_tmp_path()
+        .join(Uuid::new_v4().to_string());
+    let mut tmp_file = std::fs::File::create(&tmp_file_path)?;
+    let mut byte_size = 0i64;
+    let mut md5_hasher = md5::Md5::new();
+
+    while let Some(chunk) = field.chunk().await.map_err(|_| crate::utils::MutError::default())? {
+        tmp_file.write(&chunk)?;
         byte_size += chunk.len() as i64;
         md5_hasher.update(chunk);
     }
 
-    #[cfg(feature = "website_storage")]
+    #[cfg(feature = "website-storage")]
     {
         if let Some(website) = website {
             if website.available_storage(core_context).await.bytes() < byte_size {
-                return Err(ValidationErrors::default());
+                return crate::mut_error!();
             }
         }
     }
 
     let md5_checksum = format!("{:x}", md5_hasher.finalize());
-    let content_type = field.content_type().unwrap_or(&APPLICATION_OCTET_STREAM).to_string();
+    let content_type = field
+        .content_type()
+        .unwrap_or(&mime::APPLICATION_OCTET_STREAM)
+        .to_string();
 
-    let result = query_as!(
-        Self,
+    let result = sqlx::query_as!(
+        Blob,
         "SELECT * FROM blobs
         WHERE user_id = $1 AND website_id = $2 AND content_type = $3 AND byte_size = $4 AND md5_checksum = $5",
         user.id,      // $1
@@ -157,20 +164,22 @@ pub async fn insert_blob(
     .fetch_one(&core_context.db_pool)
     .await;
 
-    if let Ok(blob) = result {
-        let _ = fs::remove_file(tmp_file_path);
-        return Ok(blob);
+    if let Ok(ref blob) = result {
+        let _ = std::fs::remove_file(tmp_file_path);
+
+        return crate::mut_success!(blob.clone());
     }
 
     if !ALLOWED_FILE_TYPES.contains(&content_type.as_str()) {
-        let _ = fs::remove_file(tmp_file_path);
-        return Err(ValidationErrors::default());
+        let _ = std::fs::remove_file(tmp_file_path);
+
+        return crate::mut_error!();
     }
 
     let file_name = field.file_name().unwrap_or_default();
 
-    let result = query_as!(
-        Self,
+    let result = sqlx::query_as!(
+        Blob,
         "INSERT INTO blobs (user_id, website_id, file_name, content_type, byte_size, md5_checksum)
         VALUES ($1, $2, $3, $4, $5, $6)
         RETURNING *",
@@ -184,30 +193,27 @@ pub async fn insert_blob(
     .fetch_one(&core_context.db_pool)
     .await;
 
-    match result {
-        Ok(blob) => {
-            let _ = fs::create_dir_all(blob.directory());
-            let _ = fs::rename(&tmp_file_path, blob.default_path());
-            let _ = fs::remove_file(tmp_file_path);
-
-            Ok(blob)
-        }
-        Err(_) => Err(ValidationErrors::default()),
+    if let Ok(ref blob) = result {
+        let _ = std::fs::create_dir_all(blob.directory());
+        let _ = std::fs::rename(&tmp_file_path, blob.default_path());
+        let _ = std::fs::remove_file(tmp_file_path);
     }
+
+    crate::mut_result!(result)
 }
 
 #[cfg(feature = "paginate-blobs")]
 pub async fn paginate_blobs<'a>(
     core_context: &'a CoreContext,
-    cursor_page_params: &CursorPageParams,
+    cursor_page_params: &crate::utils::CursorPageParams,
     website: Option<&'a Website>,
     user: Option<&'a User>,
-) -> CursorPage<Self> {
-    cursor_page!(
+) -> crate::utils::CursorPage<Blob> {
+    crate::cursor_page!(
         core_context,
         cursor_page_params,
-        |node: Self| node.id,
-        move |core_context, after| async move { Self::get_by_id(core_context, after, website, user).await.ok() },
+        |node: Blob| node.id,
+        move |core_context, after| async move { get_blob_by_id(core_context, after, website, user).await.ok() },
         move |core_context, cursor_resource, limit| async move {
             let website_id = website.map(|w| w.id);
             let user_id = user.map(|u| u.id);
@@ -215,8 +221,8 @@ pub async fn paginate_blobs<'a>(
                 .map(|c| (Some(c.id), Some(c.created_at)))
                 .unwrap_or_default();
 
-            query_as!(
-                Self,
+            sqlx::query_as!(
+                Blob,
                 r#"SELECT * FROM blobs
                 WHERE ($1::uuid IS NULL OR website_id = $1) AND ($2::uuid IS NULL OR user_id = $2)
                     AND ($4::timestamptz IS NULL OR created_at < $4 OR (created_at = $4 AND id < $3))

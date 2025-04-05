@@ -1,15 +1,25 @@
 use uuid::Uuid;
 
-use crate::constants::*;
 use crate::enums::UserRole;
 use crate::models::*;
-use crate::utils::*;
 use crate::CoreContext;
 
-#[cfg(feature = "insert-user")]
+#[cfg(any(
+    feature = "insert-user",
+    feature = "update-user-email",
+    feature = "update-user-password",
+    feature = "update-user-profile"
+))]
 use crate::enums::{Input, InputError};
+#[cfg(any(feature = "insert-user", feature = "update-user-profile"))]
+use crate::utils::{Validator, ValidatorTrait};
 
-#[cfg(feature = "insert-user")]
+#[cfg(any(
+    feature = "insert-user",
+    feature = "update-user-email",
+    feature = "update-user-password",
+    feature = "update-user-profile"
+))]
 impl Validator {
     fn validate_full_name(&mut self, value: &str) -> bool {
         self.validate_presence(Input::FullName, value)
@@ -62,7 +72,11 @@ pub async fn all_admin_users(core_context: &CoreContext) -> Vec<User> {
 }
 
 #[cfg(feature = "authenticate-user")]
-pub async fn authenticate_user(core_context: &CoreContext, username_or_email: &str, password: &str) -> MutResult<User> {
+pub async fn authenticate_user(
+    core_context: &CoreContext,
+    username_or_email: &str,
+    password: &str,
+) -> crate::utils::MutResult<User> {
     use crate::enums::Input;
 
     let mut validator = crate::validator!();
@@ -85,6 +99,9 @@ pub async fn authenticate_user(core_context: &CoreContext, username_or_email: &s
 
 #[cfg(feature = "clear-user-cache")]
 pub async fn clear_user_cache(user: &User) {
+    use crate::constants::*;
+    use crate::utils::AsyncRedisCacheTrait;
+
     let email = user.email.to_lowercase();
     let username = user.username.to_lowercase();
 
@@ -99,7 +116,7 @@ pub async fn clear_user_cache(user: &User) {
 }
 
 #[cfg(feature = "confirm-user-email")]
-pub async fn confirm_user_email(core_context: &CoreContext, user: &User) -> MutResult<Self> {
+pub async fn confirm_user_email(core_context: &CoreContext, user: &User) -> crate::utils::MutResult<User> {
     let result = sqlx::query_as!(
         User,
         r#"UPDATE users SET email_confirmed_at = current_timestamp
@@ -137,7 +154,7 @@ pub async fn confirm_user_email(core_context: &CoreContext, user: &User) -> MutR
 }
 
 #[cfg(feature = "disable-user")]
-pub async fn disable_user(core_context: &CoreContext, user: &User) -> MutResult {
+pub async fn disable_user(core_context: &CoreContext, user: &User) -> crate::utils::MutResult {
     let result = sqlx::query!(
         "UPDATE users SET disabled_at = current_timestamp WHERE role = 'user' AND disabled_at IS NULL AND id = $1",
         user.id
@@ -165,7 +182,7 @@ pub async fn disable_user(core_context: &CoreContext, user: &User) -> MutResult 
 }
 
 #[cfg(feature = "enable-user")]
-pub async fn enable_user(core_context: &CoreContext, user: &User) -> MutResult {
+pub async fn enable_user(core_context: &CoreContext, user: &User) -> crate::utils::MutResult {
     let result = sqlx::query!(
         "UPDATE users SET disabled_at = NULL WHERE disabled_at IS NOT NULL AND id = $1",
         user.id
@@ -315,16 +332,17 @@ pub async fn insert_user(
     birthdate: &str,
     language_code: &str,
     country_alpha2: &str,
-) -> MutResult<User> {
+) -> crate::utils::MutResult<User> {
     use crate::config::USER_CONFIG;
+    use crate::constants::{BLACKLISTED_SLUGS, REGEX_EMAIL, REGEX_USERNAME};
 
     let mut validator = crate::validator!();
 
     let username = username.trim();
     let email = email.trim().to_lowercase();
     let full_name = full_name.trim();
-    let birthdate = parse_date(birthdate);
-    let country = find_country(country_alpha2);
+    let birthdate = crate::utils::parse_date(birthdate);
+    let country = crate::utils::find_country(country_alpha2);
 
     if validator.validate_presence(Input::Username, username)
         && validator.validate_length(Input::Username, username, Some(3), Some(16))
@@ -373,7 +391,7 @@ pub async fn insert_user(
     }
 
     let display_name = full_name.split(' ').next().unwrap();
-    let encrypted_password = encrypt_password(password);
+    let encrypted_password = crate::utils::encrypt_password(password);
 
     let result = sqlx::query_as!(
         User,
@@ -441,7 +459,10 @@ pub async fn insert_user(
 }
 
 #[cfg(feature = "paginate-users")]
-pub async fn paginate_users(core_context: &CoreContext, cursor_page_params: &CursorPageParams) -> CursorPage<User> {
+pub async fn paginate_users(
+    core_context: &CoreContext,
+    cursor_page_params: &crate::utils::CursorPageParams,
+) -> crate::utils::CursorPage<User> {
     crate::cursor_page!(
         core_context,
         cursor_page_params,
@@ -483,7 +504,11 @@ pub async fn paginate_users(core_context: &CoreContext, cursor_page_params: &Cur
 }
 
 #[cfg(feature = "reset-user-password")]
-pub async fn reset_user_password(core_context: &CoreContext, user: &User, new_password: &str) -> MutResult<User> {
+pub async fn reset_user_password(
+    core_context: &CoreContext,
+    user: &User,
+    new_password: &str,
+) -> crate::utils::MutResult<User> {
     let mut validator = crate::validator!();
 
     validator.validate_password(Input::NewPassword, new_password);
@@ -492,7 +517,7 @@ pub async fn reset_user_password(core_context: &CoreContext, user: &User, new_pa
         return crate::mut_error!(validator.errors);
     }
 
-    let encrypted_password = encrypt_password(new_password);
+    let encrypted_password = crate::utils::encrypt_password(new_password);
 
     let result = sqlx::query_as!(
         User,
@@ -532,16 +557,27 @@ pub async fn reset_user_password(core_context: &CoreContext, user: &User, new_pa
 }
 
 #[cfg(feature = "send-user-email-confirmation-code")]
-pub async fn send_user_email_confirmation_code(core_context: &CoreContext, user: &User) -> MutResult<ConfirmationCode> {
+pub async fn send_user_email_confirmation_code(
+    core_context: &CoreContext,
+    user: &User,
+) -> crate::utils::MutResult<ConfirmationCode> {
     if user.email_is_confirmed() {
         return crate::mut_error!();
     }
 
-    super::insert_confirmation_code(core_context, self, ConfirmationCodeAction::EmailConfirmation).await
+    super::insert_confirmation_code(
+        core_context,
+        user,
+        crate::enums::ConfirmationCodeAction::EmailConfirmation,
+    )
+    .await
 }
 
 #[cfg(feature = "send-user-login-confirmation-code")]
-pub async fn send_user_login_confirmation_code(core_context: &CoreContext, user: &User) -> MutResult<ConfirmationCode> {
+pub async fn send_user_login_confirmation_code(
+    core_context: &CoreContext,
+    user: &User,
+) -> crate::utils::MutResult<ConfirmationCode> {
     if !user.email_is_confirmed() {
         return crate::mut_error!();
     }
@@ -555,7 +591,10 @@ pub async fn send_user_login_confirmation_code(core_context: &CoreContext, user:
 }
 
 #[cfg(feature = "send-user-password-reset-code")]
-pub async fn send_user_password_reset_code(core_context: &CoreContext, user: &User) -> MutResult<ConfirmationCode> {
+pub async fn send_user_password_reset_code(
+    core_context: &CoreContext,
+    user: &User,
+) -> crate::utils::MutResult<ConfirmationCode> {
     if !user.email_is_confirmed() {
         return crate::mut_error!();
     }
@@ -569,18 +608,20 @@ pub async fn update_user_email(
     user: &User,
     email: &str,
     password: &str,
-) -> MutResult<Self> {
+) -> crate::utils::MutResult<User> {
+    use crate::enums::{Input, InputError};
+
     let email = email.trim().to_lowercase();
 
-    let mut validator = validator!();
+    let mut validator = crate::validator!();
 
     if validator.validate_presence(Input::Email, &email)
         && validator.validate_length(Input::Email, &email, Some(5), Some(256))
-        && validator.validate_format(Input::Email, &email, &REGEX_EMAIL)
+        && validator.validate_format(Input::Email, &email, &crate::constants::REGEX_EMAIL)
     {
-        let email_exists = query!(
+        let email_exists = sqlx::query!(
             "SELECT id FROM users WHERE id != $1 AND LOWER(email) = $2 LIMIT 1",
-            self.id, // $1
+            user.id, // $1
             email,   // $2
         )
         .fetch_one(&core_context.db_pool)
@@ -591,20 +632,20 @@ pub async fn update_user_email(
 
     if validator.validate_presence(Input::Password, password) {
         validator.custom_validation(Input::Password, InputError::IsInvalid, &|| {
-            self.verify_password(password)
+            verify_user_password(user, password)
         });
     }
 
     if !validator.is_valid {
-        return Err(validator.errors);
+        return crate::mut_error!(validator.errors);
     }
 
-    if self.email == email {
-        return Ok(self.clone());
+    if user.email == email {
+        return crate::mut_success!(user.clone());
     }
 
-    let result = query_as!(
-        Self,
+    let result = sqlx::query_as!(
+        User,
         r#"UPDATE users SET email = $2::text, email_confirmed_at = NULL WHERE disabled_at IS NULL AND id = $1
         RETURNING
             id,
@@ -624,19 +665,19 @@ pub async fn update_user_email(
             disabled_at,
             created_at,
             updated_at"#,
-        self.id, // $1
+        user.id, // $1
         email,   // $2
     )
     .fetch_one(&core_context.db_pool)
     .await;
 
     match result {
-        Ok(user) => {
-            user.cache_remove().await;
+        Ok(user1) => {
+            clear_user_cache(user).await;
 
-            Ok(user)
+            crate::mut_success!(user1)
         }
-        Err(_) => Err(ValidationErrors::default()),
+        Err(_) => crate::mut_error!(),
     }
 }
 
@@ -646,29 +687,29 @@ pub async fn update_user_password(
     user: &User,
     current_password: &str,
     new_password: &str,
-) -> MutResult<User> {
-    let mut validator = Validator::default();
+) -> crate::utils::MutResult<User> {
+    let mut validator = crate::validator!();
 
     if validator.validate_presence(Input::CurrentPassword, current_password) {
         validator.custom_validation(Input::CurrentPassword, InputError::IsInvalid, &|| {
-            self.verify_password(current_password)
+            verify_user_password(user, current_password)
         });
     }
 
     validator.validate_password(Input::NewPassword, new_password);
 
     if !validator.is_valid {
-        return Err(validator.errors);
+        return crate::mut_error!(validator.errors);
     }
 
-    if self.verify_password(new_password) {
-        return Ok(self.clone());
+    if verify_user_password(user, new_password) {
+        return crate::mut_success!(user.clone());
     }
 
-    let encrypted_password = encrypt_password(new_password);
+    let encrypted_password = crate::utils::encrypt_password(new_password);
 
-    let result = query_as!(
-        Self,
+    let result = sqlx::query_as!(
+        User,
         r#"UPDATE users SET encrypted_password = $2 WHERE disabled_at IS NULL AND id = $1 RETURNING
             id,
             username,
@@ -687,19 +728,19 @@ pub async fn update_user_password(
             disabled_at,
             created_at,
             updated_at"#,
-        self.id,            // $1
+        user.id,            // $1
         encrypted_password, // $2
     )
     .fetch_one(&core_context.db_pool)
     .await;
 
     match result {
-        Ok(user) => {
-            user.cache_remove().await;
+        Ok(user1) => {
+            clear_user_cache(user).await;
 
-            Ok(user)
+            crate::mut_success!(user1)
         }
-        Err(_) => Err(ValidationErrors::default()),
+        Err(_) => crate::mut_error!(),
     }
 }
 
@@ -713,13 +754,13 @@ pub async fn update_user_profile(
     country_alpha2: &str,
     bio: &str,
     avatar_image_blob: Option<&Blob>,
-) -> Result<User, ValidationErrors> {
+) -> crate::utils::MutResult<User> {
     let mut validator = crate::validator!();
 
     let display_name = display_name.trim();
     let full_name = full_name.trim();
-    let birthdate = parse_date(birthdate);
-    let country = find_country(country_alpha2);
+    let birthdate = crate::utils::parse_date(birthdate);
+    let country = crate::utils::find_country(country_alpha2);
     let bio = bio.trim();
     let avatar_image_blob_id = avatar_image_blob.map(|blob| blob.id);
 
@@ -739,8 +780,8 @@ pub async fn update_user_profile(
         return crate::mut_error!(validator.errors);
     }
 
-    let hashtags = get_or_insert_many_hashtags(core_context, bio).await?;
-    let hashtag_ids = hashtags.iter().map(|hashtag| hashtag.id).collect::<Vec<Uuid>>();
+    let hashtags = super::get_or_insert_many_hashtags(core_context, bio).await?;
+    let hashtag_ids = hashtags.data.iter().map(|hashtag| hashtag.id).collect::<Vec<Uuid>>();
 
     let result = sqlx::query_as!(
         User,
@@ -771,7 +812,7 @@ pub async fn update_user_profile(
                 disabled_at,
                 created_at,
                 updated_at"#,
-        self.id,                 // $1
+        user.id,                 // $1
         display_name,            // $2
         full_name,               // $3
         birthdate,               // $4
@@ -794,7 +835,11 @@ pub async fn update_user_profile(
 }
 
 #[cfg(feature = "update-user-role")]
-pub async fn update_user_role(core_context: &CoreContext, user: &User, role: UserRole) -> MutResult<User> {
+pub async fn update_user_role(
+    core_context: &CoreContext,
+    user: &User,
+    role: UserRole,
+) -> crate::utils::MutResult<User> {
     if role == UserRole::Superuser {
         let _ = sqlx::query!(
             r#"UPDATE users SET role = 'admin' WHERE role = 'superuser' AND id != $1"#,
@@ -846,7 +891,7 @@ pub fn verify_user_password(user: &User, password: &str) -> bool {
         return false;
     }
 
-    verify_password(password, &user.encrypted_password)
+    crate::utils::verify_password(password, &user.encrypted_password)
 }
 
 #[cfg(test)]

@@ -1,4 +1,3 @@
-use regex::Match;
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
 
@@ -13,7 +12,6 @@ pub mod utils;
 mod test_utils;
 
 use config::DATABASE_CONFIG;
-use constants::HASHTAG_LOOKAROUND;
 
 type DBPool = PgPool;
 
@@ -40,9 +38,4 @@ impl CoreContext {
             jobs: utils::Jobs::setup().await,
         }
     }
-}
-
-pub fn hashtag_has_lookaround(content: &str, match_: Match) -> bool {
-    (match_.start() == 1 || HASHTAG_LOOKAROUND.contains(&content.get(match_.start() - 2..match_.start() - 1)))
-        && HASHTAG_LOOKAROUND.contains(&content.get(match_.end()..match_.end() + 1))
 }

@@ -100,7 +100,7 @@ impl Post {
     map_error = r##"|err| err"##,
     convert = r#"{ post.id }"#,
     ty = "cached::AsyncRedisCache<Uuid, String>",
-    create = r##" { crate::async_redis_cache!(PREFIX_POST_CONTENT_HTML).await } "##
+    create = r##" { crate::async_redis_cache!(crate::constants::PREFIX_POST_CONTENT_HTML).await } "##
 )]
 pub(crate) async fn post_cached_content_html(post: &Post) -> Result<String, cached::RedisCacheError> {
     Ok(crate::parse_html!(
@@ -113,7 +113,7 @@ pub(crate) async fn post_cached_content_html(post: &Post) -> Result<String, cach
     map_error = r##"|err| err"##,
     convert = r#"{ post.id }"#,
     ty = "cached::AsyncRedisCache<Uuid, String>",
-    create = r##" { crate::async_redis_cache!(PREFIX_POST_CONTENT_PREVIEW_HTML).await } "##
+    create = r##" { crate::async_redis_cache!(crate::constants::PREFIX_POST_CONTENT_PREVIEW_HTML).await } "##
 )]
 pub(crate) async fn post_cached_content_preview_html(post: &Post) -> Result<String, cached::RedisCacheError> {
     Ok(crate::parse_html!(

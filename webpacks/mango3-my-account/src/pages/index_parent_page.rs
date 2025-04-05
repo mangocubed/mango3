@@ -20,8 +20,8 @@ pub fn IndexParentPage() -> impl IntoView {
     let logout_action_value = logout_server_action.value();
 
     Effect::new(move || {
-        if let Some(()) = logout_action_value.get().and_then(|result| result.ok()) {
-            navigate(&basic_config.login_url, Default::default());
+        if let Some(Ok(_)) = logout_action_value.get() {
+            navigate(&basic_config.login_url.to_string(), Default::default());
         }
     });
 

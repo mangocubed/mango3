@@ -20,10 +20,16 @@ uuid = { workspace = true }
 wasm-bindgen = { workspace = true }
 mango3-core = { workspace = true, features = [
     "all-navigation-items-by-website",
+    "delete-post-reaction",
     "get-hashtag-by-name",
     "get-or-insert-post-view",
     "get-post-by-slug",
+    "get-post-reaction-by-post-and-user",
+    "get-post-reaction-emojis-count",
     "get-website-by-subdomain",
+    "insert-or-update-post-reaction",
+    "insert-post-comment",
+    "paginate-post-comments",
     "paginate-posts",
     "search-posts",
 ], optional = true }
@@ -34,6 +40,7 @@ mango3-web-utils = { workspace = true, features = [
     "post-card",
     "post-comment-presenter",
     "post-content-html",
+    "post-reaction-presenter",
     "unconfirmed-email-alert",
     "website-description-html",
 ] }

@@ -39,8 +39,7 @@ pub async fn finish_and_delete_user_session(core_context: &mango3_core::CoreCont
 
     set_cookie_lang.set(None);
 
-    user_session
-        .delete(&core_context)
+    mango3_core::commands::delete_user_session(&core_context, &user_session)
         .await
         .map_err(|_| ServerFnError::new("Could not delete user session.".to_owned()))?;
 

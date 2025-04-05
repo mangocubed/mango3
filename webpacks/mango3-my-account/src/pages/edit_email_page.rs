@@ -6,8 +6,8 @@ use mango3_web_utils::components::forms::{FormErrorAlert, FormSuccessModal, Pass
 use mango3_web_utils::components::CurrentUser;
 use mango3_web_utils::context::use_current_user_resource;
 use mango3_web_utils::i18n::{t, use_i18n};
-use mango3_web_utils::models::FormResp;
 use mango3_web_utils::pages::AuthenticatedPage;
+use mango3_web_utils::presenters::MutPresenter;
 use mango3_web_utils::utils::ToSignalTrait;
 
 use crate::components::EmailConfirmationBadge;
@@ -23,7 +23,7 @@ pub fn EditEmailPage() -> impl IntoView {
     let text_title = async_t_string!(i18n, my_account.edit_email).to_signal();
 
     Effect::new(move || {
-        let response = FormResp::from(action_value);
+        let response = MutPresenter::from(action_value);
 
         if response.is_success() {
             form_node_ref.with(|form| form.as_ref().map(|f: &HtmlFormElement| f.reset()));

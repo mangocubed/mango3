@@ -6,15 +6,13 @@ use mango3_web_utils::presenters::{CursorPagePresenter, MutPresenter, PostCommen
 #[cfg(feature = "ssr")]
 use mango3_core::utils::CursorPageParams;
 #[cfg(feature = "ssr")]
-use mango3_web_utils::ssr::{expect_core_context, extract_i18n, extract_user, require_authentication};
+use mango3_web_utils::ssr::{expect_core_context, extract_user, require_authentication};
 
 #[cfg(feature = "ssr")]
 use super::posts::current_post;
 
 #[server]
 pub async fn attempt_to_create_post_comment(post_id: Uuid, content: String) -> Result<MutPresenter, ServerFnError> {
-    let i18n = extract_i18n().await?;
-
     if !require_authentication().await? {
         return mango3_web_utils::mut_presenter_error!();
     }

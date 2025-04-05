@@ -42,43 +42,52 @@ pub async fn get_hashtag_by_name(core_context: &CoreContext, name: &str) -> sqlx
 }
 
 #[cfg(feature = "get-or-insert-hashtag")]
-pub async fn get_or_insert_hashtag(core_context: &CoreContext, name: &str) -> MutResult<Hashtag> {
+pub async fn get_or_insert_hashtag(core_context: &CoreContext, name: &str) -> crate::utils::MutResult<Hashtag> {
+    use crate::enums::{Input, InputError};
+    use crate::utils::ValidatorTrait;
+
     let name = name.trim().to_lowercase();
 
-    if let Ok(hashtag) = Self::get_by_name(core_context, &name).await {
-        return Ok(hashtag);
+    if let Ok(hashtag) = get_hashtag_by_name(core_context, &name).await {
+        return crate::mut_success!(hashtag);
     };
 
-    let mut validator = Validator::default();
+    let mut validator = crate::validator!();
 
     if validator.validate_presence(Input::Name, &name)
-        && validator.validate_format(Input::Name, &name, &REGEX_HASHTAG)
+        && validator.validate_format(Input::Name, &name, &crate::constants::REGEX_HASHTAG)
         && validator.validate_length(Input::Name, &name, Some(1), Some(256))
         && validator.custom_validation(Input::Name, InputError::IsInvalid, &|| Uuid::try_parse(&name).is_err())
     {
         validator.custom_validation(Input::Name, InputError::IsInvalid, &|| {
-            !BLACKLISTED_HASHTAGS.contains(&name.as_str())
+            !crate::constants::BLACKLISTED_HASHTAGS.contains(&name.as_str())
         });
     }
 
-    sqlx::query_as!(
-        Self,
+    let result = sqlx::query_as!(
+        Hashtag,
         "INSERT INTO hashtags (name) VALUES ($1) RETURNING *",
         name, // $1
     )
     .fetch_one(&core_context.db_pool)
-    .await
-    .map_err(|_| ValidationErrors::default())
+    .await;
+
+    crate::mut_result!(result)
 }
 
 #[cfg(feature = "get-or-insert-many-hashtags")]
-async fn get_or_insert_many_hashtags(core_context: &CoreContext, content: &str) -> MutResult<Vec<Hashtag>> {
-    let mut hashtag_names = REGEX_FIND_HASHTAGS
+pub async fn get_or_insert_many_hashtags(
+    core_context: &CoreContext,
+    content: &str,
+) -> crate::utils::MutResult<Vec<Hashtag>> {
+    let mut hashtag_names = crate::constants::REGEX_FIND_HASHTAGS
         .captures_iter(content)
         .filter_map(|captures| {
             captures.name("name").and_then(|match_| {
                 let name = match_.as_str();
-                if !BLACKLISTED_HASHTAGS.contains(&name) && hashtag_has_lookaround(content, match_) {
+                if !crate::constants::BLACKLISTED_HASHTAGS.contains(&name)
+                    && crate::utils::hashtag_has_lookaround(content, match_)
+                {
                     Some(name)
                 } else {
                     None
@@ -90,17 +99,17 @@ async fn get_or_insert_many_hashtags(core_context: &CoreContext, content: &str) 
     hashtag_names.dedup();
 
     if hashtag_names.is_empty() {
-        return Ok(vec![]);
+        return crate::mut_success!(vec![]);
     }
 
-    Ok(future::join_all(
+    crate::mut_success!(futures::future::join_all(
         hashtag_names
             .iter()
             .map(|name| get_or_insert_hashtag(core_context, name)),
     )
     .await
     .iter()
-    .filter_map(|hashtag| hashtag.as_ref().ok().cloned())
+    .filter_map(|result| result.as_ref().map(|success| success.data.clone()).ok())
     .collect())
 }
 

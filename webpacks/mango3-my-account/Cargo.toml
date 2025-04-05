@@ -12,18 +12,32 @@ leptos = { workspace = true }
 leptos_i18n = { workspace = true }
 leptos_meta = { workspace = true }
 leptos_router = { workspace = true }
+serde = { workspace = true }
 tokio = { workspace = true, optional = true }
-uuid = { workspace = true, optional = true }
+uuid = { workspace = true }
 wasm-bindgen = { workspace = true }
 web-sys = { workspace = true }
-mango3-core = { workspace = true, features = [], optional = true }
-mango3-web-utils = { workspace = true, features = ["image-upload", "markdown-editor"] }
+mango3-core = { workspace = true, features = [
+    "confirm-confirmation-code",
+    "confirm-user-email",
+    "send-user-email-confirmation-code",
+    "update-user-email",
+    "update-user-password",
+    "update-user-profile",
+], optional = true }
+mango3-web-utils = { workspace = true, features = [
+    "confirmation-code-presenter",
+    "confirmation-codes",
+    "finish-and-delete-user-session",
+    "image-upload",
+    "markdown-editor",
+    "user-email-is-confirmed",
+] }
 
 [features]
 hydrate = ["leptos/hydrate", "leptos_i18n/hydrate", "mango3-web-utils/hydrate"]
 ssr = [
     "dep:tokio",
-    "dep:uuid",
     "dep:mango3-core",
     "leptos/ssr",
     "leptos_i18n/axum",

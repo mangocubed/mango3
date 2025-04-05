@@ -7,7 +7,7 @@ use mango3_web_utils::components::Modal;
 use mango3_web_utils::context::use_current_user_resource;
 use mango3_web_utils::i18n::{t, use_i18n};
 use mango3_web_utils::icons::CheckMini;
-use mango3_web_utils::models::FormResp;
+use mango3_web_utils::presenters::MutPresenter;
 
 use crate::server_functions::{AttemptToConfirmEmail, AttemptToSendEmailConfirmationCode};
 
@@ -20,7 +20,7 @@ pub fn EmailConfirmationModal(is_open: RwSignal<bool>) -> impl IntoView {
     let success_modal_is_open = RwSignal::new(false);
 
     Effect::new(move || {
-        let response = FormResp::from(action_value);
+        let response = MutPresenter::from(action_value);
 
         if let Some(true) = response.success {
             is_open.set(false);
@@ -60,7 +60,7 @@ pub fn EmailConfirmationBadge(#[prop(into)] is_confirmed: Signal<bool>) -> impl 
     let confirmation_modal_is_open = RwSignal::new(false);
 
     Effect::new(move || {
-        let response = FormResp::from(send_code_action_value);
+        let response = MutPresenter::from(send_code_action_value);
 
         if let Some(true) = response.success {
             confirmation_modal_is_open.set(true)

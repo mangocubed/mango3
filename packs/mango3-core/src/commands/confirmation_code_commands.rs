@@ -1,5 +1,3 @@
-use uuid::Uuid;
-
 use crate::enums::ConfirmationCodeAction;
 use crate::models::*;
 use crate::utils::*;
@@ -80,7 +78,7 @@ pub async fn delete_all_expired_confirmation_codes(core_context: &CoreContext) -
 }
 
 #[cfg(feature = "get-confirmation-code-by-id")]
-pub async fn get_confirmation_code_by_id(core_context: &CoreContext, id: Uuid) -> sqlx::Result<ConfirmationCode> {
+pub async fn get_confirmation_code_by_id(core_context: &CoreContext, id: uuid::Uuid) -> sqlx::Result<ConfirmationCode> {
     sqlx::query_as!(
         ConfirmationCode,
         r#"SELECT

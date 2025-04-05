@@ -28,7 +28,7 @@ mango3-core = { workspace = true, features = [
     "send-user-login-confirmation-code",
     "send-user-password-reset-code",
 ], optional = true }
-mango3-web-utils = { workspace = true, features = ["forms"] }
+mango3-web-utils = { workspace = true, features = ["confirmation-code-presenter", "forms"] }
 
 [features]
 hydrate = ["leptos/hydrate", "leptos_i18n/hydrate", "mango3-web-utils/hydrate"]

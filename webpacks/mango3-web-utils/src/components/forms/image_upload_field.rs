@@ -29,8 +29,8 @@ pub fn ImageUploadField(
     let website_id_store = StoredValue::new(website_id);
 
     Effect::new(move || {
-        if let Some(Ok(blob_resp)) = upload_action_value.get() {
-            value.set(blob_resp)
+        if let Some(Ok(success)) = upload_action_value.get() {
+            value.set(success.data)
         }
     });
 
@@ -73,12 +73,16 @@ pub fn ImageUploadField(
                 if upload_action.pending().get() {
                     EitherOf3::A(LoadingSpinner)
                 } else if let Some(blob) = value.get() {
-                    let variant_url = blob.variant_url(width, height, true).clone();
                     EitherOf3::B(
                         view! {
-                            <input type="hidden" name=name.clone() value=blob.id />
+                            <input type="hidden" name=name.clone() value=blob.id.to_string() />
                             <div class="flex flex-wrap gap-3">
-                                <img class="rounded" width=width height=height src=variant_url />
+                                <img
+                                    class="rounded"
+                                    width=width
+                                    height=height
+                                    src=blob.variant_url(width, height, true).to_string()
+                                />
 
                                 <div class="flex flex-1 gap-3">
                                     <CopyableText value=blob.url />

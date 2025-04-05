@@ -21,7 +21,7 @@ pub async fn attempt_to_delete_post_reaction(post_id: Uuid) -> Result<MutPresent
 
     let post_reaction = mango3_core::commands::get_post_reaction_by_post_and_user(&core_context, &post, &user).await?;
 
-    let result = mango3_core::commands::delete_post_reaction(&core_context).await;
+    let result = mango3_core::commands::delete_post_reaction(&core_context, &post_reaction).await;
 
     mango3_web_utils::mut_presenter!(result)
 }

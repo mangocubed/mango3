@@ -1,6 +1,5 @@
 use leptos::prelude::*;
 
-#[cfg(feature = "ssr")]
 #[cfg(feature = "image-upload")]
 mod image_upload;
 

@@ -3,7 +3,8 @@ use pulldown_cmark::{Event, HeadingLevel, Options, Parser, Tag, TagEnd};
 use regex::Captures;
 
 use crate::constants::{BLACKLISTED_HASHTAGS, REGEX_FIND_HASHTAGS};
-use crate::hashtag_has_lookaround;
+
+use super::hashtag_has_lookaround;
 
 #[macro_export]
 macro_rules! parse_html {

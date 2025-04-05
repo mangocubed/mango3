@@ -75,3 +75,12 @@ impl From<sqlx::Error> for MutError {
         }
     }
 }
+
+impl From<std::io::Error> for MutError {
+    fn from(error: std::io::Error) -> Self {
+        Self {
+            errors: ValidationErrors::default(),
+            message: format!("Failed to save record: {}.", error),
+        }
+    }
+}

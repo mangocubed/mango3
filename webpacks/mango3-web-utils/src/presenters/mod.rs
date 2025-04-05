@@ -75,6 +75,13 @@ impl FromModel<mango3_core::models::ConfirmationCode> for () {
     }
 }
 
+#[cfg(all(feature = "ssr", feature = "post-reaction-presenter"))]
+impl FromModel<mango3_core::models::PostReaction> for () {
+    async fn from_model(_: &mango3_core::models::PostReaction) -> Self {
+        ()
+    }
+}
+
 #[cfg(feature = "ssr")]
 impl FromModel<mango3_core::models::UserSession> for () {
     async fn from_model(_: &mango3_core::models::UserSession) -> Self {

@@ -1,5 +1,4 @@
 use crate::models::*;
-use crate::utils::*;
 use crate::CoreContext;
 
 #[cfg(feature = "all-user-sessions-by-user")]
@@ -55,7 +54,7 @@ pub async fn get_user_session_by_id(core_context: &CoreContext, id: uuid::Uuid) 
 }
 
 #[cfg(feature = "insert-user-session")]
-pub async fn insert_user_session(core_context: &CoreContext, user: &User) -> MutResult<UserSession> {
+pub async fn insert_user_session(core_context: &CoreContext, user: &User) -> crate::utils::MutResult<UserSession> {
     let result = sqlx::query_as!(
         UserSession,
         "INSERT INTO user_sessions (user_id) VALUES ($1) RETURNING *",

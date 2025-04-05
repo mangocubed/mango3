@@ -1,7 +1,6 @@
 use uuid::Uuid;
 
 use crate::models::*;
-use crate::utils::*;
 use crate::CoreContext;
 
 #[cfg(feature = "insert-navigation-item")]
@@ -26,7 +25,7 @@ pub async fn all_navigation_items_by_website(core_context: &CoreContext, website
     map_error = r##"|_| sqlx::Error::RowNotFound"##,
     convert = r#"{ website.id }"#,
     ty = "cached::AsyncRedisCache<Uuid, NavigationItems>",
-    create = r##" { crate::async_redis_cache!(crate::constants::PREFIX_NAVIGATION_ITEM_ALL_BY_WEBSITE).await } "##
+    create = r##" { crate::async_redis_cache!(crate::constants::PREFIX_ALL_NAVIGATION_ITEMS_BY_WEBSITE).await } "##
 )]
 async fn all_cached_navigation_items_by_website(
     core_context: &CoreContext,
@@ -47,7 +46,7 @@ async fn delete_all_navigation_items(
     core_context: &CoreContext,
     skip: Vec<NavigationItem>,
     website: &Website,
-) -> MutResult {
+) -> crate::utils::MutResult {
     let _ = sqlx::query!(
         "DELETE FROM navigation_items WHERE id != ALL($1) AND website_id = $2",
         &skip.iter().map(|item| item.id.clone()).collect::<Vec<Uuid>>(), // $1
@@ -88,7 +87,7 @@ async fn insert_navigation_item(
     position: i16,
     title: &str,
     url: &str,
-) -> MutResult<NavigationItem> {
+) -> crate::utils::MutResult<NavigationItem> {
     let title = title.trim();
     let url = url.trim().to_lowercase();
 
@@ -117,7 +116,7 @@ pub async fn insert_or_update_many_navigation_items(
     core_context: &CoreContext,
     website: &Website,
     items: Vec<(Option<Uuid>, String, String)>,
-) -> MutResult {
+) -> crate::utils::MutResult {
     let mut position = 0;
 
     let mut skip_from_removal = vec![];
@@ -156,7 +155,7 @@ async fn update_navigation_item(
     position: i16,
     title: &str,
     url: &str,
-) -> Result<Self, ValidationErrors> {
+) -> crate::utils::MutResult<Self> {
     let title = title.trim();
     let url = url.trim().to_lowercase();
 

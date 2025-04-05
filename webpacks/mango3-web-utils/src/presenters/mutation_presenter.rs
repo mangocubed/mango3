@@ -11,6 +11,14 @@ use super::FromModel;
 
 #[cfg(feature = "ssr")]
 #[macro_export]
+macro_rules! mut_presenter {
+    ($result:expr) => {
+        Ok($crate::presenters::MutPresenter::new($result).await)
+    };
+}
+
+#[cfg(feature = "ssr")]
+#[macro_export]
 macro_rules! mut_presenter_error {
     () => {
         Ok($crate::presenters::MutPresenter::new_with_error())
@@ -19,9 +27,9 @@ macro_rules! mut_presenter_error {
 
 #[cfg(feature = "ssr")]
 #[macro_export]
-macro_rules! mut_presenter {
-    ($result:expr) => {
-        Ok($crate::presenters::MutPresenter::new($result).await)
+macro_rules! mut_presenter_success {
+    () => {
+        Ok($crate::presenters::MutPresenter::new_with_success())
     };
 }
 
@@ -83,6 +91,16 @@ impl<T> MutPresenter<T> {
     pub fn new_with_error() -> Self {
         Self {
             success: Some(false),
+            errors: None,
+            data: None,
+            message: None,
+        }
+    }
+
+    #[cfg(feature = "ssr")]
+    pub fn new_with_success() -> Self {
+        Self {
+            success: Some(true),
             errors: None,
             data: None,
             message: None,

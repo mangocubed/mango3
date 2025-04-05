@@ -3186,6 +3186,7 @@ dependencies = [
  "leptos_router",
  "mango3-core",
  "mango3-web-utils",
+ "serde",
  "tokio",
  "uuid",
  "wasm-bindgen",

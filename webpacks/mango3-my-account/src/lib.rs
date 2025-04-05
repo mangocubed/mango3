@@ -4,6 +4,7 @@
 pub mod app;
 pub mod components;
 pub mod pages;
+pub mod presenters;
 pub mod server_functions;
 
 #[cfg(feature = "hydrate")]

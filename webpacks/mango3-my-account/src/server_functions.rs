@@ -1,121 +1,110 @@
 use leptos::prelude::*;
-
-#[cfg(feature = "ssr")]
 use uuid::Uuid;
 
-use mango3_web_utils::models::{FormResp, UserProfileResp};
+use mango3_web_utils::presenters::MutPresenter;
 
 #[cfg(feature = "ssr")]
 use mango3_core::enums::ConfirmationCodeAction;
 #[cfg(feature = "ssr")]
-use mango3_core::models::Blob;
-#[cfg(feature = "ssr")]
-use mango3_web_utils::models::FromCore;
+use mango3_web_utils::presenters::FromModel;
 #[cfg(feature = "ssr")]
 use mango3_web_utils::ssr::{
-    expect_core_context, extract_confirmation_code, extract_i18n, extract_user, finish_and_delete_user_session,
+    expect_core_context, extract_confirmation_code, extract_user, finish_and_delete_user_session,
     require_authentication, start_confirmation_code,
 };
 
-#[server]
-pub async fn attempt_to_confirm_email(code: String) -> Result<FormResp, ServerFnError> {
-    let i18n = extract_i18n().await?;
+use crate::presenters::EditUserProfilePresenter;
 
+#[server]
+pub async fn attempt_to_confirm_email(code: String) -> Result<MutPresenter, ServerFnError> {
     if !require_authentication().await? {
-        return FormResp::new_with_error(&i18n);
+        return mango3_web_utils::mut_presenter_error!();
     };
 
     let Some(confirmation_code) = extract_confirmation_code().await? else {
-        return FormResp::new_with_error(&i18n);
+        return mango3_web_utils::mut_presenter_error!();
     };
 
     let core_context = expect_core_context();
     let user = extract_user().await?.unwrap();
 
-    let result = confirmation_code
-        .confirm(
-            &core_context.clone(),
-            ConfirmationCodeAction::EmailConfirmation,
-            &code,
-            || {
-                let core_context = core_context.clone();
-                let user = user.clone();
-                async move { user.confirm_email(&core_context).await.map(|_| ()) }
-            },
-        )
-        .await;
+    let result = mango3_core::commands::confirm_confirmation_code(
+        &core_context.clone(),
+        &confirmation_code,
+        ConfirmationCodeAction::EmailConfirmation,
+        &code,
+        || {
+            let core_context = core_context.clone();
+            let user = user.clone();
+            async move { mango3_core::commands::confirm_user_email(&core_context, &user).await }
+        },
+    )
+    .await;
 
-    FormResp::new(&i18n, result)
+    mango3_web_utils::mut_presenter!(result)
 }
 
 #[server]
-pub async fn attempt_to_logout() -> Result<(), ServerFnError> {
+pub async fn attempt_to_logout() -> Result<MutPresenter, ServerFnError> {
     if !require_authentication().await? {
-        return Ok(());
+        return mango3_web_utils::mut_presenter_success!();
     }
 
     let core_context = expect_core_context();
 
     finish_and_delete_user_session(&core_context).await?;
 
-    Ok(())
+    mango3_web_utils::mut_presenter_success!()
 }
 
 #[server]
-pub async fn attempt_to_send_email_confirmation_code() -> Result<FormResp, ServerFnError> {
-    let i18n = extract_i18n().await?;
-
+pub async fn attempt_to_send_email_confirmation_code() -> Result<MutPresenter, ServerFnError> {
     if !require_authentication().await? {
-        return FormResp::new_with_error(&i18n);
+        return mango3_web_utils::mut_presenter_error!();
     };
 
     let core_context = expect_core_context();
     let user = extract_user().await?.unwrap();
 
-    let result = user.send_email_confirmation_code(&core_context).await;
+    let result = mango3_core::commands::send_user_email_confirmation_code(&core_context, &user).await;
 
-    if let Ok(ref confirmation_code) = result {
-        let _ = start_confirmation_code(&confirmation_code).await;
+    if let Ok(ref success) = result {
+        let _ = start_confirmation_code(&success.data).await;
     }
 
-    FormResp::new(&i18n, result)
+    mango3_web_utils::mut_presenter!(result)
 }
 
 #[server]
-pub async fn attempt_to_update_email(email: String, password: String) -> Result<FormResp, ServerFnError> {
-    let i18n = extract_i18n().await?;
-
+pub async fn attempt_to_update_email(email: String, password: String) -> Result<MutPresenter, ServerFnError> {
     if !require_authentication().await? {
-        return FormResp::new_with_error(&i18n);
+        return mango3_web_utils::mut_presenter_error!();
     };
 
     let core_context = expect_core_context();
     let user = extract_user().await?.unwrap();
 
-    let result = user.update_email(&core_context, &email, &password).await;
+    let result = mango3_core::commands::update_user_email(&core_context, &user, &email, &password).await;
 
-    FormResp::new(&i18n, result)
+    mango3_web_utils::mut_presenter!(result)
 }
 
 #[server]
 pub async fn attempt_to_update_password(
     current_password: String,
     new_password: String,
-) -> Result<FormResp, ServerFnError> {
-    let i18n = extract_i18n().await?;
-
+) -> Result<MutPresenter, ServerFnError> {
     if !require_authentication().await? {
-        return FormResp::new_with_error(&i18n);
+        return mango3_web_utils::mut_presenter_error!();
     };
 
     let core_context = expect_core_context();
     let user = extract_user().await?.unwrap();
 
-    let result = user
-        .update_password(&core_context, &current_password, &new_password)
-        .await;
+    let result =
+        mango3_core::commands::update_user_password(&core_context, &user, &current_password, &new_password).await;
 
-    FormResp::new(&i18n, result)
+    mango3_web_utils::mut_presenter!(result)
 }
 
 #[server]
@@ -125,49 +114,46 @@ pub async fn attempt_to_update_profile(
     birthdate: String,
     country_alpha2: String,
     bio: String,
-    avatar_image_blob_id: Option<String>,
-) -> Result<FormResp, ServerFnError> {
-    let i18n = extract_i18n().await?;
-
+    avatar_image_blob_id: Option<Uuid>,
+) -> Result<MutPresenter, ServerFnError> {
     if !require_authentication().await? {
-        return FormResp::new_with_error(&i18n);
+        return mango3_web_utils::mut_presenter_error!();
     };
 
     let core_context = expect_core_context();
-    let user = extract_user().await?;
+    let user = extract_user().await?.expect("Could not get user");
 
-    let avatar_image_blob = if let Some(id) = avatar_image_blob_id.as_ref().and_then(|id| Uuid::try_parse(id).ok()) {
-        Blob::get_by_id(&core_context, id, None, user.as_ref()).await.ok()
+    let avatar_image_blob = if let Some(id) = avatar_image_blob_id {
+        mango3_core::commands::get_blob_by_id(&core_context, id, None, Some(&user))
+            .await
+            .ok()
     } else {
         None
     };
 
-    let result = user
-        .unwrap()
-        .update_profile(
-            &core_context,
-            &display_name,
-            &full_name,
-            &birthdate,
-            &country_alpha2,
-            &bio,
-            avatar_image_blob.as_ref(),
-        )
-        .await;
+    let result = mango3_core::commands::update_user_profile(
+        &core_context,
+        &user,
+        &display_name,
+        &full_name,
+        &birthdate,
+        &country_alpha2,
+        &bio,
+        avatar_image_blob.as_ref(),
+    )
+    .await;
 
-    FormResp::new(&i18n, result)
+    mango3_web_utils::mut_presenter!(result)
 }
 
 #[server]
-pub async fn get_user_profile() -> Result<Option<UserProfileResp>, ServerFnError> {
+pub async fn get_user_profile() -> Result<Option<EditUserProfilePresenter>, ServerFnError> {
     if !require_authentication().await? {
         return Ok(None);
     };
 
     if let Some(user) = extract_user().await? {
-        let core_context = expect_core_context();
-
-        Ok(Some(UserProfileResp::from_core(&core_context, &user).await))
+        Ok(Some(EditUserProfilePresenter::from_model(&user).await))
     } else {
         Ok(None)
     }

@@ -7,17 +7,17 @@ pub async fn delete_post_comment(core_context: &CoreContext, post_comment: &Post
         .execute(&core_context.db_pool)
         .await?;
 
-    crate::modesl::POST_COMMENT_CONTENT_HTML
+    crate::models::POST_COMMENT_CONTENT_HTML
         .cache_remove(crate::constants::PREFIX_POST_COMMENT_CONTENT_HTML, post_comment.id)
         .await;
 
-    Ok(())
+    create::mut_success!()
 }
 
 #[cfg(feature = "get-post-comment-by-id")]
 pub async fn get_post_comment_by_id(
     core_context: &CoreContext,
-    id: Uuid,
+    id: uuid::Uuid,
     user: Option<&User>,
 ) -> sqlx::Result<PostComment> {
     let user_id = user.map(|user| user.id);
@@ -51,7 +51,10 @@ pub async fn insert_post_comment(
     post: &Post,
     user: &User,
     content: &str,
-) -> MutResult<PostComment> {
+) -> crate::utils::MutResult<PostComment> {
+    use crate::enums::Input;
+    use crate::utils::ValidatorTrait;
+
     let mut validator = crate::validator!();
 
     let content = content.trim();
@@ -61,15 +64,15 @@ pub async fn insert_post_comment(
             Input::Content,
             content,
             Some(1),
-            Some(MISC_CONFIG.max_comment_content_length),
+            Some(crate::config::MISC_CONFIG.max_comment_content_length),
         );
     }
 
     if !validator.is_valid {
-        return Err(validator.errors);
+        return crate::mut_error!(validator.errors);
     }
 
-    sqlx::query_as!(
+    let result = sqlx::query_as!(
         PostComment,
         "INSERT INTO post_comments (post_id, user_id, content) VALUES ($1, $2, $3) RETURNING
             id, post_id, user_id, content, created_at, updated_at",
@@ -78,20 +81,22 @@ pub async fn insert_post_comment(
         content, // $3
     )
     .fetch_one(&core_context.db_pool)
-    .await
+    .await;
+
+    crate::mut_result!(result)
 }
 
 #[cfg(feature = "paginate-post-comments")]
-pub async fn paginate_post_commentc<'a>(
+pub async fn paginate_post_comments<'a>(
     core_context: &'a CoreContext,
-    cursor_page_params: &CursorPageParams,
+    cursor_page_params: &crate::utils::CursorPageParams,
     post: Option<&'a Post>,
     user: Option<&'a User>,
-) -> CursorPage<Self> {
+) -> crate::utils::CursorPage<PostComment> {
     crate::cursor_page!(
         core_context,
         cursor_page_params,
-        |node: Self| node.id,
+        |node: PostComment| node.id,
         move |core_context, after| async move { get_post_comment_by_id(core_context, after, user).await.ok() },
         move |core_context, cursor_resource, limit| async move {
             let post_id = post.map(|u| u.id);
@@ -100,7 +105,7 @@ pub async fn paginate_post_commentc<'a>(
                 .map(|c| (Some(c.id), Some(c.created_at)))
                 .unwrap_or_default();
 
-            query_as!(
+            sqlx::query_as!(
                 PostComment,
                 r#"SELECT id, post_id, user_id, content, created_at, updated_at
                 FROM post_comments

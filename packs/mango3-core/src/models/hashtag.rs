@@ -1,6 +1,7 @@
 use chrono::{DateTime, Utc};
 use uuid::Uuid;
 
+#[derive(Clone)]
 pub struct Hashtag {
     pub id: Uuid,
     pub name: String,

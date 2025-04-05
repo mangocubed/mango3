@@ -43,7 +43,12 @@ mod navigation_item_commands;
     feature = "search-posts"
 ))]
 mod post_commands;
-#[cfg(any(feature = "delete-post-comment", feature = "get-post-comments-count"))]
+#[cfg(any(
+    feature = "delete-post-comment",
+    feature = "get-post-comments-count",
+    feature = "insert-post-comment",
+    feature = "paginate-post-comments"
+))]
 mod post_comment_commands;
 #[cfg(any(
     feature = "delete-post-reaction",
@@ -58,6 +63,7 @@ mod post_view_commands;
 #[cfg(any(
     feature = "authenticate-user",
     feature = "clear-user-cache",
+    feature = "confirm-user-email",
     feature = "disable-user",
     feature = "enable-user",
     feature = "get-user-by-id",
@@ -66,8 +72,12 @@ mod post_view_commands;
     feature = "insert-user",
     feature = "paginate-users",
     feature = "reset-user-password",
+    feature = "send-user-email-confirmation-code",
     feature = "send-user-login-confirmation-code",
     feature = "send-user-password-reset-code",
+    feature = "update-user-email",
+    feature = "update-user-password",
+    feature = "update-user-profile",
     feature = "update-user-role",
 ))]
 mod user_commands;
@@ -134,6 +144,8 @@ pub use navigation_item_commands::all_navigation_items_by_website;
 pub use navigation_item_commands::get_navigation_item_by_id;
 #[cfg(feature = "insert-or-update-many-navigation-items")]
 pub use navigation_item_commands::insert_or_update_many_navigation_items;
+#[cfg(feature = "get-post-by-id")]
+pub use post_commands::get_post_by_id;
 #[cfg(feature = "get-post-by-id-with-search-rank")]
 pub use post_commands::get_post_by_id_with_search_rank;
 #[cfg(feature = "get-post-by-slug")]
@@ -146,6 +158,10 @@ pub use post_commands::search_posts;
 pub use post_comment_commands::delete_post_comment;
 #[cfg(feature = "get-post-comments-count")]
 pub use post_comment_commands::get_post_comments_count;
+#[cfg(feature = "insert-post-comment")]
+pub use post_comment_commands::insert_post_comment;
+#[cfg(feature = "paginate-post-comments")]
+pub use post_comment_commands::paginate_post_comments;
 #[cfg(feature = "delete-post-reaction")]
 pub use post_reaction_commands::delete_post_reaction;
 #[cfg(feature = "get-post-reaction-by-post-and-user")]
@@ -166,6 +182,8 @@ pub use user_commands::all_admin_users;
 pub use user_commands::authenticate_user;
 #[cfg(feature = "clear-user-cache")]
 pub use user_commands::clear_user_cache;
+#[cfg(feature = "confirm-user-email")]
+pub use user_commands::confirm_user_email;
 #[cfg(feature = "disable-user")]
 pub use user_commands::disable_user;
 #[cfg(feature = "enable-user")]
@@ -182,10 +200,18 @@ pub use user_commands::insert_user;
 pub use user_commands::paginate_users;
 #[cfg(feature = "reset-user-password")]
 pub use user_commands::reset_user_password;
+#[cfg(feature = "send-user-email-confirmation-code")]
+pub use user_commands::send_user_email_confirmation_code;
 #[cfg(feature = "send-user-login-confirmation-code")]
 pub use user_commands::send_user_login_confirmation_code;
 #[cfg(feature = "send-user-password-reset-code")]
 pub use user_commands::send_user_password_reset_code;
+#[cfg(feature = "update-user-email")]
+pub use user_commands::update_user_email;
+#[cfg(feature = "update-user-password")]
+pub use user_commands::update_user_password;
+#[cfg(feature = "update-user-profile")]
+pub use user_commands::update_user_profile;
 #[cfg(feature = "update-user-role")]
 pub use user_commands::update_user_role;
 #[cfg(feature = "all-user-sessions-by-user")]

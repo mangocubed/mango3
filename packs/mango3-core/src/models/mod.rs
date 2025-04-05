@@ -12,6 +12,8 @@ mod navigation_item;
 mod post;
 #[cfg(feature = "post-comment")]
 mod post_comment;
+#[cfg(feature = "post-reaction")]
+mod post_reaction;
 #[cfg(feature = "post-view")]
 mod post_view;
 #[cfg(feature = "user")]
@@ -40,6 +42,8 @@ pub use navigation_item::NavigationItem;
 pub use post::Post;
 #[cfg(feature = "post-comment")]
 pub use post_comment::PostComment;
+#[cfg(feature = "post-reaction")]
+pub use post_reaction::PostReaction;
 #[cfg(feature = "post-view")]
 pub use post_view::PostView;
 #[cfg(feature = "user")]
