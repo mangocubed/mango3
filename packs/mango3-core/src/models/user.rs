@@ -53,7 +53,6 @@ impl User {
         user_bio_html(self).await.unwrap_or_default()
     }
 
-    #[cfg(feature = "user-bio-preview-html")]
     pub async fn bio_preview_html(&self) -> String {
         user_bio_preview_html(self).await.unwrap_or_default()
     }
@@ -116,7 +115,6 @@ pub(crate) async fn user_bio_html(user: &User) -> Result<String, cached::RedisCa
     Ok(crate::parse_html!(&user.bio, true))
 }
 
-#[cfg(feature = "user-bio-preview-html")]
 #[cached::proc_macro::io_cached(
     map_error = r##"|err| err"##,
     convert = r#"{ user.id }"#,

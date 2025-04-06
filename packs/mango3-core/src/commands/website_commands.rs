@@ -556,11 +556,14 @@ pub async fn update_website(
 
 #[cfg(test)]
 mod tests {
-    use crate::test_utils::{fake_uuid, insert_test_user, insert_test_website, setup_core_context};
+    use crate::test_utils::{
+        fake_name, fake_sentence, fake_uuid, insert_test_user, insert_test_website, setup_core_context,
+    };
+    use crate::utils::CursorPageParams;
 
     use super::{
-        get_website_by_id, get_website_by_id_with_search_rank, get_website_by_subdomain, paginate_websites,
-        paginate_websites_sorted_by_name_asc, search_websites,
+        delete_website, get_website_by_id, get_website_by_id_with_search_rank, get_website_by_subdomain,
+        paginate_websites, paginate_websites_sorted_by_name_asc, search_websites, update_website,
     };
 
     #[tokio::test]
@@ -568,7 +571,7 @@ mod tests {
         let core_context = setup_core_context().await;
         let website = insert_test_website(&core_context, None).await;
 
-        let result = website.delete(&core_context).await;
+        let result = delete_website(&core_context, &website).await;
 
         assert!(result.is_ok());
     }
@@ -714,9 +717,18 @@ mod tests {
         let name = fake_name();
         let description = fake_sentence();
 
-        let result = website
-            .update(&core_context, &name, &description, None, None, "light", "dark", true)
-            .await;
+        let result = update_website(
+            &core_context,
+            &website,
+            &name,
+            &description,
+            None,
+            None,
+            "light",
+            "dark",
+            true,
+        )
+        .await;
 
         assert!(result.is_ok());
     }
@@ -726,7 +738,7 @@ mod tests {
         let core_context = setup_core_context().await;
         let website = insert_test_website(&core_context, None).await;
 
-        let result = website.update(&core_context, "", "", None, None, "", "", true).await;
+        let result = update_website(&core_context, &website, "", "", None, None, "", "", true).await;
 
         assert!(result.is_err());
     }

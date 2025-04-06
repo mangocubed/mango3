@@ -45,7 +45,7 @@ pub fn SearchPage() -> impl IntoView {
                                 <section class="max-w-[720px] w-full mx-auto">
                                     <InfiniteScroll
                                         controller=controller
-                                        key=|post: &PostMinPresenter| post.id.clone()
+                                        key=|post: &PostMinPresenter| post.id
                                         let:post
                                     >
                                         <PostCard post=post />

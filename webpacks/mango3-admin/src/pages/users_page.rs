@@ -63,10 +63,10 @@ pub fn UsersPage() -> impl IntoView {
                 <ConfirmationModal
                     is_open=show_disable_confirmation
                     on_accept=move || {
-                        let user = disable_user.get().unwrap();
+                        let user_id = disable_user.get().unwrap().id;
                         server_action_disable_user
                             .dispatch(AttemptToDisableUser {
-                                id: user.id.clone(),
+                                id: user_id,
                             });
                     }
                 >
@@ -78,11 +78,8 @@ pub fn UsersPage() -> impl IntoView {
                 <ConfirmationModal
                     is_open=show_enable_confirmation
                     on_accept=move || {
-                        let user = enable_user.get().unwrap();
-                        server_action_enable_user
-                            .dispatch(AttemptToEnableUser {
-                                id: user.id.clone(),
-                            });
+                        let user_id = enable_user.get().unwrap().id;
+                        server_action_enable_user.dispatch(AttemptToEnableUser { id: user_id });
                     }
                 >
                     <div>{t!(i18n, admin.are_you_sure_you_want_to_enable_this_user)}</div>
@@ -90,7 +87,7 @@ pub fn UsersPage() -> impl IntoView {
                     {move || enable_user.get().map(|user| view! { <UserTag class="justify-center my-3" user=user /> })}
                 </ConfirmationModal>
 
-                <InfiniteScroll controller=controller key=|user: &UserMinPresenter| user.id.clone() let:user>
+                <InfiniteScroll controller=controller key=|user: &UserMinPresenter| user.id let:user>
                     <UserCard
                         user=user.clone()
                         hashtags_base_url=basic_config.home_url.to_string()

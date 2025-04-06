@@ -40,8 +40,9 @@ pub async fn insert_test_blob(core_context: &CoreContext, user: Option<&User>, w
 
     fs::create_dir_all(MISC_CONFIG.storage_tmp_path()).unwrap();
 
-    Blob::insert(core_context, &user, website, &mut field)
+    crate::commands::insert_blob(core_context, &user, website, &mut field)
         .await
         .ok()
         .unwrap()
+        .data
 }

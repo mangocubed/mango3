@@ -10,6 +10,7 @@ pub struct ConfirmationCode {
     pub id: Uuid,
     pub user_id: Uuid,
     pub action: ConfirmationCodeAction,
+    #[allow(dead_code)]
     pub(crate) encrypted_code: String,
     pub failed_attempts: i16,
     pub created_at: DateTime<Utc>,

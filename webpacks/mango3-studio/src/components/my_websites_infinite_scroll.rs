@@ -21,11 +21,5 @@ where
 
     selected_website.set(None);
 
-    view! {
-        <InfiniteScroll
-            controller=controller
-            key=|website: &WebsiteMinPresenter| website.id.clone()
-            children=children
-        />
-    }
+    view! { <InfiniteScroll controller=controller key=|website: &WebsiteMinPresenter| website.id children=children /> }
 }

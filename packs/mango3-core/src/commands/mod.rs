@@ -33,6 +33,7 @@ mod invitation_code_commands;
 #[cfg(any(
     feature = "all-navigation-items-by-website",
     feature = "get-navigation-item-by-id",
+    feature = "insert-navigation-item",
     feature = "insert-or-update-many-navigation-items",
 ))]
 mod navigation_item_commands;
@@ -152,6 +153,8 @@ pub use invitation_code_commands::insert_invitation_code;
 pub use navigation_item_commands::all_navigation_items_by_website;
 #[cfg(feature = "get-navigation-item-by-id")]
 pub use navigation_item_commands::get_navigation_item_by_id;
+#[cfg(feature = "insert-navigation-item")]
+pub use navigation_item_commands::insert_navigation_item;
 #[cfg(feature = "insert-or-update-many-navigation-items")]
 pub use navigation_item_commands::insert_or_update_many_navigation_items;
 #[cfg(feature = "delete-post")]

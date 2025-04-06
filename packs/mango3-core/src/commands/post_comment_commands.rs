@@ -2,16 +2,18 @@ use crate::models::*;
 use crate::CoreContext;
 
 #[cfg(feature = "delete-post-comment")]
-pub async fn delete_post_comment(core_context: &CoreContext, post_comment: &PostComment) -> MutResult {
+pub async fn delete_post_comment(core_context: &CoreContext, post_comment: &PostComment) -> crate::utils::MutResult {
+    use crate::utils::AsyncRedisCacheTrait;
+
     sqlx::query!("DELETE FROM post_comments WHERE id = $1", post_comment.id)
         .execute(&core_context.db_pool)
         .await?;
 
-    crate::models::POST_COMMENT_CONTENT_HTML
-        .cache_remove(crate::constants::PREFIX_POST_COMMENT_CONTENT_HTML, post_comment.id)
+    POST_COMMENT_CONTENT_HTML
+        .cache_remove(crate::constants::PREFIX_POST_COMMENT_CONTENT_HTML, &post_comment.id)
         .await;
 
-    create::mut_success!()
+    crate::mut_success!()
 }
 
 #[cfg(feature = "get-post-comment-by-id")]
@@ -128,9 +130,12 @@ pub async fn paginate_post_comments<'a>(
 
 #[cfg(test)]
 mod tests {
-    use crate::test_utils::{fake_paragraph, insert_test_post, insert_test_user, setup_core_context};
+    use crate::test_utils::{
+        fake_paragraph, insert_test_post, insert_test_post_comment, insert_test_user, setup_core_context,
+    };
+    use crate::utils::CursorPageParams;
 
-    use super::PostComment;
+    use super::{get_post_comments_count, insert_post_comment, paginate_post_comments};
 
     #[tokio::test]
     async fn should_count_post_comments() {
@@ -160,13 +165,8 @@ mod tests {
         let user = insert_test_user(&core_context).await;
         let post = insert_test_post(&core_context, None, None).await;
 
-        let cursor_page = PostComment::paginate_by_created_at_desc(
-            &core_context,
-            &CursorPageParams::default(),
-            Some(&post),
-            Some(&user),
-        )
-        .await;
+        let cursor_page =
+            paginate_post_comments(&core_context, &CursorPageParams::default(), Some(&post), Some(&user)).await;
 
         assert!(cursor_page.nodes.is_empty());
     }
@@ -179,13 +179,8 @@ mod tests {
 
         insert_test_post_comment(&core_context, Some(&post), Some(&user)).await;
 
-        let cursor_page = PostComment::paginate_by_created_at_desc(
-            &core_context,
-            &CursorPageParams::default(),
-            Some(&post),
-            Some(&user),
-        )
-        .await;
+        let cursor_page =
+            paginate_post_comments(&core_context, &CursorPageParams::default(), Some(&post), Some(&user)).await;
 
         assert_eq!(cursor_page.nodes.len(), 1);
     }

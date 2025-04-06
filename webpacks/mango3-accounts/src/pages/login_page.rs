@@ -71,7 +71,7 @@ pub fn LoginPage() -> impl IntoView {
                 is_open=success_modal_is_open
                 message=move || t!(i18n, accounts.user_authenticated_successfully)
                 on_close=move || {
-                    navigate(&basic_config.home_url.to_string(), Default::default());
+                    navigate(basic_config.home_url.as_ref(), Default::default());
                 }
             />
 

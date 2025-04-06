@@ -30,27 +30,42 @@ rust_iso3166 = { workspace = true, optional = true }
 serde = { workspace = true }
 server_fn = { workspace = true }
 time = { version = "0.3.41", optional = true }
-tower-sessions =  { version = "0.13.0", optional = true,  features = ["private"] }
+tower-sessions = { version = "0.13.0", optional = true, features = ["private"] }
 tower-sessions-redis-store = { version = "0.15.0", optional = true }
 tokio = { workspace = true, optional = true }
 url = { workspace = true }
 uuid = { workspace = true, features = ["js"] }
 wasm-bindgen = { workspace = true }
 web-sys = { workspace = true }
-mango3-core = { workspace = true, optional = true, features = ["get-user-session-by-id", "user", "user-session"] }
+mango3-core = { workspace = true, optional = true, features = [
+    "get-user-session-by-id",
+    "user",
+    "user-session",
+] }
 
 [features]
 default = ["current-user", "user-tag"]
 # Components
 current-user = ["user-presenter"]
 forms = ["mutation-presenter", "leptos-use/use_textarea_autosize"]
-image-upload = ["forms", "mango3-core?/insert-blob", "web-sys/File", "web-sys/FileList", "server_fn/multipart"]
+image-upload = [
+    "forms",
+    "mango3-core?/insert-blob",
+    "web-sys/File",
+    "web-sys/FileList",
+    "server_fn/multipart",
+]
 infinite-scroll = ["cursor-page-presenter"]
-markdown-editor = ["forms", "web-sys/HtmlDocument", "web-sys/HtmlTextAreaElement", "web-sys/KeyboardEvent"]
+markdown-editor = [
+    "forms",
+    "web-sys/HtmlDocument",
+    "web-sys/HtmlTextAreaElement",
+    "web-sys/KeyboardEvent",
+]
 multiple-image-upload = ["image-upload"]
 post-card = ["post-presenter", "user-tag", "website-icon"]
 unconfirmed-email-alert = ["user-email-is-confirmed"]
-user-card = ["user-bio-preview-html", "user-presenter"]
+user-card = ["user-presenter"]
 user-tag = ["user-presenter"]
 website-card = ["website-icon", "website-presenter"]
 website-icon = ["website-presenter"]
@@ -70,12 +85,20 @@ website-presenter = ["mango3-core?/website"]
 blob-is-removable = ["blob-presenter", "mango3-core?/blob-is-removable"]
 post-content-html = ["post-presenter", "mango3-core?/post-content-html"]
 user-bio-html = ["user-presenter", "mango3-core?/user-bio-html"]
-user-bio-preview-html = ["user-presenter", "mango3-core?/user-bio-preview-html"]
-user-email-is-confirmed = ["user-presenter", "mango3-core?/user-email-is-confirmed"]
-website-description-html = ["website-presenter", "mango3-core?/website-description-html"]
+user-email-is-confirmed = [
+    "user-presenter",
+    "mango3-core?/user-email-is-confirmed",
+]
+website-description-html = [
+    "website-presenter",
+    "mango3-core?/website-description-html",
+]
 website-storage = ["website-presenter", "mango3-core?/website-storage"]
 # Misc
-confirmation-codes = ["mango3-core?/confirmation-code", "mango3-core?/get-confirmation-code-by-id"]
+confirmation-codes = [
+    "mango3-core?/confirmation-code",
+    "mango3-core?/get-confirmation-code-by-id",
+]
 extract-user = []
 finish-and-delete-user-session = ["mango3-core?/delete-user-session"]
 start-user-session = []
@@ -107,5 +130,13 @@ ssr = [
 [package.metadata.leptos-i18n]
 default = "en"
 locales = ["en", "es", "pt"]
-namespaces = ["accounts", "admin", "home", "my_account", "shared", "studio", "websites"]
+namespaces = [
+    "accounts",
+    "admin",
+    "home",
+    "my_account",
+    "shared",
+    "studio",
+    "websites",
+]
 locales-dir = "../locales"

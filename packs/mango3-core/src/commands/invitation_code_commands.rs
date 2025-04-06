@@ -53,7 +53,7 @@ pub async fn insert_invitation_code(core_context: &CoreContext, email: &str) -> 
         .fetch_one(&core_context.db_pool)
         .await
         .is_ok();
-        validator.custom_validation(Input::Email, InputError::AlreadyInUse, &|| !email_exists);
+        validator.custom_validation(Input::Email, InputError::AlreadyInUse, || !email_exists);
     }
 
     if !validator.is_valid {

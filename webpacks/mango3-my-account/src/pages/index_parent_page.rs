@@ -21,7 +21,7 @@ pub fn IndexParentPage() -> impl IntoView {
 
     Effect::new(move || {
         if let Some(Ok(_)) = logout_action_value.get() {
-            navigate(&basic_config.login_url.to_string(), Default::default());
+            navigate(basic_config.login_url.as_ref(), Default::default());
         }
     });
 

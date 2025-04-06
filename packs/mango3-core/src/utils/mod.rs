@@ -22,6 +22,7 @@ mod validator;
 pub use info::{Info, INFO};
 
 #[cfg(feature = "cache")]
+#[allow(unused_imports)]
 pub(crate) use cache_utils::{async_redis_cache, AsyncRedisCacheTrait};
 #[cfg(feature = "handlebars")]
 pub use handlebars_utils::render_handlebars;

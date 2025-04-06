@@ -27,6 +27,7 @@ where
         .expect("Could not get redis cache")
 }
 
+#[allow(dead_code)]
 pub(crate) trait AsyncRedisCacheTrait<K> {
     async fn cache_remove(&self, prefix: &str, key: &K);
 }

@@ -580,9 +580,12 @@ pub async fn update_post(
 
 #[cfg(test)]
 mod tests {
-    use crate::test_utils::{insert_test_post, insert_test_user, insert_test_website, setup_core_context};
+    use crate::test_utils::{fake_uuid, insert_test_post, insert_test_user, insert_test_website, setup_core_context};
+    use crate::utils::CursorPageParams;
 
-    use super::CursorPageParams;
+    use super::{
+        delete_post, get_post_by_id, get_post_by_id_with_search_rank, get_post_by_slug, paginate_posts, search_posts,
+    };
 
     #[tokio::test]
     async fn should_delete_post() {
@@ -665,8 +668,15 @@ mod tests {
         let user = insert_test_user(&core_context).await;
         let website = insert_test_website(&core_context, Some(&user)).await;
 
-        let cursor_page =
-            paginate_posts(&core_context, &CursorPageParams::default(), Some(&website), Some(&user)).await;
+        let cursor_page = paginate_posts(
+            &core_context,
+            &CursorPageParams::default(),
+            Some(&website),
+            Some(&user),
+            None,
+            None,
+        )
+        .await;
 
         assert!(cursor_page.nodes.is_empty());
     }
@@ -678,19 +688,26 @@ mod tests {
         let website = insert_test_website(&core_context, Some(&user)).await;
         insert_test_post(&core_context, Some(&website), Some(&user)).await;
 
-        let cursor_page =
-            paginate_posts(&core_context, &CursorPageParams::default(), Some(&website), Some(&user)).await;
+        let cursor_page = paginate_posts(
+            &core_context,
+            &CursorPageParams::default(),
+            Some(&website),
+            Some(&user),
+            None,
+            None,
+        )
+        .await;
 
         assert_eq!(cursor_page.nodes.len(), 1);
     }
 
     #[tokio::test]
-    async fn should_get_zero_posts() {
+    async fn should_find_zero_posts() {
         let core_context = setup_core_context().await;
         let user = insert_test_user(&core_context).await;
         let website = insert_test_website(&core_context, Some(&user)).await;
 
-        let cursor_page = Post::search(
+        let cursor_page = search_posts(
             &core_context,
             &CursorPageParams::default(),
             Some(&website),
@@ -704,13 +721,13 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn should_get_one_post() {
+    async fn should_find_one_post() {
         let core_context = setup_core_context().await;
         let user = insert_test_user(&core_context).await;
         let website = insert_test_website(&core_context, Some(&user)).await;
         let post = insert_test_post(&core_context, Some(&website), Some(&user)).await;
 
-        let cursor_page = Post::search(
+        let cursor_page = search_posts(
             &core_context,
             &CursorPageParams::default(),
             Some(&website),

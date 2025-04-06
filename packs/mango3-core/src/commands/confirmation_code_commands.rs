@@ -1,7 +1,7 @@
-use crate::enums::ConfirmationCodeAction;
-use crate::models::*;
-use crate::utils::*;
 use crate::CoreContext;
+
+#[allow(unused_imports)]
+use crate::models::*;
 
 #[cfg(feature = "confirm-confirmation-code")]
 pub async fn confirm_confirmation_code<F, IF, T>(
@@ -10,12 +10,13 @@ pub async fn confirm_confirmation_code<F, IF, T>(
     action: crate::enums::ConfirmationCodeAction,
     code: &str,
     on_success: F,
-) -> MutResult<T>
+) -> crate::utils::MutResult<T>
 where
     F: Fn() -> IF,
-    IF: std::future::IntoFuture<Output = MutResult<T>>,
+    IF: std::future::IntoFuture<Output = crate::utils::MutResult<T>>,
 {
     use crate::enums::{Input, InputError};
+    use crate::utils::ValidatorTrait;
 
     let mut validator = crate::validator!();
 
@@ -25,7 +26,9 @@ where
 
     if validator.validate_presence(Input::Code, code) {
         let code_is_valid = async {
-            if confirmation_code.failed_attempts < 3 && verify_password(code, &confirmation_code.encrypted_code) {
+            if confirmation_code.failed_attempts < 3
+                && crate::utils::verify_password(code, &confirmation_code.encrypted_code)
+            {
                 return true;
             }
 
@@ -60,7 +63,10 @@ where
 }
 
 #[cfg(feature = "delete-confirmation-code")]
-pub async fn delete_confirmation_code(core_context: &CoreContext, confirmation_code: &ConfirmationCode) -> MutResult {
+pub async fn delete_confirmation_code(
+    core_context: &CoreContext,
+    confirmation_code: &ConfirmationCode,
+) -> crate::utils::MutResult {
     sqlx::query!("DELETE FROM confirmation_codes WHERE id = $1", confirmation_code.id)
         .execute(&core_context.db_pool)
         .await?;
@@ -69,7 +75,7 @@ pub async fn delete_confirmation_code(core_context: &CoreContext, confirmation_c
 }
 
 #[cfg(feature = "delete-all-expired-confirmation-codes")]
-pub async fn delete_all_expired_confirmation_codes(core_context: &CoreContext) -> MutResult {
+pub async fn delete_all_expired_confirmation_codes(core_context: &CoreContext) -> crate::utils::MutResult {
     sqlx::query!("DELETE FROM confirmation_codes WHERE created_at < current_timestamp - INTERVAL '1 hour'")
         .execute(&core_context.db_pool)
         .await?;
@@ -79,6 +85,8 @@ pub async fn delete_all_expired_confirmation_codes(core_context: &CoreContext) -
 
 #[cfg(feature = "get-confirmation-code-by-id")]
 pub async fn get_confirmation_code_by_id(core_context: &CoreContext, id: uuid::Uuid) -> sqlx::Result<ConfirmationCode> {
+    use crate::enums::ConfirmationCodeAction;
+
     sqlx::query_as!(
         ConfirmationCode,
         r#"SELECT
@@ -100,8 +108,10 @@ pub async fn get_confirmation_code_by_id(core_context: &CoreContext, id: uuid::U
 pub async fn get_confirmation_code_by_user(
     core_context: &CoreContext,
     user: &User,
-    action: ConfirmationCodeAction,
+    action: crate::enums::ConfirmationCodeAction,
 ) -> sqlx::Result<ConfirmationCode> {
+    use crate::enums::ConfirmationCodeAction;
+
     sqlx::query_as!(
         ConfirmationCode,
         r#"SELECT
@@ -125,14 +135,16 @@ pub async fn insert_confirmation_code(
     core_context: &CoreContext,
     user: &User,
     action: crate::enums::ConfirmationCodeAction,
-) -> MutResult<ConfirmationCode> {
+) -> crate::utils::MutResult<ConfirmationCode> {
+    use crate::enums::ConfirmationCodeAction;
+
     if let Ok(confirmation_code) = get_confirmation_code_by_user(core_context, user, action.clone()).await {
         return crate::mut_success!(confirmation_code);
     }
 
-    let code = generate_random_string(crate::config::MISC_CONFIG.confirmation_code_length);
+    let code = crate::utils::generate_random_string(crate::config::MISC_CONFIG.confirmation_code_length);
 
-    let encrypted_code = encrypt_password(&code);
+    let encrypted_code = crate::utils::encrypt_password(&code);
 
     let result = sqlx::query_as!(
         ConfirmationCode,

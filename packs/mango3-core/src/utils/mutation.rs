@@ -4,8 +4,8 @@ use super::ValidationErrors;
 macro_rules! mut_result {
     ($result:expr) => {
         match $result {
-            Ok(data) => crate::mut_success!(data),
-            Err(_) => crate::mut_error!(),
+            Ok(data) => $crate::mut_success!(data),
+            Err(_) => $crate::mut_error!(),
         }
     };
 }

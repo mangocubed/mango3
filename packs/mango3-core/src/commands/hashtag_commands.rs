@@ -149,6 +149,6 @@ mod tests {
 
         assert!(result.is_ok());
 
-        assert_eq!(result.ok().unwrap().len(), 4);
+        assert_eq!(result.ok().unwrap().data.len(), 4);
     }
 }

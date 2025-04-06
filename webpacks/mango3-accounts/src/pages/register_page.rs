@@ -143,7 +143,7 @@ pub fn RegisterPage() -> impl IntoView {
                 action_value=action_value
                 message=move || t!(i18n, accounts.user_created_successfully)
                 on_close=move || {
-                    navigate(&basic_config.home_url.to_string(), Default::default());
+                    navigate(basic_config.home_url.as_ref(), Default::default());
                 }
             />
 

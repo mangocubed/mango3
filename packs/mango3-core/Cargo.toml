@@ -82,7 +82,6 @@ clear-user-cache = [
     "get-user-by-username-or-email",
     "user",
     "user-bio-html",
-    "user-bio-preview-html",
 ]
 clear-website-cache = [
     "cache",
@@ -244,7 +243,7 @@ post = [
 post-comment = []
 post-reaction = []
 post-view = ["dep:ipnetwork", "sqlx/ipnetwork"]
-user = ["all-hashtags-by-ids", "get-blob-by-id"]
+user = ["all-hashtags-by-ids", "get-blob-by-id", "markdown"]
 user-session = ["get-user-by-id", "user"]
 website = ["all-hashtags-by-ids", "get-blob-by-id", "markdown"]
 # Model attributes
@@ -252,7 +251,6 @@ blob-is-removable = ["blob"]
 blob-read = ["blob", "dep:image"]
 post-content-html = ["handlebars", "markdown", "post"]
 user-bio-html = ["markdown", "user"]
-user-bio-preview-html = ["markdown", "user"]
 user-i18n = ["locales", "user"]
 user-email-is-confirmed = ["user"]
 website-description-html = ["markdown", "website"]

@@ -28,7 +28,7 @@ pub fn IndexPage() -> impl IntoView {
                                 .and_then(|result| result.ok())
                                 .map(|cursor_page| {
                                     view! {
-                                        <For each=move || cursor_page.nodes.clone() key=|post| post.id.clone() let:post>
+                                        <For each=move || cursor_page.nodes.clone() key=|post| post.id let:post>
                                             <PostCard post=post show_host=true />
                                         </For>
                                     }
@@ -53,7 +53,7 @@ pub fn IndexPage() -> impl IntoView {
                                     view! {
                                         <For
                                             each=move || cursor_page.nodes.clone()
-                                            key=|website| website.id.clone()
+                                            key=|website| website.id
                                             let:website
                                         >
                                             <WebsiteCard website=website />

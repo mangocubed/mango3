@@ -33,7 +33,7 @@ pub fn PostsPage() -> impl IntoView {
                             let id = delete_post.get().unwrap().id;
                             server_action
                                 .dispatch(AttemptToDeletePost {
-                                    website_id: website_id,
+                                    website_id,
                                     id,
                                 });
                             controller

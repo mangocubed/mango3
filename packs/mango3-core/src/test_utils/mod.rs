@@ -13,10 +13,7 @@ use rand::rng;
 use url::Url;
 use uuid::Uuid;
 
-use mango3_utils::models::NavigationItem;
-
-use crate::commands::NavigationItemWrite;
-use crate::models::{User, Website};
+use crate::models::{NavigationItem, User, Website};
 use crate::CoreContext;
 
 mod test_blob;
@@ -116,10 +113,11 @@ pub async fn insert_test_navigation_item(core_context: &CoreContext, website: Op
     let label = fake_name();
     let url = fake_url();
 
-    NavigationItem::insert(core_context, &website, 0, &label, &url)
+    crate::commands::insert_navigation_item(core_context, &website, 0, &label, &url)
         .await
         .ok()
         .unwrap()
+        .data
 }
 
 pub async fn insert_test_user(core_context: &CoreContext) -> User {
@@ -130,7 +128,7 @@ pub async fn insert_test_user(core_context: &CoreContext) -> User {
     let birthdate = fake_birthdate();
     let country_alpha2 = fake_country_alpha2();
 
-    User::insert(
+    crate::commands::insert_user(
         core_context,
         &username,
         &email,
@@ -143,6 +141,7 @@ pub async fn insert_test_user(core_context: &CoreContext) -> User {
     .await
     .ok()
     .unwrap()
+    .data
 }
 
 pub async fn insert_test_website(core_context: &CoreContext, user: Option<&User>) -> Website {
@@ -155,10 +154,11 @@ pub async fn insert_test_website(core_context: &CoreContext, user: Option<&User>
     let subdomain = fake_slug();
     let description = fake_sentence();
 
-    Website::insert(core_context, &user, &name, &subdomain, &description)
+    crate::commands::insert_website(core_context, &user, &name, &subdomain, &description)
         .await
         .ok()
         .unwrap()
+        .data
 }
 
 pub async fn setup_core_context() -> CoreContext {

@@ -111,7 +111,7 @@ pub fn FilesPage() -> impl IntoView {
                         let id = delete_blob.get().unwrap().id;
                         server_action
                             .dispatch(AttemptToDeleteBlob {
-                                website_id: website_id,
+                                website_id,
                                 id,
                             });
                         controller

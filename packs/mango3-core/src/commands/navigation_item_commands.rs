@@ -84,7 +84,7 @@ pub async fn get_navigation_item_by_id(
 }
 
 #[cfg(feature = "insert-navigation-item")]
-async fn insert_navigation_item(
+pub async fn insert_navigation_item(
     core_context: &CoreContext,
     website: &Website,
     position: i16,
@@ -188,9 +188,14 @@ async fn update_navigation_item(
 
 #[cfg(test)]
 mod tests {
-    use crate::test_utils::{insert_test_navigation_item, insert_test_website, setup_core_context};
+    use crate::test_utils::{
+        fake_name, fake_url, fake_uuid, insert_test_navigation_item, insert_test_website, setup_core_context,
+    };
 
-    use super::{all_navigation_items_by_website, get_navigation_item_by_id};
+    use super::{
+        all_navigation_items_by_website, delete_all_navigation_items, get_navigation_item_by_id,
+        insert_navigation_item, insert_or_update_many_navigation_items, update_navigation_item,
+    };
 
     #[tokio::test]
     async fn should_get_zero_navigation_items() {
@@ -276,7 +281,7 @@ mod tests {
         let title = fake_name();
         let url = fake_url();
 
-        let result = navigation_item.update(&core_context, 0, &title, &url).await;
+        let result = update_navigation_item(&core_context, &navigation_item, 0, &title, &url).await;
 
         assert!(result.is_ok());
     }
@@ -302,7 +307,7 @@ mod tests {
             (None, fake_name(), fake_url()),
         ];
 
-        let result = save_all_navigation_items(&core_context, &website, items).await;
+        let result = insert_or_update_many_navigation_items(&core_context, &website, items).await;
 
         assert!(result.is_ok());
     }

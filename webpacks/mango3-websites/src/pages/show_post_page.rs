@@ -93,11 +93,7 @@ pub fn ShowPostPage() -> impl IntoView {
                                             />
 
                                             <div class="empty:hidden flex flex-wrap gap-3 my-4">
-                                                <For
-                                                    each=move || post.blobs.clone()
-                                                    key=|blob| blob.id.clone()
-                                                    let:blob
-                                                >
+                                                <For each=move || post.blobs.clone() key=|blob| blob.id let:blob>
                                                     <figure
                                                         class="rounded"
                                                         on:click=move |_| {

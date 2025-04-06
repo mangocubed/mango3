@@ -24,7 +24,7 @@ pub fn PostsPage() -> impl IntoView {
             <h2 class="h2">{move || text_title.get()}</h2>
 
             <section class="max-w-[720px] w-full ml-auto mr-auto">
-                <InfiniteScroll controller=controller key=|post: &PostMinPresenter| post.id.clone() let:post>
+                <InfiniteScroll controller=controller key=|post: &PostMinPresenter| post.id let:post>
                     <PostCard post=post show_host=true />
                 </InfiniteScroll>
             </section>

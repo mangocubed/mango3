@@ -24,7 +24,7 @@ pub async fn admin_mailer_worker(job: AdminMailerJob) -> Result<(), Error> {
 async fn send_new_user_emails(new_user: &User) {
     let core_context = CoreContext::setup().await;
 
-    let users = User::all_admins(&core_context).await;
+    let users = mango3_core::commands::all_admin_users(&core_context).await;
 
     for user in users {
         let i18n = user.i18n();

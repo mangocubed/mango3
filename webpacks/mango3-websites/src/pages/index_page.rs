@@ -62,7 +62,7 @@ pub fn IndexPage() -> impl IntoView {
                                     <div class="shrink-0 max-w-[720px] w-full">
                                         <InfiniteScroll
                                             controller=controller
-                                            key=|post: &PostMinPresenter| post.id.clone()
+                                            key=|post: &PostMinPresenter| post.id
                                             let:post
                                         >
                                             <PostCard post=post />

@@ -19,7 +19,7 @@ pub async fn insert_test_post(core_context: &CoreContext, website: Option<&Websi
     let content = fake_paragraph();
     let blob = insert_test_blob(&core_context, Some(&user), Some(&website)).await;
 
-    Post::insert(
+    crate::commands::insert_post(
         core_context,
         &website,
         &user,
@@ -34,4 +34,5 @@ pub async fn insert_test_post(core_context: &CoreContext, website: Option<&Websi
     .await
     .ok()
     .unwrap()
+    .data
 }

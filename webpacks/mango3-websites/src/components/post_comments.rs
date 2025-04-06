@@ -16,11 +16,7 @@ use crate::server_functions::{get_post_comments, AttemptToCreatePostComment};
 pub fn PostComments(post_id: Uuid) -> impl IntoView {
     let i18n = use_i18n();
     let controller = InfiniteScrollLocalResourceController::new(|after| {
-        let post_id = post_id.clone();
-        LocalResource::new(move || {
-            let post_id = post_id.clone();
-            async move { get_post_comments(post_id.clone(), after.get()).await }
-        })
+        LocalResource::new(move || async move { get_post_comments(post_id, after.get()).await })
     });
 
     view! {
@@ -29,7 +25,6 @@ pub fn PostComments(post_id: Uuid) -> impl IntoView {
 
             <Transition>
                 {move || Suspend::new({
-                    let post_id = post_id.clone();
                     let controller = controller.clone();
                     async move {
                         view! {
@@ -37,7 +32,6 @@ pub fn PostComments(post_id: Uuid) -> impl IntoView {
                                 let controller = controller.clone();
                                 move |user| {
                                     let controller = controller.clone();
-                                    let post_id = post_id.clone();
                                     let server_action = ServerAction::<AttemptToCreatePostComment>::new();
                                     let action_value = server_action.value();
                                     let value_content = RwSignal::new(String::new());
@@ -84,7 +78,7 @@ pub fn PostComments(post_id: Uuid) -> impl IntoView {
 
                             <InfiniteScroll
                                 controller=controller
-                                key=|comment: &PostCommentPresenter| comment.id.clone()
+                                key=|comment: &PostCommentPresenter| comment.id
                                 let:post_comment
                             >
                                 <div class="card card-sm card-border border-neutral-500 mt-4">

@@ -896,10 +896,13 @@ pub fn verify_user_password(user: &User, password: &str) -> bool {
 
 #[cfg(test)]
 mod tests {
+    use crate::enums::UserRole;
     use crate::test_utils::{fake_username, fake_uuid, insert_test_user, setup_core_context};
+    use crate::utils::CursorPageParams;
 
     use super::{
-        disable_user, get_user_by_id, get_user_by_username, get_user_by_username_or_email, update_user_role, UserRole,
+        disable_user, get_user_by_id, get_user_by_username, get_user_by_username_or_email, paginate_users,
+        update_user_role,
     };
 
     #[tokio::test]
@@ -978,7 +981,7 @@ mod tests {
 
         insert_test_user(&core_context).await;
 
-        let cursor_page = User::paginate_by_username_asc(&core_context, &CursorPageParams::default()).await;
+        let cursor_page = paginate_users(&core_context, &CursorPageParams::default()).await;
 
         assert!(!cursor_page.nodes.is_empty());
     }
@@ -994,6 +997,6 @@ mod tests {
 
         let user = result.unwrap();
 
-        assert_eq!(user.role, UserRole::Admin);
+        assert_eq!(user.data.role, UserRole::Admin);
     }
 }

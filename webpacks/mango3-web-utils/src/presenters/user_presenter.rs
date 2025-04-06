@@ -17,6 +17,7 @@ pub struct UserPresenter {
     pub display_name: String,
     pub initials: String,
     pub email: String,
+    pub bio_preview_html: String,
     pub hashtags: Vec<HashtagPresenter>,
     pub avatar_image_blob: Option<BlobPresenter>,
     pub can_insert_website: bool,
@@ -25,8 +26,6 @@ pub struct UserPresenter {
     pub role: String,
     pub is_disabled: bool,
 
-    #[cfg(feature = "user-bio-preview-html")]
-    pub bio_preview_html: String,
     #[cfg(feature = "user-email-is-confirmed")]
     pub email_is_confirmed: bool,
 }
@@ -69,6 +68,7 @@ impl FromModel<User> for UserPresenter {
             display_name: user.display_name.clone(),
             initials: user.initials(),
             email: user.email.clone(),
+            bio_preview_html: user.bio_preview_html().await,
             hashtags,
             avatar_image_blob,
             can_insert_website: user.can_insert_website(&core_context).await,
@@ -77,8 +77,6 @@ impl FromModel<User> for UserPresenter {
             role: user.role.to_string(),
             is_disabled: user.is_disabled(),
 
-            #[cfg(feature = "user-bio-preview-html")]
-            bio_preview_html: user.bio_preview_html().await,
             #[cfg(feature = "user-email-is-confirmed")]
             email_is_confirmed: user.email_is_confirmed(),
         }
@@ -91,15 +89,13 @@ pub struct UserMinPresenter {
     pub username: String,
     pub display_name: String,
     pub initials: String,
+    pub bio_preview_html: String,
     pub hashtags: Vec<HashtagPresenter>,
     pub avatar_image_blob: Option<BlobPresenter>,
     pub text_avatar_url: Url,
     pub url: Url,
     pub role: String,
     pub is_disabled: bool,
-
-    #[cfg(feature = "user-bio-preview-html")]
-    pub bio_preview_html: String,
 }
 
 impl UserMinPresenter {
@@ -139,15 +135,13 @@ impl FromModel<User> for UserMinPresenter {
             username: user.username.clone(),
             display_name: user.display_name.clone(),
             initials: user.initials(),
+            bio_preview_html: user.bio_preview_html().await,
             hashtags,
             avatar_image_blob,
             text_avatar_url: user.text_avatar_url(),
             url: user.url(),
             role: user.role.to_string(),
             is_disabled: user.is_disabled(),
-
-            #[cfg(feature = "user-bio-preview-html")]
-            bio_preview_html: user.bio_preview_html().await,
         }
     }
 }
@@ -159,15 +153,13 @@ impl From<UserPresenter> for UserMinPresenter {
             username: value.username,
             display_name: value.display_name,
             initials: value.initials,
+            bio_preview_html: value.bio_preview_html,
             hashtags: value.hashtags,
             avatar_image_blob: value.avatar_image_blob,
             url: value.url,
             text_avatar_url: value.text_avatar_url,
             role: value.role,
             is_disabled: value.is_disabled,
-
-            #[cfg(feature = "user-bio-preview-html")]
-            bio_preview_html: value.bio_preview_html,
         }
     }
 }

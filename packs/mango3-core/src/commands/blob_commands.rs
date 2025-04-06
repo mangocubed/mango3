@@ -246,6 +246,7 @@ mod tests {
     use crate::test_utils::{
         insert_test_blob, insert_test_post, insert_test_user, insert_test_website, setup_core_context,
     };
+    use crate::utils::CursorPageParams;
 
     use super::{delete_blob, get_blob_by_id, paginate_blobs};
 
