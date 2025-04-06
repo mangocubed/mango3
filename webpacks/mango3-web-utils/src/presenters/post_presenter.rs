@@ -143,3 +143,10 @@ impl FromModel<Post> for PostMinPresenter {
         }
     }
 }
+
+#[cfg(feature = "ssr")]
+impl FromModel<Post> for () {
+    async fn from_model(_: &Post) -> Self {
+        ()
+    }
+}

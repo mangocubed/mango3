@@ -16,8 +16,7 @@ pub fn NewPostPage() -> impl IntoView {
     view! {
         <MyWebsitePageWrapper children=move |website| {
             let navigate = use_navigate();
-            let website_id = website.id.clone();
-            let website_id_clone = website_id.clone();
+            let website_id = website.id;
             view! {
                 <h2 class="h2">{t!(i18n, studio.new_post)}</h2>
 
@@ -32,7 +31,7 @@ pub fn NewPostPage() -> impl IntoView {
                     <PostFormFields
                         action_value=action_value
                         is_loading=server_action.pending()
-                        website_id=website_id_clone
+                        website_id=website_id.to_string()
                     />
                 </ActionForm>
 

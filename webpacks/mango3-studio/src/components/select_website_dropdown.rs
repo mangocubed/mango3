@@ -64,7 +64,7 @@ pub fn SelectWebsiteDropdown(orientation: Orientation) -> impl IntoView {
                                 </li>
 
                                 <li>
-                                    <a href=basic_config.new_website_url>
+                                    <a href=basic_config.new_website_url.to_string()>
                                         <PlusOutlined />
 
                                         {t!(i18n, shared.new_website)}

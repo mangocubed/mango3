@@ -99,7 +99,7 @@ pub(crate) static BLACKLISTED_SLUGS: LazyLock<[&str; 80]> = LazyLock::new(|| {
 });
 
 #[cfg(feature = "update-website")]
-pub(crate) static DARK_HEMES: LazyLock<[&str; 14]> = LazyLock::new(|| {
+pub(crate) static DARK_THEMES: LazyLock<[&str; 14]> = LazyLock::new(|| {
     [
         "dark",
         "abyss",
@@ -152,11 +152,11 @@ pub static REACTION_EMOJIS: LazyLock<[&str; 24]> = LazyLock::new(|| {
     ]
 });
 
+pub static REGEX_FIND_HASHTAGS: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"#(?<name>[a-zA-Z0-9]+(?:[-_][a-zA-Z0-9]+)*)").unwrap());
+
 #[cfg(feature = "regex-email")]
 pub(crate) static REGEX_EMAIL: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\A[^@\s]+@[^@\s]+\z").unwrap());
-#[cfg(feature = "regex-find-hashtags")]
-pub(crate) static REGEX_FIND_HASHTAGS: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"#(?<name>[a-zA-Z0-9]+(?:[-_][a-zA-Z0-9]+)*)").unwrap());
 #[cfg(feature = "regex-handlebars")]
 pub(crate) static REGEX_HANDLEBARS: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"(^|[^\\])\{\{(?s:.)*?\}\}").unwrap());

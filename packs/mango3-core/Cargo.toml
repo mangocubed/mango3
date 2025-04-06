@@ -8,8 +8,15 @@ ab_glyph = { version = "0.2.29", optional = true }
 argon2 = "0.5.3"
 apalis = { workspace = true }
 apalis-redis = { workspace = true }
-attohttpc = { version = "0.29.2", features = ["charsets",  "json"], optional = true }
-cached = { version = "0.55.1", features = ["async", "redis_store", "redis_tokio"] }
+attohttpc = { version = "0.29.2", features = [
+    "charsets",
+    "json",
+], optional = true }
+cached = { version = "0.55.1", features = [
+    "async",
+    "redis_store",
+    "redis_tokio",
+] }
 chrono = { workspace = true }
 dotenvy = "0.15.7"
 figment = { version = "0.10.19", features = ["env"] }
@@ -18,9 +25,11 @@ fluent-bundle = { version = "0.15.3", optional = true }
 futures-util = "0.3.31"
 futures = { workspace = true }
 env_logger = "0.11.7"
-handlebars = { version = "6.3.2", features = ["no_logging"], optional = true}
+handlebars = { version = "6.3.2", features = ["no_logging"], optional = true }
 handlebars_misc_helpers = { version = "0.17.0", default-features = false, features = [
-    "json", "jsontype", "string"
+    "json",
+    "jsontype",
+    "string",
 ], optional = true }
 image = { version = "0.25.6", optional = true }
 imageproc = { version = "0.25.0", optional = true }
@@ -35,7 +44,13 @@ rust_iso3166 = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 size = { version = "0.5.0", features = ["serde"], optional = true }
-sqlx = { version = "0.8.3", features = ["chrono", "postgres", "runtime-tokio", "tls-rustls", "uuid"] }
+sqlx = { version = "0.8.3", features = [
+    "chrono",
+    "postgres",
+    "runtime-tokio",
+    "tls-rustls",
+    "uuid",
+] }
 strum = { version = "0.27.1", features = ["derive"] }
 unic-langid = { version = "0.9.5", features = ["serde"] }
 url = { workspace = true }
@@ -54,8 +69,12 @@ all-blobs-by-ids = ["blob", "get-blob-by-id"]
 all-hashtags-by-ids = ["hashtag"]
 all-navigation-items-by-website = ["navigation-item"]
 all-user-sessions-by-user = ["user", "user-session"]
-authenticate-user = ["get-user-by-username-or-email", "user", "verify-user-password"]
-clear-post-cache = ["cache", "post"]
+authenticate-user = [
+    "get-user-by-username-or-email",
+    "user",
+    "verify-user-password",
+]
+clear-post-cache = ["cache", "get-post-by-id", "get-post-by-slug", "post"]
 clear-user-cache = [
     "cache",
     "get-user-by-id",
@@ -63,10 +82,19 @@ clear-user-cache = [
     "get-user-by-username-or-email",
     "user",
     "user-bio-html",
-    "user-bio-preview-html"
+    "user-bio-preview-html",
 ]
-clear-website-cache = ["cache", "website"]
-confirm-confirmation-code = ["confirmation-code", "delete-confirmation-code", "verify-password"]
+clear-website-cache = [
+    "cache",
+    "get-website-by-subdomain",
+    "website",
+    "website-description-html",
+]
+confirm-confirmation-code = [
+    "confirmation-code",
+    "delete-confirmation-code",
+    "verify-password",
+]
 confirm-user-email = ["user"]
 delete-all-expired-confirmation-codes = ["confirmation-code"]
 delete-all-navigation-items = ["navigation-item"]
@@ -75,10 +103,11 @@ delete-blob = ["blob", "cache", "get-blob-by-id"]
 delete-confirmation-code = ["confirmation-code"]
 delete-invitation-code = ["invitation-code"]
 delete-orphaned-blobs = ["blob", "delete-blob"]
-delete-post = []
+delete-post = ["clear-post-cache"]
 delete-post-comment = []
 delete-post-reaction = []
 delete-user-session = ["cache", "get-user-session-by-id", "user-session"]
+delete-website = ["website"]
 disable-user = ["clear-user-cache", "delete-all-user-sessions", "jobs"]
 enable-user = ["jobs", "user"]
 get-blob-by-id = ["blob", "cache"]
@@ -90,7 +119,10 @@ get-invitation-code = ["invitation-code"]
 get-invitation-code-by-id = ["invitation-code"]
 get-navigation-item-by-id = ["navigation-item"]
 get-or-insert-hashtag = ["get-hashtag-by-name", "hashtag", "regex-hashtag"]
-get-or-insert-many-hashtags = ["get-or-insert-hashtag", "hashtag-has-lookaround"]
+get-or-insert-many-hashtags = [
+    "get-or-insert-hashtag",
+    "hashtag-has-lookaround",
+]
 get-or-insert-post-view = ["post-view"]
 get-post-by-id = ["cache", "post"]
 get-post-by-id-with-search-rank = ["post"]
@@ -101,26 +133,56 @@ get-post-reaction-by-post-and-user = ["post", "post-reaction", "user"]
 get-post-reaction-emojis-count = []
 get-post-reactions-count = []
 get-post-views-count = []
+get-used-website-storage = ["dep:size"]
 get-user-by-id = ["cache", "user"]
-get-user-by-username =["cache", "user"]
+get-user-by-username = ["cache", "user"]
 get-user-by-username-or-email = ["cache", "user"]
 get-user-session-by-id = ["cache", "user-session"]
 get-website-by-id = ["cache", "website"]
 get-website-by-id-with-search-rank = ["website"]
 get-website-by-subdomain = ["cache", "website"]
 insert-blob = ["dep:md-5", "dep:multer", "blob"]
-insert-confirmation-code = ["confirmation-code", "generate-random-string", "get-confirmation-code-by-user", "jobs"]
-insert-invitation-code = ["generate-random-string", "invitation-code", "jobs", "mutation"]
+insert-confirmation-code = [
+    "confirmation-code",
+    "generate-random-string",
+    "get-confirmation-code-by-user",
+    "jobs",
+]
+insert-invitation-code = [
+    "generate-random-string",
+    "invitation-code",
+    "jobs",
+    "mutation",
+    "regex-email",
+]
 insert-navigation-item = ["navigation-item"]
-insert-or-update-many-navigation-items = ["navigation-item"]
+insert-or-update-many-navigation-items = [
+    "delete-all-navigation-items",
+    "get-navigation-item-by-id",
+    "insert-navigation-item",
+    "navigation-item",
+    "update-navigation-item",
+]
 insert-or-update-post-reaction = []
-insert-post = ["post"]
+insert-post = ["get-or-insert-many-hashtags", "post", "regex-slug"]
 insert-post-comment = ["post-comment"]
-insert-user = ["encrypt-password", "find-country", "jobs", "parse-date", "regex-email", "regex-username", "user"]
+insert-user = [
+    "encrypt-password",
+    "find-country",
+    "jobs",
+    "parse-date",
+    "regex-email",
+    "regex-username",
+    "user",
+]
 insert-user-session = ["jobs", "user-session"]
-insert-website = ["website"]
+insert-website = ["regex-subdomain", "website"]
 paginate-blobs = ["blob", "pagination"]
-paginate-post-comments = ["get-post-comment-by-id", "pagination", "post-comment"]
+paginate-post-comments = [
+    "get-post-comment-by-id",
+    "pagination",
+    "post-comment",
+]
 paginate-posts = ["get-post-by-id", "hashtag", "pagination", "post"]
 paginate-users = ["get-user-by-id", "pagination", "user"]
 paginate-websites = ["get-website-by-id", "hashtag", "pagination", "website"]
@@ -130,18 +192,32 @@ search-posts = ["get-post-by-id-with-search-rank", "hashtag", "post"]
 search-websites = ["get-website-by-id-with-search-rank", "hashtag", "website"]
 send-user-email-confirmation-code = ["insert-confirmation-code", "user"]
 send-user-login-confirmation-code = ["insert-confirmation-code", "user"]
-send-user-password-reset-code = ["insert-confirmation-code", "user", "user-email-is-confirmed"]
+send-user-password-reset-code = [
+    "insert-confirmation-code",
+    "user",
+    "user-email-is-confirmed",
+]
 update-navigation-item = ["navigation-item"]
-update-post = ["post"]
-update-user-email = ["clear-user-cache", "regex-email", "user", "verify-user-password"]
+update-post = ["clear-post-cache", "post"]
+update-user-email = [
+    "clear-user-cache",
+    "regex-email",
+    "user",
+    "verify-user-password",
+]
 update-user-password = ["encrypt-password", "user", "verify-user-password"]
-update-user-profile = ["clear-user-cache", "find-country", "get-or-insert-many-hashtags", "parse-date", "user"]
+update-user-profile = [
+    "clear-user-cache",
+    "find-country",
+    "get-or-insert-many-hashtags",
+    "parse-date",
+    "user",
+]
 update-user-role = ["clear-user-cache"]
-update-website = ["website"]
+update-website = ["clear-website-cache", "website"]
 verify-user-password = ["user", "verify-password"]
 # Constants
 regex-email = []
-regex-find-hashtags = []
 regex-handlebars = []
 regex-hashtag = []
 regex-slug = []
@@ -180,7 +256,7 @@ user-bio-preview-html = ["markdown", "user"]
 user-i18n = ["locales", "user"]
 user-email-is-confirmed = ["user"]
 website-description-html = ["markdown", "website"]
-website-storage = []
+website-storage = ["dep:size", "get-used-website-storage"]
 # Utils
 cache = []
 encrypt-password = []
@@ -190,9 +266,9 @@ handlebars = ["dep:attohttpc", "dep:handlebars", "dep:handlebars_misc_helpers"]
 hashtag-has-lookaround = []
 jobs = []
 locales = ["dep:fluent-templates", "dep:fluent-bundle"]
-markdown = ["dep:pulldown-cmark", "hashtag-has-lookaround", "regex-find-hashtags"]
+markdown = ["dep:pulldown-cmark", "hashtag-has-lookaround"]
 mutation = []
-pagination  = []
+pagination = []
 parse-date = []
 text-icon = ["dep:ab_glyph", "dep:image", "dep:imageproc"]
 validator = ["locales"]

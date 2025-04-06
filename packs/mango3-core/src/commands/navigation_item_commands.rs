@@ -4,9 +4,10 @@ use crate::models::*;
 use crate::CoreContext;
 
 #[cfg(feature = "insert-navigation-item")]
-impl Validator {
+impl crate::utils::Validator {
     fn validate_navigation_item_title(&mut self, value: &str) -> bool {
         use crate::enums::Input;
+        use crate::utils::ValidatorTrait;
 
         self.validate_presence(Input::Title, value) && self.validate_length(Input::Title, value, None, Some(256))
     }
@@ -47,6 +48,8 @@ async fn delete_all_navigation_items(
     skip: Vec<NavigationItem>,
     website: &Website,
 ) -> crate::utils::MutResult {
+    use crate::utils::AsyncRedisCacheTrait;
+
     let _ = sqlx::query!(
         "DELETE FROM navigation_items WHERE id != ALL($1) AND website_id = $2",
         &skip.iter().map(|item| item.id.clone()).collect::<Vec<Uuid>>(), // $1
@@ -55,11 +58,11 @@ async fn delete_all_navigation_items(
     .execute(&core_context.db_pool)
     .await;
 
-    NAVIGATION_ITEM_ALL_BY_WEBSITE
-        .cache_remove(crate::contants::PREFIX_NAVIGATION_ITEM_ALL_BY_WEBSITE, &website.id)
+    ALL_CACHED_NAVIGATION_ITEMS_BY_WEBSITE
+        .cache_remove(crate::constants::PREFIX_ALL_NAVIGATION_ITEMS_BY_WEBSITE, &website.id)
         .await;
 
-    Ok(())
+    crate::mut_success!()
 }
 
 #[cfg(feature = "get-navigation-item-by-id")]
@@ -71,7 +74,7 @@ pub async fn get_navigation_item_by_id(
     let website_id = website.map(|website| website.id);
 
     sqlx::query_as!(
-        Self,
+        NavigationItem,
         "SELECT * FROM navigation_items WHERE id = $1 AND ($2::uuid IS NULL OR website_id = $2) LIMIT 1",
         id,         // $1
         website_id, // $2
@@ -91,16 +94,16 @@ async fn insert_navigation_item(
     let title = title.trim();
     let url = url.trim().to_lowercase();
 
-    let mut validator = Validator::default();
+    let mut validator = crate::validator!();
 
     validator.validate_navigation_item_title(title);
 
     if !validator.is_valid {
-        return Err(validator.errors);
+        return crate::mut_error!(validator.errors);
     }
 
-    sqlx::query_as!(
-        Self,
+    let result = sqlx::query_as!(
+        NavigationItem,
         "INSERT INTO navigation_items (website_id, position, title, url) VALUES ($1, $2, $3, $4) RETURNING *",
         website.id, // $1
         position,   // $2
@@ -108,7 +111,9 @@ async fn insert_navigation_item(
         url,        // $4
     )
     .fetch_one(&core_context.db_pool)
-    .await
+    .await;
+
+    crate::mut_result!(result)
 }
 
 #[cfg(feature = "insert-or-update-many-navigation-items")]
@@ -127,17 +132,17 @@ pub async fn insert_or_update_many_navigation_items(
                 continue;
             };
 
-            let Ok(nav_item) = update_navigation_item(core_context, nav_item, position, &title, &url).await else {
+            let Ok(nav_item) = update_navigation_item(core_context, &nav_item, position, &title, &url).await else {
                 continue;
             };
 
-            skip_from_removal.push(nav_item);
+            skip_from_removal.push(nav_item.data);
         } else {
             let Ok(nav_item) = insert_navigation_item(core_context, website, position, &title, &url).await else {
                 continue;
             };
 
-            skip_from_removal.push(nav_item);
+            skip_from_removal.push(nav_item.data);
         }
 
         position += 1
@@ -145,7 +150,7 @@ pub async fn insert_or_update_many_navigation_items(
 
     let _ = delete_all_navigation_items(core_context, skip_from_removal, website).await;
 
-    Ok(())
+    crate::mut_success!()
 }
 
 #[cfg(feature = "update-navigation-item")]
@@ -155,20 +160,20 @@ async fn update_navigation_item(
     position: i16,
     title: &str,
     url: &str,
-) -> crate::utils::MutResult<Self> {
+) -> crate::utils::MutResult<NavigationItem> {
     let title = title.trim();
     let url = url.trim().to_lowercase();
 
-    let mut validator = validator!();
+    let mut validator = crate::validator!();
 
-    validator.validate_title(title);
+    validator.validate_navigation_item_title(title);
 
     if !validator.is_valid {
-        return Err(validator.errors);
+        return crate::mut_error!(validator.errors);
     }
 
-    query_as!(
-        Self,
+    let result = sqlx::query_as!(
+        NavigationItem,
         "UPDATE navigation_items SET position = $2, title = $3, url = $4 WHERE id = $1 RETURNING *",
         navigation_item.id, // $1
         position,           // $2
@@ -176,7 +181,9 @@ async fn update_navigation_item(
         url,                // $4
     )
     .fetch_one(&core_context.db_pool)
-    .await
+    .await;
+
+    crate::mut_result!(result)
 }
 
 #[cfg(test)]

@@ -4,8 +4,8 @@ use leptos::prelude::*;
 use mango3_web_utils::async_t_string;
 use mango3_web_utils::components::LoadingSpinner;
 use mango3_web_utils::i18n::use_i18n;
-use mango3_web_utils::models::WebsiteResp;
 use mango3_web_utils::pages::Page;
+use mango3_web_utils::presenters::WebsitePresenter;
 
 use crate::context::use_my_website_resource;
 
@@ -13,7 +13,7 @@ use crate::context::use_my_website_resource;
 pub fn MyWebsiteOpt<VF, IV>(children: VF) -> impl IntoView
 where
     IV: IntoView + 'static,
-    VF: Fn(Option<WebsiteResp>) -> IV + Send + Sync + 'static,
+    VF: Fn(Option<WebsitePresenter>) -> IV + Send + Sync + 'static,
 {
     let my_website_resource = use_my_website_resource();
     let children_store = StoredValue::new(children);
@@ -34,7 +34,7 @@ where
 pub fn MyWebsite<VF, IV>(children: VF) -> impl IntoView
 where
     IV: IntoView + 'static,
-    VF: Fn(WebsiteResp) -> IV + Send + Sync + 'static,
+    VF: Fn(WebsitePresenter) -> IV + Send + Sync + 'static,
 {
     view! { <MyWebsiteOpt children=move |website_opt| { website_opt.map(&children) } /> }
 }
@@ -43,7 +43,7 @@ where
 pub fn MyWebsitePageWrapper<VF, IV>(children: VF) -> impl IntoView
 where
     IV: IntoView + 'static,
-    VF: Fn(WebsiteResp) -> IV + Copy + Send + Sync + 'static,
+    VF: Fn(WebsitePresenter) -> IV + Copy + Send + Sync + 'static,
 {
     let i18n = use_i18n();
     let text_my_websites = async_t_string!(i18n, studio.my_websites);

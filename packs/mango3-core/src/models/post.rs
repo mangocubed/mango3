@@ -1,9 +1,10 @@
 use std::fmt::Display;
 
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use sqlx::types::chrono::{DateTime, Utc};
-use sqlx::types::{JsonValue, Uuid};
+use serde_json::Value;
 use url::Url;
+use uuid::Uuid;
 
 use crate::CoreContext;
 
@@ -18,7 +19,7 @@ pub struct Post {
     pub title: String,
     pub slug: String,
     pub content: String,
-    pub variables: JsonValue,
+    pub variables: Value,
     pub hashtag_ids: Vec<Uuid>,
     pub cover_image_blob_id: Option<Uuid>,
     pub blob_ids: Vec<Uuid>,
@@ -46,11 +47,11 @@ impl Post {
 
     #[cfg(feature = "post-content-html")]
     pub async fn content_html(&self) -> String {
-        post_cached_content_html(self).await.unwrap_or_default()
+        post_content_html(self).await.unwrap_or_default()
     }
 
     pub async fn content_preview_html(&self) -> String {
-        post_cached_content_preview_html(self).await.unwrap_or_default()
+        post_content_preview_html(self).await.unwrap_or_default()
     }
 
     pub async fn cover_image_blob(&self, core_context: &CoreContext) -> Option<sqlx::Result<Blob>> {
@@ -102,7 +103,7 @@ impl Post {
     ty = "cached::AsyncRedisCache<Uuid, String>",
     create = r##" { crate::async_redis_cache!(crate::constants::PREFIX_POST_CONTENT_HTML).await } "##
 )]
-pub(crate) async fn post_cached_content_html(post: &Post) -> Result<String, cached::RedisCacheError> {
+pub(crate) async fn post_content_html(post: &Post) -> Result<String, cached::RedisCacheError> {
     Ok(crate::parse_html!(
         &crate::render_handlebars!(&post.content, &post.variables).unwrap_or_default(),
         true
@@ -115,7 +116,7 @@ pub(crate) async fn post_cached_content_html(post: &Post) -> Result<String, cach
     ty = "cached::AsyncRedisCache<Uuid, String>",
     create = r##" { crate::async_redis_cache!(crate::constants::PREFIX_POST_CONTENT_PREVIEW_HTML).await } "##
 )]
-pub(crate) async fn post_cached_content_preview_html(post: &Post) -> Result<String, cached::RedisCacheError> {
+pub(crate) async fn post_content_preview_html(post: &Post) -> Result<String, cached::RedisCacheError> {
     Ok(crate::parse_html!(
         &crate::constants::REGEX_HANDLEBARS
             .replace_all(&post.content, "")

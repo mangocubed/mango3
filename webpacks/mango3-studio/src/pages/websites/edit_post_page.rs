@@ -19,19 +19,17 @@ pub fn EditPostPage() -> impl IntoView {
     view! {
         <MyWebsitePageWrapper children=move |website| {
             let post_resource = LocalResource::new({
-                let website_id = website.id.clone();
+                let website_id = website.id;
                 move || get_my_post(
-                    website_id.clone(),
+                    website_id,
                     params_map.with(|params| params.get(KEY_PARAM_POST_ID).unwrap_or_default()),
                 )
             });
             view! {
                 <Suspense>
                     {move || {
-                        let website_id = website.id.clone();
+                        let website_id = website.id;
                         Suspend::new(async move {
-                            let website_id = website_id.clone();
-                            let website_id_clone = website_id.clone();
                             if let Some(Ok(Some(post))) = post_resource.get().map(|resource| resource.take()) {
                                 let navigate = use_navigate();
                                 Either::Left(
@@ -49,12 +47,12 @@ pub fn EditPostPage() -> impl IntoView {
                                                 message=move || t!(i18n, studio.failed_to_update_post)
                                             />
 
-                                            <input type="hidden" name="id" value=post.id.clone() />
+                                            <input type="hidden" name="id" value=post.id.to_string() />
 
                                             <PostFormFields
                                                 action_value=action_value
                                                 is_loading=server_action.pending()
-                                                website_id=website_id_clone
+                                                website_id=website_id.to_string()
                                                 post=post
                                             />
                                         </ActionForm>

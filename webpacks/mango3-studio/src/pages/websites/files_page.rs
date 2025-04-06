@@ -6,7 +6,7 @@ use mango3_web_utils::components::{
     InfiniteScrollLocalResourceController,
 };
 use mango3_web_utils::i18n::{t, use_i18n};
-use mango3_web_utils::models::BlobResp;
+use mango3_web_utils::presenters::BlobPresenter;
 
 use crate::components::{MyWebsitePageWrapper, WebsiteStorageProgress};
 use crate::server_functions::{get_my_blobs, AttemptToDeleteBlob};
@@ -15,18 +15,15 @@ use crate::server_functions::{get_my_blobs, AttemptToDeleteBlob};
 pub fn FilesPage() -> impl IntoView {
     let i18n = use_i18n();
     let server_action = ServerAction::<AttemptToDeleteBlob>::new();
-    let delete_blob = RwSignal::new(None);
+    let delete_blob: RwSignal<Option<BlobPresenter>> = RwSignal::new(None);
     let show_delete_confirmation = RwSignal::new(false);
     let uploaded_files = RwSignal::new(vec![]);
 
     view! {
         <MyWebsitePageWrapper children=move |website| {
-            let website_id = website.id.clone();
+            let website_id = website.id;
             let controller = InfiniteScrollLocalResourceController::new(|after| {
-                LocalResource::new({
-                    let website_id = website_id.clone();
-                    move || get_my_blobs(website_id.clone(), after.get())
-                })
+                LocalResource::new({ move || get_my_blobs(website_id, after.get()) })
             });
             Effect::new({
                 let controller = controller.clone();
@@ -46,7 +43,7 @@ pub fn FilesPage() -> impl IntoView {
                 <section class="max-w-[720px] w-full mx-auto mt-4">
                     <h3 class="h3">{t!(i18n, studio.upload_files)}</h3>
 
-                    <MultipleImageUploadField website_id=website_id.clone() value=uploaded_files />
+                    <MultipleImageUploadField website_id=website_id.to_string() value=uploaded_files />
                 </section>
 
                 <section class="max-w-[720px] w-full mx-auto mt-4">
@@ -54,7 +51,7 @@ pub fn FilesPage() -> impl IntoView {
 
                     <InfiniteScroll
                         controller=controller.clone()
-                        key=|blob: &BlobResp| blob.id.clone()
+                        key=|blob: &BlobPresenter| blob.id
                         children=move |blob| {
                             view! {
                                 <div class="card card-sm bg-base-200 shadow-xl mb-4">
@@ -64,7 +61,7 @@ pub fn FilesPage() -> impl IntoView {
                                                 <div class="rounded" style:width="82px" style:height="82px">
                                                     <img
                                                         alt=blob.file_name.clone()
-                                                        src=blob.variant_url(82, 82, true)
+                                                        src=blob.variant_url(82, 82, true).to_string()
                                                     />
                                                 </div>
                                             </div>
@@ -110,22 +107,19 @@ pub fn FilesPage() -> impl IntoView {
 
                 <ConfirmationModal
                     is_open=show_delete_confirmation
-                    on_accept={
-                        let website_id = website_id.clone();
-                        move || {
-                            let id = delete_blob.get().map(|b: BlobResp| b.id).unwrap();
-                            server_action
-                                .dispatch(AttemptToDeleteBlob {
-                                    website_id: website_id.clone(),
-                                    id: id.clone(),
-                                });
-                            controller
-                                .nodes
-                                .update(|blobs| {
-                                    blobs.retain(|b: &BlobResp| b.id != id);
-                                });
-                            delete_blob.set(None);
-                        }
+                    on_accept=move || {
+                        let id = delete_blob.get().unwrap().id;
+                        server_action
+                            .dispatch(AttemptToDeleteBlob {
+                                website_id: website_id,
+                                id,
+                            });
+                        controller
+                            .nodes
+                            .update(|blobs| {
+                                blobs.retain(|blob| blob.id != id);
+                            });
+                        delete_blob.set(None);
                     }
                 >
                     {t!(i18n, studio.are_you_sure_you_want_to_delete_this_file)}

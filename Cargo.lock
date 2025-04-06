@@ -3197,7 +3197,6 @@ dependencies = [
 name = "mango3-studio"
 version = "0.0.0-alpha.17"
 dependencies = [
- "async-trait",
  "chrono",
  "console_error_panic_hook",
  "futures",
@@ -3212,6 +3211,7 @@ dependencies = [
  "serde_json",
  "slug",
  "tokio",
+ "url",
  "uuid",
  "wasm-bindgen",
 ]

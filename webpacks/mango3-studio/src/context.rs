@@ -2,13 +2,13 @@ use leptos::prelude::*;
 use leptos_router::hooks::use_params_map;
 
 use leptos_router::params::ParamsMap;
-use mango3_web_utils::models::{WebsitePreviewResp, WebsiteResp};
+use mango3_web_utils::presenters::{WebsiteMinPresenter, WebsitePresenter};
 
 use crate::constants::KEY_PARAM_WEBSITE_ID;
 use crate::server_functions::get_my_website;
 
 pub fn provide_selected_website() {
-    provide_context::<RwSignal<Option<WebsitePreviewResp>>>(RwSignal::new(None));
+    provide_context::<RwSignal<Option<WebsiteMinPresenter>>>(RwSignal::new(None));
 }
 
 pub fn provide_my_website_resource() {
@@ -22,14 +22,14 @@ pub fn provide_my_website_resource() {
     }))
 }
 
-pub fn use_selected_website() -> RwSignal<Option<WebsitePreviewResp>> {
-    use_context::<RwSignal<Option<WebsitePreviewResp>>>().unwrap()
+pub fn use_selected_website() -> RwSignal<Option<WebsiteMinPresenter>> {
+    use_context::<RwSignal<Option<WebsiteMinPresenter>>>().unwrap()
 }
 
 pub fn param_website_id(params_map: Memo<ParamsMap>) -> Option<String> {
     params_map.with(|params| params.get(KEY_PARAM_WEBSITE_ID))
 }
 
-pub fn use_my_website_resource() -> LocalResource<Result<Option<WebsiteResp>, ServerFnError>> {
-    use_context::<LocalResource<Result<Option<WebsiteResp>, ServerFnError>>>().unwrap()
+pub fn use_my_website_resource() -> LocalResource<Result<Option<WebsitePresenter>, ServerFnError>> {
+    use_context::<LocalResource<Result<Option<WebsitePresenter>, ServerFnError>>>().unwrap()
 }

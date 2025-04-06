@@ -101,6 +101,23 @@ impl Website {
     pub fn url(&self) -> Url {
         BASIC_CONFIG.website_url(&self.subdomain)
     }
+
+    #[cfg(feature = "website-storage")]
+    pub async fn available_storage(&self, core_context: &CoreContext) -> size::Size {
+        self.max_storage() - self.used_storage(core_context).await
+    }
+
+    #[cfg(feature = "website-storage")]
+    pub fn max_storage(&self) -> size::Size {
+        crate::config::WEBSITE_CONFIG.max_storage
+    }
+
+    #[cfg(feature = "website-storage")]
+    pub async fn used_storage(&self, core_context: &CoreContext) -> size::Size {
+        crate::commands::get_used_website_storage(core_context, self)
+            .await
+            .expect("Could not get used storage")
+    }
 }
 
 #[cfg(feature = "website-description-html")]

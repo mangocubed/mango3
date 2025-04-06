@@ -25,8 +25,12 @@ mod website;
 
 #[cfg(feature = "navigation-item")]
 pub(crate) use navigation_item::NavigationItems;
+#[cfg(feature = "clear-post-cache")]
+pub(crate) use post::{POST_CONTENT_HTML, POST_CONTENT_PREVIEW_HTML};
 #[cfg(feature = "clear-user-cache")]
 pub(crate) use user::{USER_BIO_HTML, USER_BIO_PREVIEW_HTML};
+#[cfg(feature = "clear-website-cache")]
+pub(crate) use website::{WEBSITE_DESCRIPTION_HTML, WEBSITE_DESCRIPTION_PREVIEW_HTML};
 
 #[cfg(feature = "blob")]
 pub use blob::Blob;

@@ -4,31 +4,24 @@ use uuid::Uuid;
 #[cfg(feature = "ssr")]
 use chrono::Utc;
 #[cfg(feature = "ssr")]
-use futures::future;
-#[cfg(feature = "ssr")]
 use serde_json::Value;
 
-use mango3_web_utils::models::{FormResp, PostPreviewResp, PostResp};
-use mango3_utils::models::CursorPage;
+use mango3_web_utils::presenters::{CursorPagePresenter, MutPresenter, PostMinPresenter, PostPresenter};
 
 #[cfg(feature = "ssr")]
 use mango3_core::constants::{BLACKLISTED_HASHTAGS, REGEX_FIND_HASHTAGS};
 #[cfg(feature = "ssr")]
-use mango3_core::hashtag_has_lookaround;
+use mango3_core::models::Post;
 #[cfg(feature = "ssr")]
-use mango3_core::models::{Blob, Post};
+use mango3_core::utils::hashtag_has_lookaround;
 #[cfg(feature = "ssr")]
-use mango3_core::utils::{parse_html, render_handlebars};
+use mango3_core::utils::{parse_html, render_handlebars, CursorPageParams};
 #[cfg(feature = "ssr")]
-use mango3_web_utils::models::{BlobResp, FromCore, UserPreviewResp};
+use mango3_web_utils::presenters::FromModel;
 #[cfg(feature = "ssr")]
-use mango3_web_utils::ssr::{expect_core_context, extract_i18n, extract_user};
-#[cfg(feature = "ssr")]
-use mango3_utils::models::CursorPageParams;
-#[cfg(feature = "ssr")]
-use mango3_utils::models::Hashtag;
+use mango3_web_utils::ssr::{expect_core_context, extract_user};
 
-use crate::models::EditPostResp;
+use crate::presenters::EditPostPresenter;
 
 #[cfg(feature = "ssr")]
 use super::{get_blobs_by_ids, my_website};
@@ -38,8 +31,10 @@ pub async fn preview_post(
     title: String,
     content: String,
     variables: String,
-    cover_image_blob_id: Option<String>,
-) -> Result<PostResp, ServerFnError> {
+    cover_image_blob_id: Option<Uuid>,
+) -> Result<PostPresenter, ServerFnError> {
+    use mango3_web_utils::presenters::{BlobPresenter, HashtagPresenter, UserMinPresenter};
+
     let title = title.trim().to_owned();
     let content = content.trim();
     let variables = variables.parse::<Value>().unwrap_or_default();
@@ -66,17 +61,15 @@ pub async fn preview_post(
 
     let hashtags = hashtag_names
         .iter()
-        .map(|name| Hashtag {
+        .map(|name| HashtagPresenter {
             id: Uuid::new_v4(),
             name: (*name).to_owned(),
-            created_at: Utc::now(),
-            updated_at: None,
         })
-        .collect::<Vec<Hashtag>>();
+        .collect::<Vec<HashtagPresenter>>();
 
-    let cover_image_blob = if let Some(id) = cover_image_blob_id.and_then(|id| Uuid::try_parse(&id).ok()) {
-        if let Ok(blob) = Blob::get_by_id(&core_context, id, None, Some(&user)).await {
-            Some(BlobResp::from_core(&core_context, &blob).await)
+    let cover_image_blob = if let Some(id) = cover_image_blob_id {
+        if let Ok(blob) = mango3_core::commands::get_blob_by_id(&core_context, id, None, Some(&user)).await {
+            Some(BlobPresenter::from_model(&blob).await)
         } else {
             None
         }
@@ -84,9 +77,9 @@ pub async fn preview_post(
         None
     };
 
-    Ok(PostResp {
-        id: String::new(),
-        user: UserPreviewResp::from_core(&core_context, &user).await,
+    Ok(PostPresenter {
+        id: Uuid::new_v4(),
+        user: UserMinPresenter::from_model(&user).await,
         title,
         slug: String::new(),
         content_html,
@@ -94,7 +87,7 @@ pub async fn preview_post(
         cover_image_blob,
         blobs: vec![],
         is_published: true,
-        url: String::new(),
+        url: url::Url::parse("/").expect("Failed to parse URL"),
         views_count: 0,
         comments_count: 0,
         reactions_count: 0,
@@ -107,33 +100,31 @@ pub async fn preview_post(
 
 #[server]
 pub async fn attempt_to_create_post(
-    website_id: String,
+    website_id: Uuid,
     title: String,
     slug: String,
     content: String,
     variables: String,
-    blob_ids: Option<Vec<String>>,
-    cover_image_blob_id: Option<String>,
+    blob_ids: Option<Vec<Uuid>>,
+    cover_image_blob_id: Option<Uuid>,
     publish: Option<bool>,
-) -> Result<FormResp, ServerFnError> {
-    let i18n = extract_i18n().await?;
-
-    let Some(website) = my_website(&website_id).await? else {
-        return FormResp::new_with_error(&i18n);
+) -> Result<MutPresenter, ServerFnError> {
+    let Some(website) = my_website(website_id).await? else {
+        return mango3_web_utils::mut_presenter_error!();
     };
 
     let core_context = expect_core_context();
     let user = extract_user().await?.unwrap();
     let blobs = get_blobs_by_ids(&website, &user, blob_ids).await;
-    let cover_image_blob = if let Some(id) = cover_image_blob_id.as_ref().and_then(|id| Uuid::try_parse(id).ok()) {
-        Blob::get_by_id(&core_context, id, Some(&website), Some(&user))
+    let cover_image_blob = if let Some(id) = cover_image_blob_id {
+        mango3_core::commands::get_blob_by_id(&core_context, id, Some(&website), Some(&user))
             .await
             .ok()
     } else {
         None
     };
 
-    let result = Post::insert(
+    let result = mango3_core::commands::insert_post(
         &core_context,
         &website,
         &user,
@@ -147,76 +138,70 @@ pub async fn attempt_to_create_post(
     )
     .await;
 
-    FormResp::new(&i18n, result)
+    mango3_web_utils::mut_presenter!(result)
 }
 
 #[server]
-pub async fn attempt_to_delete_post(website_id: String, id: String) -> Result<FormResp, ServerFnError> {
-    let i18n = extract_i18n().await?;
-
-    let Some(post) = my_post(&website_id, &id).await? else {
-        return FormResp::new_with_error(&i18n);
+pub async fn attempt_to_delete_post(website_id: Uuid, id: Uuid) -> Result<MutPresenter, ServerFnError> {
+    let Some(post) = my_post(website_id, id).await? else {
+        return mango3_web_utils::mut_presenter_error!();
     };
 
     let core_context = expect_core_context();
 
-    let result = post.delete(&core_context).await;
+    let result = mango3_core::commands::delete_post(&core_context, &post).await;
 
-    FormResp::new(&i18n, result)
+    mango3_web_utils::mut_presenter!(result)
 }
 
 #[server]
 pub async fn attempt_to_update_post(
-    website_id: String,
-    id: String,
+    website_id: Uuid,
+    id: Uuid,
     title: String,
     slug: String,
     content: String,
     variables: String,
-    blob_ids: Option<Vec<String>>,
-    cover_image_blob_id: Option<String>,
+    blob_ids: Option<Vec<Uuid>>,
+    cover_image_blob_id: Option<Uuid>,
     publish: Option<bool>,
-) -> Result<FormResp, ServerFnError> {
-    let i18n = extract_i18n().await?;
-
-    let Some(post) = my_post(&website_id, &id).await? else {
-        return FormResp::new_with_error(&i18n);
+) -> Result<MutPresenter, ServerFnError> {
+    let Some(post) = my_post(website_id, id).await? else {
+        return mango3_web_utils::mut_presenter_error!();
     };
 
     let core_context = expect_core_context();
     let user = extract_user().await?.unwrap();
     let website = post.website(&core_context).await?;
     let blobs = get_blobs_by_ids(&website, &user, blob_ids).await;
-    let cover_image_blob = if let Some(id) = cover_image_blob_id.as_ref().and_then(|id| Uuid::try_parse(id).ok()) {
-        Blob::get_by_id(&core_context, id, Some(&website), Some(&user))
+    let cover_image_blob = if let Some(id) = cover_image_blob_id {
+        mango3_core::commands::get_blob_by_id(&core_context, id, Some(&website), Some(&user))
             .await
             .ok()
     } else {
         None
     };
 
-    let result = post
-        .update(
-            &core_context,
-            &title,
-            &slug,
-            &content,
-            &variables,
-            blobs,
-            cover_image_blob.as_ref(),
-            publish.unwrap_or_default(),
-        )
-        .await;
+    let result = mango3_core::commands::update_post(
+        &core_context,
+        &post,
+        &title,
+        &slug,
+        &content,
+        &variables,
+        blobs,
+        cover_image_blob.as_ref(),
+        publish.unwrap_or_default(),
+    )
+    .await;
 
-    FormResp::new(&i18n, result)
+    mango3_web_utils::mut_presenter!(result)
 }
 
 #[server]
-pub async fn get_my_post(website_id: String, id: String) -> Result<Option<EditPostResp>, ServerFnError> {
-    if let Some(post) = my_post(&website_id, &id).await? {
-        let core_context = expect_core_context();
-
-        Ok(Some(EditPostResp::from_core(&core_context, &post).await))
+pub async fn get_my_post(website_id: Uuid, id: String) -> Result<Option<EditPostPresenter>, ServerFnError> {
+    if let Some(post) = my_post(website_id, Uuid::try_parse(&id)?).await? {
+        Ok(Some(EditPostPresenter::from_model(&post).await))
     } else {
         Ok(None)
     }
@@ -224,33 +209,25 @@ pub async fn get_my_post(website_id: String, id: String) -> Result<Option<EditPo
 
 #[server]
 pub async fn get_my_posts(
-    website_id: String,
+    website_id: Uuid,
     after: Option<Uuid>,
-) -> Result<CursorPage<PostPreviewResp>, ServerFnError> {
-    let Some(website) = my_website(&website_id).await? else {
-        return Ok(CursorPage::default());
+) -> Result<CursorPagePresenter<PostMinPresenter>, ServerFnError> {
+    let Some(website) = my_website(website_id).await? else {
+        return mango3_web_utils::cursor_page_presenter!();
     };
 
     let core_context = expect_core_context();
     let user = extract_user().await?.unwrap();
     let page_params = CursorPageParams { after, first: 10 };
     let page =
-        Post::paginate_by_created_at_desc(&core_context, &page_params, Some(&website), Some(&user), None, None).await;
+        mango3_core::commands::paginate_posts(&core_context, &page_params, Some(&website), Some(&user), None, None)
+            .await;
 
-    Ok(CursorPage {
-        end_cursor: page.end_cursor,
-        has_next_page: page.has_next_page,
-        nodes: future::join_all(
-            page.nodes
-                .iter()
-                .map(|post| PostPreviewResp::from_core(&core_context, post)),
-        )
-        .await,
-    })
+    mango3_web_utils::cursor_page_presenter!(&page)
 }
 
 #[cfg(feature = "ssr")]
-async fn my_post(website_id: &str, id: &str) -> Result<Option<Post>, ServerFnError> {
+async fn my_post(website_id: Uuid, id: Uuid) -> Result<Option<Post>, ServerFnError> {
     let Some(website) = my_website(website_id).await? else {
         return Ok(None);
     };
@@ -259,7 +236,7 @@ async fn my_post(website_id: &str, id: &str) -> Result<Option<Post>, ServerFnErr
     let user = extract_user().await?.unwrap();
 
     Ok(
-        Post::get_by_id(&core_context, Uuid::try_parse(id)?, Some(&website), Some(&user), None)
+        mango3_core::commands::get_post_by_id(&core_context, id, Some(&website), Some(&user), None)
             .await
             .ok(),
     )

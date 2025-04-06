@@ -1,9 +1,10 @@
 use leptos::either::Either;
 use leptos::prelude::*;
+use uuid::Uuid;
 
 use mango3_web_utils::components::{Hashtags, LoadingSpinner, Modal, UserTagLink};
 use mango3_web_utils::i18n::{t, use_i18n};
-use mango3_web_utils::models::BlobResp;
+use mango3_web_utils::presenters::BlobPresenter;
 
 use crate::components::{HighLightCode, MyWebsite};
 use crate::server_functions::preview_post;
@@ -14,11 +15,11 @@ pub fn PostPreviewModal(
     #[prop(into)] title: Signal<String>,
     #[prop(into)] content: Signal<String>,
     #[prop(into)] variables: Signal<String>,
-    #[prop(into)] cover_image_blob: Signal<Option<BlobResp>>,
+    #[prop(into)] cover_image_blob: Signal<Option<BlobPresenter>>,
 ) -> impl IntoView {
     let i18n = use_i18n();
     let preview_action = Action::new(
-        move |(title, content, variables, cover_image_blob_id): &(String, String, String, Option<String>)| {
+        move |(title, content, variables, cover_image_blob_id): &(String, String, String, Option<Uuid>)| {
             let title = title.to_owned();
             let content = content.to_owned();
             let variables = variables.to_owned();
@@ -57,10 +58,14 @@ pub fn PostPreviewModal(
                                         post.cover_image_blob
                                             .clone()
                                             .map(|cover_image_blob| {
-                                                let cover_image_url = cover_image_blob.variant_url(1200, 200, true);
                                                 view! {
                                                     <figure>
-                                                        <img src=cover_image_url alt=post_title.clone() />
+                                                        <img
+                                                            src=cover_image_blob
+                                                                .variant_url(1200, 200, true)
+                                                                .to_string()
+                                                            alt=post_title.clone()
+                                                        />
                                                     </figure>
                                                 }
                                             })
@@ -81,7 +86,7 @@ pub fn PostPreviewModal(
 
                                     <div class="empty:hidden my-4 flex flex-wrap gap-2">
                                         <MyWebsite let:website>
-                                            <Hashtags hashtags=post.hashtags.clone() base_url=website.url />
+                                            <Hashtags hashtags=post.hashtags.clone() base_url=website.url.to_string() />
                                         </MyWebsite>
                                     </div>
                                 </div>

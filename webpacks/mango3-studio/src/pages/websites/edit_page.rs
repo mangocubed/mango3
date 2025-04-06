@@ -75,7 +75,7 @@ pub fn EditPage() -> impl IntoView {
                         message=move || t!(i18n, studio.failed_to_update_website)
                     />
 
-                    <input type="hidden" name="id" value=website.id.clone() />
+                    <input type="hidden" name="id" value=website.id.to_string() />
 
                     <TextField
                         action_value=action_value
@@ -99,7 +99,7 @@ pub fn EditPage() -> impl IntoView {
                         label=move || t!(i18n, studio.icon_image)
                         name="icon_image_blob_id"
                         value=value_icon_image_blob
-                        website_id=website.id.clone()
+                        website_id=website.id.to_string()
                     />
 
                     <ImageUploadField
@@ -109,6 +109,7 @@ pub fn EditPage() -> impl IntoView {
                         name="cover_image_blob_id"
                         width=288
                         value=value_cover_image_blob
+                        website_id=website.id.to_string()
                     />
 
                     <ThemeSelectorField

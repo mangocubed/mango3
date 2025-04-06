@@ -1,10 +1,11 @@
 use uuid::Uuid;
 
-#[allow(unused_imports)]
-use crate::constants::*;
 use crate::models::*;
 use crate::utils::*;
 use crate::CoreContext;
+
+#[cfg(feature = "insert-post")]
+use crate::enums::{Input, InputError};
 
 #[cfg(feature = "insert-post")]
 impl Validator {
@@ -22,15 +23,15 @@ impl Validator {
         slug: &str,
     ) -> bool {
         if self.validate_presence(Input::Slug, slug)
-            && self.validate_format(Input::Slug, slug, &REGEX_SLUG)
+            && self.validate_format(Input::Slug, slug, &crate::constants::REGEX_SLUG)
             && self.validate_length(Input::Slug, slug, None, Some(256))
             && self.custom_validation(Input::Slug, InputError::IsInvalid, &|| Uuid::try_parse(slug).is_err())
             && self.custom_validation(Input::Slug, InputError::IsInvalid, &|| {
-                !BLACKLISTED_SLUGS.contains(&slug)
+                !crate::constants::BLACKLISTED_SLUGS.contains(&slug)
             })
         {
             let id = post.map(|p| p.id);
-            let slug_exists = query!(
+            let slug_exists = sqlx::query!(
                 "SELECT id FROM posts WHERE ($1::uuid IS NULL OR id != $1) AND LOWER(slug) = $2 AND website_id = $3 LIMIT 1",
                 id,         // $1
                 slug,       // $2
@@ -46,10 +47,15 @@ impl Validator {
     }
 
     fn validate_post_content(&mut self, value: &str) -> bool {
-        self.validate_length(Input::Content, value, None, Some(MISC_CONFIG.max_post_content_length))
+        self.validate_length(
+            Input::Content,
+            value,
+            None,
+            Some(crate::config::MISC_CONFIG.max_post_content_length),
+        )
     }
 
-    fn validate_post_variables(&mut self, value: Option<&JsonValue>) -> bool {
+    fn validate_post_variables(&mut self, value: Option<&serde_json::Value>) -> bool {
         self.custom_validation(Input::Variables, InputError::IsInvalid, &|| value.is_some())
     }
 }
@@ -61,10 +67,12 @@ fn cache_key_get_post_by_slug(slug: &str, website: &Website) -> String {
 
 #[cfg(feature = "clear-post-cache")]
 async fn clear_post_cache(core_context: &CoreContext, post: &Post) {
+    use crate::constants::*;
+
     futures::future::join4(
-        POST_CONTENT_HTML.cache_remove(PREFIX_POST_CONTENT_HTML, &post.id),
-        POST_CONTENT_PREVIEW_HTML.cache_remove(PREFIX_POST_CONTENT_PREVIEW_HTML, &post.id),
-        GET_POST_BY_ID.cache_remove(PREFIX_GET_POST_BY_ID, &post.id),
+        crate::models::POST_CONTENT_HTML.cache_remove(PREFIX_POST_CONTENT_HTML, &post.id),
+        crate::models::POST_CONTENT_PREVIEW_HTML.cache_remove(PREFIX_POST_CONTENT_PREVIEW_HTML, &post.id),
+        GET_CACHED_POST_BY_ID.cache_remove(PREFIX_GET_POST_BY_ID, &post.id),
         async {
             let website = post.website(core_context).await.expect("Could not get website");
 
@@ -81,21 +89,21 @@ async fn clear_post_cache(core_context: &CoreContext, post: &Post) {
 
 #[cfg(feature = "delete-post")]
 pub async fn delete_post(core_context: &CoreContext, post: &Post) -> MutResult {
-        sqlx::query!("DELETE FROM posts WHERE id = $1", self.id)
-            .execute(&core_context.db_pool)
-            .await?;
+    sqlx::query!("DELETE FROM posts WHERE id = $1", post.id)
+        .execute(&core_context.db_pool)
+        .await?;
 
-        clear_post_cache(core_context, post).await;
+    clear_post_cache(core_context, post).await;
 
-        crate::mut_success!()
-    }
+    crate::mut_success!()
+}
 
 #[cfg(feature = "get-post-by-id")]
 #[cached::proc_macro::io_cached(
     map_error = r##"|_| sqlx::Error::RowNotFound"##,
     convert = r#"{ id }"#,
     ty = "cached::AsyncRedisCache<Uuid, Post>",
-    create = r##" { crate::async_redis_cache!(PREFIX_GET_POST_BY_ID).await } "##
+    create = r##" { crate::async_redis_cache!(crate::constants::PREFIX_GET_POST_BY_ID).await } "##
 )]
 async fn get_cached_post_by_id(core_context: &CoreContext, id: Uuid) -> sqlx::Result<Post> {
     sqlx::query_as!(
@@ -209,7 +217,7 @@ pub async fn get_post_by_id_with_search_rank(
     map_error = r##"|_| sqlx::Error::RowNotFound"##,
     convert = r#"{ cache_key_get_post_by_slug(slug, website) }"#,
     ty = "cached::AsyncRedisCache<String, Post>",
-    create = r##" { crate::async_redis_cache!(PREFIX_GET_POST_BY_SLUG).await } "##
+    create = r##" { crate::async_redis_cache!(crate::constants::PREFIX_GET_POST_BY_SLUG).await } "##
 )]
 pub async fn get_post_by_slug(core_context: &CoreContext, slug: &str, website: &Website) -> sqlx::Result<Post> {
     if slug.is_empty() {
@@ -245,41 +253,41 @@ pub async fn get_post_by_slug(core_context: &CoreContext, slug: &str, website: &
 
 #[cfg(feature = "insert-post")]
 pub async fn insert_post(
-        core_context: &CoreContext,
-        website: &Website,
-        user: &User,
-        title: &str,
-        slug: &str,
-        content: &str,
-        variables: &str,
-        blobs: Vec<Blob>,
-        cover_image_blob: Option<&Blob>,
-        publish: bool,
-    ) -> MutResult<Post> {
-        let mut validator = crate::validator!();
+    core_context: &CoreContext,
+    website: &Website,
+    user: &User,
+    title: &str,
+    slug: &str,
+    content: &str,
+    variables: &str,
+    blobs: Vec<Blob>,
+    cover_image_blob: Option<&Blob>,
+    publish: bool,
+) -> MutResult<Post> {
+    let mut validator = crate::validator!();
 
-        let title = title.trim();
-        let slug = slug.trim().to_lowercase();
-        let content = content.trim();
-        let variables = variables.parse::<JsonValue>().ok();
-        let cover_image_blob_id = cover_image_blob.map(|blob| blob.id);
+    let title = title.trim();
+    let slug = slug.trim().to_lowercase();
+    let content = content.trim();
+    let variables = variables.parse::<serde_json::Value>().ok();
+    let cover_image_blob_id = cover_image_blob.map(|blob| blob.id);
 
-        let hashtags = super::get_or_insert_many_hashtag(core_context, content).await?;
-        let hashtag_ids = hashtags.iter().map(|hashtag| hashtag.id).collect::<Vec<Uuid>>();
-        let blob_ids = blobs.iter().map(|blob| blob.id).collect::<Vec<Uuid>>();
+    let hashtags = super::get_or_insert_many_hashtags(core_context, content).await?;
+    let hashtag_ids = hashtags.data.iter().map(|hashtag| hashtag.id).collect::<Vec<Uuid>>();
+    let blob_ids = blobs.iter().map(|blob| blob.id).collect::<Vec<Uuid>>();
 
-        validator.validate_post_title(title);
-        validator.validate_post_slug(core_context, None, website, &slug).await;
-        validator.validate_post_content(content);
-        validator.validate_post_variables(variables.as_ref());
+    validator.validate_post_title(title);
+    validator.validate_post_slug(core_context, None, website, &slug).await;
+    validator.validate_post_content(content);
+    validator.validate_post_variables(variables.as_ref());
 
-        if !validator.is_valid {
-            return crate::mut_error!(validator.errors);
-        }
+    if !validator.is_valid {
+        return crate::mut_error!(validator.errors);
+    }
 
-        sqlx::query_as!(
-            Post,
-            r#"INSERT INTO posts (
+    let result = sqlx::query_as!(
+        Post,
+        r#"INSERT INTO posts (
                 website_id,
                 user_id,
                 title,
@@ -308,20 +316,21 @@ pub async fn insert_post(
                 NULL::real AS search_rank,
                 created_at,
                 updated_at"#,
-            website.id,          // $1
-            user.id,             // $2
-            title,               // $3
-            slug,                // $4
-            content,             // $5
-            variables.unwrap(),  // $6
-            &hashtag_ids,        // $7
-            cover_image_blob_id, // $8
-            &blob_ids,           // $9
-            publish,             // $10
-        )
-        .fetch_one(&core_context.db_pool)
-        .await
-        .map_err(|_| ValidationErrors::default())
+        website.id,          // $1
+        user.id,             // $2
+        title,               // $3
+        slug,                // $4
+        content,             // $5
+        variables.unwrap(),  // $6
+        &hashtag_ids,        // $7
+        cover_image_blob_id, // $8
+        &blob_ids,           // $9
+        publish,             // $10
+    )
+    .fetch_one(&core_context.db_pool)
+    .await;
+
+    crate::mut_result!(result)
 }
 
 #[cfg(feature = "paginate-posts")]
@@ -472,13 +481,110 @@ pub async fn search_posts<'a>(
     .await
 }
 
+#[cfg(feature = "update-post")]
+pub async fn update_post(
+    core_context: &CoreContext,
+    post: &Post,
+    title: &str,
+    slug: &str,
+    content: &str,
+    variables: &str,
+    blobs: Vec<Blob>,
+    cover_image_blob: Option<&Blob>,
+    publish: bool,
+) -> crate::utils::MutResult<Post> {
+    let mut validator = crate::validator!();
+
+    let title = title.trim();
+    let slug = slug.trim().to_lowercase();
+    let content = content.trim();
+    let variables = variables.parse::<serde_json::Value>().ok();
+    let cover_image_blob_id = cover_image_blob.map(|blob| blob.id);
+
+    let hashtags = super::get_or_insert_many_hashtags(core_context, content).await?;
+    let hashtag_ids = hashtags.data.iter().map(|hashtag| hashtag.id).collect::<Vec<Uuid>>();
+    let blob_ids = blobs.iter().map(|blob| blob.id).collect::<Vec<Uuid>>();
+
+    validator.validate_post_title(title);
+    validator
+        .validate_post_slug(
+            core_context,
+            Some(post),
+            &post.website(core_context).await.unwrap(),
+            &slug,
+        )
+        .await;
+    validator.validate_post_content(content);
+    validator.validate_post_variables(variables.as_ref());
+
+    if !validator.is_valid {
+        return crate::mut_error!(validator.errors);
+    }
+
+    let result = sqlx::query_as!(
+        Post,
+        r#"UPDATE posts SET
+            title = $2,
+            slug = $3,
+            content = $4,
+            variables = $5,
+            hashtag_ids = $6,
+            cover_image_blob_id = $7,
+            blob_ids = $8,
+            published_at = CASE
+                WHEN $9 IS TRUE AND published_at IS NOT NULL THEN published_at
+                WHEN $9 IS TRUE THEN current_timestamp
+                ELSE NULL
+            END,
+            modified_at = CASE WHEN $9 IS TRUE THEN current_timestamp ELSE NULL END
+        WHERE id = $1
+        RETURNING
+            id,
+            website_id,
+            user_id,
+            language::varchar as "language!",
+            title,
+            slug,
+            content,
+            variables,
+            hashtag_ids,
+            cover_image_blob_id,
+            blob_ids,
+            published_at,
+            modified_at,
+            NULL::real AS search_rank,
+            created_at,
+            updated_at"#,
+        post.id,             // $1
+        title,               // $2
+        slug,                // $3
+        content,             // $4
+        variables,           // $5
+        &hashtag_ids,        // $6
+        cover_image_blob_id, // $7
+        &blob_ids,           // $8
+        publish,             // $9
+    )
+    .fetch_one(&core_context.db_pool)
+    .await;
+
+    match result {
+        Ok(post1) => {
+            clear_post_cache(core_context, post).await;
+
+            crate::mut_success!(post1)
+        }
+        Err(_) => crate::mut_error!(),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::test_utils::{insert_test_post, insert_test_user, insert_test_website, setup_core_context};
 
     use super::CursorPageParams;
-    
-   #[tokio::test]
+
+    #[tokio::test]
     async fn should_delete_post() {
         let core_context = setup_core_context().await;
         let post = insert_test_post(&core_context, None, None).await;

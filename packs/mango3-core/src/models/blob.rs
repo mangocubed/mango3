@@ -7,11 +7,6 @@ use sqlx::types::chrono::{DateTime, Utc};
 use sqlx::types::Uuid;
 use url::Url;
 
-#[cfg(feature = "website-storage")]
-use size::Size;
-#[cfg(feature = "website-storage")]
-use sqlx::query;
-
 use crate::config::{BASIC_CONFIG, MISC_CONFIG};
 
 #[derive(Clone, Deserialize, Serialize)]
@@ -35,7 +30,7 @@ impl Display for Blob {
 
 impl Blob {
     #[cfg(feature = "blob-is-removable")]
-    pub async fn is_removable(&self, core_context: &CoreContext) -> bool {
+    pub async fn is_removable(&self, core_context: &crate::CoreContext) -> bool {
         sqlx::query!(
             "SELECT id
             FROM blobs AS b
@@ -157,17 +152,6 @@ impl Blob {
         }
 
         std::fs::read(self.default_path()).ok()
-    }
-
-    #[cfg(feature = "website-storage")]
-    pub async fn website_used_storage(core_context: &CoreContext, website: &Website) -> sqlx::Result<Size> {
-        query!(
-            "SELECT SUM(byte_size)::bigint AS total_size FROM blobs WHERE website_id = $1 LIMIT 1",
-            website.id
-        )
-        .fetch_one(&core_context.db_pool)
-        .await
-        .map(|record| Size::from_bytes(record.total_size.unwrap_or_default()))
     }
 
     pub fn url(&self) -> Url {

@@ -2,17 +2,17 @@ use leptos::prelude::*;
 
 use mango3_web_utils::components::forms::FormField;
 use mango3_web_utils::components::{TopBar, WebsiteIcon};
-use mango3_web_utils::models::{ActionValue, WebsitePreviewResp};
+use mango3_web_utils::presenters::{MutPresenterActionValue, WebsiteMinPresenter};
 
 #[component]
 pub fn ThemeSelectorField(
-    action_value: ActionValue,
+    action_value: MutPresenterActionValue,
     id: &'static str,
     #[prop(into)] label: ViewFn,
     name: &'static str,
     options: Vec<&'static str>,
     value: RwSignal<String>,
-    #[prop(into)] website: WebsitePreviewResp,
+    #[prop(into)] website: WebsiteMinPresenter,
 ) -> impl IntoView {
     let website_name = website.name.clone();
     let options_store = StoredValue::new(options);

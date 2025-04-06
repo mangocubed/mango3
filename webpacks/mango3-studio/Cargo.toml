@@ -7,7 +7,6 @@ edition.workspace = true
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-async-trait = { workspace = true, optional = true }
 console_error_panic_hook = { workspace = true }
 chrono = { workspace = true, optional = true }
 futures = { workspace = true, optional = true }
@@ -20,14 +19,32 @@ serde = { workspace = true }
 serde_json = { workspace = true, optional = true }
 slug = "0.1.6"
 tokio = { workspace = true, optional = true }
+url = { workspace = true }
 uuid = { workspace = true }
 wasm-bindgen = { workspace = true }
-mango3-core = { workspace = true, features = [], optional = true }
+mango3-core = { workspace = true, features = [
+    "all-navigation-items-by-website",
+    "delete-blob",
+    "delete-post",
+    "hashtag-has-lookaround",
+    "insert-or-update-many-navigation-items",
+    "insert-post",
+    "insert-website",
+    "paginate-blobs",
+    "paginate-posts",
+    "paginate-websites-sorted-by-name-asc",
+    "update-post",
+    "update-website",
+], optional = true }
 mango3-web-utils = { workspace = true, features = [
+    "blob-is-removable",
     "infinite-scroll",
     "markdown-editor",
     "multiple-image-upload",
+    "navigation-item-presenter",
     "post-card",
+    "post-content-html",
+    "unconfirmed-email-alert",
     "website-card",
     "website-storage",
 ] }
@@ -35,7 +52,6 @@ mango3-web-utils = { workspace = true, features = [
 [features]
 hydrate = ["leptos/hydrate", "leptos_i18n/hydrate", "mango3-web-utils/hydrate"]
 ssr = [
-    "dep:async-trait",
     "dep:chrono",
     "dep:futures",
     "dep:serde_json",

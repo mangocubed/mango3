@@ -5,7 +5,7 @@ use mango3_web_utils::components::{
 };
 use mango3_web_utils::i18n::{t, use_i18n};
 use mango3_web_utils::icons::PlusOutlined;
-use mango3_web_utils::models::PostPreviewResp;
+use mango3_web_utils::presenters::PostMinPresenter;
 
 use crate::components::MyWebsitePageWrapper;
 use crate::server_functions::{get_my_posts, AttemptToDeletePost};
@@ -16,15 +16,12 @@ pub fn PostsPage() -> impl IntoView {
 
     view! {
         <MyWebsitePageWrapper children=move |website| {
-            let website_id = website.id.clone();
+            let website_id = website.id;
             let controller = InfiniteScrollLocalResourceController::new(|after| {
-                LocalResource::new({
-                    let website_id = website_id.clone();
-                    move || get_my_posts(website_id.clone(), after.get())
-                })
+                LocalResource::new({ move || get_my_posts(website_id, after.get()) })
             });
             let server_action = ServerAction::<AttemptToDeletePost>::new();
-            let delete_post = RwSignal::new(None);
+            let delete_post: RwSignal<Option<PostMinPresenter>> = RwSignal::new(None);
             let show_delete_confirmation = RwSignal::new(false);
 
             view! {
@@ -32,18 +29,17 @@ pub fn PostsPage() -> impl IntoView {
                     is_open=show_delete_confirmation
                     on_accept={
                         let controller = controller.clone();
-                        let website_id = website_id.clone();
                         move || {
-                            let id = delete_post.get().map(|p: PostPreviewResp| p.id).unwrap();
+                            let id = delete_post.get().unwrap().id;
                             server_action
                                 .dispatch(AttemptToDeletePost {
-                                    website_id: website_id.clone(),
-                                    id: id.clone(),
+                                    website_id: website_id,
+                                    id,
                                 });
                             controller
                                 .nodes
                                 .update(|p| {
-                                    p.retain(|p: &PostPreviewResp| p.id != id);
+                                    p.retain(|p: &PostMinPresenter| p.id != id);
                                 });
                             delete_post.set(None);
                         }
@@ -65,14 +61,14 @@ pub fn PostsPage() -> impl IntoView {
                 <section class="max-w-[720px] w-full mx-auto">
                     <InfiniteScroll
                         controller=controller
-                        key=|post: &PostPreviewResp| post.id.clone()
+                        key=|post: &PostMinPresenter| post.id
                         children=move |post| {
-                            let website_id = website_id.clone();
-                            let post_id = post.id.clone();
+                            let website_id = website_id;
+                            let post_id = post.id;
                             view! {
                                 <PostCard
                                     post=post.clone()
-                                    hashtags_base_url=post.website.url.clone()
+                                    hashtags_base_url=post.website.url.to_string()
                                     actions=move || {
                                         view! {
                                             <a

@@ -4,6 +4,7 @@
     feature = "delete-orphaned-blobs",
     feature = "get-blob-by-id",
     feature = "insert-blob",
+    feature = "paginate-blobs",
 ))]
 mod blob_commands;
 #[cfg(any(
@@ -36,11 +37,14 @@ mod invitation_code_commands;
 ))]
 mod navigation_item_commands;
 #[cfg(any(
+    feature = "delete-post",
     feature = "get-post-by-id",
     feature = "get-post-by-id-with-search-rank",
     feature = "get-post-by-slug",
+    feature = "insert-post",
     feature = "paginate-posts",
-    feature = "search-posts"
+    feature = "search-posts",
+    feature = "update-post",
 ))]
 mod post_commands;
 #[cfg(any(
@@ -92,11 +96,15 @@ mod user_commands;
 mod user_session_commands;
 #[cfg(any(
     feature = "clear-website-cache",
+    feature = "delete-website",
+    feature = "get-used-website-storage",
     feature = "get-website-by-id",
     feature = "get-website-by-subdomain",
+    feature = "insert-website",
     feature = "paginate-websites",
     feature = "paginate-websites-sorted-by-name-asc",
-    feature = "search-websites"
+    feature = "search-websites",
+    feature = "update-website",
 ))]
 mod website_commands;
 
@@ -110,6 +118,8 @@ pub use blob_commands::delete_orphaned_blobs;
 pub use blob_commands::get_blob_by_id;
 #[cfg(feature = "insert-blob")]
 pub use blob_commands::insert_blob;
+#[cfg(feature = "paginate-blobs")]
+pub use blob_commands::paginate_blobs;
 #[cfg(feature = "confirm-confirmation-code")]
 pub use confirmation_code_commands::confirm_confirmation_code;
 #[cfg(feature = "delete-all-expired-confirmation-codes")]
@@ -144,16 +154,22 @@ pub use navigation_item_commands::all_navigation_items_by_website;
 pub use navigation_item_commands::get_navigation_item_by_id;
 #[cfg(feature = "insert-or-update-many-navigation-items")]
 pub use navigation_item_commands::insert_or_update_many_navigation_items;
+#[cfg(feature = "delete-post")]
+pub use post_commands::delete_post;
 #[cfg(feature = "get-post-by-id")]
 pub use post_commands::get_post_by_id;
 #[cfg(feature = "get-post-by-id-with-search-rank")]
 pub use post_commands::get_post_by_id_with_search_rank;
 #[cfg(feature = "get-post-by-slug")]
 pub use post_commands::get_post_by_slug;
+#[cfg(feature = "insert-post")]
+pub use post_commands::insert_post;
 #[cfg(feature = "paginate-posts")]
 pub use post_commands::paginate_posts;
 #[cfg(feature = "search-posts")]
 pub use post_commands::search_posts;
+#[cfg(feature = "update-post")]
+pub use post_commands::update_post;
 #[cfg(feature = "delete-post-comment")]
 pub use post_comment_commands::delete_post_comment;
 #[cfg(feature = "get-post-comments-count")]
@@ -226,13 +242,21 @@ pub use user_session_commands::get_user_session_by_id;
 pub use user_session_commands::insert_user_session;
 #[cfg(feature = "clear-website-cache")]
 pub use website_commands::clear_website_cache;
+#[cfg(feature = "delete-website")]
+pub use website_commands::delete_website;
+#[cfg(feature = "get-used-website-storage")]
+pub use website_commands::get_used_website_storage;
 #[cfg(feature = "get-website-by-id")]
 pub use website_commands::get_website_by_id;
 #[cfg(feature = "get-website-by-subdomain")]
 pub use website_commands::get_website_by_subdomain;
+#[cfg(feature = "insert-website")]
+pub use website_commands::insert_website;
 #[cfg(feature = "paginate-websites")]
 pub use website_commands::paginate_websites;
 #[cfg(feature = "paginate-websites-sorted-by-name-asc")]
 pub use website_commands::paginate_websites_sorted_by_name_asc;
 #[cfg(feature = "search-websites")]
 pub use website_commands::search_websites;
+#[cfg(feature = "update-website")]
+pub use website_commands::update_website;

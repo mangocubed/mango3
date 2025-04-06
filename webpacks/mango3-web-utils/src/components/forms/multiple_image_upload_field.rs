@@ -1,7 +1,7 @@
 use leptos::prelude::*;
 use leptos::text_prop::TextProp;
 
-use crate::models::BlobResp;
+use crate::presenters::BlobPresenter;
 
 use super::ImageUploadField;
 
@@ -10,7 +10,7 @@ pub fn MultipleImageUploadField(
     #[prop(into, optional)] id: &'static str,
     #[prop(into, optional)] label: ViewFn,
     #[prop(into, optional)] name: &'static str,
-    #[prop(into, optional)] value: RwSignal<Vec<BlobResp>>,
+    #[prop(into, optional)] value: RwSignal<Vec<BlobPresenter>>,
     #[prop(into, optional)] website_id: TextProp,
 ) -> impl IntoView {
     let uploaded_blob = RwSignal::new(None);
@@ -30,7 +30,7 @@ pub fn MultipleImageUploadField(
         <fieldset class="fieldset">
             <ForEnumerate
                 each=move || value.get()
-                key=|blob| blob.id.clone()
+                key=|blob| blob.id
                 children=move |index, blob| {
                     let blob = RwSignal::new(Some(blob));
                     Effect::new(move || {

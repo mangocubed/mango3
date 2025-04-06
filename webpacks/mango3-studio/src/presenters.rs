@@ -1,40 +1,38 @@
 use serde::{Deserialize, Serialize};
+use url::Url;
+use uuid::Uuid;
 
-#[cfg(feature = "ssr")]
-use async_trait::async_trait;
 #[cfg(feature = "ssr")]
 use futures::future;
 #[cfg(feature = "ssr")]
 use serde_json::to_string_pretty;
 
-use mango3_web_utils::models::BlobResp;
+use mango3_web_utils::presenters::BlobPresenter;
 
 #[cfg(feature = "ssr")]
 use mango3_core::models::Post;
 #[cfg(feature = "ssr")]
-use mango3_core::CoreContext;
-#[cfg(feature = "ssr")]
-use mango3_web_utils::models::FromCore;
+use mango3_web_utils::presenters::FromModel;
 
 #[derive(Clone, Deserialize, Serialize)]
-pub struct EditPostResp {
-    pub id: String,
+pub struct EditPostPresenter {
+    pub id: Uuid,
     pub title: String,
     pub slug: String,
     pub content: String,
     pub variables: String,
-    pub cover_image_blob: Option<BlobResp>,
-    pub blobs: Vec<BlobResp>,
+    pub cover_image_blob: Option<BlobPresenter>,
+    pub blobs: Vec<BlobPresenter>,
     pub is_published: bool,
-    pub url: String,
+    pub url: Url,
 }
 
 #[cfg(feature = "ssr")]
-#[async_trait]
-impl FromCore<Post> for EditPostResp {
-    async fn from_core(core_context: &CoreContext, post: &Post) -> Self {
+impl FromModel<Post> for EditPostPresenter {
+    async fn from_model(post: &Post) -> Self {
+        let core_context = mango3_web_utils::ssr::expect_core_context();
         let cover_image_blob = if let Some(Ok(blob)) = post.cover_image_blob(&core_context).await {
-            Some(BlobResp::from_core(core_context, &blob).await)
+            Some(BlobPresenter::from_model(&blob).await)
         } else {
             None
         };
@@ -42,20 +40,20 @@ impl FromCore<Post> for EditPostResp {
             post.blobs(&core_context)
                 .await
                 .iter()
-                .map(|blob| BlobResp::from_core(core_context, blob)),
+                .map(|blob| BlobPresenter::from_model(blob)),
         )
         .await;
 
         Self {
-            id: post.id.to_string(),
+            id: post.id,
             title: post.title.clone(),
             slug: post.slug.clone(),
             content: post.content.clone(),
             variables: to_string_pretty(&post.variables).unwrap_or_else(|_| "{}".to_owned()),
             cover_image_blob,
-            is_published: post.is_published(core_context).await,
+            is_published: post.is_published(&core_context).await,
             blobs,
-            url: post.url(&core_context).await.to_string(),
+            url: post.url(&core_context).await,
         }
     }
 }

@@ -23,7 +23,7 @@ pub fn ShowPage() -> impl IntoView {
 
                     <a
                         class="btn btn-primary btn-outline"
-                        href=if website.is_published { Some(website.url.clone()) } else { None }
+                        href=if website.is_published { Some(website.url.to_string()) } else { None }
                     >
                         {t!(i18n, studio.go_to_website)}
                     </a>

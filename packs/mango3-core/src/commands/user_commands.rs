@@ -877,7 +877,7 @@ pub async fn update_user_role(
 
     match result {
         Ok(user1) => {
-            clear_user_cache(&user).await;
+            clear_user_cache(user).await;
 
             crate::mut_success!(user1)
         }

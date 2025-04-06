@@ -81,9 +81,9 @@ impl FromModel<Website> for WebsitePresenter {
 
         #[cfg(feature = "website-storage")]
         let (available_storage, max_storage, used_storage) = (
-            website.available_storage(core_context).await,
+            website.available_storage(&core_context).await,
             website.max_storage(),
-            website.used_storage(core_context).await,
+            website.used_storage(&core_context).await,
         );
 
         Self {
@@ -200,5 +200,12 @@ impl From<&WebsitePresenter> for WebsiteMinPresenter {
 impl From<WebsitePresenter> for WebsiteMinPresenter {
     fn from(website: WebsitePresenter) -> Self {
         Self::from(&website)
+    }
+}
+
+#[cfg(feature = "ssr")]
+impl FromModel<Website> for () {
+    async fn from_model(_: &Website) -> Self {
+        ()
     }
 }

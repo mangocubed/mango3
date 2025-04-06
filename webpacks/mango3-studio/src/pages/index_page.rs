@@ -43,7 +43,10 @@ pub fn IndexPage() -> impl IntoView {
                         {move || {
                             let basic_config = use_basic_config();
                             view! {
-                                <a class="btn btn-block ml-auto mr-auto mt-4" href=basic_config.new_website_url>
+                                <a
+                                    class="btn btn-block ml-auto mr-auto mt-4"
+                                    href=basic_config.new_website_url.to_string()
+                                >
                                     <PlusOutlined />
 
                                     {t!(i18n, shared.new_website)}

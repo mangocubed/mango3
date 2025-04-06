@@ -1,10 +1,10 @@
 use leptos::prelude::*;
 
 use mango3_web_utils::i18n::{t, use_i18n};
-use mango3_web_utils::models::WebsiteResp;
+use mango3_web_utils::presenters::WebsitePresenter;
 
 #[component]
-pub fn WebsiteStorageProgress(website: WebsiteResp) -> impl IntoView {
+pub fn WebsiteStorageProgress(website: WebsitePresenter) -> impl IntoView {
     let i18n = use_i18n();
 
     view! {

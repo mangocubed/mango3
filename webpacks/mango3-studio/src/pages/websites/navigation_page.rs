@@ -35,12 +35,8 @@ pub fn NavigationPage() -> impl IntoView {
     view! {
         <MyWebsitePageWrapper children=move |website| {
             let navigate = use_navigate();
-            let website_id = website.id.clone();
-            let website_id_clone = website_id.clone();
-            let items_resource = LocalResource::new({
-                let website_id = website_id.clone();
-                move || get_all_my_navigation_items(website_id.clone())
-            });
+            let website_id = website.id;
+            let items_resource = LocalResource::new({ move || get_all_my_navigation_items(website_id) });
             Effect::new(move || {
                 if let Some(Ok(nav_items)) = items_resource.get().map(|resource| resource.take()) {
                     items.set(nav_items.iter().map(|item| item.into()).collect());
@@ -55,7 +51,7 @@ pub fn NavigationPage() -> impl IntoView {
                         message=move || t!(i18n, studio.failed_to_save_navigation)
                     />
 
-                    <input type="hidden" name="website_id" value=website_id_clone />
+                    <input type="hidden" name="website_id" value=website_id.to_string() />
 
                     <table class="table">
                         <thead>

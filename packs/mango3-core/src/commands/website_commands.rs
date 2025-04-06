@@ -1,7 +1,12 @@
 use uuid::Uuid;
 
-use crate::models::{User, Website};
+use crate::models::*;
 use crate::CoreContext;
+
+#[cfg(feature = "insert-website")]
+use crate::enums::{Input, InputError};
+#[cfg(feature = "insert-website")]
+use crate::utils::{Validator, ValidatorTrait};
 
 #[cfg(feature = "insert-website")]
 impl Validator {
@@ -16,7 +21,7 @@ impl Validator {
             && self.custom_validation(Input::Name, InputError::IsInvalid, &|| Uuid::try_parse(value).is_err())
         {
             let id = website.map(|w| w.id);
-            let name_exists = query!(
+            let name_exists = sqlx::query!(
                 "SELECT id FROM websites WHERE ($1::uuid IS NULL OR id != $1) AND LOWER(name) = $2 LIMIT 1",
                 id,                   // $1
                 value.to_lowercase()  // $2
@@ -37,13 +42,29 @@ impl Validator {
 
 #[cfg(feature = "clear-website-cache")]
 pub async fn clear_website_cache(website: &Website) {
-    future::join4(
-        WEBSITE_DESCRIPTION_HTML.cache_remove(PREFIX_WEBSITE_DESCRIPTION_HTML, &website.id),
-        WEBSITE_DESCRIPTION_PREVIEW_HTML.cache_remove(PREFIX_WEBSITE_DESCRIPTION_PREVIEW_HTML, &website.id),
-        GET_WEBSITE_BY_ID.cache_remove(PREFIX_GET_WEBSITE_BY_ID, &website.id),
-        GET_WEBSITE_BY_SUBDOMAIN.cache_remove(PREFIX_GET_WEBSITE_BY_SUBDOMAIN, &website.subdomain.to_lowercase()),
+    use crate::constants::*;
+    use crate::utils::AsyncRedisCacheTrait;
+
+    futures::future::join4(
+        crate::models::WEBSITE_DESCRIPTION_HTML.cache_remove(PREFIX_WEBSITE_DESCRIPTION_HTML, &website.id),
+        crate::models::WEBSITE_DESCRIPTION_PREVIEW_HTML
+            .cache_remove(PREFIX_WEBSITE_DESCRIPTION_PREVIEW_HTML, &website.id),
+        GET_CACHED_WEBSITE_BY_ID.cache_remove(PREFIX_GET_WEBSITE_BY_ID, &website.id),
+        GET_CACHED_WEBSITE_BY_SUBDOMAIN
+            .cache_remove(PREFIX_GET_WEBSITE_BY_SUBDOMAIN, &website.subdomain.to_lowercase()),
     )
     .await;
+}
+
+#[cfg(feature = "delete-website")]
+pub async fn delete_website(core_context: &CoreContext, website: &Website) -> crate::utils::MutResult {
+    sqlx::query!("DELETE FROM websites WHERE id = $1", website.id)
+        .execute(&core_context.db_pool)
+        .await?;
+
+    clear_website_cache(website).await;
+
+    crate::mut_success!()
 }
 
 #[cfg(feature = "get-website-by-id")]
@@ -165,6 +186,17 @@ pub async fn get_website_by_id_with_search_rank(
     .await
 }
 
+#[cfg(feature = "get-used-website-storage")]
+pub async fn get_used_website_storage(core_context: &CoreContext, website: &Website) -> sqlx::Result<size::Size> {
+    sqlx::query!(
+        "SELECT SUM(byte_size)::bigint AS total_size FROM blobs WHERE website_id = $1 LIMIT 1",
+        website.id
+    )
+    .fetch_one(&core_context.db_pool)
+    .await
+    .map(|record| size::Size::from_bytes(record.total_size.unwrap_or_default()))
+}
+
 #[cfg(feature = "get-website-by-subdomain")]
 pub async fn get_website_by_subdomain(core_context: &CoreContext, subdomain: &str) -> sqlx::Result<Website> {
     get_cached_website_by_subdomain(core_context, subdomain).await
@@ -177,8 +209,8 @@ pub async fn insert_website(
     name: &str,
     subdomain: &str,
     description: &str,
-) -> Result<Self, ValidationErrors> {
-    let mut validator = validator!();
+) -> crate::utils::MutResult<Website> {
+    let mut validator = crate::validator!();
 
     let name = name.trim();
     let subdomain = subdomain.trim().to_lowercase();
@@ -187,13 +219,13 @@ pub async fn insert_website(
     validator.validate_website_name(core_context, None, name).await;
 
     if validator.validate_presence(Input::Subdomain, &subdomain)
-        && validator.validate_format(Input::Subdomain, &subdomain, &REGEX_SUBDOMAIN)
+        && validator.validate_format(Input::Subdomain, &subdomain, &crate::constants::REGEX_SUBDOMAIN)
         && validator.validate_length(Input::Subdomain, &subdomain, Some(3), Some(256))
         && validator.custom_validation(Input::Subdomain, InputError::IsInvalid, &|| {
             Uuid::try_parse(&subdomain).is_err()
         })
         && validator.custom_validation(Input::Subdomain, InputError::IsInvalid, &|| {
-            !BLACKLISTED_SLUGS.contains(&subdomain.as_str())
+            !crate::constants::BLACKLISTED_SLUGS.contains(&subdomain.as_str())
         })
     {
         let subdomain_exists = sqlx::query!(
@@ -209,14 +241,14 @@ pub async fn insert_website(
     validator.validate_website_description(description);
 
     if !validator.is_valid {
-        return Err(validator.errors);
+        return crate::mut_error!(validator.errors);
     }
 
-    let hashtags = Hashtag::get_or_insert_all(core_context, description).await?;
-    let hashtag_ids = hashtags.iter().map(|hashtag| hashtag.id).collect::<Vec<Uuid>>();
+    let hashtags = super::get_or_insert_many_hashtags(core_context, description).await?;
+    let hashtag_ids = hashtags.data.iter().map(|hashtag| hashtag.id).collect::<Vec<Uuid>>();
 
-    sqlx::query_as!(
-        Self,
+    let result = sqlx::query_as!(
+        Website,
         r#"INSERT INTO websites (user_id, name, subdomain, description, hashtag_ids) VALUES ($1, $2, $3, $4, $5)
         RETURNING
             id,
@@ -241,16 +273,18 @@ pub async fn insert_website(
         &hashtag_ids, // $5
     )
     .fetch_one(&core_context.db_pool)
-    .await
+    .await;
+
+    crate::mut_result!(result)
 }
 
 #[cfg(feature = "paginate-websites-sorted-by-name-asc")]
 pub async fn paginate_websites_sorted_by_name_asc<'a>(
     core_context: &'a CoreContext,
-    page_params: &CursorPageParams,
+    page_params: &crate::utils::CursorPageParams,
     user: Option<&'a User>,
     is_published: Option<bool>,
-) -> CursorPage<Website> {
+) -> crate::utils::CursorPage<Website> {
     crate::cursor_page!(
         core_context,
         page_params,
@@ -429,6 +463,97 @@ pub async fn search_websites<'a>(
     .await
 }
 
+#[cfg(feature = "update-website")]
+pub async fn update_website(
+    core_context: &CoreContext,
+    website: &Website,
+    name: &str,
+    description: &str,
+    icon_image_blob: Option<&Blob>,
+    cover_image_blob: Option<&Blob>,
+    light_theme: &str,
+    dark_theme: &str,
+    publish: bool,
+) -> crate::utils::MutResult<Website> {
+    let mut validator = crate::validator!();
+
+    let name = name.trim();
+    let description = description.trim();
+    let icon_image_blob_id = icon_image_blob.map(|blob| blob.id);
+    let cover_image_blob_id = cover_image_blob.map(|blob| blob.id);
+    let light_theme = light_theme.trim();
+    let dark_theme = dark_theme.trim();
+
+    validator.validate_website_name(core_context, Some(website), name).await;
+    validator.validate_website_description(description);
+    validator.custom_validation(Input::LightTheme, InputError::IsInvalid, &|| {
+        crate::constants::LIGHT_THEMES.contains(&light_theme)
+    });
+    validator.custom_validation(Input::DarkTheme, InputError::IsInvalid, &|| {
+        crate::constants::DARK_THEMES.contains(&dark_theme)
+    });
+
+    if !validator.is_valid {
+        return crate::mut_error!(validator.errors);
+    }
+
+    let hashtags = super::get_or_insert_many_hashtags(core_context, description).await?;
+    let hashtag_ids = hashtags.data.iter().map(|hashtag| hashtag.id).collect::<Vec<Uuid>>();
+
+    let result = sqlx::query_as!(
+        Website,
+        r#"UPDATE websites SET
+            name = $2,
+            description = $3,
+            hashtag_ids = $4,
+            icon_image_blob_id = $5,
+            cover_image_blob_id = $6,
+            light_theme = $7,
+            dark_theme = $8,
+            published_at = CASE
+                WHEN $9 IS TRUE AND published_at IS NOT NULL THEN published_at
+                WHEN $9 IS TRUE THEN current_timestamp
+                ELSE NULL
+            END
+        WHERE id = $1 RETURNING
+            id,
+            user_id,
+            name,
+            subdomain,
+            description,
+            hashtag_ids,
+            icon_image_blob_id,
+            cover_image_blob_id,
+            light_theme,
+            dark_theme,
+            language::varchar AS "language!",
+            published_at,
+            NULL::real AS search_rank,
+            created_at,
+            updated_at"#,
+        website.id,          // $1
+        name,                // $2
+        description,         // $3
+        &hashtag_ids,        // $4
+        icon_image_blob_id,  // $5
+        cover_image_blob_id, // $6
+        light_theme,         // $7
+        dark_theme,          // $8
+        publish,             // $9
+    )
+    .fetch_one(&core_context.db_pool)
+    .await;
+
+    match result {
+        Ok(website1) => {
+            clear_website_cache(website).await;
+
+            crate::mut_success!(website1)
+        }
+        Err(_) => crate::mut_error!(),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::test_utils::{fake_uuid, insert_test_user, insert_test_website, setup_core_context};
@@ -437,6 +562,16 @@ mod tests {
         get_website_by_id, get_website_by_id_with_search_rank, get_website_by_subdomain, paginate_websites,
         paginate_websites_sorted_by_name_asc, search_websites,
     };
+
+    #[tokio::test]
+    async fn should_delete_website() {
+        let core_context = setup_core_context().await;
+        let website = insert_test_website(&core_context, None).await;
+
+        let result = website.delete(&core_context).await;
+
+        assert!(result.is_ok());
+    }
 
     #[tokio::test]
     async fn should_get_website_by_id() {
@@ -570,5 +705,29 @@ mod tests {
         .await;
 
         assert_eq!(cursor_page.nodes.len(), 1);
+    }
+
+    #[tokio::test]
+    async fn should_update_website() {
+        let core_context = setup_core_context().await;
+        let website = insert_test_website(&core_context, None).await;
+        let name = fake_name();
+        let description = fake_sentence();
+
+        let result = website
+            .update(&core_context, &name, &description, None, None, "light", "dark", true)
+            .await;
+
+        assert!(result.is_ok());
+    }
+
+    #[tokio::test]
+    async fn should_not_update_website_when_fields_are_empty() {
+        let core_context = setup_core_context().await;
+        let website = insert_test_website(&core_context, None).await;
+
+        let result = website.update(&core_context, "", "", None, None, "", "", true).await;
+
+        assert!(result.is_err());
     }
 }

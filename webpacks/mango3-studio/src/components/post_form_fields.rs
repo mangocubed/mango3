@@ -9,17 +9,17 @@ use mango3_web_utils::components::forms::{
     TextareaField,
 };
 use mango3_web_utils::i18n::{t, use_i18n};
-use mango3_web_utils::models::FormResp;
+use mango3_web_utils::presenters::MutPresenter;
 
 use crate::components::PostPreviewModal;
-use crate::models::EditPostResp;
+use crate::presenters::EditPostPresenter;
 
 #[component]
 pub fn PostFormFields(
-    action_value: RwSignal<Option<Result<FormResp, ServerFnError<NoCustomError>>>>,
+    action_value: RwSignal<Option<Result<MutPresenter, ServerFnError<NoCustomError>>>>,
     #[prop(into)] is_loading: Signal<bool>,
     #[prop(into)] website_id: TextProp,
-    #[prop(optional)] post: Option<EditPostResp>,
+    #[prop(optional)] post: Option<EditPostPresenter>,
 ) -> impl IntoView {
     let i18n = use_i18n();
     let value_title = RwSignal::new(post.as_ref().map(|p| p.title.clone()).unwrap_or_default());
