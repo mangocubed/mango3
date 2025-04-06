@@ -57,7 +57,7 @@ jobs:
             - uses: ./.github/actions/setup-rust
             - uses: ./.github/actions/setup-database
             - name: Run all unit tests
-              run: cargo nextest run --package core --all-features
+              run: cargo nextest run --package mango3-core --all-features
 
     end2end_tests:
         runs-on: ubuntu-24.04
