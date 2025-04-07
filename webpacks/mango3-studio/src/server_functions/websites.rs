@@ -10,7 +10,7 @@ use mango3_core::utils::CursorPageParams;
 #[cfg(feature = "ssr")]
 use mango3_web_utils::presenters::FromModel;
 #[cfg(feature = "ssr")]
-use mango3_web_utils::ssr::{expect_core_context, extract_user, require_authentication};
+use mango3_web_utils::ssr::{expect_core_context, extract_i18n, extract_user, require_authentication};
 
 #[server]
 pub async fn attempt_to_create_website(
@@ -18,20 +18,26 @@ pub async fn attempt_to_create_website(
     subdomain: String,
     description: String,
 ) -> Result<MutPresenter, ServerFnError> {
+    use crate::constants::ssr::{KEY_TEXT_FAILED_TO_CREATE_WEBSITE, KEY_TEXT_WEBSITE_CREATED_SUCCESSFULLY};
+
+    let i18n = extract_i18n().await?;
+    let error_message = i18n.text(KEY_TEXT_FAILED_TO_CREATE_WEBSITE);
+
     if !require_authentication().await? {
-        return mango3_web_utils::mut_presenter_error!();
+        return mango3_web_utils::mut_presenter_error!(error_message);
     }
 
     let core_context = expect_core_context();
     let user = extract_user().await?.unwrap();
 
     if !user.can_insert_website(&core_context).await {
-        return mango3_web_utils::mut_presenter_error!();
+        return mango3_web_utils::mut_presenter_error!(error_message);
     }
 
     let result = mango3_core::commands::insert_website(&core_context, &user, &name, &subdomain, &description).await;
+    let success_message = i18n.text(KEY_TEXT_WEBSITE_CREATED_SUCCESSFULLY);
 
-    mango3_web_utils::mut_presenter!(result)
+    mango3_web_utils::mut_presenter!(result, success_message, error_message)
 }
 
 #[server]

@@ -13,7 +13,13 @@ use super::FromModel;
 #[macro_export]
 macro_rules! mut_presenter {
     ($result:expr) => {
-        Ok($crate::presenters::MutPresenter::new($result).await)
+        Ok($crate::presenters::MutPresenter::new($result, None, None).await)
+    };
+    ($result:expr, $success_message:expr) => {
+        Ok($crate::presenters::MutPresenter::new($result, Some($success_message), None).await)
+    };
+    ($result:expr, $success_message:expr, $error_message:expr) => {
+        Ok($crate::presenters::MutPresenter::new($result, Some($success_message), Some($error_message)).await)
     };
 }
 
@@ -21,7 +27,10 @@ macro_rules! mut_presenter {
 #[macro_export]
 macro_rules! mut_presenter_error {
     () => {
-        Ok($crate::presenters::MutPresenter::new_with_error())
+        Ok($crate::presenters::MutPresenter::new_with_error(None))
+    };
+    ($message:expr) => {
+        Ok($crate::presenters::MutPresenter::new_with_error(Some($message)))
     };
 }
 
@@ -29,7 +38,10 @@ macro_rules! mut_presenter_error {
 #[macro_export]
 macro_rules! mut_presenter_success {
     () => {
-        Ok($crate::presenters::MutPresenter::new_with_success())
+        Ok($crate::presenters::MutPresenter::new_with_success(None))
+    };
+    ($message:expr) => {
+        Ok($crate::presenters::MutPresenter::new_with_success(Some($message)))
     };
 }
 
@@ -57,7 +69,7 @@ impl<T> MutPresenter<T> {
     }
 
     #[cfg(feature = "ssr")]
-    pub async fn new<M>(result: MutResult<M>) -> Self
+    pub async fn new<M>(result: MutResult<M>, success_message: Option<String>, error_message: Option<String>) -> Self
     where
         T: FromModel<M>,
     {
@@ -66,7 +78,7 @@ impl<T> MutPresenter<T> {
                 success: Some(true),
                 errors: None,
                 data: Some(T::from_model(&success.data).await),
-                message: Some(success.message),
+                message: success_message,
             },
             Err(error) => {
                 let i18n = crate::ssr::extract_i18n().await.expect("Could not get i18n");
@@ -81,29 +93,29 @@ impl<T> MutPresenter<T> {
                             .collect(),
                     ),
                     data: None,
-                    message: Some(error.message),
+                    message: error_message,
                 }
             }
         }
     }
 
     #[cfg(feature = "ssr")]
-    pub fn new_with_error() -> Self {
+    pub fn new_with_error(message: Option<String>) -> Self {
         Self {
             success: Some(false),
             errors: None,
             data: None,
-            message: None,
+            message,
         }
     }
 
     #[cfg(feature = "ssr")]
-    pub fn new_with_success() -> Self {
+    pub fn new_with_success(message: Option<String>) -> Self {
         Self {
             success: Some(true),
             errors: None,
             data: None,
-            message: None,
+            message,
         }
     }
 }

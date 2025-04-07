@@ -10,7 +10,6 @@ delete: Excluir
 edit: Editar
 edit_post: Editar postagem
 failed_to_create_post: Falha ao criar postagem
-failed_to_create_website: Falha ao criar website
 failed_to_save_navigation: Falha ao salvar navegação
 failed_to_update_post: Falha ao atualizar postagem
 failed_to_update_website: Falha ao atualizar website
@@ -36,5 +35,4 @@ upload_files: Subir arquivos
 uploaded_files: Arquivos subidos
 url: URL
 variables: Variáveis
-website_created_successfully: Website criado com sucesso
 website_updated_successfully: Website atualizado com sucesso

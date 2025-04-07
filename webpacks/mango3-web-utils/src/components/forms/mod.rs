@@ -1,3 +1,4 @@
+use leptos::either::Either;
 use leptos::ev::Event;
 use leptos::prelude::*;
 
@@ -61,22 +62,34 @@ fn FieldLabel(id: String, children: Children) -> impl IntoView {
 pub fn FormErrorAlert<D>(
     #[prop(optional)] action_value: MutPresenterActionValue<D>,
     #[prop(into, optional)] is_active: RwSignal<bool>,
-    #[prop(into)] message: ViewFn,
+    #[prop(into, optional)] message: ViewFn,
 ) -> impl IntoView
 where
     D: Clone + Default + Send + Sync + 'static,
 {
+    let mut_message = RwSignal::new(None);
+
     Effect::new(move || {
         let response = MutPresenter::from(action_value);
 
         is_active.set(response.is_invalid());
+        mut_message.set(response.message);
     });
 
     view! {
         <Show when=move || is_active.get()>
             <div class="py-2 has-[div:empty]:hidden">
                 <div role="alert" class="alert alert-error">
-                    {message.run()}
+                    {
+                        let message = message.clone();
+                        move || {
+                            if let Some(mut_msg) = mut_message.get() {
+                                Either::Left(mut_msg)
+                            } else {
+                                Either::Right(message.run())
+                            }
+                        }
+                    }
                 </div>
             </div>
         </Show>
@@ -119,18 +132,29 @@ where
 pub fn FormSuccessModal(
     #[prop(optional)] action_value: MutPresenterActionValue,
     #[prop(into, optional)] is_open: RwSignal<bool>,
-    #[prop(into)] message: ViewFn,
-    #[prop(optional, into)] on_close: Option<Callback<()>>,
+    #[prop(into, optional)] message: ViewFn,
+    #[prop(into, optional)] on_close: Option<Callback<()>>,
 ) -> impl IntoView {
+    let mut_message = RwSignal::new(None);
+
     Effect::new(move || {
         let response = MutPresenter::from(action_value);
 
         is_open.set(response.is_success());
+        mut_message.set(response.message);
     });
 
     view! {
         <Modal is_closable=false is_open=is_open>
-            <div>{message.run()}</div>
+            <div>
+                {move || {
+                    if let Some(mut_msg) = mut_message.get() {
+                        Either::Left(mut_msg)
+                    } else {
+                        Either::Right(message.run())
+                    }
+                }}
+            </div>
             <div class="modal-action">
                 <button
                     class="btn btn-primary"
