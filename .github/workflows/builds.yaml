@@ -43,7 +43,7 @@ on:
 env:
     CARGO_TERM_COLOR: always
     DATABASE_URL: postgres://mango3:mango3@localhost:5432/mango3_test
-    LEPTOS_TAILWIND_VERSION: v4.0.16
+    LEPTOS_TAILWIND_VERSION: v4.1.3
 
 jobs:
     rust_builds:
