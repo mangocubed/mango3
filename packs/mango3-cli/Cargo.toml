@@ -1,0 +1,11 @@
+[package]
+name = "mango3-cli"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+clap = "4.5.34"
+tokio = { workspace = true }
+mango3-core = { workspace = true, features = [
+    "disable-user", "get-user-by-username", "insert-invitation-code", "update-user-role"
+] }

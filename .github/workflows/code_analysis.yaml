@@ -28,7 +28,7 @@ jobs:
             - name: Check with leptosfmt
               run: |
                   cargo install --force leptosfmt
-                  leptosfmt --check -x mango3-cli -x mango3-core -x mango3-monitor -x mango3-uploads -x target .
+                  leptosfmt --check -x mango3-cli -x core -x mango3-monitor -x mango3-uploads -x target .
             - uses: ./.github/actions/setup-database
             - name: Check with cargo-clippy
               run: cargo clippy -- -D warnings

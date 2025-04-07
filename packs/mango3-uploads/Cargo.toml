@@ -1,0 +1,11 @@
+[package]
+name = "mango3-uploads"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+axum = { workspace = true }
+serde = { workspace = true }
+tokio = { workspace = true }
+uuid = { workspace = true }
+mango3-core = { workspace = true, default-features = false, features = ["blob-read", "get-blob-by-id", "text-icon"] }

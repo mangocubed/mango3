@@ -3066,8 +3066,7 @@ dependencies = [
  "leptos_meta",
  "leptos_router",
  "mango3-core",
- "mango3-leptos-utils",
- "mango3-utils",
+ "mango3-web-utils",
  "serde",
  "tokio",
  "uuid",
@@ -3086,8 +3085,7 @@ dependencies = [
  "leptos_meta",
  "leptos_router",
  "mango3-core",
- "mango3-leptos-utils",
- "mango3-utils",
+ "mango3-web-utils",
  "tokio",
  "uuid",
  "wasm-bindgen",
@@ -3099,7 +3097,6 @@ version = "0.0.0-alpha.17"
 dependencies = [
  "clap",
  "mango3-core",
- "mango3-utils",
  "tokio",
 ]
 
@@ -3127,7 +3124,6 @@ dependencies = [
  "image",
  "imageproc",
  "ipnetwork",
- "mango3-utils",
  "md-5",
  "mime",
  "multer",
@@ -3157,47 +3153,12 @@ dependencies = [
  "leptos_meta",
  "leptos_router",
  "mango3-core",
- "mango3-leptos-utils",
- "mango3-utils",
- "tokio",
- "uuid",
- "wasm-bindgen",
-]
-
-[[package]]
-name = "mango3-leptos-utils"
-version = "0.0.0-alpha.17"
-dependencies = [
- "accept-language",
- "async-trait",
- "axum",
- "axum-client-ip",
- "chrono",
- "codee",
- "cookie",
- "default-struct-builder",
- "fred",
- "futures",
- "http",
- "leptos",
- "leptos-use",
- "leptos_axum",
- "leptos_i18n",
- "leptos_meta",
- "leptos_router",
- "mango3-core",
- "mango3-utils",
- "regex",
- "rust_iso3166",
+ "mango3-web-utils",
  "serde",
- "server_fn",
- "time",
  "tokio",
- "tower-sessions",
- "tower-sessions-redis-store",
+ "url",
  "uuid",
  "wasm-bindgen",
- "web-sys",
 ]
 
 [[package]]
@@ -3224,7 +3185,8 @@ dependencies = [
  "leptos_meta",
  "leptos_router",
  "mango3-core",
- "mango3-leptos-utils",
+ "mango3-web-utils",
+ "serde",
  "tokio",
  "uuid",
  "wasm-bindgen",
@@ -3235,7 +3197,6 @@ dependencies = [
 name = "mango3-studio"
 version = "0.0.0-alpha.17"
 dependencies = [
- "async-trait",
  "chrono",
  "console_error_panic_hook",
  "futures",
@@ -3245,12 +3206,12 @@ dependencies = [
  "leptos_meta",
  "leptos_router",
  "mango3-core",
- "mango3-leptos-utils",
- "mango3-utils",
+ "mango3-web-utils",
  "serde",
  "serde_json",
  "slug",
  "tokio",
+ "url",
  "uuid",
  "wasm-bindgen",
 ]
@@ -3267,13 +3228,38 @@ dependencies = [
 ]
 
 [[package]]
-name = "mango3-utils"
+name = "mango3-web-utils"
 version = "0.0.0-alpha.17"
 dependencies = [
+ "accept-language",
+ "axum",
+ "axum-client-ip",
  "chrono",
- "ipnetwork",
+ "codee",
+ "cookie",
+ "default-struct-builder",
+ "fred",
+ "futures",
+ "http",
+ "leptos",
+ "leptos-use",
+ "leptos_axum",
+ "leptos_i18n",
+ "leptos_meta",
+ "leptos_router",
+ "mango3-core",
+ "regex",
+ "rust_iso3166",
  "serde",
+ "server_fn",
+ "time",
+ "tokio",
+ "tower-sessions",
+ "tower-sessions-redis-store",
+ "url",
  "uuid",
+ "wasm-bindgen",
+ "web-sys",
 ]
 
 [[package]]
@@ -3289,8 +3275,7 @@ dependencies = [
  "leptos_meta",
  "leptos_router",
  "mango3-core",
- "mango3-leptos-utils",
- "mango3-utils",
+ "mango3-web-utils",
  "tokio",
  "uuid",
  "wasm-bindgen",
