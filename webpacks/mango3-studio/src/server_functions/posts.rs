@@ -9,6 +9,8 @@ use serde_json::Value;
 use mango3_web_utils::presenters::{CursorPagePresenter, MutPresenter, PostMinPresenter, PostPresenter};
 
 #[cfg(feature = "ssr")]
+use mango3_core::config::BASIC_CONFIG;
+#[cfg(feature = "ssr")]
 use mango3_core::constants::{BLACKLISTED_HASHTAGS, REGEX_FIND_HASHTAGS};
 #[cfg(feature = "ssr")]
 use mango3_core::models::Post;
@@ -87,7 +89,7 @@ pub async fn preview_post(
         cover_image_blob,
         blobs: vec![],
         is_published: true,
-        url: url::Url::parse("/").expect("Failed to parse URL"),
+        url: BASIC_CONFIG.home_url(),
         views_count: 0,
         comments_count: 0,
         reactions_count: 0,
