@@ -8,7 +8,7 @@ use crate::constants::KEY_PARAM_WEBSITE_ID;
 use crate::server_functions::get_my_website;
 
 pub fn provide_selected_website() {
-    provide_context::<RwSignal<Option<WebsiteMinPresenter>>>(RwSignal::new(None));
+    provide_context::<ArcRwSignal<Option<WebsiteMinPresenter>>>(ArcRwSignal::new(None));
 }
 
 pub fn provide_my_website_resource() {
@@ -22,8 +22,8 @@ pub fn provide_my_website_resource() {
     }))
 }
 
-pub fn use_selected_website() -> RwSignal<Option<WebsiteMinPresenter>> {
-    use_context::<RwSignal<Option<WebsiteMinPresenter>>>().unwrap()
+pub fn use_selected_website() -> ArcRwSignal<Option<WebsiteMinPresenter>> {
+    use_context::<ArcRwSignal<Option<WebsiteMinPresenter>>>().unwrap()
 }
 
 pub fn param_website_id(params_map: Memo<ParamsMap>) -> Option<String> {

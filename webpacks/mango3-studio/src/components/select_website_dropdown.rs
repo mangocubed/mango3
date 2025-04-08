@@ -52,12 +52,10 @@ pub fn SelectWebsiteDropdown(orientation: Orientation) -> impl IntoView {
                     </li>
                 </MyWebsitesInfiniteScroll>
 
-                <CurrentUser let:user>
-                    <Show when=move || {
-                        user.can_insert_website
-                    }>
-                        {move || {
-                            let basic_config = use_basic_config();
+                <CurrentUser children=move |user| {
+                    let basic_config = use_basic_config();
+                    if user.can_insert_website {
+                        Either::Left(
                             view! {
                                 <li class="disabled">
                                     <div class="divider m-0"></div>
@@ -70,10 +68,12 @@ pub fn SelectWebsiteDropdown(orientation: Orientation) -> impl IntoView {
                                         {t!(i18n, shared.new_website)}
                                     </a>
                                 </li>
-                            }
-                        }}
-                    </Show>
-                </CurrentUser>
+                            },
+                        )
+                    } else {
+                        Either::Right(())
+                    }
+                } />
             </ul>
         </div>
     }

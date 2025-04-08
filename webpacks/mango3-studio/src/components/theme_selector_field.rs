@@ -14,7 +14,6 @@ pub fn ThemeSelectorField(
     value: RwSignal<String>,
     #[prop(into)] website: WebsiteMinPresenter,
 ) -> impl IntoView {
-    let website_name = website.name.clone();
     let options_store = StoredValue::new(options);
 
     view! {
@@ -26,7 +25,6 @@ pub fn ThemeSelectorField(
                     each=move || options_store.read_value().clone()
                     key=|key| key.to_owned()
                     children=move |key| {
-                        let website_name = website_name.clone();
                         let is_selected = move || value.get() == key;
                         view! {
                             <div
@@ -44,12 +42,13 @@ pub fn ThemeSelectorField(
                                         <TopBar
                                             brand={
                                                 let website = website.clone();
+                                                let website_name = website.name.clone();
                                                 move || {
                                                     view! {
                                                         <a class="btn btn-ghost text-xl pl-1 pr-2">
                                                             <WebsiteIcon website=website size=42 />
 
-                                                            {website_name.clone()}
+                                                            {website_name}
                                                         </a>
                                                     }
                                                 }

@@ -17,8 +17,16 @@ leptos_router = { workspace = true }
 tokio = { workspace = true, optional = true }
 uuid = { workspace = true }
 wasm-bindgen = { workspace = true }
-mango3-core = { workspace = true, features = ["disable-user", "enable-user", "paginate-users"], optional = true }
-mango3-web-utils = { workspace = true, features = ["forms", "infinite-scroll", "user-card"] }
+mango3-core = { workspace = true, features = [
+    "disable-user",
+    "enable-user",
+    "paginate-users",
+], optional = true }
+mango3-web-utils = { workspace = true, features = [
+    "forms",
+    "infinite-scroll",
+    "user-card",
+] }
 
 [features]
 hydrate = ["leptos/hydrate", "leptos_i18n/hydrate", "mango3-web-utils/hydrate"]
@@ -108,3 +116,13 @@ hash-files = true
 #
 # Optional: Defaults to "hash.txt". Can also be set with the LEPTOS_HASH_FILE_NAME="hash.txt" env var
 hash-file-name = "hash-admin.txt"
+
+# Pass additional parameters to the cargo process compiling to WASM
+#
+# Optional. No default
+lib-cargo-args = ["--timings"]
+
+# Pass additional parameters to the cargo process to build the server
+#
+# Optional. No default
+bin-cargo-args = ["--timings"]
