@@ -55,7 +55,7 @@ pub async fn attempt_to_update_website(
 
     let i18n = extract_i18n().await?;
     let error_message = i18n.text(KEY_TEXT_FAILED_TO_UPDATE_WEBSITE);
-    
+
     let Some(website) = my_website(id).await? else {
         return mango3_web_utils::mut_presenter_error!(error_message);
     };
