@@ -127,13 +127,3 @@ hash-files = true
 #
 # Optional: Defaults to "hash.txt". Can also be set with the LEPTOS_HASH_FILE_NAME="hash.txt" env var
 hash-file-name = "hash-home.txt"
-
-# Pass additional parameters to the cargo process compiling to WASM
-#
-# Optional. No default
-lib-cargo-args = ["--timings"]
-
-# Pass additional parameters to the cargo process to build the server
-#
-# Optional. No default
-bin-cargo-args = ["--timings"]
