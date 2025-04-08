@@ -70,10 +70,7 @@ pub fn EditPage() -> impl IntoView {
                 <h2 class="h2">{t!(i18n, studio.edit)}</h2>
 
                 <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
-                    <FormErrorAlert
-                        action_value=action_value
-                        message=move || t!(i18n, studio.failed_to_update_website)
-                    />
+                    <FormErrorAlert action_value=action_value />
 
                     <input type="hidden" name="id" value=website.id.to_string() />
 
@@ -145,7 +142,6 @@ pub fn EditPage() -> impl IntoView {
 
                 <FormSuccessModal
                     action_value=action_value
-                    message=move || t!(i18n, studio.website_updated_successfully)
                     on_close=move || {
                         navigate("/", Default::default());
                     }

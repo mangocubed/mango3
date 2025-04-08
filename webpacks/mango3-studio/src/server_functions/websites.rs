@@ -51,8 +51,13 @@ pub async fn attempt_to_update_website(
     dark_theme: String,
     publish: Option<bool>,
 ) -> Result<MutPresenter, ServerFnError> {
+    use crate::constants::ssr::{KEY_TEXT_FAILED_TO_UPDATE_WEBSITE, KEY_TEXT_WEBSITE_UPDATED_SUCCESSFULLY};
+
+    let i18n = extract_i18n().await?;
+    let error_message = i18n.text(KEY_TEXT_FAILED_TO_UPDATE_WEBSITE);
+    
     let Some(website) = my_website(id).await? else {
-        return mango3_web_utils::mut_presenter_error!();
+        return mango3_web_utils::mut_presenter_error!(error_message);
     };
 
     let core_context = expect_core_context();
@@ -86,8 +91,9 @@ pub async fn attempt_to_update_website(
         publish.unwrap_or_default(),
     )
     .await;
+    let success_message = i18n.text(KEY_TEXT_WEBSITE_UPDATED_SUCCESSFULLY);
 
-    mango3_web_utils::mut_presenter!(result)
+    mango3_web_utils::mut_presenter!(result, success_message, error_message)
 }
 
 #[server]
