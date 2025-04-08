@@ -21,7 +21,7 @@ use mango3_core::utils::{parse_html, render_handlebars, CursorPageParams};
 #[cfg(feature = "ssr")]
 use mango3_web_utils::presenters::FromModel;
 #[cfg(feature = "ssr")]
-use mango3_web_utils::ssr::{expect_core_context, extract_user};
+use mango3_web_utils::ssr::{expect_core_context, extract_i18n, extract_user};
 
 use crate::presenters::EditPostPresenter;
 
@@ -111,8 +111,13 @@ pub async fn attempt_to_create_post(
     cover_image_blob_id: Option<Uuid>,
     publish: Option<bool>,
 ) -> Result<MutPresenter, ServerFnError> {
+    use crate::constants::ssr::{KEY_TEXT_FAILED_TO_CREATE_POST, KEY_TEXT_POST_CREATED_SUCCESSFULLY};
+
+    let i18n = extract_i18n().await?;
+    let error_message = i18n.text(KEY_TEXT_FAILED_TO_CREATE_POST);
+
     let Some(website) = my_website(website_id).await? else {
-        return mango3_web_utils::mut_presenter_error!();
+        return mango3_web_utils::mut_presenter_error!(error_message);
     };
 
     let core_context = expect_core_context();
@@ -139,8 +144,9 @@ pub async fn attempt_to_create_post(
         publish.unwrap_or_default(),
     )
     .await;
+    let success_message = i18n.text(KEY_TEXT_POST_CREATED_SUCCESSFULLY);
 
-    mango3_web_utils::mut_presenter!(result)
+    mango3_web_utils::mut_presenter!(result, success_message, error_message)
 }
 
 #[server]
@@ -168,6 +174,11 @@ pub async fn attempt_to_update_post(
     cover_image_blob_id: Option<Uuid>,
     publish: Option<bool>,
 ) -> Result<MutPresenter, ServerFnError> {
+    use crate::constants::ssr::{KEY_TEXT_FAILED_TO_UPDATE_POST, KEY_TEXT_POST_UPDATED_SUCCESSFULLY};
+
+    let i18n = extract_i18n().await?;
+    let error_message = i18n.text(KEY_TEXT_FAILED_TO_UPDATE_POST);
+
     let Some(post) = my_post(website_id, id).await? else {
         return mango3_web_utils::mut_presenter_error!();
     };
@@ -196,8 +207,9 @@ pub async fn attempt_to_update_post(
         publish.unwrap_or_default(),
     )
     .await;
+    let success_message = i18n.text(KEY_TEXT_POST_UPDATED_SUCCESSFULLY);
 
-    mango3_web_utils::mut_presenter!(result)
+    mango3_web_utils::mut_presenter!(result, success_message, error_message)
 }
 
 #[server]

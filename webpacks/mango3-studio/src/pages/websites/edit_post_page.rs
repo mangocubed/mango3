@@ -42,10 +42,7 @@ pub fn EditPostPage() -> impl IntoView {
                                             attr:novalidate="true"
                                             attr:class="form max-w-5xl"
                                         >
-                                            <FormErrorAlert
-                                                action_value=action_value
-                                                message=move || t!(i18n, studio.failed_to_update_post)
-                                            />
+                                            <FormErrorAlert action_value=action_value />
 
                                             <input type="hidden" name="id" value=post.id.to_string() />
 
@@ -59,7 +56,6 @@ pub fn EditPostPage() -> impl IntoView {
 
                                         <FormSuccessModal
                                             action_value=action_value
-                                            message=move || t!(i18n, studio.post_updated_successfully)
                                             on_close=move || {
                                                 navigate(
                                                     &format!("/websites/{}/posts", &website_id),

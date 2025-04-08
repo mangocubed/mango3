@@ -9,11 +9,6 @@ dark_theme: Dark theme
 delete: Delete
 edit: Edit
 edit_post: Edit post
-failed_to_create_post: Failed to create post
-failed_to_create_website: Failed to create website
-failed_to_save_navigation: Failed to save navigation
-failed_to_update_post: Failed to update post
-failed_to_update_website: Failed to update website
 files: Files
 description: Description
 go_to_website: Go to website
@@ -22,10 +17,7 @@ light_theme: Light theme
 my_websites: My websites
 name: Name
 navigation: Navigation
-navigation_saved_successfully: Navigation saved successfully
 new_post: New post
-post_created_successfully: Post created successfully
-post_updated_successfully: Post updated successfully
 preview: Preview
 publish: Publish
 slug: Slug
@@ -36,5 +28,3 @@ upload_files: Upload files
 uploaded_files: Uploaded files
 url: URL
 variables: Variables
-website_created_successfully: Website created successfully
-website_updated_successfully: Website updated successfully

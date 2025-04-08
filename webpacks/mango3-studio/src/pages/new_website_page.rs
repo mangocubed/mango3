@@ -34,7 +34,7 @@ pub fn NewWebsitePage() -> impl IntoView {
             <h2 class="text-xl font-bold mb-4">{title}</h2>
 
             <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
-                <FormErrorAlert action_value=action_value message=move || t!(i18n, studio.failed_to_create_website) />
+                <FormErrorAlert action_value=action_value />
 
                 <TextField
                     action_value=action_value
@@ -64,7 +64,6 @@ pub fn NewWebsitePage() -> impl IntoView {
 
             <FormSuccessModal
                 action_value=action_value
-                message=move || t!(i18n, studio.website_created_successfully)
                 on_close=move || {
                     navigate("/", Default::default());
                 }
