@@ -46,10 +46,7 @@ pub fn NavigationPage() -> impl IntoView {
                 <h2 class="h2">{t!(i18n, studio.navigation)}</h2>
 
                 <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
-                    <FormErrorAlert
-                        action_value=action_value
-                        message=move || t!(i18n, studio.failed_to_save_navigation)
-                    />
+                    <FormErrorAlert action_value=action_value />
 
                     <input type="hidden" name="website_id" value=website_id.to_string() />
 
@@ -128,7 +125,6 @@ pub fn NavigationPage() -> impl IntoView {
 
                 <FormSuccessModal
                     action_value=action_value
-                    message=move || t!(i18n, studio.navigation_saved_successfully)
                     on_close=move || {
                         navigate(&format!("/websites/{}", &website_id), Default::default());
                     }

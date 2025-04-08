@@ -26,7 +26,7 @@ pub fn NewPostPage() -> impl IntoView {
                     attr:novalidate="true"
                     attr:class="form max-w-5xl"
                 >
-                    <FormErrorAlert action_value=action_value message=move || t!(i18n, studio.failed_to_create_post) />
+                    <FormErrorAlert action_value=action_value />
 
                     <PostFormFields
                         action_value=action_value
@@ -37,7 +37,6 @@ pub fn NewPostPage() -> impl IntoView {
 
                 <FormSuccessModal
                     action_value=action_value
-                    message=move || t!(i18n, studio.post_created_successfully)
                     on_close=move || {
                         navigate(&format!("/websites/{}/posts", &website_id), Default::default());
                     }

@@ -24,6 +24,12 @@ macro_rules! mut_success {
             message: "Record saved successfully.".to_owned(),
         })
     };
+    ($data:expr, $message:expr) => {
+        Ok($crate::utils::MutSuccess {
+            data: $data,
+            message: $message,
+        })
+    };
 }
 
 #[macro_export]
@@ -38,6 +44,12 @@ macro_rules! mut_error {
         Err($crate::utils::MutError {
             errors: $errors,
             message: "Failed to save record.".to_owned(),
+        })
+    };
+    ($errors:expr, $message:expr) => {
+        Err($crate::utils::MutError {
+            errors: $errors,
+            message: $message,
         })
     };
 }

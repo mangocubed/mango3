@@ -1,3 +1,10 @@
+failed-to-create-post = Falha ao criar postagem
 failed-to-create-website = Falha ao criar website
+failed-to-save-navigation = Falha ao salvar navegação
+failed-to-update-post = Falha ao atualizar postagem
+failed-to-update-website = Falha ao atualizar website
+navigation-saved-successfully = Navegação salva com sucesso
+post-created-successfully = Postagem criada com sucesso
+post-updated-successfully = Postagem atualizada com sucesso
 website-created-successfully = Website criado com sucesso
 website-updated-successfully = Website atualizado com sucesso

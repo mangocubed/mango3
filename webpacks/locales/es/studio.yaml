@@ -9,10 +9,6 @@ dark_theme: Tema oscuro
 delete: Eliminar
 edit: Editar
 edit_post: Editar post
-failed_to_create_post: Error al crear post
-failed_to_save_navigation: Error al guardar navegación
-failed_to_update_post: Error al actualizar post
-failed_to_update_website: Error al actualizar website
 files: Archivos
 description: Descripción
 go_to_website: Ir a website
@@ -21,10 +17,7 @@ light_theme: Tema claro
 my_websites: My websites
 name: Nombre
 navigation: Navegación
-navigation_saved_successfully: Navegación guardada exitosamente
 new_post: Nuevo post
-post_created_successfully: Post creado exitosamente
-post_updated_successfully: Post actualizado exitosamente
 preview: Previsualizar
 publish: Publicar
 slug: Slug
