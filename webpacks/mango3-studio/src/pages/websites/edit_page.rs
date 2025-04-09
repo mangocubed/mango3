@@ -67,7 +67,7 @@ pub fn EditPage() -> impl IntoView {
             let value_dark_theme = RwSignal::new(website.dark_theme.clone());
 
             view! {
-                <h2 class="h2">{t!(i18n, studio.edit)}</h2>
+                <h1 class="h1">{t!(i18n, studio.edit)}</h1>
 
                 <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
                     <FormErrorAlert action_value=action_value />

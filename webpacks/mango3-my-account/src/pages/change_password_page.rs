@@ -19,7 +19,7 @@ pub fn ChangePasswordPage() -> impl IntoView {
 
     view! {
         <AuthenticatedPage title=title>
-            <h2 class="h2">{title}</h2>
+            <h1 class="h1">{title}</h1>
 
             <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
                 <FormErrorAlert action_value=action_value message=move || t!(i18n, shared.failed_to_update_password) />

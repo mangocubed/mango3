@@ -36,7 +36,7 @@ pub fn FilesPage() -> impl IntoView {
             });
 
             view! {
-                <h2 class="h2">{t!(i18n, studio.files)}</h2>
+                <h1 class="h1">{t!(i18n, studio.files)}</h1>
 
                 <WebsiteStorageProgress website=website.clone() />
 

@@ -21,7 +21,7 @@ pub fn EditProfilePage() -> impl IntoView {
 
     view! {
         <AuthenticatedPage title=title>
-            <h2 class="h2">{move || title.get()}</h2>
+            <h1 class="h1">{move || title.get()}</h1>
 
             <Suspense>
                 {move || Suspend::new(async move {

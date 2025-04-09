@@ -23,7 +23,7 @@ pub fn UserCard(
                         <UserAvatar user=user.clone() />
                     </a>
 
-                    <div class="card-title">
+                    <div class="card-title text-lg">
                         <a href=href.clone() class:opacity-50=move || user.is_disabled>
                             <div class="font-bold text-lg">{user.display_name.clone()}</div>
                             <div class="text-base opacity-70">"@"{user.username.clone()}</div>

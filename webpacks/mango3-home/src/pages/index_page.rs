@@ -19,7 +19,7 @@ pub fn IndexPage() -> impl IntoView {
         <Page title=text_title>
             <div class="flex flex-wrap gap-6 justify-center max-w-[1200px] mx-auto">
                 <section class="shrink-0 sm:min-w-[480px] max-w-[720px] w-full">
-                    <h2 class="h2">{t!(i18n, home.recent_posts)}</h2>
+                    <h2 class="h1">{t!(i18n, home.recent_posts)}</h2>
 
                     <Suspense>
                         {move || Suspend::new(async move {
@@ -42,7 +42,7 @@ pub fn IndexPage() -> impl IntoView {
                 </section>
 
                 <section class="flex-1 sm:min-w-[320px] max-w-[640px] w-full">
-                    <h2 class="h2">{t!(i18n, home.recent_websites)}</h2>
+                    <h2 class="h1">{t!(i18n, home.recent_websites)}</h2>
 
                     <Suspense>
                         {move || Suspend::new(async move {

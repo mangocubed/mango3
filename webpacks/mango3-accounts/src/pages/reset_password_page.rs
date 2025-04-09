@@ -31,7 +31,7 @@ pub fn ResetPasswordPage() -> impl IntoView {
 
     view! {
         <GuestPage title=text_title>
-            <h2 class="h2">{move || text_title.get()}</h2>
+            <h1 class="h1">{move || text_title.get()}</h1>
 
             <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
                 <FormErrorAlert

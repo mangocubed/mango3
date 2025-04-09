@@ -73,7 +73,7 @@ pub fn PostPreviewModal(
                                 }
 
                                 <div class="card-body">
-                                    <h1 class="card-title h1 mb-6">{post.title}</h1>
+                                    <h2 class="card-title h1 text-2xl">{post.title}</h2>
 
                                     <div class="my-4">
                                         <UserTagLink user=post.user />

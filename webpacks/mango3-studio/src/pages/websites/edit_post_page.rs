@@ -34,7 +34,7 @@ pub fn EditPostPage() -> impl IntoView {
                                 let navigate = use_navigate();
                                 Either::Left(
                                     view! {
-                                        <h2 class="h2">{t!(i18n, studio.edit_post)}</h2>
+                                        <h1 class="h1">{t!(i18n, studio.edit_post)}</h1>
 
                                         <ActionForm
                                             action=server_action

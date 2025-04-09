@@ -21,7 +21,7 @@ pub fn IndexPage() -> impl IntoView {
 
     view! {
         <AuthenticatedPage title=async_t_string!(i18n, shared.home).to_signal()>
-            <h2 class="h2">{t!(i18n, studio.my_websites)}</h2>
+            <h1 class="h1">{t!(i18n, studio.my_websites)}</h1>
 
             <section class="max-w-[640px] w-full ml-auto mr-auto">
                 <MyWebsitesInfiniteScroll let:website>
