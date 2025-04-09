@@ -81,7 +81,7 @@ pub fn ShowPostPage() -> impl IntoView {
                                                     })
                                             }
                                         } <div class="card-body">
-                                            <h1 class="card-title h1 mb-6">{post.title}</h1>
+                                            <h1 class="card-title h1 text-2xl">{post.title}</h1>
 
                                             <div class="my-4">
                                                 <UserTagLink user=post.user />

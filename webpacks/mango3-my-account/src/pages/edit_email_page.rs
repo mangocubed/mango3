@@ -32,7 +32,7 @@ pub fn EditEmailPage() -> impl IntoView {
 
     view! {
         <AuthenticatedPage title=text_title>
-            <h2 class="h2">{move || text_title.get()}</h2>
+            <h1 class="h1">{move || text_title.get()}</h1>
 
             <section class="max-w-[640px] w-full mx-auto">
                 <h3 class="h3">{t!(i18n, my_account.current_email)}</h3>

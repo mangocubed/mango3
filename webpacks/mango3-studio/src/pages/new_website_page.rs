@@ -31,7 +31,7 @@ pub fn NewWebsitePage() -> impl IntoView {
 
     view! {
         <AuthenticatedPage title=title>
-            <h2 class="text-xl font-bold mb-4">{title}</h2>
+            <h1 class="text-xl font-bold mb-4">{title}</h1>
 
             <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
                 <FormErrorAlert action_value=action_value />

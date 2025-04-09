@@ -11,7 +11,7 @@ pub fn ShowPage() -> impl IntoView {
 
     view! {
         <MyWebsitePageWrapper let:website>
-            <h2 class="h2">{t!(i18n, shared.home)}</h2>
+            <h1 class="h1">{t!(i18n, shared.home)}</h1>
 
             <WebsiteStorageProgress website=website.clone() />
 

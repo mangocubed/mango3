@@ -13,7 +13,7 @@ pub fn IndexPage() -> impl IntoView {
 
     view! {
         <AuthenticatedPage title=text_title>
-            <h2 class="text-xl font-bold mb-4">{move || text_title.get()}</h2>
+            <h1 class="h1">{move || text_title.get()}</h1>
         </AuthenticatedPage>
     }
 }

@@ -49,9 +49,9 @@ pub fn ShowUserPage() -> impl IntoView {
 
                                                     <h1 class="h1 mb-1">{user.display_name.clone()}</h1>
 
-                                                    <h2 class="h2 opacity-70 font-normal">
+                                                    <h1 class="h1 opacity-70 font-normal">
                                                         "@" {user.username.clone()}
-                                                    </h2>
+                                                    </h1>
                                                 </div>
 
                                                 <div

@@ -48,7 +48,7 @@ pub fn PostsPage() -> impl IntoView {
                     {t!(i18n, studio.are_you_sure_you_want_to_delete_this_post)}
                 </ConfirmationModal>
 
-                <h2 class="h2">{t!(i18n, shared.posts)}</h2>
+                <h1 class="h1">{t!(i18n, shared.posts)}</h1>
 
                 <section class="flex justify-end max-w-[720px] w-full mb-5 mx-auto">
                     <a class="btn btn-outline" href=format!("/websites/{}/posts/new", website_id.clone())>

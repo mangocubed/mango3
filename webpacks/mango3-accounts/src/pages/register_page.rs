@@ -75,7 +75,7 @@ pub fn RegisterPage() -> impl IntoView {
 
     view! {
         <GuestPage title=text_title>
-            <h2 class="h2">{move || text_title.get()}</h2>
+            <h1 class="h1">{move || text_title.get()}</h1>
 
             <InvitationCodeModal value=value_invitation_code_id />
 

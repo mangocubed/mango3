@@ -52,7 +52,7 @@ pub fn PostCard(
                         })
                 }
             } <div class="card-body">
-                <h3 class="card-title">
+                <h3 class="card-title text-xl">
                     <a href=href.clone()>{post.title}</a>
                 </h3>
 

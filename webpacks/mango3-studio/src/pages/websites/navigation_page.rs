@@ -42,7 +42,7 @@ pub fn NavigationPage() -> impl IntoView {
                 }
             });
             view! {
-                <h2 class="h2">{t!(i18n, studio.navigation)}</h2>
+                <h1 class="h1">{t!(i18n, studio.navigation)}</h1>
 
                 <ActionForm action=server_action attr:autocomplete="off" attr:novalidate="true" attr:class="form">
                     <FormErrorAlert action_value=action_value />

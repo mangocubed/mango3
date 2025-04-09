@@ -18,7 +18,7 @@ pub fn NewPostPage() -> impl IntoView {
             let navigate = use_navigate();
             let website_id = website.id;
             view! {
-                <h2 class="h2">{t!(i18n, studio.new_post)}</h2>
+                <h1 class="h1">{t!(i18n, studio.new_post)}</h1>
 
                 <ActionForm
                     action=server_action
