@@ -1,3 +1,4 @@
+use leptos::either::Either;
 use leptos::prelude::*;
 
 use crate::components::Hashtags;
@@ -17,6 +18,14 @@ pub fn WebsiteCard(
         Some(website.url.to_string())
     } else {
         None
+    };
+
+    let unpublished_tag = if !website.is_published {
+        Either::Left(
+            view! { <a class="btn btn-sm btn-outline btn-info no-animation">{t!(i18n, shared.unpublished)}</a> },
+        )
+    } else {
+        Either::Right(())
     };
 
     view! {
@@ -41,11 +50,7 @@ pub fn WebsiteCard(
                 </a>
 
                 <div class="empty:hidden my-1 flex gap-2 overflow-x-auto">
-                    <Show when=move || !website.is_published>
-                        <a class="btn btn-sm btn-outline btn-info no-animation">{t!(i18n, shared.unpublished)}</a>
-                    </Show>
-
-                    <Hashtags hashtags=website.hashtags base_url=hashtags_base_url />
+                    {unpublished_tag} <Hashtags hashtags=website.hashtags base_url=hashtags_base_url />
                 </div>
 
                 <div class="card-actions justify-end">{actions.run()}</div>

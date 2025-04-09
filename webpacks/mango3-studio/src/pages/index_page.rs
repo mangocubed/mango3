@@ -1,3 +1,4 @@
+use leptos::either::Either;
 use leptos::prelude::*;
 
 use mango3_web_utils::async_t_string;
@@ -36,12 +37,10 @@ pub fn IndexPage() -> impl IntoView {
                     />
                 </MyWebsitesInfiniteScroll>
 
-                <CurrentUser let:user>
-                    <Show when=move || {
-                        user.can_insert_website
-                    }>
-                        {move || {
-                            let basic_config = use_basic_config();
+                <CurrentUser children=move |user| {
+                    let basic_config = use_basic_config();
+                    if user.can_insert_website {
+                        Either::Left(
                             view! {
                                 <a
                                     class="btn btn-block ml-auto mr-auto mt-4"
@@ -51,10 +50,12 @@ pub fn IndexPage() -> impl IntoView {
 
                                     {t!(i18n, shared.new_website)}
                                 </a>
-                            }
-                        }}
-                    </Show>
-                </CurrentUser>
+                            },
+                        )
+                    } else {
+                        Either::Right(())
+                    }
+                } />
             </section>
         </AuthenticatedPage>
     }

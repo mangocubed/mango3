@@ -1,3 +1,4 @@
+use leptos::either::Either;
 use leptos::prelude::*;
 
 use crate::components::{Hashtags, WebsiteIcon};
@@ -15,12 +16,18 @@ pub fn PostCard(
 ) -> impl IntoView {
     let i18n = use_i18n();
 
-    let href = move || {
-        if post.is_published {
-            Some(post.url.to_string())
-        } else {
-            None
-        }
+    let href = if post.is_published {
+        Some(post.url.to_string())
+    } else {
+        None
+    };
+
+    let unpublished_tag = if !post.is_published {
+        Either::Left(
+            view! { <a class="btn btn-sm btn-outline btn-info no-animation">{t!(i18n, shared.unpublished)}</a> },
+        )
+    } else {
+        Either::Right(())
     };
 
     view! {
@@ -77,11 +84,7 @@ pub fn PostCard(
                 </a>
 
                 <div class="empty:hidden my-1 flex gap-2 overflow-x-auto">
-                    <Show when=move || !post.is_published>
-                        <a class="btn btn-sm btn-outline btn-info no-animation">{t!(i18n, shared.unpublished)}</a>
-                    </Show>
-
-                    <Hashtags hashtags=post.hashtags base_url=hashtags_base_url />
+                    {unpublished_tag} <Hashtags hashtags=post.hashtags base_url=hashtags_base_url />
                 </div>
 
                 <PostBottomBar

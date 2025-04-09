@@ -13,3 +13,4 @@ runs:
                   ~/.cargo/git/db/
                   target/
               key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+        - uses: rui314/setup-mold@v1
