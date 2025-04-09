@@ -34,9 +34,9 @@ jobs:
                           - 'package.json'
                           - 'package-lock.json'
                           - 'tailwind.config.js'
-                      github:
+                      github: &github
                           - '.github/**/*yaml'
-                      rust_config:
+                      rust_config: &rust_config
                           - '.cargo/config.toml'
                           - '.clippy.toml'
                           - '.rustfmt.toml'
