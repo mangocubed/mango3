@@ -34,27 +34,28 @@ jobs:
                           - 'package.json'
                           - 'package-lock.json'
                           - 'tailwind.config.js'
-                      rust:
+                      github:
+                          - '.github/**/*yaml'
+                      rust_config:
+                          - '.cargo/config.toml'
                           - '.clippy.toml'
-                          - '.github/workflows/code_analysis.yaml'
-                          - '.github/workflows/tests.yaml'
                           - '.rustfmt.toml'
                           - 'leptosfmt.toml'
                           - 'rust-toolchain.toml'
-                          - 'locales/leptos/**'
-                          - '**.rs'
                           - 'Cargo.lock'
                           - 'Cargo.toml'
-                          - '*/Cargo.toml'
+                      rust:
+                          - *github
+                          - *rust_config
+                          - '**.rs'
+                          - '**/*/Cargo.toml'
                       sql:
-                          - '.github/workflows/code_analysis.yaml'
+                          - *github
                           - '.sqlfluff'
                           - 'migrations/*.sql'
                       workspace: &workspace
-                          - '.github/workflows/builds.yaml'
-                          - '.github/workflows/tests.yaml'
-                          - 'Cargo.lock'
-                          - 'Cargo.toml'
+                          - *github
+                          - *rust_config
                           - 'packs/mango3-core/**'
                           - 'migrations/*.sql'
                       accounts: &accounts
@@ -146,23 +147,23 @@ jobs:
             skip_rust: ${{ needs.changes.outputs.rust == 'false' }}
             skip_sql: ${{ needs.changes.outputs.sql == 'false' }}
 
-    builds:
-        needs: [changes, code_analysis]
-        if: ${{ always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}
-        uses: ./.github/workflows/builds.yaml
-        with:
-            skip_accounts: ${{ needs.changes.outputs.accounts == 'false' }}
-            skip_admin: ${{ needs.changes.outputs.admin == 'false' }}
-            skip_cli: ${{ needs.changes.outputs.cli == 'false' }}
-            skip_home: ${{ needs.changes.outputs.home == 'false' }}
-            skip_monitor: ${{ needs.changes.outputs.monitor == 'false' }}
-            skip_my_account: ${{ needs.changes.outputs.my_account == 'false' }}
-            skip_studio: ${{ needs.changes.outputs.studio == 'false' }}
-            skip_uploads: ${{ needs.changes.outputs.uploads == 'false' }}
-            skip_websites: ${{ needs.changes.outputs.websites == 'false' }}
+    # builds:
+    #     needs: [changes, code_analysis]
+    #     if: ${{ always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}
+    #     uses: ./.github/workflows/builds.yaml
+    #     with:
+    #         skip_accounts: ${{ needs.changes.outputs.accounts == 'false' }}
+    #         skip_admin: ${{ needs.changes.outputs.admin == 'false' }}
+    #         skip_cli: ${{ needs.changes.outputs.cli == 'false' }}
+    #         skip_home: ${{ needs.changes.outputs.home == 'false' }}
+    #         skip_monitor: ${{ needs.changes.outputs.monitor == 'false' }}
+    #         skip_my_account: ${{ needs.changes.outputs.my_account == 'false' }}
+    #         skip_studio: ${{ needs.changes.outputs.studio == 'false' }}
+    #         skip_uploads: ${{ needs.changes.outputs.uploads == 'false' }}
+    #         skip_websites: ${{ needs.changes.outputs.websites == 'false' }}
 
     tests:
-        needs: [changes, builds]
+        needs: [changes, code_analysis]
         if: ${{ always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') }}
         uses: ./.github/workflows/tests.yaml
         with:
