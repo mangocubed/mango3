@@ -8,36 +8,39 @@ use serde::{Deserialize, Serialize};
 
 mod basic_config;
 mod cache_config;
-mod mailer_config;
 mod misc_config;
 mod user_config;
 
 #[cfg(feature = "jobs")]
 mod jobs_config;
+#[cfg(feature = "mailer")]
+mod mailer_config;
 #[cfg(feature = "website-storage")]
 mod website_config;
 
 pub use basic_config::BasicConfig;
 pub(crate) use cache_config::CacheConfig;
-pub use mailer_config::MailerConfig;
 pub use misc_config::MiscConfig;
 pub(crate) use user_config::UserConfig;
 
 #[cfg(feature = "jobs")]
 pub(crate) use jobs_config::JobsConfig;
+#[cfg(feature = "mailer")]
+pub use mailer_config::MailerConfig;
 #[cfg(feature = "website-storage")]
 pub(crate) use website_config::WebsiteConfig;
 
 pub static BASIC_CONFIG: LazyLock<BasicConfig> = LazyLock::new(BasicConfig::load);
 pub(crate) static CACHE_CONFIG: LazyLock<CacheConfig> = LazyLock::new(CacheConfig::load);
 pub(crate) static DATABASE_CONFIG: LazyLock<DatabaseConfig> = LazyLock::new(DatabaseConfig::load);
-pub static MAILER_CONFIG: LazyLock<MailerConfig> = LazyLock::new(MailerConfig::load);
 pub static MISC_CONFIG: LazyLock<MiscConfig> = LazyLock::new(MiscConfig::load);
 pub static SESSIONS_CONFIG: LazyLock<SessionsConfig> = LazyLock::new(SessionsConfig::load);
 pub static USER_CONFIG: LazyLock<UserConfig> = LazyLock::new(UserConfig::load);
 
 #[cfg(feature = "jobs")]
 pub(crate) static JOBS_CONFIG: LazyLock<JobsConfig> = LazyLock::new(JobsConfig::load);
+#[cfg(feature = "mailer")]
+pub static MAILER_CONFIG: LazyLock<MailerConfig> = LazyLock::new(MailerConfig::load);
 #[cfg(feature = "website-storage")]
 pub(crate) static WEBSITE_CONFIG: LazyLock<WebsiteConfig> = LazyLock::new(WebsiteConfig::load);
 
