@@ -17,14 +17,14 @@ members = [
 
 [workspace.package]
 edition = "2021"
-version = "0.0.0-alpha.18"
+version = "0.0.0-alpha.19"
 
 [workspace.dependencies]
 apalis = "0.7.0"
 apalis-redis = "0.7.0"
 async-trait = "0.1.88"
 axum = "0.7.9"
-chrono = {version = "0.4.40", features = ["serde"] }
+chrono = { version = "0.4.40", features = ["serde"] }
 console_error_panic_hook = "0.1.7"
 futures = "0.3.31"
 ipnetwork = "0.20.0"
@@ -50,7 +50,9 @@ uuid = { version = "1.16.0", features = ["serde", "v4"] }
 url = { version = "2.5.4", features = ["serde"] }
 wasm-bindgen = "0.2.100"
 web-sys = "0.3.77"
-mango3-core = { path = "packs/mango3-core", default-features = false, features = ["validator"] }
+mango3-core = { path = "packs/mango3-core", default-features = false, features = [
+    "validator",
+] }
 mango3-web-utils = { path = "webpacks/mango3-web-utils" }
 
 [profile.dev]
