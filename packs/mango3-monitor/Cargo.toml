@@ -19,5 +19,6 @@ mango3-core = { workspace = true, features = [
     "delete-all-expired-confirmation-codes",
     "delete-orphaned-blobs",
     "jobs",
+    "mailer",
     "user-i18n",
 ] }

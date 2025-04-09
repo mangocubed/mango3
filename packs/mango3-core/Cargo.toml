@@ -5,9 +5,9 @@ edition.workspace = true
 
 [dependencies]
 ab_glyph = { version = "0.2.29", optional = true }
-argon2 = "0.5.3"
-apalis = { workspace = true }
-apalis-redis = { workspace = true }
+argon2 = { version = "0.5.3", optional = true }
+apalis = { workspace = true, optional = true }
+apalis-redis = { workspace = true, optional = true }
 attohttpc = { version = "0.29.2", features = [
     "charsets",
     "json",
@@ -22,7 +22,6 @@ dotenvy = "0.15.7"
 figment = { version = "0.10.19", features = ["env"] }
 fluent-templates = { version = "0.13.0", optional = true }
 fluent-bundle = { version = "0.15.3", optional = true }
-futures-util = "0.3.31"
 futures = { workspace = true }
 env_logger = "0.11.8"
 handlebars = { version = "6.3.2", features = ["no_logging"], optional = true }
@@ -61,6 +60,7 @@ uuid = { workspace = true }
 [dev-dependencies]
 chrono = { workspace = true }
 fake = { version = "4.3.0", features = ["chrono", "url"] }
+futures-util = "0.3.31"
 tokio = { workspace = true }
 
 [features]
@@ -259,17 +259,18 @@ website-description-html = ["markdown", "website"]
 website-storage = ["dep:size", "get-used-website-storage"]
 # Utils
 cache = []
-encrypt-password = []
+encrypt-password = ["dep:argon2"]
 find-country = []
 generate-random-string = []
 handlebars = ["dep:attohttpc", "dep:handlebars", "dep:handlebars_misc_helpers"]
 hashtag-has-lookaround = []
-jobs = []
+jobs = ["dep:apalis", "dep:apalis-redis"]
 locales = ["dep:fluent-templates", "dep:fluent-bundle"]
+mailer = []
 markdown = ["dep:pulldown-cmark", "hashtag-has-lookaround"]
 mutation = []
 pagination = []
 parse-date = []
 text-icon = ["dep:ab_glyph", "dep:image", "dep:imageproc"]
 validator = ["locales"]
-verify-password = []
+verify-password = ["dep:argon2"]
