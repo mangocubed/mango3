@@ -43,7 +43,7 @@ where
 pub fn MyWebsitePageWrapper<VF, IV>(children: VF) -> impl IntoView
 where
     IV: IntoView + 'static,
-    VF: Fn(WebsitePresenter) -> IV + Send + Sync + 'static,
+    VF: Fn(WebsitePresenter) -> IV + Copy + Send + Sync + 'static,
 {
     let i18n = use_i18n();
     let text_my_websites = async_t_string!(i18n, studio.my_websites);
