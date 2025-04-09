@@ -23,7 +23,6 @@ pub fn NavigationPage() -> impl IntoView {
         items.update(|items| {
             items.push(NavigationItemParam {
                 id: temp_id.to_string(),
-                position: 0,
                 title: String::new(),
                 url: "/".to_owned(),
             });

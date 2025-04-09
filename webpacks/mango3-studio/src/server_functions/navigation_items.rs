@@ -15,7 +15,6 @@ use crate::server_functions::my_website;
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct NavigationItemParam {
     pub id: String,
-    pub position: i16,
     pub title: String,
     pub url: String,
 }
@@ -24,7 +23,6 @@ impl From<&NavigationItemPresenter> for NavigationItemParam {
     fn from(value: &NavigationItemPresenter) -> Self {
         Self {
             id: value.id.to_string(),
-            position: value.position,
             title: value.title.clone(),
             url: value.url.clone(),
         }
