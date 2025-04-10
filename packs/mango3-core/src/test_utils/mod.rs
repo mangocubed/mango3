@@ -128,6 +128,13 @@ pub async fn insert_test_user(core_context: &CoreContext) -> User {
     let birthdate = fake_birthdate();
     let country_alpha2 = fake_country_alpha2();
 
+    println!("USERNAME: {username}");
+    println!("EMAIL: {email}");
+    println!("PASSWORD: {password}");
+    println!("FULL NAME: {full_name}");
+    println!("BIRTHDATE: {birthdate}");
+    println!("COUNTRY: {country_alpha2}");
+
     crate::commands::insert_user(
         core_context,
         &username,

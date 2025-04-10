@@ -6,5 +6,5 @@ test("should have a heading text", async ({ page }) => {
 
     await expectLoadToComplete(page);
 
-    await expect(page.locator("h2")).toHaveText("Login");
+    await expect(page.locator("h1")).toHaveText("Login");
 });

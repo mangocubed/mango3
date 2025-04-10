@@ -10,5 +10,5 @@ test("should redirects to login page when is not logged in", async ({ page }) =>
 testAsUser("should have a heading text", async ({ page }) => {
     await page.goto("/");
 
-    await expect(page.locator("h2")).toHaveText("Home");
+    await expect(page.locator("h1")).toHaveText("Home");
 });

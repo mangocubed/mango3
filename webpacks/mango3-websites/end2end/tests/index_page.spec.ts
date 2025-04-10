@@ -6,7 +6,7 @@ test("does not exists", async ({ page }) => {
 
     await expectLoadToComplete(page);
 
-    await expect(page).toHaveTitle("Error 404: Page not found | Mango³ Dev")
+    await expect(page).toHaveTitle("Error 404: Page not found | Mango³ Dev");
 
-    await expect(page.locator("h2")).toHaveText("Whoops!");
+    await expect(page.locator("h1")).toHaveText("Whoops!");
 });
