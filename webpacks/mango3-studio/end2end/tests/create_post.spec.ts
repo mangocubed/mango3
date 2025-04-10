@@ -6,7 +6,7 @@ import { expectLoadToComplete, expectRedirectToLoginPage, testAsUser } from "../
 testAsUser("should create a new post", async ({ page }) => {
     await page.goto("/new-website");
 
-    await expect(page.locator("h2")).toHaveText("New website");
+    await expect(page.locator("h1")).toHaveText("New website");
 
     const websiteName = faker.internet.displayName();
 
@@ -18,7 +18,7 @@ testAsUser("should create a new post", async ({ page }) => {
 
     await page.getByRole("button", { name: "Ok", exact: true }).click();
 
-    await expect(page.locator("h2")).toHaveText("My websites");
+    await expect(page.locator("h1")).toHaveText("My websites");
 
     await page
         .locator("div.card", { has: page.getByText(websiteName) })
@@ -28,7 +28,7 @@ testAsUser("should create a new post", async ({ page }) => {
     await page.getByText("Posts").click();
     await page.getByText("New post").click();
 
-    await expect(page.locator("h2")).toHaveText("New post");
+    await expect(page.locator("h1")).toHaveText("New post");
 
     await page.getByLabel("Title").pressSequentially(faker.lorem.sentence());
     await page.getByLabel("Content").fill(faker.lorem.paragraphs());

@@ -7,11 +7,11 @@ test("should register a new user", async ({ page }) => {
 
     await expectLoadToComplete(page);
 
-    await expect(page.locator("h2")).toHaveText("Login");
+    await expect(page.locator("h1")).toHaveText("Login");
 
     await page.getByText("I don't have an account").click();
 
-    await expect(page.locator("h2")).toHaveText("Register");
+    await expect(page.locator("h1")).toHaveText("Register");
 
     await page.getByLabel("Username").fill(faker.internet.username().substring(0, 16));
     await page.getByLabel("Email").fill(faker.internet.email());

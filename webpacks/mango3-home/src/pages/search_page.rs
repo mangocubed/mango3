@@ -19,7 +19,7 @@ pub fn SearchPage() -> impl IntoView {
 
     view! {
         <Page title=text_title>
-            <h1 class="h2">{move || text_title.get()}</h1>
+            <h1 class="h1">{move || text_title.get()}</h1>
 
             <section class="max-w-[720px] w-full mx-auto">
                 <div role="tablist" class="tabs tabs-border mb-5">

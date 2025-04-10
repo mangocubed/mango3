@@ -59,7 +59,7 @@ pub fn ShowHashtagPage() -> impl IntoView {
                             EitherOf3::A(
                                 view! {
                                     <Page title=format!("#{}", hashtag.name)>
-                                        <h1 class="h2">"#"{hashtag.name}</h1>
+                                        <h1 class="h1">"#"{hashtag.name}</h1>
 
                                         <section class="max-w-[720px] w-full mx-auto">
                                             <InfiniteScroll
