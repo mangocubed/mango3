@@ -49,9 +49,9 @@ impl Website {
         .map(|record| record.count.unwrap_or_default())
     }
 
-    pub async fn cover_image_blob(&self, core_context: &CoreContext) -> Option<sqlx::Result<Blob>> {
+    pub async fn cover_image_blob(&self) -> Option<sqlx::Result<Blob<'_>>> {
         if let Some(id) = self.cover_image_blob_id {
-            Some(crate::commands::get_blob_by_id(core_context, id, None, None).await)
+            Some(crate::commands::get_blob_by_id(id, None, None).await)
         } else {
             None
         }
@@ -74,9 +74,9 @@ impl Website {
         self.url().host().unwrap().to_string()
     }
 
-    pub async fn icon_image_blob(&self, core_context: &CoreContext) -> Option<sqlx::Result<Blob>> {
+    pub async fn icon_image_blob(&self) -> Option<sqlx::Result<Blob<'_>>> {
         if let Some(id) = self.icon_image_blob_id {
-            Some(crate::commands::get_blob_by_id(core_context, id, None, None).await)
+            Some(crate::commands::get_blob_by_id(id, None, None).await)
         } else {
             None
         }

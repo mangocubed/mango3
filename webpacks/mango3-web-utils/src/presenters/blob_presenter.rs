@@ -19,14 +19,14 @@ pub struct BlobPresenter {
 }
 
 #[cfg(feature = "ssr")]
-impl FromModel<Blob> for BlobPresenter {
-    async fn from_model(blob: &Blob) -> Self {
+impl FromModel<Blob<'_>> for BlobPresenter {
+    async fn from_model(blob: &Blob<'_>) -> Self {
         #[cfg(feature = "blob-is-removable")]
         let core_context = crate::ssr::expect_core_context();
 
         Self {
             id: blob.id,
-            file_name: blob.file_name.clone(),
+            file_name: blob.file_name.to_string(),
             url: blob.url(),
 
             #[cfg(feature = "blob-is-removable")]

@@ -23,7 +23,7 @@ pub async fn scheduled_worker(reminder: Reminder) {
     let _ = delete_all_expired_confirmation_codes(&core_context).await;
 
     info!("Deleting all orphaned blobs...");
-    let _ = delete_orphaned_blobs(&core_context).await;
+    let _ = delete_orphaned_blobs().await;
 
     info!("Done!");
 }

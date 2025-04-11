@@ -63,12 +63,12 @@ markdown-editor = [
     "web-sys/KeyboardEvent",
 ]
 multiple-image-upload = ["image-upload"]
-post-card = ["post-presenter", "user-tag", "website-icon"]
+post-card = ["post-min-presenter", "user-tag", "website-icon"]
 unconfirmed-email-alert = ["user-email-is-confirmed"]
 user-card = ["user-presenter"]
 user-tag = ["user-presenter"]
-website-card = ["website-icon", "website-presenter"]
-website-icon = ["website-presenter"]
+website-card = ["website-icon", "website-min-presenter"]
+website-icon = ["website-min-presenter"]
 # Presenters
 blob-presenter = ["mango3-core?/blob"]
 confirmation-code-presenter = ["mango3-core?/confirmation-code"]
@@ -78,8 +78,14 @@ mutation-presenter = ["mango3-core?/mutation"]
 navigation-item-presenter = ["mango3-core?/navigation-item"]
 post-reaction-presenter = ["mango3-core?/post-reaction"]
 post-comment-presenter = ["mango3-core?/post-comment", "user-presenter"]
-post-presenter = ["mango3-core?/post", "website-presenter"]
+post-min-presenter = ["mango3-core?/post", "website-presenter"]
+post-presenter = [
+    "mango3-core?/post",
+    "mango3-core?/post-blobs",
+    "website-presenter",
+]
 user-presenter = ["mango3-core?/user", "blob-presenter", "hashtag-presenter"]
+website-min-presenter = ["mango3-core?/website"]
 website-presenter = ["mango3-core?/website"]
 # Presenter attributes
 blob-is-removable = ["blob-presenter", "mango3-core?/blob-is-removable"]

@@ -37,8 +37,9 @@ impl Display for Post {
 }
 
 impl Post {
-    pub async fn blobs(&self, core_context: &CoreContext) -> Vec<Blob> {
-        crate::commands::all_blobs_by_ids(core_context, self.blob_ids.clone(), None, None).await
+    #[cfg(feature = "post-blobs")]
+    pub async fn blobs(&self) -> Vec<Blob<'_>> {
+        crate::commands::all_blobs_by_ids(self.blob_ids.clone(), None, None).await
     }
 
     pub async fn comments_count(&self, core_context: &CoreContext) -> i64 {
@@ -54,9 +55,9 @@ impl Post {
         post_content_preview_html(self).await.unwrap_or_default()
     }
 
-    pub async fn cover_image_blob(&self, core_context: &CoreContext) -> Option<sqlx::Result<Blob>> {
+    pub async fn cover_image_blob(&self) -> Option<sqlx::Result<Blob<'_>>> {
         if let Some(id) = self.cover_image_blob_id {
-            Some(crate::commands::get_blob_by_id(core_context, id, None, None).await)
+            Some(crate::commands::get_blob_by_id(id, None, None).await)
         } else {
             None
         }

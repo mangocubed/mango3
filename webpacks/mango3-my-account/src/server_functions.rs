@@ -124,9 +124,7 @@ pub async fn attempt_to_update_profile(
     let user = extract_user().await?.expect("Could not get user");
 
     let avatar_image_blob = if let Some(id) = avatar_image_blob_id {
-        mango3_core::commands::get_blob_by_id(&core_context, id, None, Some(&user))
-            .await
-            .ok()
+        mango3_core::commands::get_blob_by_id(id, None, Some(&user)).await.ok()
     } else {
         None
     };

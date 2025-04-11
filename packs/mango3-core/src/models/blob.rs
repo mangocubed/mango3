@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use std::fmt::Display;
 use std::str::FromStr;
 
@@ -10,25 +11,25 @@ use url::Url;
 use crate::config::{BASIC_CONFIG, MISC_CONFIG};
 
 #[derive(Clone, Deserialize, Serialize)]
-pub struct Blob {
+pub struct Blob<'a> {
     pub id: Uuid,
     pub website_id: Option<Uuid>,
     pub user_id: Uuid,
-    pub file_name: String,
-    pub content_type: String,
+    pub file_name: Cow<'a, str>,
+    pub content_type: Cow<'a, str>,
     pub byte_size: i64,
-    pub md5_checksum: String,
+    pub md5_checksum: Cow<'a, str>,
     pub created_at: DateTime<Utc>,
     pub updated_at: Option<DateTime<Utc>>,
 }
 
-impl Display for Blob {
+impl Display for Blob<'_> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.id)
     }
 }
 
-impl Blob {
+impl Blob<'_> {
     #[cfg(feature = "blob-is-removable")]
     pub async fn is_removable(&self, core_context: &crate::CoreContext) -> bool {
         sqlx::query!(
@@ -61,47 +62,47 @@ impl Blob {
         .is_ok()
     }
 
-    pub fn default_path(&self) -> String {
-        format!("{}/default{}", self.directory(), self.extension())
+    pub fn default_path(&self) -> Cow<str> {
+        Cow::Owned(format!("{}/default{}", self.directory(), self.extension()))
     }
 
-    pub fn directory(&self) -> String {
-        format!("{}/blobs/{}", MISC_CONFIG.storage_path, self.id)
+    pub fn directory(&self) -> Cow<str> {
+        Cow::Owned(format!("{}/blobs/{}", MISC_CONFIG.storage_path, self.id))
     }
 
-    pub fn extension(&self) -> String {
+    pub fn extension(&self) -> Cow<str> {
         let mime = self.mime();
         match (mime.type_(), mime.subtype()) {
-            (IMAGE, JPEG) => ".jpg".to_owned(),
-            (_, subtype) => format!(".{subtype}"),
+            (IMAGE, JPEG) => Cow::Borrowed(".jpg"),
+            (_, subtype) => Cow::Owned(format!(".{subtype}")),
         }
     }
 
-    pub fn filename_without_extension(&self) -> String {
-        self.file_name.split('.').collect::<Vec<&str>>()[0].to_string()
+    pub fn filename_without_extension(&self) -> &str {
+        self.file_name.split('.').collect::<Vec<&str>>()[0]
     }
 
     pub fn mime(&self) -> Mime {
         Mime::from_str(&self.content_type).unwrap()
     }
 
-    pub fn variant_filename(&self, width: Option<u16>, height: Option<u16>, fill: Option<bool>) -> String {
+    pub fn variant_filename(&self, width: Option<u16>, height: Option<u16>, fill: Option<bool>) -> Cow<str> {
         if width.is_some() && height.is_some() {
             let width = width.unwrap();
             let height = height.unwrap();
             let fill = fill.map(|f| if f { "_fill" } else { "" }).unwrap_or_default();
 
-            return format!(
+            return Cow::Owned(format!(
                 "{}_{}x{}{}{}",
                 self.filename_without_extension(),
                 width,
                 height,
                 fill,
                 self.extension()
-            );
+            ));
         }
 
-        self.file_name.clone()
+        Cow::Borrowed(&self.file_name)
     }
 
     pub fn image_variant_path(&self, width: u16, height: u16, fill: bool) -> String {
@@ -127,7 +128,7 @@ impl Blob {
             if !std::path::Path::new(&variant_path).exists() {
                 use image::ImageDecoder;
 
-                let mut image_decoder = image::ImageReader::open(self.default_path())
+                let mut image_decoder = image::ImageReader::open(self.default_path().to_string())
                     .expect("Could not get image")
                     .into_decoder()
                     .expect("Could not convert image into decoder");
@@ -151,7 +152,7 @@ impl Blob {
             return std::fs::read(variant_path).ok();
         }
 
-        std::fs::read(self.default_path()).ok()
+        std::fs::read(self.default_path().to_string()).ok()
     }
 
     pub fn url(&self) -> Url {

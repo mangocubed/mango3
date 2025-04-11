@@ -64,7 +64,7 @@ pub async fn attempt_to_update_website(
     let user = extract_user().await?.unwrap();
 
     let icon_image_blob = if let Some(id) = icon_image_blob_id {
-        mango3_core::commands::get_blob_by_id(&core_context, id, Some(&website), Some(&user))
+        mango3_core::commands::get_blob_by_id(id, Some(&website), Some(&user))
             .await
             .ok()
     } else {
@@ -72,7 +72,7 @@ pub async fn attempt_to_update_website(
     };
 
     let cover_image_blob = if let Some(id) = cover_image_blob_id {
-        mango3_core::commands::get_blob_by_id(&core_context, id, Some(&website), Some(&user))
+        mango3_core::commands::get_blob_by_id(id, Some(&website), Some(&user))
             .await
             .ok()
     } else {

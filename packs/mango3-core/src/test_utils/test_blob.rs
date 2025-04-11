@@ -12,7 +12,11 @@ use crate::CoreContext;
 
 use super::insert_test_user;
 
-pub async fn insert_test_blob(core_context: &CoreContext, user: Option<&User>, website: Option<&Website>) -> Blob {
+pub async fn insert_test_blob<'a>(
+    core_context: &CoreContext,
+    user: Option<&User>,
+    website: Option<&Website>,
+) -> Blob<'a> {
     let user = if let Some(user) = user {
         user
     } else {

@@ -753,7 +753,7 @@ pub async fn update_user_profile(
     birthdate: &str,
     country_alpha2: &str,
     bio: &str,
-    avatar_image_blob: Option<&Blob>,
+    avatar_image_blob: Option<&Blob<'_>>,
 ) -> crate::utils::MutResult<User> {
     let mut validator = crate::validator!();
 

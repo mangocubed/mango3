@@ -13,11 +13,11 @@ mod mutation_presenter;
 mod navigation_item_presenter;
 #[cfg(feature = "post-comment-presenter")]
 mod post_comment_presenter;
-#[cfg(feature = "post-presenter")]
+#[cfg(any(feature = "post-min-presenter", feature = "post-presenter"))]
 mod post_presenter;
 #[cfg(feature = "user-presenter")]
 mod user_presenter;
-#[cfg(feature = "website-presenter")]
+#[cfg(any(feature = "website-min-presenter", feature = "website-presenter"))]
 mod website_presenter;
 
 pub use basic_config_presenter::BasicConfigPresenter;
@@ -35,12 +35,16 @@ pub use mutation_presenter::{MutPresenter, MutPresenterActionValue};
 pub use navigation_item_presenter::NavigationItemPresenter;
 #[cfg(feature = "post-comment-presenter")]
 pub use post_comment_presenter::PostCommentPresenter;
+#[cfg(feature = "post-min-presenter")]
+pub use post_presenter::PostMinPresenter;
 #[cfg(feature = "post-presenter")]
-pub use post_presenter::{PostMinPresenter, PostPresenter};
+pub use post_presenter::PostPresenter;
 #[cfg(feature = "user-presenter")]
 pub use user_presenter::{UserMinPresenter, UserPresenter};
+#[cfg(feature = "website-min-presenter")]
+pub use website_presenter::WebsiteMinPresenter;
 #[cfg(feature = "website-presenter")]
-pub use website_presenter::{WebsiteMinPresenter, WebsitePresenter};
+pub use website_presenter::WebsitePresenter;
 
 #[cfg(feature = "ssr")]
 pub trait FromModel<T> {

@@ -40,9 +40,9 @@ impl Display for User {
 }
 
 impl User {
-    pub async fn avatar_image_blob(&self, core_context: &CoreContext) -> Option<sqlx::Result<Blob>> {
+    pub async fn avatar_image_blob(&self) -> Option<sqlx::Result<Blob<'_>>> {
         if let Some(id) = self.avatar_image_blob_id {
-            Some(crate::commands::get_blob_by_id(core_context, id, None, Some(self)).await)
+            Some(crate::commands::get_blob_by_id(id, None, None).await)
         } else {
             None
         }

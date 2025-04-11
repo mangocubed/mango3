@@ -11,6 +11,7 @@ use super::{BlobPresenter, HashtagPresenter, UserMinPresenter, WebsiteMinPresent
 #[cfg(feature = "ssr")]
 use super::FromModel;
 
+#[cfg(feature = "post-presenter")]
 #[derive(Clone, Deserialize, Serialize)]
 pub struct PostPresenter {
     pub id: Uuid,
@@ -34,7 +35,7 @@ pub struct PostPresenter {
     pub content_html: String,
 }
 
-#[cfg(feature = "ssr")]
+#[cfg(all(feature = "ssr", feature = "post-presenter"))]
 impl FromModel<Post> for PostPresenter {
     async fn from_model(post: &Post) -> Self {
         let core_context = crate::ssr::expect_core_context();
@@ -46,18 +47,13 @@ impl FromModel<Post> for PostPresenter {
                 .map(|hashtag| HashtagPresenter::from_model(hashtag)),
         )
         .await;
-        let cover_image_blob = if let Some(Ok(blob)) = post.cover_image_blob(&core_context).await {
+        let cover_image_blob = if let Some(Ok(blob)) = post.cover_image_blob().await {
             Some(BlobPresenter::from_model(&blob).await)
         } else {
             None
         };
-        let blobs = futures::future::join_all(
-            post.blobs(&core_context)
-                .await
-                .iter()
-                .map(|blob| BlobPresenter::from_model(&blob)),
-        )
-        .await;
+        let blobs =
+            futures::future::join_all(post.blobs().await.iter().map(|blob| BlobPresenter::from_model(&blob))).await;
 
         Self {
             id: post.id,
@@ -83,6 +79,7 @@ impl FromModel<Post> for PostPresenter {
     }
 }
 
+#[cfg(feature = "post-min-presenter")]
 #[derive(Clone, Deserialize, Serialize)]
 pub struct PostMinPresenter {
     pub id: Uuid,
@@ -103,7 +100,7 @@ pub struct PostMinPresenter {
     pub updated_at: Option<DateTime<Utc>>,
 }
 
-#[cfg(feature = "ssr")]
+#[cfg(all(feature = "ssr", feature = "post-min-presenter"))]
 impl FromModel<Post> for PostMinPresenter {
     async fn from_model(post: &Post) -> Self {
         let core_context = crate::ssr::expect_core_context();
@@ -117,7 +114,7 @@ impl FromModel<Post> for PostMinPresenter {
                 .map(|hashtag| HashtagPresenter::from_model(hashtag)),
         )
         .await;
-        let cover_image_blob = if let Some(Ok(blob)) = post.cover_image_blob(&core_context).await {
+        let cover_image_blob = if let Some(Ok(blob)) = post.cover_image_blob().await {
             Some(BlobPresenter::from_model(&blob).await)
         } else {
             None
