@@ -33,6 +33,6 @@ pub async fn insert_test_post(core_context: &CoreContext, website: Option<&Websi
     )
     .await
     .ok()
-    .unwrap()
+    .expect("Could not insert post")
     .data
 }
