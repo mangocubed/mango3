@@ -175,6 +175,8 @@ pub(crate) static REGEX_USERNAME: LazyLock<Regex> =
 
 pub(crate) const HASHTAG_LOOKAROUND: [Option<&str>; 3] = [Some(" "), Some("\n"), None];
 
+#[cfg(feature = "all-hashtags-by-ids")]
+pub(crate) const PREFIX_ALL_HASHTAGS_BY_IDS: &str = "all_hashtags_by_ids";
 #[cfg(feature = "all-navigation-items-by-website")]
 pub(crate) const PREFIX_ALL_NAVIGATION_ITEMS_BY_WEBSITE: &str = "all_navigation_items_by_website";
 #[cfg(feature = "get-blob-by-id")]
