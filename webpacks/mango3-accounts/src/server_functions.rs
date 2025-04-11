@@ -27,7 +27,6 @@ pub async fn attempt_to_confirm_login(code: String) -> Result<MutPresenter, Serv
     let user = confirmation_code.user(&core_context).await?;
 
     let result = mango3_core::commands::confirm_confirmation_code(
-        &core_context.clone(),
         &confirmation_code,
         ConfirmationCodeAction::LoginConfirmation,
         &code,
@@ -67,7 +66,7 @@ pub async fn attempt_to_login(
     };
 
     if user.data.email_is_confirmed() {
-        let result = mango3_core::commands::send_user_login_confirmation_code(&core_context, &user.data).await;
+        let result = mango3_core::commands::send_user_login_confirmation_code(&user.data).await;
 
         if let Ok(ref confirmation_code) = result {
             let _ = start_confirmation_code(&confirmation_code.data).await;
@@ -152,7 +151,7 @@ pub async fn attempt_to_send_password_reset_code(username_or_email: String) -> R
         return mango3_web_utils::mut_presenter_error!();
     };
 
-    let result = mango3_core::commands::send_user_password_reset_code(&core_context, &user).await;
+    let result = mango3_core::commands::send_user_password_reset_code(&user).await;
 
     if let Ok(ref success_send) = result {
         let _ = start_confirmation_code(&success_send.data).await;
@@ -175,7 +174,6 @@ pub async fn attempt_to_reset_password(code: String, new_password: String) -> Re
     let user = confirmation_code.user(&core_context).await?;
 
     let result = mango3_core::commands::confirm_confirmation_code(
-        &core_context.clone(),
         &confirmation_code,
         ConfirmationCodeAction::PasswordReset,
         &code,
@@ -207,7 +205,7 @@ pub async fn attempt_to_get_invitation_code_id(code: String) -> Result<MutPresen
 
     let core_context = expect_core_context();
 
-    let result = mango3_core::commands::get_invitation_code(&core_context, &code).await;
+    let result = mango3_core::commands::get_invitation_code(&code).await;
 
     match result {
         Ok(invitation_code) => mango3_web_utils::mut_presenter!(mango3_core::mut_success!(invitation_code.id)),

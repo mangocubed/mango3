@@ -15,9 +15,7 @@ pub async fn extract_confirmation_code() -> Result<Option<ConfirmationCode>, Ser
         return Ok(None);
     };
 
-    let core_context = expect_core_context();
-
-    Ok(get_confirmation_code_by_id(&core_context, id).await.ok())
+    Ok(get_confirmation_code_by_id(id).await.ok())
 }
 
 pub async fn finish_confirmation_code() -> Result<(), ServerFnError> {

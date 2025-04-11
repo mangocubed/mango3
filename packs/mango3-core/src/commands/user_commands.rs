@@ -557,49 +557,30 @@ pub async fn reset_user_password(
 }
 
 #[cfg(feature = "send-user-email-confirmation-code")]
-pub async fn send_user_email_confirmation_code(
-    core_context: &CoreContext,
-    user: &User,
-) -> crate::utils::MutResult<ConfirmationCode> {
+pub async fn send_user_email_confirmation_code(user: &User) -> crate::utils::MutResult<ConfirmationCode> {
     if user.email_is_confirmed() {
         return crate::mut_error!();
     }
 
-    super::insert_confirmation_code(
-        core_context,
-        user,
-        crate::enums::ConfirmationCodeAction::EmailConfirmation,
-    )
-    .await
+    super::insert_confirmation_code(user, crate::enums::ConfirmationCodeAction::EmailConfirmation).await
 }
 
 #[cfg(feature = "send-user-login-confirmation-code")]
-pub async fn send_user_login_confirmation_code(
-    core_context: &CoreContext,
-    user: &User,
-) -> crate::utils::MutResult<ConfirmationCode> {
+pub async fn send_user_login_confirmation_code(user: &User) -> crate::utils::MutResult<ConfirmationCode> {
     if !user.email_is_confirmed() {
         return crate::mut_error!();
     }
 
-    super::insert_confirmation_code(
-        core_context,
-        user,
-        crate::enums::ConfirmationCodeAction::LoginConfirmation,
-    )
-    .await
+    super::insert_confirmation_code(user, crate::enums::ConfirmationCodeAction::LoginConfirmation).await
 }
 
 #[cfg(feature = "send-user-password-reset-code")]
-pub async fn send_user_password_reset_code(
-    core_context: &CoreContext,
-    user: &User,
-) -> crate::utils::MutResult<ConfirmationCode> {
+pub async fn send_user_password_reset_code(user: &User) -> crate::utils::MutResult<ConfirmationCode> {
     if !user.email_is_confirmed() {
         return crate::mut_error!();
     }
 
-    super::insert_confirmation_code(core_context, user, crate::enums::ConfirmationCodeAction::PasswordReset).await
+    super::insert_confirmation_code(user, crate::enums::ConfirmationCodeAction::PasswordReset).await
 }
 
 #[cfg(feature = "update-user-email")]
