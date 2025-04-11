@@ -1,12 +1,12 @@
-use crate::CoreContext;
-
+#[allow(unused_imports)]
+use crate::enums::ConfirmationCodeAction;
 #[allow(unused_imports)]
 use crate::models::*;
 
 #[cfg(feature = "confirm-confirmation-code")]
 pub async fn confirm_confirmation_code<F, IF, T>(
     confirmation_code: &ConfirmationCode,
-    action: crate::enums::ConfirmationCodeAction,
+    action: ConfirmationCodeAction,
     code: &str,
     on_success: F,
 ) -> crate::utils::MutResult<T>
@@ -86,8 +86,6 @@ pub async fn delete_all_expired_confirmation_codes() -> crate::utils::MutResult 
 
 #[cfg(feature = "get-confirmation-code-by-id")]
 pub async fn get_confirmation_code_by_id(id: uuid::Uuid) -> sqlx::Result<ConfirmationCode> {
-    use crate::enums::ConfirmationCodeAction;
-
     let db_pool = crate::db_pool().await;
 
     sqlx::query_as!(
@@ -110,10 +108,8 @@ pub async fn get_confirmation_code_by_id(id: uuid::Uuid) -> sqlx::Result<Confirm
 #[cfg(feature = "get-confirmation-code-by-user")]
 pub async fn get_confirmation_code_by_user(
     user: &User,
-    action: crate::enums::ConfirmationCodeAction,
+    action: ConfirmationCodeAction,
 ) -> sqlx::Result<ConfirmationCode> {
-    use crate::enums::ConfirmationCodeAction;
-
     let db_pool = crate::db_pool().await;
 
     sqlx::query_as!(
@@ -137,10 +133,8 @@ pub async fn get_confirmation_code_by_user(
 #[cfg(feature = "insert-confirmation-code")]
 pub async fn insert_confirmation_code(
     user: &User,
-    action: crate::enums::ConfirmationCodeAction,
+    action: ConfirmationCodeAction,
 ) -> crate::utils::MutResult<ConfirmationCode> {
-    use crate::enums::ConfirmationCodeAction;
-
     let db_pool = crate::db_pool().await;
     let jobs = crate::jobs().await;
 
