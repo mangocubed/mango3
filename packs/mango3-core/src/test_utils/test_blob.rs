@@ -47,6 +47,6 @@ pub async fn insert_test_blob<'a>(
     crate::commands::insert_blob(core_context, &user, website, &mut field)
         .await
         .ok()
-        .unwrap()
+        .expect("Could not insert blob")
         .data
 }

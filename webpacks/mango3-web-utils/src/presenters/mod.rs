@@ -73,8 +73,8 @@ impl FromModel<uuid::Uuid> for uuid::Uuid {
 }
 
 #[cfg(all(feature = "ssr", feature = "confirmation-code-presenter"))]
-impl FromModel<mango3_core::models::ConfirmationCode> for () {
-    async fn from_model(_: &mango3_core::models::ConfirmationCode) -> Self {
+impl FromModel<mango3_core::models::ConfirmationCode<'_>> for () {
+    async fn from_model(_: &mango3_core::models::ConfirmationCode<'_>) -> Self {
         ()
     }
 }

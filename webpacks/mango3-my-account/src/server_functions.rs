@@ -29,7 +29,6 @@ pub async fn attempt_to_confirm_email(code: String) -> Result<MutPresenter, Serv
     let user = extract_user().await?.unwrap();
 
     let result = mango3_core::commands::confirm_confirmation_code(
-        &core_context.clone(),
         &confirmation_code,
         ConfirmationCodeAction::EmailConfirmation,
         &code,
@@ -63,10 +62,9 @@ pub async fn attempt_to_send_email_confirmation_code() -> Result<MutPresenter, S
         return mango3_web_utils::mut_presenter_error!();
     };
 
-    let core_context = expect_core_context();
     let user = extract_user().await?.unwrap();
 
-    let result = mango3_core::commands::send_user_email_confirmation_code(&core_context, &user).await;
+    let result = mango3_core::commands::send_user_email_confirmation_code(&user).await;
 
     if let Ok(ref success) = result {
         let _ = start_confirmation_code(&success.data).await;

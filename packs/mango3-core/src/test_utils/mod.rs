@@ -1,6 +1,7 @@
 use std::collections::HashSet;
 use std::fmt::Display;
-use std::sync::{LazyLock, Mutex};
+use std::fs::OpenOptions;
+use std::io::{Read, Write};
 
 use chrono::{DateTime, Utc};
 use fake::faker::address::en::CountryCode;
@@ -24,19 +25,48 @@ pub use test_blob::insert_test_blob;
 pub use test_post::insert_test_post;
 pub use test_post_comment::insert_test_post_comment;
 
-static FAKE_CACHE: LazyLock<Mutex<HashSet<String>>> = LazyLock::new(|| Mutex::new(HashSet::new()));
-
 fn unique_fake<T, F>(prefix: &str, fake_fn: F) -> T
 where
     F: Fn() -> T,
     T: Display,
 {
-    let mut fake = fake_fn();
-    let mut cache = FAKE_CACHE.lock().expect("Could not lock FAKE_CACHE");
+    let file_path = std::env::temp_dir().join("unique_fake");
 
-    while !cache.insert(format!("{prefix}_{fake}")) {
+    let mut file = OpenOptions::new()
+        .append(true)
+        .create(true)
+        .read(true)
+        .open(&file_path)
+        .expect("Could not open file");
+
+    let mut file_content = String::new();
+
+    let _ = file.read_to_string(&mut file_content);
+
+    let mut lines = file_content
+        .lines()
+        .map(|line| line.to_owned())
+        .collect::<HashSet<String>>();
+
+    if lines.len() > 200 {
+        for line in lines.clone().iter().take(lines.len() - 200) {
+            lines.remove(line);
+        }
+    }
+
+    let _ = file.set_len(0);
+
+    for line in &lines {
+        let _ = file.write_all(format!("{line}\n").as_bytes());
+    }
+
+    let mut fake = fake_fn();
+
+    while !lines.insert(format!("{prefix}_{fake}")) {
         fake = fake_fn();
     }
+
+    let _ = file.write_all(format!("{prefix}_{fake}\n").as_bytes());
 
     fake
 }
@@ -116,7 +146,7 @@ pub async fn insert_test_navigation_item(core_context: &CoreContext, website: Op
     crate::commands::insert_navigation_item(core_context, &website, 0, &label, &url)
         .await
         .ok()
-        .unwrap()
+        .expect("Could not insert navigation item")
         .data
 }
 
@@ -139,8 +169,7 @@ pub async fn insert_test_user(core_context: &CoreContext) -> User {
         &country_alpha2,
     )
     .await
-    .ok()
-    .unwrap()
+    .expect("Could not insert user")
     .data
 }
 
@@ -157,7 +186,7 @@ pub async fn insert_test_website(core_context: &CoreContext, user: Option<&User>
     crate::commands::insert_website(core_context, &user, &name, &subdomain, &description)
         .await
         .ok()
-        .unwrap()
+        .expect("Could not insert website")
         .data
 }
 

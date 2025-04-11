@@ -23,6 +23,6 @@ pub async fn insert_test_post_comment(
     crate::commands::insert_post_comment(core_context, &post, &user, &content)
         .await
         .ok()
-        .unwrap()
+        .expect("Could not insert post comment")
         .data
 }

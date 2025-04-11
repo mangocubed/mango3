@@ -5,7 +5,7 @@ use crate::models::*;
 
 #[cfg(feature = "confirm-confirmation-code")]
 pub async fn confirm_confirmation_code<F, IF, T>(
-    confirmation_code: &ConfirmationCode,
+    confirmation_code: &ConfirmationCode<'_>,
     action: ConfirmationCodeAction,
     code: &str,
     on_success: F,
@@ -63,7 +63,7 @@ where
 }
 
 #[cfg(feature = "delete-confirmation-code")]
-pub async fn delete_confirmation_code(confirmation_code: &ConfirmationCode) -> crate::utils::MutResult {
+pub async fn delete_confirmation_code(confirmation_code: &ConfirmationCode<'_>) -> crate::utils::MutResult {
     let db_pool = crate::db_pool().await;
 
     sqlx::query!("DELETE FROM confirmation_codes WHERE id = $1", confirmation_code.id)
@@ -85,7 +85,7 @@ pub async fn delete_all_expired_confirmation_codes() -> crate::utils::MutResult 
 }
 
 #[cfg(feature = "get-confirmation-code-by-id")]
-pub async fn get_confirmation_code_by_id(id: uuid::Uuid) -> sqlx::Result<ConfirmationCode> {
+pub async fn get_confirmation_code_by_id<'a>(id: uuid::Uuid) -> sqlx::Result<ConfirmationCode<'a>> {
     let db_pool = crate::db_pool().await;
 
     sqlx::query_as!(
@@ -109,7 +109,7 @@ pub async fn get_confirmation_code_by_id(id: uuid::Uuid) -> sqlx::Result<Confirm
 pub async fn get_confirmation_code_by_user(
     user: &User,
     action: ConfirmationCodeAction,
-) -> sqlx::Result<ConfirmationCode> {
+) -> sqlx::Result<ConfirmationCode<'_>> {
     let db_pool = crate::db_pool().await;
 
     sqlx::query_as!(
@@ -134,11 +134,11 @@ pub async fn get_confirmation_code_by_user(
 pub async fn insert_confirmation_code(
     user: &User,
     action: ConfirmationCodeAction,
-) -> crate::utils::MutResult<ConfirmationCode> {
+) -> crate::utils::MutResult<ConfirmationCode<'_>> {
     let db_pool = crate::db_pool().await;
     let jobs = crate::jobs().await;
 
-    if let Ok(confirmation_code) = get_confirmation_code_by_user(core_context, user, action.clone()).await {
+    if let Ok(confirmation_code) = get_confirmation_code_by_user(user, action.clone()).await {
         return crate::mut_success!(confirmation_code);
     }
 

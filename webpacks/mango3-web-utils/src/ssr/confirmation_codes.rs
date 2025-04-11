@@ -6,9 +6,9 @@ use mango3_core::models::ConfirmationCode;
 
 use crate::constants::KEY_CONFIRMATION_CODE_ID;
 
-use super::{expect_core_context, extract_session};
+use super::extract_session;
 
-pub async fn extract_confirmation_code() -> Result<Option<ConfirmationCode>, ServerFnError> {
+pub async fn extract_confirmation_code<'a>() -> Result<Option<ConfirmationCode<'a>>, ServerFnError> {
     let session = extract_session().await?;
 
     let Some(id) = session.get(KEY_CONFIRMATION_CODE_ID).await? else {
@@ -26,7 +26,7 @@ pub async fn finish_confirmation_code() -> Result<(), ServerFnError> {
     Ok(())
 }
 
-pub async fn start_confirmation_code(confirmation_code: &ConfirmationCode) -> Result<(), ServerFnError> {
+pub async fn start_confirmation_code(confirmation_code: &ConfirmationCode<'_>) -> Result<(), ServerFnError> {
     let session = extract_session().await?;
 
     session.insert(KEY_CONFIRMATION_CODE_ID, confirmation_code.id).await?;

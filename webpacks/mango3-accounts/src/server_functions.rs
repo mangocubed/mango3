@@ -205,7 +205,7 @@ pub async fn attempt_to_get_invitation_code_id(code: String) -> Result<MutPresen
 
     let core_context = expect_core_context();
 
-    let result = mango3_core::commands::get_invitation_code(&code).await;
+    let result = mango3_core::commands::get_invitation_code(&core_context, &code).await;
 
     match result {
         Ok(invitation_code) => mango3_web_utils::mut_presenter!(mango3_core::mut_success!(invitation_code.id)),
