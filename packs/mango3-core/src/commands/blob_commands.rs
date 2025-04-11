@@ -4,20 +4,14 @@ use sqlx::types::Uuid;
 
 use crate::constants::*;
 use crate::models::*;
-use crate::CoreContext;
 
 #[cfg(feature = "all-blobs-by-ids")]
-pub async fn all_blobs_by_ids(
-    core_context: &CoreContext,
-    ids: Vec<Uuid>,
-    website: Option<&Website>,
-    user: Option<&User>,
-) -> Vec<Blob> {
+pub async fn all_blobs_by_ids<'a>(ids: Vec<Uuid>, website: Option<&Website>, user: Option<&User>) -> Vec<Blob<'a>> {
     if ids.is_empty() {
         return vec![];
     }
 
-    futures::future::join_all(ids.iter().map(|id| get_blob_by_id(core_context, *id, website, user)))
+    futures::future::join_all(ids.iter().map(|id| get_blob_by_id(*id, website, user)))
         .await
         .iter()
         .filter_map(|result| result.as_ref().ok())
@@ -26,14 +20,16 @@ pub async fn all_blobs_by_ids(
 }
 
 #[cfg(feature = "delete-blob")]
-pub async fn delete_blob(core_context: &CoreContext, blob: &Blob) -> crate::utils::MutResult {
+pub async fn delete_blob(blob: &Blob<'_>) -> crate::utils::MutResult {
     use cached::IOCachedAsync;
 
+    let db_pool = crate::db_pool().await;
+
     sqlx::query!("DELETE FROM blobs WHERE id = $1", blob.id)
-        .execute(&core_context.db_pool)
+        .execute(db_pool)
         .await?;
 
-    let _ = std::fs::remove_dir_all(blob.directory());
+    let _ = std::fs::remove_dir_all(blob.directory().to_string());
 
     if let Some(cache) = GET_CACHED_BLOB_BY_ID.get() {
         let _ = cache.cache_remove(&blob.id).await;
@@ -43,7 +39,9 @@ pub async fn delete_blob(core_context: &CoreContext, blob: &Blob) -> crate::util
 }
 
 #[cfg(feature = "delete-orphaned-blobs")]
-pub async fn delete_orphaned_blobs(core_context: &CoreContext) -> crate::utils::MutResult {
+pub async fn delete_orphaned_blobs() -> crate::utils::MutResult {
+    let db_pool = crate::db_pool().await;
+
     let result = sqlx::query_as!(
         Blob,
         "SELECT *
@@ -59,12 +57,12 @@ pub async fn delete_orphaned_blobs(core_context: &CoreContext) -> crate::utils::
             ) IS NULL
         LIMIT 1",
     )
-    .fetch_all(&core_context.db_pool)
+    .fetch_all(db_pool)
     .await;
 
     if let Ok(blobs) = result {
         for blob in blobs {
-            let _ = delete_blob(core_context, &blob).await;
+            let _ = delete_blob(&blob).await;
         }
     }
 
@@ -78,24 +76,21 @@ pub async fn delete_orphaned_blobs(core_context: &CoreContext) -> crate::utils::
     ty = "AsyncRedisCache<Uuid, Blob>",
     create = r##" { crate::async_redis_cache!(PREFIX_GET_BLOB_BY_ID).await } "##
 )]
-async fn get_cached_blob_by_id(core_context: &CoreContext, id: Uuid) -> sqlx::Result<Blob> {
+async fn get_cached_blob_by_id(id: Uuid) -> sqlx::Result<Blob<'static>> {
+    let db_pool = crate::db_pool().await;
+
     sqlx::query_as!(
         Blob,
         "SELECT * FROM blobs WHERE id = $1 LIMIT 1",
         id, // $1
     )
-    .fetch_one(&core_context.db_pool)
+    .fetch_one(db_pool)
     .await
 }
 
 #[cfg(feature = "get-blob-by-id")]
-pub async fn get_blob_by_id(
-    core_context: &CoreContext,
-    id: Uuid,
-    website: Option<&crate::models::Website>,
-    user: Option<&crate::models::User>,
-) -> sqlx::Result<Blob> {
-    let blob = get_cached_blob_by_id(core_context, id).await?;
+pub async fn get_blob_by_id<'a>(id: Uuid, website: Option<&Website>, user: Option<&User>) -> sqlx::Result<Blob<'a>> {
+    let blob = get_cached_blob_by_id(id).await?;
     if let Some(website) = website {
         if Some(website.id) != blob.website_id {
             return Err(sqlx::Error::RowNotFound);
@@ -112,16 +107,17 @@ pub async fn get_blob_by_id(
 }
 
 #[cfg(feature = "insert-blob")]
-pub async fn insert_blob(
-    core_context: &CoreContext,
+pub async fn insert_blob<'a>(
+    core_context: &crate::CoreContext,
     user: &User,
     website: Option<&Website>,
     field: &mut multer::Field<'_>,
-) -> crate::utils::MutResult<Blob> {
+) -> crate::utils::MutResult<Blob<'a>> {
     use std::io::Write;
 
     use md5::Digest;
 
+    let db_pool = crate::db_pool().await;
     let website_id = website.map(|w| w.id);
     let tmp_file_path = crate::config::MISC_CONFIG
         .storage_tmp_path()
@@ -161,7 +157,7 @@ pub async fn insert_blob(
         byte_size,    // $4
         md5_checksum, // $5
     )
-    .fetch_one(&core_context.db_pool)
+    .fetch_one(db_pool)
     .await;
 
     if let Ok(ref blob) = result {
@@ -190,12 +186,12 @@ pub async fn insert_blob(
         byte_size,    // $5
         md5_checksum, // $6
     )
-    .fetch_one(&core_context.db_pool)
+    .fetch_one(db_pool)
     .await;
 
     if let Ok(ref blob) = result {
-        let _ = std::fs::create_dir_all(blob.directory());
-        let _ = std::fs::rename(&tmp_file_path, blob.default_path());
+        let _ = std::fs::create_dir_all(blob.directory().to_string());
+        let _ = std::fs::rename(&tmp_file_path, blob.default_path().to_string());
         let _ = std::fs::remove_file(tmp_file_path);
     }
 
@@ -204,16 +200,16 @@ pub async fn insert_blob(
 
 #[cfg(feature = "paginate-blobs")]
 pub async fn paginate_blobs<'a>(
-    core_context: &'a CoreContext,
+    core_context: &'a crate::CoreContext,
     cursor_page_params: &crate::utils::CursorPageParams,
     website: Option<&'a Website>,
     user: Option<&'a User>,
-) -> crate::utils::CursorPage<Blob> {
+) -> crate::utils::CursorPage<Blob<'a>> {
     crate::cursor_page!(
         core_context,
         cursor_page_params,
         |node: Blob| node.id,
-        move |core_context, after| async move { get_blob_by_id(core_context, after, website, user).await.ok() },
+        move |_, after| async move { get_blob_by_id(after, website, user).await.ok() },
         move |core_context, cursor_resource, limit| async move {
             let website_id = website.map(|w| w.id);
             let user_id = user.map(|u| u.id);
@@ -257,7 +253,7 @@ mod tests {
 
         let blob = insert_test_blob(&core_context, Some(&user), None).await;
 
-        let result = delete_blob(&core_context, &blob).await;
+        let result = delete_blob(&blob).await;
 
         assert!(result.is_ok());
     }
@@ -267,7 +263,7 @@ mod tests {
         let core_context = setup_core_context().await;
         let blob = insert_test_blob(&core_context, None, None).await;
 
-        let result = get_blob_by_id(&core_context, blob.id, None, None).await;
+        let result = get_blob_by_id(blob.id, None, None).await;
 
         assert!(result.is_ok());
     }
@@ -278,7 +274,7 @@ mod tests {
         let user = insert_test_user(&core_context).await;
         let blob = insert_test_blob(&core_context, Some(&user), None).await;
 
-        let result = get_blob_by_id(&core_context, blob.id, None, Some(&user)).await;
+        let result = get_blob_by_id(blob.id, None, Some(&user)).await;
 
         assert!(result.is_ok());
     }
@@ -289,7 +285,7 @@ mod tests {
         let user = insert_test_user(&core_context).await;
         let blob = insert_test_blob(&core_context, None, None).await;
 
-        let result = get_blob_by_id(&core_context, blob.id, None, Some(&user)).await;
+        let result = get_blob_by_id(blob.id, None, Some(&user)).await;
 
         assert!(result.is_err());
     }

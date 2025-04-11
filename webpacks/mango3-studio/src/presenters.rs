@@ -31,18 +31,12 @@ pub struct EditPostPresenter {
 impl FromModel<Post> for EditPostPresenter {
     async fn from_model(post: &Post) -> Self {
         let core_context = mango3_web_utils::ssr::expect_core_context();
-        let cover_image_blob = if let Some(Ok(blob)) = post.cover_image_blob(&core_context).await {
+        let cover_image_blob = if let Some(Ok(blob)) = post.cover_image_blob().await {
             Some(BlobPresenter::from_model(&blob).await)
         } else {
             None
         };
-        let blobs = future::join_all(
-            post.blobs(&core_context)
-                .await
-                .iter()
-                .map(|blob| BlobPresenter::from_model(blob)),
-        )
-        .await;
+        let blobs = future::join_all(post.blobs().await.iter().map(|blob| BlobPresenter::from_model(blob))).await;
 
         Self {
             id: post.id,

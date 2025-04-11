@@ -10,6 +10,7 @@ use super::{BlobPresenter, HashtagPresenter};
 #[cfg(feature = "ssr")]
 use super::FromModel;
 
+#[cfg(feature = "website-presenter")]
 #[derive(Clone, Deserialize, Serialize)]
 pub struct WebsitePresenter {
     pub id: Uuid,
@@ -43,6 +44,7 @@ pub struct WebsitePresenter {
     pub used_storage: i64,
 }
 
+#[cfg(feature = "website-presenter")]
 impl WebsitePresenter {
     pub fn icon_image_url(&self, size: u16) -> Url {
         self.icon_image_blob
@@ -56,7 +58,7 @@ impl WebsitePresenter {
     }
 }
 
-#[cfg(feature = "ssr")]
+#[cfg(all(feature = "ssr", feature = "website-presenter"))]
 impl FromModel<Website> for WebsitePresenter {
     async fn from_model(website: &Website) -> Self {
         let core_context = crate::ssr::expect_core_context();
@@ -68,12 +70,12 @@ impl FromModel<Website> for WebsitePresenter {
                 .map(|hashtag| HashtagPresenter::from_model(hashtag)),
         )
         .await;
-        let icon_image_blob = if let Some(Ok(blob)) = website.icon_image_blob(&core_context).await {
+        let icon_image_blob = if let Some(Ok(blob)) = website.icon_image_blob().await {
             Some(BlobPresenter::from_model(&blob).await)
         } else {
             None
         };
-        let cover_image_blob = if let Some(Ok(blob)) = website.cover_image_blob(&core_context).await {
+        let cover_image_blob = if let Some(Ok(blob)) = website.cover_image_blob().await {
             Some(BlobPresenter::from_model(&blob).await)
         } else {
             None
@@ -120,6 +122,7 @@ impl FromModel<Website> for WebsitePresenter {
     }
 }
 
+#[cfg(feature = "website-min-presenter")]
 #[derive(Clone, Deserialize, Serialize)]
 pub struct WebsiteMinPresenter {
     pub id: Uuid,
@@ -134,6 +137,7 @@ pub struct WebsiteMinPresenter {
     pub url: Url,
 }
 
+#[cfg(feature = "website-min-presenter")]
 impl WebsiteMinPresenter {
     pub fn icon_image_url(&self, size: u16) -> Url {
         self.icon_image_blob
@@ -147,7 +151,7 @@ impl WebsiteMinPresenter {
     }
 }
 
-#[cfg(feature = "ssr")]
+#[cfg(all(feature = "ssr", feature = "website-min-presenter"))]
 impl FromModel<Website> for WebsiteMinPresenter {
     async fn from_model(website: &Website) -> Self {
         let core_context = crate::ssr::expect_core_context();
@@ -159,7 +163,7 @@ impl FromModel<Website> for WebsiteMinPresenter {
                 .map(|hashtag| HashtagPresenter::from_model(hashtag)),
         )
         .await;
-        let icon_image_blob = if let Some(Ok(blob)) = website.icon_image_blob(&core_context).await {
+        let icon_image_blob = if let Some(Ok(blob)) = website.icon_image_blob().await {
             Some(BlobPresenter::from_model(&blob).await)
         } else {
             None
@@ -180,6 +184,7 @@ impl FromModel<Website> for WebsiteMinPresenter {
     }
 }
 
+#[cfg(all(feature = "website-min-presenter", feature = "website-presenter"))]
 impl From<&WebsitePresenter> for WebsiteMinPresenter {
     fn from(website: &WebsitePresenter) -> Self {
         WebsiteMinPresenter {
@@ -197,6 +202,7 @@ impl From<&WebsitePresenter> for WebsiteMinPresenter {
     }
 }
 
+#[cfg(all(feature = "website-min-presenter", feature = "website-presenter"))]
 impl From<WebsitePresenter> for WebsiteMinPresenter {
     fn from(website: WebsitePresenter) -> Self {
         Self::from(&website)

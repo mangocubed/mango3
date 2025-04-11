@@ -260,8 +260,8 @@ pub async fn insert_post(
     slug: &str,
     content: &str,
     variables: &str,
-    blobs: Vec<Blob>,
-    cover_image_blob: Option<&Blob>,
+    blobs: Vec<Blob<'_>>,
+    cover_image_blob: Option<&Blob<'_>>,
     publish: bool,
 ) -> MutResult<Post> {
     let mut validator = crate::validator!();
@@ -489,8 +489,8 @@ pub async fn update_post(
     slug: &str,
     content: &str,
     variables: &str,
-    blobs: Vec<Blob>,
-    cover_image_blob: Option<&Blob>,
+    blobs: Vec<Blob<'_>>,
+    cover_image_blob: Option<&Blob<'_>>,
     publish: bool,
 ) -> crate::utils::MutResult<Post> {
     let mut validator = crate::validator!();

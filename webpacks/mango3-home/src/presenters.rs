@@ -55,7 +55,7 @@ impl FromModel<User> for UserProfilePresenter {
                 .map(|hashtag| HashtagPresenter::from_model(hashtag)),
         )
         .await;
-        let avatar_image_blob = if let Some(Ok(blob)) = user.avatar_image_blob(&core_context).await {
+        let avatar_image_blob = if let Some(Ok(blob)) = user.avatar_image_blob().await {
             Some(BlobPresenter::from_model(&blob).await)
         } else {
             None

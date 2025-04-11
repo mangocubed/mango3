@@ -22,8 +22,7 @@ pub struct EditUserProfilePresenter {
 #[cfg(feature = "ssr")]
 impl FromModel<User> for EditUserProfilePresenter {
     async fn from_model(user: &User) -> Self {
-        let core_context = mango3_web_utils::ssr::expect_core_context();
-        let avatar_image_blob = if let Some(Ok(blob)) = user.avatar_image_blob(&core_context).await {
+        let avatar_image_blob = if let Some(Ok(blob)) = user.avatar_image_blob().await {
             Some(BlobPresenter::from_model(&blob).await)
         } else {
             None

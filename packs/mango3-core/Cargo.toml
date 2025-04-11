@@ -53,6 +53,7 @@ sqlx = { version = "0.8.3", default-features = false, features = [
     "uuid",
 ] }
 strum = { version = "0.27.1", features = ["derive"] }
+tokio = { workspace = true }
 unic-langid = { version = "0.9.5", features = ["serde"] }
 url = { workspace = true }
 uuid = { workspace = true }
@@ -251,6 +252,7 @@ website = ["all-hashtags-by-ids", "get-blob-by-id", "markdown"]
 # Model attributes
 blob-is-removable = ["blob"]
 blob-read = ["blob", "dep:image"]
+post-blobs = ["all-blobs-by-ids"]
 post-content-html = ["handlebars", "markdown", "post"]
 user-bio-html = ["markdown", "user"]
 user-i18n = ["locales", "user"]

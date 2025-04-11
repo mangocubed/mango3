@@ -19,22 +19,18 @@ pub async fn attempt_to_delete_blob(website_id: Uuid, id: Uuid) -> Result<MutPre
         return mango3_web_utils::mut_presenter_error!();
     };
 
-    let core_context = expect_core_context();
-
-    let result = mango3_core::commands::delete_blob(&core_context, &blob).await;
+    let result = mango3_core::commands::delete_blob(&blob).await;
 
     mango3_web_utils::mut_presenter!(result)
 }
 
 #[cfg(feature = "ssr")]
-pub async fn get_blobs_by_ids(website: &Website, user: &User, ids: Option<Vec<Uuid>>) -> Vec<Blob> {
+pub async fn get_blobs_by_ids<'a>(website: &Website, user: &User, ids: Option<Vec<Uuid>>) -> Vec<Blob<'a>> {
     let Some(ids) = ids else {
         return vec![];
     };
 
-    let core_context = expect_core_context();
-
-    mango3_core::commands::all_blobs_by_ids(&core_context, ids, Some(&website), Some(&user)).await
+    mango3_core::commands::all_blobs_by_ids(ids, Some(&website), Some(&user)).await
 }
 
 #[server]
@@ -55,17 +51,14 @@ pub async fn get_my_blobs(
 }
 
 #[cfg(feature = "ssr")]
-async fn my_blob(website_id: Uuid, id: Uuid) -> Result<Option<Blob>, ServerFnError> {
+async fn my_blob<'a>(website_id: Uuid, id: Uuid) -> Result<Option<Blob<'a>>, ServerFnError> {
     let Some(website) = my_website(website_id).await? else {
         return Ok(None);
     };
 
-    let core_context = expect_core_context();
     let user = extract_user().await?.unwrap();
 
-    Ok(
-        mango3_core::commands::get_blob_by_id(&core_context, id, Some(&website), Some(&user))
-            .await
-            .ok(),
-    )
+    Ok(mango3_core::commands::get_blob_by_id(id, Some(&website), Some(&user))
+        .await
+        .ok())
 }

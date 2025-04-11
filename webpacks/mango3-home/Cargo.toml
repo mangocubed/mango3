@@ -33,7 +33,7 @@ mango3-web-utils = { workspace = true, features = [
     "hashtag-presenter",
     "infinite-scroll",
     "post-card",
-    "post-presenter",
+    "post-min-presenter",
     "unconfirmed-email-alert",
     "user-bio-html",
     "website-card",

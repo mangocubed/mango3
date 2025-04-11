@@ -1,5 +1,5 @@
 use axum::body::Body;
-use axum::extract::{Path, Query, State};
+use axum::extract::{Path, Query};
 use axum::http::header::{CONTENT_DISPOSITION, CONTENT_LENGTH, CONTENT_TYPE};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
@@ -26,12 +26,8 @@ pub struct TextIconQueryParams {
     pub size: Option<u16>,
 }
 
-async fn get_blob(
-    State(core_context): State<CoreContext>,
-    Path(id): Path<Uuid>,
-    Query(params): Query<BlobQueryParams>,
-) -> impl IntoResponse {
-    let blob = get_blob_by_id(&core_context, id, None, None)
+async fn get_blob(Path(id): Path<Uuid>, Query(params): Query<BlobQueryParams>) -> impl IntoResponse {
+    let blob = get_blob_by_id(id, None, None)
         .await
         .map_err(|_| (StatusCode::NOT_FOUND, "FILE NOT FOUND"))?;
 
@@ -43,7 +39,7 @@ async fn get_blob(
     let body = Body::from(file);
 
     let headers = [
-        (CONTENT_TYPE, blob.content_type.clone()),
+        (CONTENT_TYPE, blob.content_type.to_string()),
         (CONTENT_LENGTH, content_length.to_string()),
         (
             CONTENT_DISPOSITION,

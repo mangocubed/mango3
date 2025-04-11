@@ -41,7 +41,7 @@ pub async fn preview_post(
     let content = content.trim();
     let variables = variables.parse::<Value>().unwrap_or_default();
 
-    let core_context = expect_context();
+    let core_context = expect_core_context();
     let user = extract_user().await?.unwrap();
     let content_html = parse_html(&render_handlebars(content, &variables)?, true);
 
@@ -70,7 +70,7 @@ pub async fn preview_post(
         .collect::<Vec<HashtagPresenter>>();
 
     let cover_image_blob = if let Some(id) = cover_image_blob_id {
-        if let Ok(blob) = mango3_core::commands::get_blob_by_id(&core_context, id, None, Some(&user)).await {
+        if let Ok(blob) = mango3_core::commands::get_blob_by_id(id, None, None).await {
             Some(BlobPresenter::from_model(&blob).await)
         } else {
             None
@@ -124,7 +124,7 @@ pub async fn attempt_to_create_post(
     let user = extract_user().await?.unwrap();
     let blobs = get_blobs_by_ids(&website, &user, blob_ids).await;
     let cover_image_blob = if let Some(id) = cover_image_blob_id {
-        mango3_core::commands::get_blob_by_id(&core_context, id, Some(&website), Some(&user))
+        mango3_core::commands::get_blob_by_id(id, Some(&website), Some(&user))
             .await
             .ok()
     } else {
@@ -188,7 +188,7 @@ pub async fn attempt_to_update_post(
     let website = post.website(&core_context).await?;
     let blobs = get_blobs_by_ids(&website, &user, blob_ids).await;
     let cover_image_blob = if let Some(id) = cover_image_blob_id {
-        mango3_core::commands::get_blob_by_id(&core_context, id, Some(&website), Some(&user))
+        mango3_core::commands::get_blob_by_id(id, Some(&website), Some(&user))
             .await
             .ok()
     } else {
