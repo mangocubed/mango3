@@ -14,14 +14,6 @@ impl crate::utils::Validator {
 }
 
 #[cfg(feature = "all-navigation-items-by-website")]
-pub async fn all_navigation_items_by_website(core_context: &CoreContext, website: &Website) -> Vec<NavigationItem> {
-    all_cached_navigation_items_by_website(core_context, website)
-        .await
-        .map(|items| items.into())
-        .unwrap_or_default()
-}
-
-#[cfg(feature = "all-navigation-items-by-website")]
 #[cached::proc_macro::io_cached(
     map_error = r##"|_| sqlx::Error::RowNotFound"##,
     convert = r#"{ website.id }"#,
@@ -39,7 +31,15 @@ async fn all_cached_navigation_items_by_website(
     )
     .fetch_all(&core_context.db_pool)
     .await
-    .map(|items| items.into())
+    .map(|item| item.into())
+}
+
+#[cfg(feature = "all-navigation-items-by-website")]
+pub async fn all_navigation_items_by_website(core_context: &CoreContext, website: &Website) -> Vec<NavigationItem> {
+    all_cached_navigation_items_by_website(core_context, website)
+        .await
+        .map(|items| items.into())
+        .unwrap_or_default()
 }
 
 #[cfg(feature = "delete-all-navigation-items")]

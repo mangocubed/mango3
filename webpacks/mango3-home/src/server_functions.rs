@@ -14,8 +14,7 @@ use crate::presenters::UserProfilePresenter;
 
 #[server]
 pub async fn get_hashtag(name: String) -> Result<Option<HashtagPresenter>, ServerFnError> {
-    let core_context = expect_core_context();
-    let result = mango3_core::commands::get_hashtag_by_name(&core_context, &name).await;
+    let result = mango3_core::commands::get_hashtag_by_name(&name).await;
 
     if let Ok(hashtag) = result {
         Ok(Some(HashtagPresenter::from_model(&hashtag).await))
@@ -31,7 +30,7 @@ pub async fn get_hashtag_posts(
 ) -> Result<CursorPagePresenter<PostMinPresenter>, ServerFnError> {
     let core_context = expect_core_context();
     let page_params = CursorPageParams { after, first: 10 };
-    let hashtag = mango3_core::commands::get_hashtag_by_id(&core_context, id).await?;
+    let hashtag = mango3_core::commands::get_hashtag_by_id(id).await?;
     let page =
         mango3_core::commands::paginate_posts(&core_context, &page_params, None, None, Some(&hashtag), Some(true))
             .await;

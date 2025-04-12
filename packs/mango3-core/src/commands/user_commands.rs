@@ -761,7 +761,7 @@ pub async fn update_user_profile(
         return crate::mut_error!(validator.errors);
     }
 
-    let hashtags = super::get_or_insert_many_hashtags(core_context, bio).await?;
+    let hashtags = super::get_or_insert_many_hashtags(bio).await?;
     let hashtag_ids = hashtags.data.iter().map(|hashtag| hashtag.id).collect::<Vec<Uuid>>();
 
     let result = sqlx::query_as!(

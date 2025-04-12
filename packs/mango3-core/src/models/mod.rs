@@ -23,6 +23,8 @@ mod user_session;
 #[cfg(feature = "website")]
 mod website;
 
+#[cfg(feature = "hashtag")]
+pub(crate) use hashtag::Hashtags;
 #[cfg(feature = "navigation-item")]
 pub(crate) use navigation_item::NavigationItems;
 #[cfg(feature = "clear-post-cache")]

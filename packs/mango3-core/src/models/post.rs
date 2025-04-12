@@ -63,8 +63,8 @@ impl Post {
         }
     }
 
-    pub async fn hashtags(&self, core_context: &CoreContext) -> Vec<Hashtag> {
-        crate::commands::all_hashtags_by_ids(core_context, &self.hashtag_ids).await
+    pub async fn hashtags(&self) -> Vec<Hashtag> {
+        crate::commands::all_hashtags_by_ids(&self.hashtag_ids).await
     }
 
     pub async fn is_published(&self, core_context: &CoreContext) -> bool {

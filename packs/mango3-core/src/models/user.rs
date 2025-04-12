@@ -74,8 +74,8 @@ impl User {
         self.email_confirmed_at.is_some()
     }
 
-    pub async fn hashtags(&self, core_context: &CoreContext) -> Vec<Hashtag> {
-        crate::commands::all_hashtags_by_ids(core_context, &self.hashtag_ids).await
+    pub async fn hashtags(&self) -> Vec<Hashtag> {
+        crate::commands::all_hashtags_by_ids(&self.hashtag_ids).await
     }
 
     #[cfg(feature = "user-i18n")]
