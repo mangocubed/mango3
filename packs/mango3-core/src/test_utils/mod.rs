@@ -6,7 +6,7 @@ use std::io::{Read, Write};
 use chrono::{DateTime, Utc};
 use fake::faker::address::en::CountryCode;
 use fake::faker::chrono::en::DateTimeBefore;
-use fake::faker::internet::en::{IPv4, Password, SafeEmail, Username};
+use fake::faker::internet::en::{FreeEmail, IPv4, Password, Username};
 use fake::faker::lorem::en::{Paragraph, Sentence};
 use fake::faker::name::en::Name;
 use fake::{Fake, Faker};
@@ -83,7 +83,7 @@ fn fake_country_alpha2() -> String {
 }
 
 fn fake_email() -> String {
-    unique_fake("email", || SafeEmail().fake_with_rng(&mut rng()))
+    unique_fake("email", || FreeEmail().fake_with_rng(&mut rng()))
 }
 
 pub fn fake_ipv4() -> String {
@@ -134,7 +134,10 @@ pub fn fake_url() -> String {
     Faker.fake::<Url>().to_string()
 }
 
-pub async fn insert_test_navigation_item(core_context: &CoreContext, website: Option<&Website>) -> NavigationItem {
+pub async fn insert_test_navigation_item<'a>(
+    core_context: &CoreContext,
+    website: Option<&Website>,
+) -> NavigationItem<'a> {
     let website = if let Some(website) = website {
         website
     } else {
@@ -143,7 +146,7 @@ pub async fn insert_test_navigation_item(core_context: &CoreContext, website: Op
     let label = fake_name();
     let url = fake_url();
 
-    crate::commands::insert_navigation_item(core_context, &website, 0, &label, &url)
+    crate::commands::insert_navigation_item(&website, 0, &label, &url)
         .await
         .ok()
         .expect("Could not insert navigation item")

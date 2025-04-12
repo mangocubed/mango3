@@ -1,7 +1,6 @@
 use uuid::Uuid;
 
 use crate::models::*;
-use crate::CoreContext;
 
 #[cfg(feature = "insert-navigation-item")]
 impl crate::utils::Validator {
@@ -20,42 +19,39 @@ impl crate::utils::Validator {
     ty = "cached::AsyncRedisCache<Uuid, NavigationItems>",
     create = r##" { crate::async_redis_cache!(crate::constants::PREFIX_ALL_NAVIGATION_ITEMS_BY_WEBSITE).await } "##
 )]
-async fn all_cached_navigation_items_by_website(
-    core_context: &CoreContext,
-    website: &Website,
-) -> sqlx::Result<NavigationItems> {
+async fn all_cached_navigation_items_by_website(website: &Website) -> sqlx::Result<NavigationItems> {
+    let db_pool = crate::db_pool().await;
+
     sqlx::query_as!(
         NavigationItem,
         "SELECT * FROM navigation_items WHERE website_id = $1 ORDER BY position ASC",
         website.id // $1
     )
-    .fetch_all(&core_context.db_pool)
+    .fetch_all(db_pool)
     .await
     .map(|item| item.into())
 }
 
 #[cfg(feature = "all-navigation-items-by-website")]
-pub async fn all_navigation_items_by_website(core_context: &CoreContext, website: &Website) -> Vec<NavigationItem> {
-    all_cached_navigation_items_by_website(core_context, website)
+pub async fn all_navigation_items_by_website(website: &Website) -> Vec<NavigationItem> {
+    all_cached_navigation_items_by_website(website)
         .await
         .map(|items| items.into())
         .unwrap_or_default()
 }
 
 #[cfg(feature = "delete-all-navigation-items")]
-async fn delete_all_navigation_items(
-    core_context: &CoreContext,
-    skip: Vec<NavigationItem>,
-    website: &Website,
-) -> crate::utils::MutResult {
+async fn delete_all_navigation_items(skip: Vec<NavigationItem<'_>>, website: &Website) -> crate::utils::MutResult {
     use crate::utils::AsyncRedisCacheTrait;
+
+    let db_pool = crate::db_pool().await;
 
     let _ = sqlx::query!(
         "DELETE FROM navigation_items WHERE id != ALL($1) AND website_id = $2",
         &skip.iter().map(|item| item.id.clone()).collect::<Vec<Uuid>>(), // $1
         website.id                                                       // $2
     )
-    .execute(&core_context.db_pool)
+    .execute(db_pool)
     .await;
 
     ALL_CACHED_NAVIGATION_ITEMS_BY_WEBSITE
@@ -66,11 +62,8 @@ async fn delete_all_navigation_items(
 }
 
 #[cfg(feature = "get-navigation-item-by-id")]
-pub async fn get_navigation_item_by_id(
-    core_context: &CoreContext,
-    id: Uuid,
-    website: Option<&Website>,
-) -> sqlx::Result<NavigationItem> {
+pub async fn get_navigation_item_by_id(id: Uuid, website: Option<&Website>) -> sqlx::Result<NavigationItem> {
+    let db_pool = crate::db_pool().await;
     let website_id = website.map(|website| website.id);
 
     sqlx::query_as!(
@@ -79,18 +72,18 @@ pub async fn get_navigation_item_by_id(
         id,         // $1
         website_id, // $2
     )
-    .fetch_one(&core_context.db_pool)
+    .fetch_one(db_pool)
     .await
 }
 
 #[cfg(feature = "insert-navigation-item")]
-pub async fn insert_navigation_item(
-    core_context: &CoreContext,
+pub async fn insert_navigation_item<'a>(
     website: &Website,
     position: i16,
     title: &str,
     url: &str,
-) -> crate::utils::MutResult<NavigationItem> {
+) -> crate::utils::MutResult<NavigationItem<'a>> {
+    let db_pool = crate::db_pool().await;
     let title = title.trim();
     let url = url.trim().to_lowercase();
 
@@ -110,7 +103,7 @@ pub async fn insert_navigation_item(
         title,      // $3
         url,        // $4
     )
-    .fetch_one(&core_context.db_pool)
+    .fetch_one(db_pool)
     .await;
 
     crate::mut_result!(result)
@@ -118,27 +111,25 @@ pub async fn insert_navigation_item(
 
 #[cfg(feature = "insert-or-update-many-navigation-items")]
 pub async fn insert_or_update_many_navigation_items(
-    core_context: &CoreContext,
     website: &Website,
     items: Vec<(Option<Uuid>, String, String)>,
 ) -> crate::utils::MutResult {
     let mut position = 0;
-
     let mut skip_from_removal = vec![];
 
     for (id, title, url) in items {
         if let Some(id) = id {
-            let Ok(nav_item) = get_navigation_item_by_id(core_context, id, Some(website)).await else {
+            let Ok(nav_item) = get_navigation_item_by_id(id, Some(website)).await else {
                 continue;
             };
 
-            let Ok(nav_item) = update_navigation_item(core_context, &nav_item, position, &title, &url).await else {
+            let Ok(nav_item) = update_navigation_item(&nav_item, position, &title, &url).await else {
                 continue;
             };
 
             skip_from_removal.push(nav_item.data);
         } else {
-            let Ok(nav_item) = insert_navigation_item(core_context, website, position, &title, &url).await else {
+            let Ok(nav_item) = insert_navigation_item(website, position, &title, &url).await else {
                 continue;
             };
 
@@ -148,22 +139,21 @@ pub async fn insert_or_update_many_navigation_items(
         position += 1
     }
 
-    let _ = delete_all_navigation_items(core_context, skip_from_removal, website).await;
+    let _ = delete_all_navigation_items(skip_from_removal, website).await;
 
     crate::mut_success!()
 }
 
 #[cfg(feature = "update-navigation-item")]
-async fn update_navigation_item(
-    core_context: &CoreContext,
-    navigation_item: &NavigationItem,
+async fn update_navigation_item<'a>(
+    navigation_item: &NavigationItem<'a>,
     position: i16,
     title: &str,
     url: &str,
-) -> crate::utils::MutResult<NavigationItem> {
+) -> crate::utils::MutResult<NavigationItem<'a>> {
+    let db_pool = crate::db_pool().await;
     let title = title.trim();
     let url = url.trim().to_lowercase();
-
     let mut validator = crate::validator!();
 
     validator.validate_navigation_item_title(title);
@@ -180,7 +170,7 @@ async fn update_navigation_item(
         title,              // $3
         url,                // $4
     )
-    .fetch_one(&core_context.db_pool)
+    .fetch_one(db_pool)
     .await;
 
     crate::mut_result!(result)
@@ -202,7 +192,7 @@ mod tests {
         let core_context = setup_core_context().await;
         let website = insert_test_website(&core_context, None).await;
 
-        let items = all_navigation_items_by_website(&core_context, &website).await;
+        let items = all_navigation_items_by_website(&website).await;
 
         assert!(items.is_empty());
     }
@@ -214,7 +204,7 @@ mod tests {
 
         insert_test_navigation_item(&core_context, Some(&website)).await;
 
-        let items = all_navigation_items_by_website(&core_context, &website).await;
+        let items = all_navigation_items_by_website(&website).await;
 
         assert_eq!(items.len(), 1);
     }
@@ -224,17 +214,16 @@ mod tests {
         let core_context = setup_core_context().await;
         let navigation_item = insert_test_navigation_item(&core_context, None).await;
 
-        let result = get_navigation_item_by_id(&core_context, navigation_item.id, None).await;
+        let result = get_navigation_item_by_id(navigation_item.id, None).await;
 
         assert!(result.is_ok());
     }
 
     #[tokio::test]
     async fn should_not_get_navigation_item_by_id_when_id_is_invalid() {
-        let core_context = setup_core_context().await;
         let id = fake_uuid();
 
-        let result = get_navigation_item_by_id(&core_context, id, None).await;
+        let result = get_navigation_item_by_id(id, None).await;
 
         assert!(result.is_err());
     }
@@ -246,7 +235,7 @@ mod tests {
 
         insert_test_navigation_item(&core_context, Some(&website)).await;
 
-        let result = delete_all_navigation_items(&core_context, vec![], &website).await;
+        let result = delete_all_navigation_items(vec![], &website).await;
 
         assert!(result.is_ok());
     }
@@ -258,7 +247,7 @@ mod tests {
         let title = fake_name();
         let url = fake_url();
 
-        let result = insert_navigation_item(&core_context, &website, 0, &title, &url).await;
+        let result = insert_navigation_item(&website, 0, &title, &url).await;
 
         assert!(result.is_ok());
     }
@@ -269,7 +258,7 @@ mod tests {
         let website = insert_test_website(&core_context, None).await;
         let url = fake_url();
 
-        let result = insert_navigation_item(&core_context, &website, 0, "", &url).await;
+        let result = insert_navigation_item(&website, 0, "", &url).await;
 
         assert!(result.is_err());
     }
@@ -281,7 +270,7 @@ mod tests {
         let title = fake_name();
         let url = fake_url();
 
-        let result = update_navigation_item(&core_context, &navigation_item, 0, &title, &url).await;
+        let result = update_navigation_item(&navigation_item, 0, &title, &url).await;
 
         assert!(result.is_ok());
     }
@@ -292,7 +281,7 @@ mod tests {
         let navigation_item = insert_test_navigation_item(&core_context, None).await;
         let url = fake_url();
 
-        let result = update_navigation_item(&core_context, &navigation_item, 0, "", &url).await;
+        let result = update_navigation_item(&navigation_item, 0, "", &url).await;
 
         assert!(result.is_err());
     }
@@ -307,7 +296,7 @@ mod tests {
             (None, fake_name(), fake_url()),
         ];
 
-        let result = insert_or_update_many_navigation_items(&core_context, &website, items).await;
+        let result = insert_or_update_many_navigation_items(&website, items).await;
 
         assert!(result.is_ok());
     }

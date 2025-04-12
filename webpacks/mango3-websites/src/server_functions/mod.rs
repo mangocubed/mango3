@@ -40,8 +40,7 @@ pub async fn get_all_navigation_items() -> Result<Vec<NavigationItemPresenter>, 
         return Ok(vec![]);
     };
 
-    let core_context = expect_core_context();
-    let navigation_items = mango3_core::commands::all_navigation_items_by_website(&core_context, &website).await;
+    let navigation_items = mango3_core::commands::all_navigation_items_by_website(&website).await;
 
     Ok(futures::future::join_all(
         navigation_items

@@ -39,7 +39,7 @@ pub async fn get_posts(
     let page_params = CursorPageParams { after, first: 10 };
 
     let hashtag = if let Some(name) = hashtag {
-        let Ok(hashtag) = mango3_core::commands::get_hashtag_by_name(&core_context, &name).await else {
+        let Ok(hashtag) = mango3_core::commands::get_hashtag_by_name(&name).await else {
             return mango3_web_utils::cursor_page_presenter!();
         };
 
