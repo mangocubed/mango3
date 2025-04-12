@@ -108,7 +108,7 @@ pub async fn get_blob_by_id<'a>(id: Uuid, website: Option<&Website>, user: Optio
 
 #[cfg(feature = "insert-blob")]
 pub async fn insert_blob<'a>(
-    core_context: &crate::CoreContext,
+    #[allow(unused_variables)] core_context: &crate::CoreContext,
     user: &User,
     website: Option<&Website>,
     field: &mut multer::Field<'_>,

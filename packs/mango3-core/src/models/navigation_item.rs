@@ -28,7 +28,7 @@ impl Display for NavigationItems<'_> {
                 .iter()
                 .map(|item| item.id.to_string())
                 .collect::<Vec<String>>()
-                .join(", ")
+                .join(",")
         )
     }
 }

@@ -272,7 +272,7 @@ pub async fn insert_post(
     let variables = variables.parse::<serde_json::Value>().ok();
     let cover_image_blob_id = cover_image_blob.map(|blob| blob.id);
 
-    let hashtags = super::get_or_insert_many_hashtags(core_context, content).await?;
+    let hashtags = super::get_or_insert_many_hashtags(content).await?;
     let hashtag_ids = hashtags.data.iter().map(|hashtag| hashtag.id).collect::<Vec<Uuid>>();
     let blob_ids = blobs.iter().map(|blob| blob.id).collect::<Vec<Uuid>>();
 
@@ -339,7 +339,7 @@ pub async fn paginate_posts<'a>(
     page_params: &CursorPageParams,
     website: Option<&'a Website>,
     user: Option<&'a User>,
-    hashtag: Option<&'a Hashtag>,
+    hashtag: Option<&'a Hashtag<'_>>,
     is_published: Option<bool>,
 ) -> CursorPage<Post> {
     crate::cursor_page!(
@@ -501,7 +501,7 @@ pub async fn update_post(
     let variables = variables.parse::<serde_json::Value>().ok();
     let cover_image_blob_id = cover_image_blob.map(|blob| blob.id);
 
-    let hashtags = super::get_or_insert_many_hashtags(core_context, content).await?;
+    let hashtags = super::get_or_insert_many_hashtags(content).await?;
     let hashtag_ids = hashtags.data.iter().map(|hashtag| hashtag.id).collect::<Vec<Uuid>>();
     let blob_ids = blobs.iter().map(|blob| blob.id).collect::<Vec<Uuid>>();
 

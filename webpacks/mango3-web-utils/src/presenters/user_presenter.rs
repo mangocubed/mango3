@@ -50,7 +50,7 @@ impl FromModel<User> for UserPresenter {
     async fn from_model(user: &User) -> Self {
         let core_context = crate::ssr::expect_core_context();
         let hashtags = futures::future::join_all(
-            user.hashtags(&core_context)
+            user.hashtags()
                 .await
                 .iter()
                 .map(|hashtag| HashtagPresenter::from_model(hashtag)),
@@ -116,9 +116,8 @@ impl UserMinPresenter {
 #[cfg(feature = "ssr")]
 impl FromModel<User> for UserMinPresenter {
     async fn from_model(user: &User) -> Self {
-        let core_context = crate::ssr::expect_core_context();
         let hashtags = futures::future::join_all(
-            user.hashtags(&core_context)
+            user.hashtags()
                 .await
                 .iter()
                 .map(|hashtag| HashtagPresenter::from_model(hashtag)),
