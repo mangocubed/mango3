@@ -41,7 +41,6 @@ pub async fn preview_post(
     let content = content.trim();
     let variables = variables.parse::<Value>().unwrap_or_default();
 
-    let core_context = expect_core_context();
     let user = extract_user().await?.unwrap();
     let content_html = parse_html(&render_handlebars(content, &variables)?, true);
 
