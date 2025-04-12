@@ -41,7 +41,7 @@ impl FromModel<Post> for PostPresenter {
         let core_context = crate::ssr::expect_core_context();
         let user = UserMinPresenter::from_model(&post.user(&core_context).await.expect("Could not get user")).await;
         let hashtags = futures::future::join_all(
-            post.hashtags(&core_context)
+            post.hashtags()
                 .await
                 .iter()
                 .map(|hashtag| HashtagPresenter::from_model(hashtag)),
@@ -108,7 +108,7 @@ impl FromModel<Post> for PostMinPresenter {
             WebsiteMinPresenter::from_model(&post.website(&core_context).await.expect("Could not get website")).await;
         let user = UserMinPresenter::from_model(&post.user(&core_context).await.expect("Could not get user")).await;
         let hashtags = futures::future::join_all(
-            post.hashtags(&core_context)
+            post.hashtags()
                 .await
                 .iter()
                 .map(|hashtag| HashtagPresenter::from_model(hashtag)),

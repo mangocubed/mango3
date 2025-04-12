@@ -14,11 +14,11 @@ pub struct HashtagPresenter {
 }
 
 #[cfg(feature = "ssr")]
-impl FromModel<Hashtag> for HashtagPresenter {
-    async fn from_model(hashtag: &Hashtag) -> Self {
+impl FromModel<Hashtag<'_>> for HashtagPresenter {
+    async fn from_model(hashtag: &Hashtag<'_>) -> Self {
         Self {
             id: hashtag.id,
-            name: hashtag.name.clone(),
+            name: hashtag.name.to_string(),
         }
     }
 }

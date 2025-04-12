@@ -47,9 +47,8 @@ impl UserProfilePresenter {
 #[cfg(feature = "ssr")]
 impl FromModel<User> for UserProfilePresenter {
     async fn from_model(user: &User) -> Self {
-        let core_context = mango3_web_utils::ssr::expect_core_context();
         let hashtags = futures::future::join_all(
-            user.hashtags(&core_context)
+            user.hashtags()
                 .await
                 .iter()
                 .map(|hashtag| HashtagPresenter::from_model(hashtag)),

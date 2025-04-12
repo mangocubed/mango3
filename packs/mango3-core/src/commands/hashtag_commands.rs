@@ -5,13 +5,13 @@ use crate::models::*;
 #[cfg(feature = "all-hashtags-by-ids")]
 #[cached::proc_macro::io_cached(
     map_error = r##"|_| sqlx::Error::RowNotFound"##,
-    convert = r#"{ ids.iter().map(|id| id.to_string()).collect::<Vec<String>>().join(',') }"#,
+    convert = r#"{ ids.iter().map(|id| id.to_string()).collect::<Vec<String>>().join(",") }"#,
     ty = "cached::AsyncRedisCache<String, Hashtags>",
     create = r##" { crate::async_redis_cache!(crate::constants::PREFIX_ALL_HASHTAGS_BY_IDS).await } "##
 )]
-async fn all_cached_hashtags_by_ids(ids: &Vec<Uuid>) -> sqlx::Result<Hashtag's> {
+async fn all_cached_hashtags_by_ids(ids: &Vec<Uuid>) -> sqlx::Result<Hashtags> {
     let db_pool = crate::db_pool().await;
-    
+
     sqlx::query_as!(
         Hashtag,
         "SELECT * FROM hashtags WHERE id = ANY($1)",
@@ -23,20 +23,27 @@ async fn all_cached_hashtags_by_ids(ids: &Vec<Uuid>) -> sqlx::Result<Hashtag's> 
 }
 
 #[cfg(feature = "all-hashtags-by-ids")]
-pub async fn all_hashtags_by_ids(ids: &Vec<Uuid>) -> Vec<Hashtag> {
+pub async fn all_hashtags_by_ids(ids: &Vec<Uuid>) -> Vec<Hashtag<'_>> {
     if ids.is_empty() {
         return vec![];
     }
-    
+
     all_cached_hashtags_by_ids(ids)
-    .await
-    .unwrap_or_default()
+        .await
+        .map(|items| items.into())
+        .unwrap_or_default()
 }
 
 #[cfg(feature = "get-hashtag-by-id")]
-pub async fn get_hashtag_by_id(id: Uuid) -> sqlx::Result<Hashtag> {
+#[cached::proc_macro::io_cached(
+    map_error = r##"|_| sqlx::Error::RowNotFound"##,
+    convert = r#"{ id }"#,
+    ty = "cached::AsyncRedisCache<Uuid, Hashtag>",
+    create = r##" { crate::async_redis_cache!(crate::constants::PREFIX_GET_HASHTAG_BY_ID).await } "##
+)]
+pub async fn get_hashtag_by_id(id: Uuid) -> sqlx::Result<Hashtag<'static>> {
     let db_pool = crate::db_pool().await;
-    
+
     sqlx::query_as!(
         Hashtag,
         "SELECT * FROM hashtags WHERE id = $1 LIMIT 1",
@@ -47,9 +54,19 @@ pub async fn get_hashtag_by_id(id: Uuid) -> sqlx::Result<Hashtag> {
 }
 
 #[cfg(feature = "get-hashtag-by-name")]
-pub async fn get_hashtag_by_name(name: &str) -> sqlx::Result<Hashtag> {
+#[cached::proc_macro::io_cached(
+    map_error = r##"|_| sqlx::Error::RowNotFound"##,
+    convert = r#"{ name.to_lowercase() }"#,
+    ty = "cached::AsyncRedisCache<String, Hashtag>",
+    create = r##" { crate::async_redis_cache!(crate::constants::PREFIX_GET_HASHTAG_BY_NAME).await } "##
+)]
+pub async fn get_hashtag_by_name(name: &str) -> sqlx::Result<Hashtag<'static>> {
+    if name.is_empty() {
+        return Err(sqlx::Error::RowNotFound);
+    }
+
     let db_pool = crate::db_pool().await;
-    
+
     sqlx::query_as!(
         Hashtag,
         "SELECT * FROM hashtags WHERE name = $1 LIMIT 1",
@@ -60,17 +77,16 @@ pub async fn get_hashtag_by_name(name: &str) -> sqlx::Result<Hashtag> {
 }
 
 #[cfg(feature = "get-or-insert-hashtag")]
-pub async fn get_or_insert_hashtag(name: &str) -> crate::utils::MutResult<Hashtag> {
+pub async fn get_or_insert_hashtag(name: &str) -> crate::utils::MutResult<Hashtag<'_>> {
     use crate::enums::{Input, InputError};
     use crate::utils::ValidatorTrait;
 
     let name = name.trim().to_lowercase();
 
-    if let Ok(hashtag) = get_hashtag_by_name(name).await {
+    if let Ok(hashtag) = get_hashtag_by_name(&name).await {
         return crate::mut_success!(hashtag);
     };
 
-    
     let db_pool = crate::db_pool().await;
     let mut validator = crate::validator!();
 
@@ -119,15 +135,13 @@ pub async fn get_or_insert_many_hashtags(content: &str) -> crate::utils::MutResu
         return crate::mut_success!(vec![]);
     }
 
-    crate::mut_success!(futures::future::join_all(
-        hashtag_names
+    crate::mut_success!(
+        futures::future::join_all(hashtag_names.iter().map(|name| get_or_insert_hashtag(name)),)
+            .await
             .iter()
-            .map(|name| get_or_insert_hashtag(name)),
+            .filter_map(|result| result.as_ref().map(|success| success.data.clone()).ok())
+            .collect()
     )
-    .await
-    .iter()
-    .filter_map(|result| result.as_ref().map(|success| success.data.clone()).ok())
-    .collect())
 }
 
 #[cfg(test)]
@@ -138,7 +152,8 @@ mod tests {
 
     #[tokio::test]
     async fn should_return_all_by_ids() {
-        let result = all_hashtags_by_ids(&vec![]).await;
+        let ids = vec![];
+        let result = all_hashtags_by_ids(&ids).await;
 
         assert!(result.is_empty());
     }

@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use std::fmt::{Display, Formatter};
 
 use chrono::{DateTime, Utc};
@@ -13,9 +14,15 @@ pub struct Hashtag<'a> {
 }
 
 #[derive(Clone, Deserialize, Serialize)]
-pub(crate) struct Hashtags(Vec<Hashtag>);
+pub(crate) struct Hashtags<'a>(Vec<Hashtag<'a>>);
 
-impl Display for Hashtags {
+impl Display for Hashtag<'_> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.id)
+    }
+}
+
+impl Display for Hashtags<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
@@ -24,19 +31,19 @@ impl Display for Hashtags {
                 .iter()
                 .map(|hashtag| hashtag.id.to_string())
                 .collect::<Vec<String>>()
-                .join(',')
+                .join(",")
         )
     }
 }
 
-impl From<Hashtags> for Vec<Hashtag> {
-    fn from(hashtags: Hashtags) -> Self {
+impl<'a> From<Hashtags<'a>> for Vec<Hashtag<'a>> {
+    fn from(hashtags: Hashtags<'a>) -> Self {
         hashtags.0
     }
 }
 
-impl From<Vec<Hashtag>> for Hashtags {
-    fn from(hashtags: Vec<Hashtag>) -> Self {
+impl<'a> From<Vec<Hashtag<'a>>> for Hashtags<'a> {
+    fn from(hashtags: Vec<Hashtag<'a>>) -> Self {
         Hashtags(hashtags)
     }
 }

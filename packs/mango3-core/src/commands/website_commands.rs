@@ -244,7 +244,7 @@ pub async fn insert_website(
         return crate::mut_error!(validator.errors);
     }
 
-    let hashtags = super::get_or_insert_many_hashtags(core_context, description).await?;
+    let hashtags = super::get_or_insert_many_hashtags(description).await?;
     let hashtag_ids = hashtags.data.iter().map(|hashtag| hashtag.id).collect::<Vec<Uuid>>();
 
     let result = sqlx::query_as!(
@@ -497,7 +497,7 @@ pub async fn update_website(
         return crate::mut_error!(validator.errors);
     }
 
-    let hashtags = super::get_or_insert_many_hashtags(core_context, description).await?;
+    let hashtags = super::get_or_insert_many_hashtags(description).await?;
     let hashtag_ids = hashtags.data.iter().map(|hashtag| hashtag.id).collect::<Vec<Uuid>>();
 
     let result = sqlx::query_as!(

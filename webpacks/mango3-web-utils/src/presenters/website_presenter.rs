@@ -61,10 +61,11 @@ impl WebsitePresenter {
 #[cfg(all(feature = "ssr", feature = "website-presenter"))]
 impl FromModel<Website> for WebsitePresenter {
     async fn from_model(website: &Website) -> Self {
+        #[allow(unused_variables)]
         let core_context = crate::ssr::expect_core_context();
         let hashtags = futures::future::join_all(
             website
-                .hashtags(&core_context)
+                .hashtags()
                 .await
                 .iter()
                 .map(|hashtag| HashtagPresenter::from_model(hashtag)),
@@ -154,10 +155,9 @@ impl WebsiteMinPresenter {
 #[cfg(all(feature = "ssr", feature = "website-min-presenter"))]
 impl FromModel<Website> for WebsiteMinPresenter {
     async fn from_model(website: &Website) -> Self {
-        let core_context = crate::ssr::expect_core_context();
         let hashtags = futures::future::join_all(
             website
-                .hashtags(&core_context)
+                .hashtags()
                 .await
                 .iter()
                 .map(|hashtag| HashtagPresenter::from_model(hashtag)),
