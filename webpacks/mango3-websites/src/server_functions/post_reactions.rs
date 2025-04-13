@@ -4,7 +4,7 @@ use uuid::Uuid;
 use mango3_web_utils::presenters::MutPresenter;
 
 #[cfg(feature = "ssr")]
-use mango3_web_utils::ssr::{expect_core_context, extract_user, require_authentication};
+use mango3_web_utils::ssr::{extract_user, require_authentication};
 
 #[cfg(feature = "ssr")]
 use super::posts::current_post;
@@ -17,11 +17,10 @@ pub async fn attempt_to_delete_post_reaction(post_id: Uuid) -> Result<MutPresent
 
     let post = current_post(post_id).await?;
     let user = extract_user().await?.unwrap();
-    let core_context = expect_core_context();
 
-    let post_reaction = mango3_core::commands::get_post_reaction_by_post_and_user(&core_context, &post, &user).await?;
+    let post_reaction = mango3_core::commands::get_post_reaction_by_post_and_user(&post, &user).await?;
 
-    let result = mango3_core::commands::delete_post_reaction(&core_context, &post_reaction).await;
+    let result = mango3_core::commands::delete_post_reaction(&post_reaction).await;
 
     mango3_web_utils::mut_presenter!(result)
 }
@@ -37,9 +36,8 @@ pub async fn attempt_to_insert_or_update_post_reaction(
 
     let post = current_post(post_id).await?;
     let user = extract_user().await?.unwrap();
-    let core_context = expect_core_context();
 
-    let result = mango3_core::commands::insert_or_update_post_reaction(&core_context, &post, &user, &emoji).await;
+    let result = mango3_core::commands::insert_or_update_post_reaction(&post, &user, &emoji).await;
 
     mango3_web_utils::mut_presenter!(result)
 }
@@ -51,20 +49,18 @@ pub async fn get_my_post_reaction_emoji(post_id: Uuid) -> Result<Option<String>,
     };
 
     let post = current_post(post_id).await?;
-    let core_context = expect_core_context();
 
-    let result = mango3_core::commands::get_post_reaction_by_post_and_user(&core_context, &post, &user).await;
+    let result = mango3_core::commands::get_post_reaction_by_post_and_user(&post, &user).await;
 
     match result {
-        Ok(reaction) => Ok(Some(reaction.emoji)),
+        Ok(reaction) => Ok(Some(reaction.emoji.to_string())),
         Err(_) => Ok(None),
     }
 }
 
 #[server]
 pub async fn get_post_reaction_emojis_count(post_id: Uuid) -> Result<Vec<(String, i64)>, ServerFnError> {
-    let core_context = expect_core_context();
     let post = current_post(post_id).await?;
 
-    Ok(mango3_core::commands::get_post_reaction_emojis_count(&core_context, &post).await?)
+    Ok(mango3_core::commands::get_post_reaction_emojis_count(&post).await?)
 }

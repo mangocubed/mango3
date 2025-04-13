@@ -71,8 +71,8 @@ impl Post {
         self.website(core_context).await.unwrap().is_published() && self.published_at.is_some()
     }
 
-    pub async fn reactions_count(&self, core_context: &CoreContext) -> i64 {
-        crate::commands::get_post_reactions_count(core_context, self).await
+    pub async fn reactions_count(&self) -> i64 {
+        crate::commands::get_post_reactions_count(self).await
     }
 
     pub async fn url(&self, core_context: &CoreContext) -> Url {
