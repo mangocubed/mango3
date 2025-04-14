@@ -19,9 +19,8 @@ pub async fn attempt_to_create_post_comment(post_id: Uuid, content: String) -> R
 
     let post = current_post(post_id).await?;
     let user = extract_user().await?.unwrap();
-    let core_context = expect_core_context();
 
-    let result = mango3_core::commands::insert_post_comment(&core_context, &post, &user, &content).await;
+    let result = mango3_core::commands::insert_post_comment(&post, &user, &content).await;
 
     mango3_web_utils::mut_presenter!(result)
 }

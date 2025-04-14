@@ -1,12 +1,13 @@
 use crate::models::*;
-use crate::CoreContext;
 
 #[cfg(feature = "delete-post-comment")]
-pub async fn delete_post_comment(core_context: &CoreContext, post_comment: &PostComment) -> crate::utils::MutResult {
+pub async fn delete_post_comment(post_comment: &PostComment<'_>) -> crate::utils::MutResult {
     use crate::utils::AsyncRedisCacheTrait;
 
+    let db_pool = crate::db_pool().await;
+
     sqlx::query!("DELETE FROM post_comments WHERE id = $1", post_comment.id)
-        .execute(&core_context.db_pool)
+        .execute(db_pool)
         .await?;
 
     POST_COMMENT_CONTENT_HTML
@@ -17,31 +18,30 @@ pub async fn delete_post_comment(core_context: &CoreContext, post_comment: &Post
 }
 
 #[cfg(feature = "get-post-comment-by-id")]
-pub async fn get_post_comment_by_id(
-    core_context: &CoreContext,
-    id: uuid::Uuid,
-    user: Option<&User>,
-) -> sqlx::Result<PostComment> {
+pub async fn get_post_comment_by_id(id: uuid::Uuid, user: Option<&User>) -> sqlx::Result<PostComment<'_>> {
+    let db_pool = crate::db_pool().await;
     let user_id = user.map(|user| user.id);
 
     sqlx::query_as!(
         PostComment,
-        r#"SELECT id, post_id, user_id, content, created_at, updated_at
-        FROM post_comments WHERE id = $1 AND ($2::uuid IS NULL OR user_id = $2) LIMIT 1"#,
+        "SELECT id, post_id, user_id, content, created_at, updated_at
+        FROM post_comments WHERE id = $1 AND ($2::uuid IS NULL OR user_id = $2) LIMIT 1",
         id,      // $1
         user_id, // $2
     )
-    .fetch_one(&core_context.db_pool)
+    .fetch_one(db_pool)
     .await
 }
 
 #[cfg(feature = "get-post-comments-count")]
-pub async fn get_post_comments_count(core_context: &CoreContext, post: &Post) -> i64 {
+pub async fn get_post_comments_count(post: &Post) -> i64 {
+    let db_pool = crate::db_pool().await;
+
     sqlx::query!(
         "SELECT COUNT(*) FROM post_comments WHERE post_id = $1 LIMIT 1",
         post.id, // $1
     )
-    .fetch_one(&core_context.db_pool)
+    .fetch_one(db_pool)
     .await
     .map(|record| record.count.unwrap_or_default())
     .unwrap_or_default()
@@ -49,16 +49,15 @@ pub async fn get_post_comments_count(core_context: &CoreContext, post: &Post) ->
 
 #[cfg(feature = "insert-post-comment")]
 pub async fn insert_post_comment(
-    core_context: &CoreContext,
     post: &Post,
     user: &User,
     content: &str,
-) -> crate::utils::MutResult<PostComment> {
+) -> crate::utils::MutResult<PostComment<'_>> {
     use crate::enums::Input;
     use crate::utils::ValidatorTrait;
 
+    let db_pool = crate::db_pool().await;
     let mut validator = crate::validator!();
-
     let content = content.trim();
 
     if validator.validate_presence(Input::Content, content) {
@@ -82,7 +81,7 @@ pub async fn insert_post_comment(
         user.id, // $2
         content, // $3
     )
-    .fetch_one(&core_context.db_pool)
+    .fetch_one(db_pool)
     .await;
 
     crate::mut_result!(result)
@@ -99,7 +98,7 @@ pub async fn paginate_post_comments<'a>(
         core_context,
         cursor_page_params,
         |node: PostComment| node.id,
-        move |core_context, after| async move { get_post_comment_by_id(core_context, after, user).await.ok() },
+        move |core_context, after| async move { get_post_comment_by_id(after, user).await.ok() },
         move |core_context, cursor_resource, limit| async move {
             let post_id = post.map(|u| u.id);
             let user_id = user.map(|u| u.id);
@@ -142,7 +141,7 @@ mod tests {
         let core_context = setup_core_context().await;
         let post = insert_test_post(&core_context, None, None).await;
 
-        let count = get_post_comments_count(&core_context, &post).await;
+        let count = get_post_comments_count(&post).await;
 
         assert_eq!(count, 0);
     }
@@ -154,7 +153,7 @@ mod tests {
         let user = insert_test_user(&core_context).await;
         let content = fake_paragraph();
 
-        let result = insert_post_comment(&core_context, &post, &user, &content).await;
+        let result = insert_post_comment(&post, &user, &content).await;
 
         assert!(result.is_ok());
     }

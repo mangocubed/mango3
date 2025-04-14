@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use chrono::{DateTime, Utc};
 use uuid::Uuid;
 
@@ -6,18 +8,18 @@ use crate::CoreContext;
 use super::User;
 
 #[derive(Clone)]
-pub struct PostComment {
+pub struct PostComment<'a> {
     pub id: Uuid,
     pub post_id: Uuid,
     pub user_id: Uuid,
-    pub content: String,
+    pub content: Cow<'a, str>,
     pub created_at: DateTime<Utc>,
     pub updated_at: Option<DateTime<Utc>>,
 }
 
 impl PostComment {
-    pub async fn content_html(&self) -> String {
-        post_comment_content_html(self).await.unwrap_or_default()
+    pub async fn content_html(&self) -> Cow<'_, str> {
+        Cow::Owned(post_comment_content_html(self).await.unwrap_or_default())
     }
 
     pub async fn user(&self, core_context: &CoreContext) -> sqlx::Result<User> {
