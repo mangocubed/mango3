@@ -4,7 +4,7 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
-anyhow = "1.0.97"
+anyhow = "1.0.98"
 apalis = { workspace = true, features = ["limit"] }
 apalis-cron = "0.7.0"
 chrono = { workspace = true }
