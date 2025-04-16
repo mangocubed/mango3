@@ -42,8 +42,8 @@ impl Post {
         crate::commands::all_blobs_by_ids(self.blob_ids.clone(), None, None).await
     }
 
-    pub async fn comments_count(&self, core_context: &CoreContext) -> i64 {
-        crate::commands::get_post_comments_count(core_context, self).await
+    pub async fn comments_count(&self) -> i64 {
+        crate::commands::get_post_comments_count(self).await
     }
 
     #[cfg(feature = "post-content-html")]
