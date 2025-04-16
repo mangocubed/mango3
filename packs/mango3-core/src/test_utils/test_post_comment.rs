@@ -3,11 +3,11 @@ use crate::CoreContext;
 
 use super::{fake_paragraph, insert_test_post, insert_test_user};
 
-pub async fn insert_test_post_comment(
+pub async fn insert_test_post_comment<'a>(
     core_context: &CoreContext,
     post: Option<&Post>,
     user: Option<&User>,
-) -> PostComment {
+) -> PostComment<'a> {
     let post = if let Some(post) = post {
         post
     } else {
@@ -20,7 +20,7 @@ pub async fn insert_test_post_comment(
     };
     let content = fake_paragraph();
 
-    crate::commands::insert_post_comment(core_context, &post, &user, &content)
+    crate::commands::insert_post_comment(&post, &user, &content)
         .await
         .ok()
         .expect("Could not insert post comment")

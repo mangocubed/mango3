@@ -48,11 +48,11 @@ pub async fn get_post_comments_count(post: &Post) -> i64 {
 }
 
 #[cfg(feature = "insert-post-comment")]
-pub async fn insert_post_comment(
+pub async fn insert_post_comment<'a>(
     post: &Post,
     user: &User,
     content: &str,
-) -> crate::utils::MutResult<PostComment<'_>> {
+) -> crate::utils::MutResult<PostComment<'a>> {
     use crate::enums::Input;
     use crate::utils::ValidatorTrait;
 
@@ -89,16 +89,16 @@ pub async fn insert_post_comment(
 
 #[cfg(feature = "paginate-post-comments")]
 pub async fn paginate_post_comments<'a>(
-    core_context: &'a CoreContext,
+    core_context: &'a crate::CoreContext,
     cursor_page_params: &crate::utils::CursorPageParams,
     post: Option<&'a Post>,
     user: Option<&'a User>,
-) -> crate::utils::CursorPage<PostComment> {
+) -> crate::utils::CursorPage<PostComment<'a>> {
     crate::cursor_page!(
         core_context,
         cursor_page_params,
         |node: PostComment| node.id,
-        move |core_context, after| async move { get_post_comment_by_id(after, user).await.ok() },
+        move |_, after| async move { get_post_comment_by_id(after, user).await.ok() },
         move |core_context, cursor_resource, limit| async move {
             let post_id = post.map(|u| u.id);
             let user_id = user.map(|u| u.id);

@@ -17,7 +17,7 @@ pub struct PostComment<'a> {
     pub updated_at: Option<DateTime<Utc>>,
 }
 
-impl PostComment {
+impl PostComment<'_> {
     pub async fn content_html(&self) -> Cow<'_, str> {
         Cow::Owned(post_comment_content_html(self).await.unwrap_or_default())
     }
@@ -33,6 +33,6 @@ impl PostComment {
     ty = "cached::AsyncRedisCache<Uuid, String>",
     create = r##" { crate::async_redis_cache!(crate::constants::PREFIX_POST_COMMENT_CONTENT_HTML).await } "##
 )]
-pub(crate) async fn post_comment_content_html(comment: &PostComment) -> Result<String, cached::RedisCacheError> {
+pub(crate) async fn post_comment_content_html(comment: &PostComment<'_>) -> Result<String, cached::RedisCacheError> {
     Ok(crate::utils::parse_html(&comment.content, true))
 }
