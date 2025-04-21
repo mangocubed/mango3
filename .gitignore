@@ -1,5 +1,6 @@
 .end2end-storage.json
 .env
+.vscode
 node_modules
 storage
 target

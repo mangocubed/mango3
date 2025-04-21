@@ -35,7 +35,7 @@ A free and open source website builder and content management system platform wr
 | Name                            | Type    | Default                                                          |
 | ------------------------------- | ------- | ---------------------------------------------------------------- |
 | BASIC_ABOUT_URL                 | String  |                                                                  |
-| BASIC_COPYRIGHT                 | String  | © 2025, Mango³ Team                                              |
+| BASIC_COPYRIGHT                 | String  | © 2025, Mango³ Team                                             |
 | BASIC_DESCRIPTION               | String  | An open source content management system platform.               |
 | BASIC_DOMAIN                    | String  | mango3.local                                                     |
 | BASIC_ENABLE_REGISTER           | String  | true                                                             |
@@ -110,37 +110,37 @@ cargo run --bin mango3-uploads
 
 Run web applications:
 
-* Home:
+- Home:
 
 ```sh
 cargo leptos serve --project mango3-home
 ```
 
-* Accounts:
+- Accounts:
 
 ```sh
 cargo leptos serve --project mango3-accounts
 ```
 
-* Admin:
+- Admin:
 
 ```sh
 cargo leptos serve --project mango3-admin
 ```
 
-* My account:
+- My account:
 
 ```sh
 cargo leptos serve --project mango3-my-account
 ```
 
-* Studio:
+- Studio:
 
 ```sh
 cargo leptos serve --project mango3-studio
 ```
 
-* Websites:
+- Websites:
 
 ```sh
 cargo leptos serve --project mango3-websites
