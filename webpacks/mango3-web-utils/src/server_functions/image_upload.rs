@@ -25,6 +25,9 @@ pub async fn attempt_to_upload_image(data: MultipartData) -> Result<MutPresenter
         return crate::mut_presenter_error!();
     };
 
+    #[allow(unused_variables)]
+    let website_id = field.text().await?;
+
     let core_context = expect_core_context();
     let user = extract_user().await?.unwrap();
 
@@ -33,12 +36,8 @@ pub async fn attempt_to_upload_image(data: MultipartData) -> Result<MutPresenter
 
     #[cfg(feature = "website-image-upload")]
     let website = Some(
-        &mango3_core::commands::get_website_by_id(
-            &core_context,
-            uuid::Uuid::try_parse(&field.text().await?)?,
-            Some(&user),
-        )
-        .await?,
+        &mango3_core::commands::get_website_by_id(&core_context, uuid::Uuid::try_parse(&website_id)?, Some(&user))
+            .await?,
     );
 
     let Some(mut field) = data.next_field().await? else {

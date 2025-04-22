@@ -81,7 +81,8 @@ async fn get_cached_blob_by_id(id: Uuid) -> sqlx::Result<Blob<'static>> {
 
     sqlx::query_as!(
         Blob,
-        "SELECT * FROM blobs WHERE id = $1 LIMIT 1",
+        "SELECT id, website_id, user_id, file_name, content_type, byte_size, md5_checksum, created_at, updated_at
+        FROM blobs WHERE id = $1 LIMIT 1",
         id, // $1
     )
     .fetch_one(db_pool)
@@ -149,7 +150,8 @@ pub async fn insert_blob<'a>(
 
     let result = sqlx::query_as!(
         Blob,
-        "SELECT * FROM blobs
+        "SELECT id, website_id, user_id, file_name, content_type, byte_size, md5_checksum, created_at, updated_at
+        FROM blobs
         WHERE user_id = $1 AND website_id = $2 AND content_type = $3 AND byte_size = $4 AND md5_checksum = $5",
         user.id,      // $1
         website_id,   // $2
@@ -178,7 +180,7 @@ pub async fn insert_blob<'a>(
         Blob,
         "INSERT INTO blobs (user_id, website_id, file_name, content_type, byte_size, md5_checksum)
         VALUES ($1, $2, $3, $4, $5, $6)
-        RETURNING *",
+        RETURNING id, website_id, user_id, file_name, content_type, byte_size, md5_checksum, created_at, updated_at",
         user.id,      // $1
         website_id,   // $2
         file_name,    // $3
@@ -219,7 +221,9 @@ pub async fn paginate_blobs<'a>(
 
             sqlx::query_as!(
                 Blob,
-                r#"SELECT * FROM blobs
+                r#"SELECT
+                    id, website_id, user_id, file_name, content_type, byte_size, md5_checksum, created_at, updated_at
+                FROM blobs
                 WHERE ($1::uuid IS NULL OR website_id = $1) AND ($2::uuid IS NULL OR user_id = $2)
                     AND ($4::timestamptz IS NULL OR created_at < $4 OR (created_at = $4 AND id < $3))
                 ORDER BY created_at DESC, id DESC LIMIT $5"#,
