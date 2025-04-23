@@ -44,7 +44,7 @@ pub async fn insert_test_blob<'a>(
 
     fs::create_dir_all(MISC_CONFIG.storage_tmp_path()).unwrap();
 
-    crate::commands::insert_blob(core_context, &user, website, &mut field)
+    crate::commands::insert_blob(&user, website, &mut field)
         .await
         .ok()
         .expect("Could not insert blob")

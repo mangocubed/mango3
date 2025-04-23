@@ -187,12 +187,14 @@ pub async fn get_website_by_id_with_search_rank(
 }
 
 #[cfg(feature = "get-used-website-storage")]
-pub async fn get_used_website_storage(core_context: &CoreContext, website: &Website) -> sqlx::Result<size::Size> {
+pub async fn get_used_website_storage(website: &Website) -> sqlx::Result<size::Size> {
+    let db_pool = crate::db_pool().await;
+
     sqlx::query!(
         "SELECT SUM(byte_size)::bigint AS total_size FROM blobs WHERE website_id = $1 LIMIT 1",
         website.id
     )
-    .fetch_one(&core_context.db_pool)
+    .fetch_one(db_pool)
     .await
     .map(|record| size::Size::from_bytes(record.total_size.unwrap_or_default()))
 }

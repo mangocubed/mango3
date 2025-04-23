@@ -28,6 +28,7 @@ pub async fn attempt_to_upload_image(data: MultipartData) -> Result<MutPresenter
     #[allow(unused_variables)]
     let website_id = field.text().await?;
 
+    #[allow(unused_variables)]
     let core_context = expect_core_context();
     let user = extract_user().await?.unwrap();
 
@@ -48,7 +49,7 @@ pub async fn attempt_to_upload_image(data: MultipartData) -> Result<MutPresenter
         return crate::mut_presenter_error!();
     };
 
-    let result = mango3_core::commands::insert_blob(&core_context, &user, website, &mut field).await;
+    let result = mango3_core::commands::insert_blob(&user, website, &mut field).await;
 
     crate::mut_presenter!(result)
 }
