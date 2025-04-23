@@ -103,8 +103,8 @@ impl Website {
     }
 
     #[cfg(feature = "website-storage")]
-    pub async fn available_storage(&self, core_context: &CoreContext) -> size::Size {
-        self.max_storage() - self.used_storage(core_context).await
+    pub async fn available_storage(&self) -> size::Size {
+        self.max_storage() - self.used_storage().await
     }
 
     #[cfg(feature = "website-storage")]
@@ -113,8 +113,8 @@ impl Website {
     }
 
     #[cfg(feature = "website-storage")]
-    pub async fn used_storage(&self, core_context: &CoreContext) -> size::Size {
-        crate::commands::get_used_website_storage(core_context, self)
+    pub async fn used_storage(&self) -> size::Size {
+        crate::commands::get_used_website_storage(self)
             .await
             .expect("Could not get used storage")
     }

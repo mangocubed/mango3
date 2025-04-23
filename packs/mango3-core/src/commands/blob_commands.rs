@@ -109,7 +109,6 @@ pub async fn get_blob_by_id<'a>(id: Uuid, website: Option<&Website>, user: Optio
 
 #[cfg(feature = "insert-blob")]
 pub async fn insert_blob<'a>(
-    #[allow(unused_variables)] core_context: &crate::CoreContext,
     user: &User,
     website: Option<&Website>,
     field: &mut multer::Field<'_>,
@@ -136,7 +135,7 @@ pub async fn insert_blob<'a>(
     #[cfg(feature = "website-storage")]
     {
         if let Some(website) = website {
-            if website.available_storage(core_context).await.bytes() < byte_size {
+            if website.available_storage().await.bytes() < byte_size {
                 return crate::mut_error!();
             }
         }
