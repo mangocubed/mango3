@@ -1,26 +1,14 @@
-#[cfg(feature = "ssr")]
-use leptos::prelude::*;
+mod app;
 
-#[cfg(feature = "ssr")]
-use mango3_web_utils::{leptos_http_server, shell};
+use crate::app::app;
 
-#[cfg(feature = "ssr")]
-use mango3_accounts::app::App;
-
-#[cfg(feature = "ssr")]
-fn shell_fn(leptos_options: LeptosOptions) -> impl IntoView {
-    shell(leptos_options, App, Some("dark:bg-neutral-950 bg-slate-50"))
-}
-
-#[cfg(feature = "ssr")]
+#[cfg(feature = "server")]
 #[tokio::main]
 async fn main() {
-    use leptos::config::get_configuration;
-
-    let leptos_options = get_configuration(None).unwrap().leptos_options;
-
-    leptos_http_server(leptos_options, App, shell_fn).await
+    mango3_web_utils::dioxus_server(app).await;
 }
 
-#[cfg(not(feature = "ssr"))]
-pub fn main() {}
+#[cfg(feature = "web")]
+fn main() {
+    mango3_web_utils::dioxus_web(app);
+}

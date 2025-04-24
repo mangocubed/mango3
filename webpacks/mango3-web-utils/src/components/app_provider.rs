@@ -1,10 +1,36 @@
+#[cfg(not(feature = "with-dioxus"))]
 use codee::string::FromToStringCodec;
+#[cfg(not(feature = "with-dioxus"))]
 use leptos::prelude::*;
 
+use crate::context::provide_basic_config;
+
+#[cfg(not(feature = "with-dioxus"))]
 use crate::constants::COOKIE_NAME_LANGUAGE;
-use crate::context::{provide_basic_config, provide_current_user_resource, provide_info, use_language_cookie_options};
+#[cfg(not(feature = "with-dioxus"))]
+use crate::context::{provide_current_user_resource, provide_info, use_language_cookie_options};
+#[cfg(not(feature = "with-dioxus"))]
 use crate::i18n::I18nContextProvider;
 
+#[cfg(feature = "with-dioxus")]
+use crate::prelude::*;
+
+#[cfg(feature = "with-dioxus")]
+#[component]
+pub fn AppProvider(class: Option<String>, children: Element) -> Element {
+    let basic_config = crate::BASIC_CONFIG.resolve();
+
+    rsx! {
+        document::Link { rel: "stylesheet", href: basic_config.asset_url("style.css").to_string() }
+
+        div {
+           class: format!("flex flex-col min-h-screen {}", class.unwrap_or_default()),
+           {children}
+        }
+    }
+}
+
+#[cfg(not(feature = "with-dioxus"))]
 #[component]
 pub fn AppProvider(children: Children) -> impl IntoView {
     provide_basic_config();

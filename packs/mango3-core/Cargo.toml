@@ -177,7 +177,7 @@ insert-user = [
     "regex-username",
     "user",
 ]
-insert-user-session = ["jobs", "user-session"]
+insert-user-session = ["jobs", "mutation", "user-session"]
 insert-website = ["regex-subdomain", "website"]
 paginate-blobs = ["blob", "pagination"]
 paginate-post-comments = [

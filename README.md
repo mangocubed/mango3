@@ -1,7 +1,7 @@
 # Mango³
 
 <p align="center">
-  <img alt="icon" src="https://raw.githubusercontent.com/mangocubed/mango3/refs/heads/main/assets/icon.svg"/>
+  <img alt="icon" src="https://raw.githubusercontent.com/mangocubed/mango3/refs/heads/main/webpacks/assets/icon.svg"/>
 </p>
 
 A free and open source website builder and content management system platform written in Rust.
@@ -13,7 +13,7 @@ A free and open source website builder and content management system platform wr
 [Website](https://mango3.app) | [Source code](https://github.com/mangocubed/mango3)
 
 <p align="center">
-  <img alt="screenshot" src="https://raw.githubusercontent.com/mangocubed/mango3/refs/heads/main/assets/screenshot.png"/>
+  <img alt="screenshot" src="https://raw.githubusercontent.com/mangocubed/mango3/refs/heads/main/screenshot.png"/>
 </p>
 
 ## Deployment

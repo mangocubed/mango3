@@ -1,81 +1,121 @@
+#[cfg(not(feature = "with-dioxus"))]
 use leptos::prelude::*;
+#[cfg(not(feature = "with-dioxus"))]
 use leptos_meta::{Link, Title};
 
 use crate::context::use_basic_config;
-use crate::i18n::{t, use_i18n};
 
-mod alert_modal;
+#[cfg(not(feature = "with-dioxus"))]
+use crate::i18n::{t, use_i18n};
+#[cfg(feature = "with-dioxus")]
+use crate::prelude::*;
+
 mod app_provider;
+
+#[cfg(not(feature = "with-dioxus"))]
+mod alert_modal;
+#[cfg(not(feature = "with-dioxus"))]
 mod authentication;
+#[cfg(not(feature = "with-dioxus"))]
 mod bottom_bar;
+#[cfg(not(feature = "with-dioxus"))]
 mod brand;
+#[cfg(not(feature = "with-dioxus"))]
 mod confirmation_modal;
+#[cfg(not(feature = "with-dioxus"))]
 mod copyable_text;
+#[cfg(not(feature = "with-dioxus"))]
 mod hashtags;
+#[cfg(not(feature = "with-dioxus"))]
 mod loading_overlay;
+#[cfg(not(feature = "with-dioxus"))]
 mod loading_spinner;
+#[cfg(not(feature = "with-dioxus"))]
 mod menu;
+#[cfg(not(feature = "with-dioxus"))]
 mod modal;
+#[cfg(not(feature = "with-dioxus"))]
 mod post_bottom_bar;
+#[cfg(not(feature = "with-dioxus"))]
 mod search_bar;
+#[cfg(not(feature = "with-dioxus"))]
 mod time_ago;
+#[cfg(not(feature = "with-dioxus"))]
 mod top_bar;
 
-#[cfg(feature = "current-user")]
+#[cfg(all(not(feature = "with-dioxus"), feature = "current-user"))]
 mod current_user;
-#[cfg(feature = "infinite-scroll")]
+#[cfg(all(not(feature = "with-dioxus"), feature = "infinite-scroll"))]
 mod infinite_scroll;
-#[cfg(feature = "post-card")]
+#[cfg(all(not(feature = "with-dioxus"), feature = "post-card"))]
 mod post_card;
-#[cfg(feature = "unconfirmed-email-alert")]
+#[cfg(all(not(feature = "with-dioxus"), feature = "unconfirmed-email-alert"))]
 mod unconfirmed_email_alert;
-#[cfg(feature = "user-card")]
+#[cfg(all(not(feature = "with-dioxus"), feature = "user-card"))]
 mod user_card;
-#[cfg(feature = "user-tag")]
+#[cfg(all(not(feature = "with-dioxus"), feature = "user-tag"))]
 mod user_tag;
-#[cfg(feature = "website-card")]
+#[cfg(all(not(feature = "with-dioxus"), feature = "website-card"))]
 mod website_card;
 
-#[cfg(feature = "forms")]
+#[cfg(all(not(feature = "with-dioxus"), feature = "forms"))]
 pub mod forms;
 
-pub use alert_modal::AlertModal;
 pub use app_provider::AppProvider;
+
+#[cfg(not(feature = "with-dioxus"))]
+pub use alert_modal::AlertModal;
+#[cfg(not(feature = "with-dioxus"))]
 pub use authentication::{RequireAuthentication, RequireNoAuthentication};
+#[cfg(not(feature = "with-dioxus"))]
 pub use bottom_bar::BottomBar;
+#[cfg(not(feature = "with-dioxus"))]
 pub use brand::Brand;
+#[cfg(not(feature = "with-dioxus"))]
 pub use confirmation_modal::ConfirmationModal;
+#[cfg(not(feature = "with-dioxus"))]
 pub use copyable_text::CopyableText;
+#[cfg(not(feature = "with-dioxus"))]
 pub use hashtags::Hashtags;
+#[cfg(not(feature = "with-dioxus"))]
 pub use loading_overlay::LoadingOverlay;
+#[cfg(not(feature = "with-dioxus"))]
 pub use loading_spinner::LoadingSpinner;
+#[cfg(not(feature = "with-dioxus"))]
 pub use menu::{Menu, MenuItem};
+#[cfg(not(feature = "with-dioxus"))]
 pub use modal::Modal;
+#[cfg(not(feature = "with-dioxus"))]
 pub use post_bottom_bar::PostBottomBar;
+#[cfg(not(feature = "with-dioxus"))]
 pub use search_bar::SearchBar;
+#[cfg(not(feature = "with-dioxus"))]
 pub use time_ago::TimeAgo;
+#[cfg(not(feature = "with-dioxus"))]
 pub use top_bar::TopBar;
 
-#[cfg(feature = "current-user")]
+#[cfg(all(feature = "current-user", not(feature = "with-dioxus")))]
 pub use current_user::{CurrentUser, CurrentUserOpt};
-#[cfg(feature = "infinite-scroll")]
+#[cfg(all(feature = "infinite-scroll", not(feature = "with-dioxus")))]
 pub use infinite_scroll::{
     InfiniteScroll, InfiniteScrollControllerTrait, InfiniteScrollLocalResourceController,
     InfiniteScrollResourceController,
 };
-#[cfg(feature = "post-card")]
+#[cfg(all(feature = "post-card", not(feature = "with-dioxus")))]
 pub use post_card::PostCard;
-#[cfg(feature = "unconfirmed-email-alert")]
+#[cfg(all(feature = "unconfirmed-email-alert", not(feature = "with-dioxus")))]
 pub use unconfirmed_email_alert::UnconfirmedEmailAlert;
-#[cfg(feature = "user-card")]
+#[cfg(all(feature = "user-card", not(feature = "with-dioxus")))]
 pub use user_card::UserCard;
-#[cfg(feature = "user-tag")]
+#[cfg(all(feature = "user-tag", not(feature = "with-dioxus")))]
 pub use user_tag::{UserAvatar, UserLabels, UserTag, UserTagLink};
-#[cfg(feature = "website-card")]
+#[cfg(all(feature = "website-card", not(feature = "with-dioxus")))]
 pub use website_card::WebsiteCard;
 
+#[cfg(not(feature = "with-dioxus"))]
 pub struct BoxedFn(pub Box<dyn Fn() + 'static>);
 
+#[cfg(not(feature = "with-dioxus"))]
 impl<T> From<T> for BoxedFn
 where
     T: Fn() + 'static,
@@ -85,6 +125,7 @@ where
     }
 }
 
+#[cfg(not(feature = "with-dioxus"))]
 #[component]
 pub fn AppTitle(#[prop(optional, into)] suffix: Signal<Option<String>>) -> impl IntoView {
     let basic_config = use_basic_config();
@@ -98,6 +139,21 @@ pub fn AppTitle(#[prop(optional, into)] suffix: Signal<Option<String>>) -> impl 
     }
 }
 
+#[cfg(feature = "with-dioxus")]
+#[component]
+pub fn FaviconLink(href: Option<String>) -> Element {
+    let basic_config = crate::BASIC_CONFIG.resolve();
+
+    let href = if let Some(href) = href {
+        href
+    } else {
+        basic_config.asset_url("favicon.ico").to_string()
+    };
+
+    rsx! { document::Link { rel: "icon",  href: href } }
+}
+
+#[cfg(not(feature = "with-dioxus"))]
 #[component]
 pub fn FaviconLink(#[prop(into, optional)] href: Option<String>) -> impl IntoView {
     let basic_config = use_basic_config();
@@ -111,6 +167,7 @@ pub fn FaviconLink(#[prop(into, optional)] href: Option<String>) -> impl IntoVie
     view! { <Link rel="icon" href=href /> }
 }
 
+#[cfg(not(feature = "with-dioxus"))]
 #[component]
 pub fn GoToMango3() -> impl IntoView {
     let basic_config = use_basic_config();
@@ -134,7 +191,7 @@ pub fn GoToMango3() -> impl IntoView {
     }
 }
 
-#[cfg(feature = "website-icon")]
+#[cfg(all(not(feature = "with-dioxus"), feature = "website-icon"))]
 #[component]
 pub fn WebsiteIcon(
     #[prop(into, optional)] class: &'static str,

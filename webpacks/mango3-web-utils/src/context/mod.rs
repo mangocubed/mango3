@@ -1,27 +1,53 @@
+#[cfg(not(feature = "with-dioxus"))]
 use leptos::prelude::*;
+#[cfg(not(feature = "with-dioxus"))]
 use leptos_router::params::ParamsMap;
 
-use crate::constants::KEY_PARAM_NAME;
 use crate::presenters::{BasicConfigPresenter, InfoPresenter};
+
+#[cfg(not(feature = "with-dioxus"))]
+use crate::constants::KEY_PARAM_NAME;
+#[cfg(feature = "with-dioxus")]
+use crate::prelude::*;
+#[cfg(not(feature = "with-dioxus"))]
 use crate::server_functions::get_current_user;
 
-#[cfg(feature = "current-user")]
+#[cfg(all(not(feature = "with-dioxus"), feature = "current-user"))]
 use crate::presenters::UserPresenter;
 
+#[cfg(not(feature = "with-dioxus"))]
 mod use_color_mode;
+#[cfg(not(feature = "with-dioxus"))]
 mod use_language_cookie;
 
+#[cfg(not(feature = "with-dioxus"))]
 pub use use_color_mode::{use_color_mode, use_color_mode_with_options, UseColorModeOptions};
+#[cfg(not(feature = "with-dioxus"))]
 pub use use_language_cookie::{use_language_cookie, use_language_cookie_options};
 
+#[cfg(not(feature = "with-dioxus"))]
 pub fn param_name(params_map: Memo<ParamsMap>) -> String {
     params_map.with(|params| params.get(KEY_PARAM_NAME).unwrap_or_default())
 }
 
+#[cfg(not(feature = "with-dioxus"))]
 pub fn param_query(params_map: Memo<ParamsMap>) -> String {
     params_map.with(|params| params.get("q").unwrap_or_default())
 }
 
+#[cfg(feature = "with-dioxus")]
+pub fn provide_basic_config() -> BasicConfigPresenter {
+    let basic_config = use_server_cached(|| {
+        #[cfg(feature = "server")]
+        return mango3_core::config::BASIC_CONFIG.clone().into();
+
+        BasicConfigPresenter::default()
+    });
+
+    use_context_provider(|| basic_config)
+}
+
+#[cfg(not(feature = "with-dioxus"))]
 pub fn provide_basic_config() {
     let basic_config = SharedValue::<BasicConfigPresenter>::new(move || {
         #[cfg(feature = "ssr")]
@@ -37,9 +63,10 @@ pub fn provide_basic_config() {
         }
     });
 
-    provide_context(basic_config.into_inner());
+    use_context_provider(basic_config.into_inner());
 }
 
+#[cfg(not(feature = "with-dioxus"))]
 pub fn provide_info() {
     let info = SharedValue::<InfoPresenter>::new(move || {
         #[cfg(feature = "ssr")]
@@ -56,10 +83,17 @@ pub fn provide_info() {
     provide_context(info.into_inner());
 }
 
+#[cfg(not(feature = "with-dioxus"))]
 pub fn provide_current_user_resource() {
     provide_context(Resource::new_blocking(|| (), |_| get_current_user()))
 }
 
+#[cfg(feature = "with-dioxus")]
+pub fn use_basic_config() -> BasicConfigPresenter {
+    use_context::<BasicConfigPresenter>()
+}
+
+#[cfg(not(feature = "with-dioxus"))]
 pub fn use_basic_config() -> BasicConfigPresenter {
     #[cfg(feature = "ssr")]
     {
@@ -74,11 +108,12 @@ pub fn use_basic_config() -> BasicConfigPresenter {
     }
 }
 
-#[cfg(feature = "current-user")]
+#[cfg(all(not(feature = "with-dioxus"), feature = "current-user"))]
 pub fn use_current_user_resource() -> Resource<Result<Option<UserPresenter>, ServerFnError>> {
     use_context::<Resource<Result<Option<UserPresenter>, ServerFnError>>>().unwrap()
 }
 
+#[cfg(not(feature = "with-dioxus"))]
 pub fn use_info() -> InfoPresenter {
     #[cfg(feature = "ssr")]
     {

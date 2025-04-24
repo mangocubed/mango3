@@ -3,23 +3,47 @@ use leptos::prelude::*;
 #[cfg(feature = "ssr")]
 use leptos_meta::HashedStylesheet;
 
+#[cfg(not(feature = "with-dioxus"))]
 #[macro_use]
 pub mod macros;
 
 pub mod components;
-pub mod constants;
 pub mod context;
-pub mod enums;
-pub mod icons;
-pub mod pages;
 pub mod presenters;
-pub mod server_functions;
-pub mod utils;
 
+#[cfg(not(feature = "with-dioxus"))]
+pub mod constants;
+#[cfg(not(feature = "with-dioxus"))]
+pub mod enums;
+#[cfg(not(feature = "with-dioxus"))]
+pub mod icons;
+#[cfg(not(feature = "with-dioxus"))]
+pub mod pages;
+#[cfg(not(feature = "with-dioxus"))]
+pub mod server_functions;
 #[cfg(feature = "ssr")]
 pub mod ssr;
+#[cfg(not(feature = "with-dioxus"))]
+pub mod utils;
 
+#[cfg(not(feature = "with-dioxus"))]
 leptos_i18n::load_locales!();
+
+#[cfg(feature = "with-dioxus")]
+pub mod prelude {
+    pub use dioxus::prelude::{
+        component, dioxus_core, dioxus_elements, document, fc_to_builder, rsx, use_context, use_context_provider,
+        use_server_cached, Element, Global, GlobalSignal, IntoDynNode, Properties, Props, Readable,
+    };
+}
+
+#[cfg(feature = "with-dioxus")]
+pub static BASIC_CONFIG: prelude::Global<presenters::BasicConfigPresenter> = prelude::Global::new(|| {
+    #[cfg(feature = "server")]
+    return mango3_core::config::BASIC_CONFIG.clone().into();
+
+    presenters::BasicConfigPresenter::default()
+});
 
 #[cfg(feature = "ssr")]
 pub fn shell<F, IV>(options: LeptosOptions, app_fn: F, body_class: Option<&'static str>) -> impl IntoView
@@ -132,4 +156,71 @@ pub async fn leptos_http_server<F, IV1, IV2>(
         .unwrap();
 
     redis_conn.await.unwrap().unwrap();
+}
+
+#[cfg(feature = "server")]
+pub async fn dioxus_server(app_fn: fn() -> prelude::Element) {
+    use std::net::SocketAddr;
+    use std::str::FromStr;
+
+    use axum::Router;
+    use axum_client_ip::SecureClientIpSource;
+    use cookie::{Key, SameSite};
+    use dioxus_fullstack::prelude::{DioxusRouterExt, ServeConfig};
+    use fred::prelude::{ClientLike, Config, Pool};
+    use time::Duration;
+    use tokio::net::TcpListener;
+    use tower_sessions::{Expiry, SessionManagerLayer};
+    use tower_sessions_redis_store::RedisStore;
+
+    use mango3_core::config::{load_config, BASIC_CONFIG, MISC_CONFIG, SESSIONS_CONFIG};
+
+    load_config();
+
+    let redis_pool = Pool::new(
+        Config::from_url(&SESSIONS_CONFIG.redis_url).expect("Could not get Redis URL for session."),
+        None,
+        None,
+        None,
+        10,
+    )
+    .expect("Could not get Redis pool for session.");
+
+    let redis_conn = redis_pool.connect();
+    redis_pool
+        .wait_for_connect()
+        .await
+        .expect("Could not get Redis connection for session.");
+
+    let session_store = RedisStore::new(redis_pool);
+    let session_layer = SessionManagerLayer::new(session_store)
+        .with_domain(BASIC_CONFIG.domain.clone())
+        .with_expiry(Expiry::OnInactivity(Duration::days(30)))
+        .with_http_only(true)
+        .with_name("_mango3_session")
+        .with_private(Key::from(SESSIONS_CONFIG.key.as_bytes()))
+        .with_same_site(SameSite::Strict)
+        .with_secure(BASIC_CONFIG.secure);
+    let client_ip_source_layer = SecureClientIpSource::from_str(&MISC_CONFIG.client_ip_source)
+        .expect("Could not get client IP source.")
+        .into_extension();
+
+    let app = Router::new()
+        .serve_dioxus_application(ServeConfig::new().unwrap(), app_fn)
+        .layer(session_layer)
+        .layer(client_ip_source_layer);
+
+    let addr = dioxus::cli_config::fullstack_address_or_localhost();
+    let listener = TcpListener::bind(&addr).await.unwrap();
+
+    axum::serve(listener, app.into_make_service_with_connect_info::<SocketAddr>())
+        .await
+        .unwrap();
+
+    redis_conn.await.unwrap().unwrap();
+}
+
+#[cfg(feature = "web")]
+pub fn dioxus_web(app_fn: fn() -> prelude::Element) {
+    dioxus_web::launch::launch_cfg(app_fn, dioxus_web::Config::new().hydrate(true));
 }

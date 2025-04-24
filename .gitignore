@@ -1,6 +1,8 @@
 .end2end-storage.json
 .env
 .vscode
+.zed
+webpacks/assets/style.css
 node_modules
 storage
 target

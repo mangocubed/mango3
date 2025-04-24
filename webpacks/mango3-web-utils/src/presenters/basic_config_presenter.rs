@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use url::Url;
 
-#[cfg(feature = "ssr")]
+#[cfg(any(feature = "ssr", feature = "server"))]
 use mango3_core::config::BasicConfig;
 
 #[derive(Clone, Deserialize, Serialize)]
@@ -49,7 +49,7 @@ impl Default for BasicConfigPresenter {
     }
 }
 
-#[cfg(feature = "ssr")]
+#[cfg(any(feature = "ssr", feature = "server"))]
 impl From<BasicConfig> for BasicConfigPresenter {
     fn from(basic_config: BasicConfig) -> Self {
         Self {

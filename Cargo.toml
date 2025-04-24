@@ -67,3 +67,13 @@ opt-level = 'z'
 lto = true
 codegen-units = 1
 panic = "abort"
+
+[profile.wasm-dev]
+inherits = "dev"
+opt-level = 1
+
+[profile.server-dev]
+inherits = "dev"
+
+[profile.android-dev]
+inherits = "dev"
