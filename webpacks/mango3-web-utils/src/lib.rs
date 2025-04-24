@@ -10,6 +10,7 @@ pub mod macros;
 pub mod components;
 pub mod context;
 pub mod presenters;
+pub mod server_functions;
 
 #[cfg(not(feature = "with-dioxus"))]
 pub mod constants;
@@ -19,8 +20,6 @@ pub mod enums;
 pub mod icons;
 #[cfg(not(feature = "with-dioxus"))]
 pub mod pages;
-#[cfg(not(feature = "with-dioxus"))]
-pub mod server_functions;
 #[cfg(feature = "ssr")]
 pub mod ssr;
 #[cfg(not(feature = "with-dioxus"))]
@@ -32,9 +31,12 @@ leptos_i18n::load_locales!();
 #[cfg(feature = "with-dioxus")]
 pub mod prelude {
     pub use dioxus::prelude::{
-        component, dioxus_core, dioxus_elements, document, fc_to_builder, rsx, use_context, use_context_provider,
-        use_server_cached, Element, Global, GlobalSignal, IntoDynNode, Properties, Props, Readable,
+        component, dioxus_core, dioxus_elements, document, fc_to_builder, rsx, server,
+        use_server_future, Element, Global, GlobalSignal, IntoDynNode, Properties, Props, Readable,
+        RenderError, Resource, ServerFnError,
     };
+    
+    pub use context::use_basic_config;
 }
 
 #[cfg(feature = "with-dioxus")]

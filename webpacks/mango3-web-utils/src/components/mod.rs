@@ -142,7 +142,7 @@ pub fn AppTitle(#[prop(optional, into)] suffix: Signal<Option<String>>) -> impl 
 #[cfg(feature = "with-dioxus")]
 #[component]
 pub fn FaviconLink(href: Option<String>) -> Element {
-    let basic_config = crate::BASIC_CONFIG.resolve();
+    let basic_config = use_basic_config()?;
 
     let href = if let Some(href) = href {
         href

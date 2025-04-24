@@ -18,7 +18,7 @@ use crate::prelude::*;
 #[cfg(feature = "with-dioxus")]
 #[component]
 pub fn AppProvider(class: Option<String>, children: Element) -> Element {
-    let basic_config = crate::BASIC_CONFIG.resolve();
+    let basic_config = use_basic_config()?;
 
     rsx! {
         document::Link { rel: "stylesheet", href: basic_config.asset_url("style.css").to_string() }

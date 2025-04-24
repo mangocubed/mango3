@@ -4,6 +4,7 @@ use leptos::prelude::*;
 use leptos_router::params::ParamsMap;
 
 use crate::presenters::{BasicConfigPresenter, InfoPresenter};
+use crate::server_functions::get_basic_config;
 
 #[cfg(not(feature = "with-dioxus"))]
 use crate::constants::KEY_PARAM_NAME;
@@ -33,18 +34,6 @@ pub fn param_name(params_map: Memo<ParamsMap>) -> String {
 #[cfg(not(feature = "with-dioxus"))]
 pub fn param_query(params_map: Memo<ParamsMap>) -> String {
     params_map.with(|params| params.get("q").unwrap_or_default())
-}
-
-#[cfg(feature = "with-dioxus")]
-pub fn provide_basic_config() -> BasicConfigPresenter {
-    let basic_config = use_server_cached(|| {
-        #[cfg(feature = "server")]
-        return mango3_core::config::BASIC_CONFIG.clone().into();
-
-        BasicConfigPresenter::default()
-    });
-
-    use_context_provider(|| basic_config)
 }
 
 #[cfg(not(feature = "with-dioxus"))]
@@ -89,8 +78,8 @@ pub fn provide_current_user_resource() {
 }
 
 #[cfg(feature = "with-dioxus")]
-pub fn use_basic_config() -> BasicConfigPresenter {
-    use_context::<BasicConfigPresenter>()
+pub fn use_basic_config() -> Result<Resource<BasicConfigPresenter>, RenderError> {
+    use_server_future(get_basic_config)
 }
 
 #[cfg(not(feature = "with-dioxus"))]
