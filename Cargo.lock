@@ -1557,6 +1557,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "dioxus-i18n"
+version = "0.4.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "159eac1082ac62f2655f36e99967509c71d75c19f6fe40b241ea0f6d2e75a3e8"
+dependencies = [
+ "dioxus-lib",
+ "fluent",
+ "thiserror 2.0.11",
+ "unic-langid",
+ "walkdir",
+]
+
+[[package]]
 name = "dioxus-interpreter-js"
 version = "0.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1655,6 +1668,20 @@ dependencies = [
  "proc-macro2-diagnostics",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "dioxus-sdk"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3b7b74aede7070ec1c0ef582dbec8bce93a5c40421155459fcdbcaa0e6ef0bf0"
+dependencies = [
+ "cfg-if",
+ "dioxus",
+ "js-sys",
+ "tracing",
+ "uuid",
+ "warnings",
 ]
 
 [[package]]
@@ -2039,6 +2066,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b09cf3155332e944990140d967ff5eceb70df778b34f77d8075db46e4704e6d8"
 dependencies = [
  "num-traits",
+]
+
+[[package]]
+name = "fluent"
+version = "0.16.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bb74634707bebd0ce645a981148e8fb8c7bccd4c33c652aeffd28bf2f96d555a"
+dependencies = [
+ "fluent-bundle",
+ "unic-langid",
 ]
 
 [[package]]
@@ -3870,6 +3907,8 @@ dependencies = [
  "default-struct-builder",
  "dioxus",
  "dioxus-fullstack",
+ "dioxus-i18n",
+ "dioxus-sdk",
  "dioxus-web",
  "fred",
  "futures",
@@ -3889,6 +3928,7 @@ dependencies = [
  "tokio",
  "tower-sessions",
  "tower-sessions-redis-store",
+ "unic-langid",
  "url",
  "uuid",
  "wasm-bindgen",

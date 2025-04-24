@@ -1,3 +1,7 @@
+#[cfg(feature = "with-dioxus")]
+use dioxus::prelude::{use_context, use_context_provider, use_server_future, Readable, RenderError, Resource};
+#[cfg(feature = "with-dioxus")]
+use dioxus_i18n::prelude::{use_init_i18n, I18n, I18nConfig};
 #[cfg(not(feature = "with-dioxus"))]
 use leptos::prelude::*;
 #[cfg(not(feature = "with-dioxus"))]
@@ -8,8 +12,6 @@ use crate::server_functions::get_basic_config;
 
 #[cfg(not(feature = "with-dioxus"))]
 use crate::constants::KEY_PARAM_NAME;
-#[cfg(feature = "with-dioxus")]
-use crate::prelude::*;
 #[cfg(not(feature = "with-dioxus"))]
 use crate::server_functions::get_current_user;
 
@@ -36,6 +38,13 @@ pub fn param_query(params_map: Memo<ParamsMap>) -> String {
     params_map.with(|params| params.get("q").unwrap_or_default())
 }
 
+#[cfg(feature = "with-dioxus")]
+pub fn provide_basic_config() -> Result<BasicConfigPresenter, RenderError> {
+    let resource = use_server_future(|| async { get_basic_config().await.expect("Could not get basic config") })?;
+
+    Ok(use_context_provider(|| resource).with(|config| config.clone().unwrap()))
+}
+
 #[cfg(not(feature = "with-dioxus"))]
 pub fn provide_basic_config() {
     let basic_config = SharedValue::<BasicConfigPresenter>::new(move || {
@@ -53,6 +62,18 @@ pub fn provide_basic_config() {
     });
 
     use_context_provider(basic_config.into_inner());
+}
+
+#[cfg(feature = "with-dioxus")]
+pub fn provide_i18n() -> I18n {
+    use dioxus_i18n::unic_langid::langid;
+
+    use_init_i18n(|| {
+        I18nConfig::new(langid!("en"))
+            .with_locale((langid!("en"), include_str!("../../../locales/en.ftl")))
+            .with_locale((langid!("es"), include_str!("../../../locales/es.ftl")))
+            .with_locale((langid!("pt"), include_str!("../../../locales/pt.ftl")))
+    })
 }
 
 #[cfg(not(feature = "with-dioxus"))]
@@ -78,8 +99,8 @@ pub fn provide_current_user_resource() {
 }
 
 #[cfg(feature = "with-dioxus")]
-pub fn use_basic_config() -> Result<Resource<BasicConfigPresenter>, RenderError> {
-    use_server_future(get_basic_config)
+pub fn use_basic_config() -> BasicConfigPresenter {
+    use_context::<Resource<BasicConfigPresenter>>().with(|config| config.clone().unwrap())
 }
 
 #[cfg(not(feature = "with-dioxus"))]

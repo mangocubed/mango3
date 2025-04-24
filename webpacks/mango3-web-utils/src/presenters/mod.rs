@@ -1,6 +1,8 @@
 mod basic_config_presenter;
 mod info_presenter;
 
+#[cfg(feature = "with-dioxus")]
+mod app_config_presenter;
 #[cfg(feature = "blob-presenter")]
 mod blob_presenter;
 #[cfg(feature = "cursor-page-presenter")]
@@ -23,6 +25,8 @@ mod website_presenter;
 pub use basic_config_presenter::BasicConfigPresenter;
 pub use info_presenter::InfoPresenter;
 
+#[cfg(feature = "with-dioxus")]
+pub use app_config_presenter::AppConfigPresenter;
 #[cfg(feature = "blob-presenter")]
 pub use blob_presenter::BlobPresenter;
 #[cfg(feature = "cursor-page-presenter")]

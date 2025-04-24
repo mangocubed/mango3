@@ -1,5 +1,7 @@
 #[cfg(not(feature = "with-dioxus"))]
 use codee::string::FromToStringCodec;
+#[cfg(feature = "with-dioxus")]
+use dioxus::prelude::*;
 #[cfg(not(feature = "with-dioxus"))]
 use leptos::prelude::*;
 
@@ -7,18 +9,18 @@ use crate::context::provide_basic_config;
 
 #[cfg(not(feature = "with-dioxus"))]
 use crate::constants::COOKIE_NAME_LANGUAGE;
+#[cfg(feature = "with-dioxus")]
+use crate::context::provide_i18n;
 #[cfg(not(feature = "with-dioxus"))]
 use crate::context::{provide_current_user_resource, provide_info, use_language_cookie_options};
 #[cfg(not(feature = "with-dioxus"))]
 use crate::i18n::I18nContextProvider;
 
 #[cfg(feature = "with-dioxus")]
-use crate::prelude::*;
-
-#[cfg(feature = "with-dioxus")]
 #[component]
 pub fn AppProvider(class: Option<String>, children: Element) -> Element {
-    let basic_config = use_basic_config()?;
+    let basic_config = provide_basic_config()?;
+    let i18n = provide_i18n();
 
     rsx! {
         document::Link { rel: "stylesheet", href: basic_config.asset_url("style.css").to_string() }

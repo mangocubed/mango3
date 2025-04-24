@@ -1,3 +1,5 @@
+#[cfg(feature = "with-dioxus")]
+use dioxus::prelude::*;
 #[cfg(not(feature = "with-dioxus"))]
 use leptos::prelude::*;
 #[cfg(not(feature = "with-dioxus"))]
@@ -7,10 +9,9 @@ use crate::context::use_basic_config;
 
 #[cfg(not(feature = "with-dioxus"))]
 use crate::i18n::{t, use_i18n};
-#[cfg(feature = "with-dioxus")]
-use crate::prelude::*;
 
 mod app_provider;
+mod top_bar;
 
 #[cfg(not(feature = "with-dioxus"))]
 mod alert_modal;
@@ -40,8 +41,6 @@ mod post_bottom_bar;
 mod search_bar;
 #[cfg(not(feature = "with-dioxus"))]
 mod time_ago;
-#[cfg(not(feature = "with-dioxus"))]
-mod top_bar;
 
 #[cfg(all(not(feature = "with-dioxus"), feature = "current-user"))]
 mod current_user;
@@ -62,6 +61,7 @@ mod website_card;
 pub mod forms;
 
 pub use app_provider::AppProvider;
+pub use top_bar::TopBar;
 
 #[cfg(not(feature = "with-dioxus"))]
 pub use alert_modal::AlertModal;
@@ -91,8 +91,6 @@ pub use post_bottom_bar::PostBottomBar;
 pub use search_bar::SearchBar;
 #[cfg(not(feature = "with-dioxus"))]
 pub use time_ago::TimeAgo;
-#[cfg(not(feature = "with-dioxus"))]
-pub use top_bar::TopBar;
 
 #[cfg(all(feature = "current-user", not(feature = "with-dioxus")))]
 pub use current_user::{CurrentUser, CurrentUserOpt};
@@ -142,7 +140,7 @@ pub fn AppTitle(#[prop(optional, into)] suffix: Signal<Option<String>>) -> impl 
 #[cfg(feature = "with-dioxus")]
 #[component]
 pub fn FaviconLink(href: Option<String>) -> Element {
-    let basic_config = use_basic_config()?;
+    let basic_config = use_basic_config();
 
     let href = if let Some(href) = href {
         href

@@ -26,7 +26,7 @@ pub struct BasicConfigPresenter {
 
 impl Default for BasicConfigPresenter {
     fn default() -> Self {
-        let home_url = Url::parse("http://mango3.local").unwrap();
+        let home_url = Url::parse("a://a").unwrap();
 
         Self {
             about_url: None,

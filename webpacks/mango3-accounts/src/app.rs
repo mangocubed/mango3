@@ -1,13 +1,16 @@
 use mango3_web_utils::components::{AppProvider, FaviconLink};
 use mango3_web_utils::prelude::*;
 
+use crate::routes::Routes;
+
 pub fn app() -> Element {
     rsx! {
         document::Meta { name: "robots", content: "noindex, nofollow" }
 
         AppProvider {
             class: "dark:bg-neutral-950 bg-slate-50",
-            FaviconLink {}
+            FaviconLink {},
+            Router::<Routes> {}
         }
     }
 }

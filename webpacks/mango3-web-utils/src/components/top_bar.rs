@@ -1,23 +1,36 @@
+#[cfg(not(feature = "with-dioxus"))]
 use std::sync::Arc;
 
+#[cfg(feature = "with-dioxus")]
+use dioxus::prelude::*;
+#[cfg(not(feature = "with-dioxus"))]
 use leptos::either::Either;
+#[cfg(not(feature = "with-dioxus"))]
 use leptos::prelude::*;
 
+#[cfg(not(feature = "with-dioxus"))]
 use crate::components::{CurrentUserOpt, UserTag};
+#[cfg(not(feature = "with-dioxus"))]
 use crate::context::use_basic_config;
+#[cfg(not(feature = "with-dioxus"))]
 use crate::enums::Orientation;
+#[cfg(not(feature = "with-dioxus"))]
 use crate::i18n::{t, use_i18n};
+#[cfg(not(feature = "with-dioxus"))]
 use crate::icons::{Bars3Outlined, ChevronDownMini};
 
+#[cfg(not(feature = "with-dioxus"))]
 #[derive(Clone)]
 pub struct ItemsViewFn(Arc<dyn Fn(Orientation) -> AnyView + Send + Sync + 'static>);
 
+#[cfg(not(feature = "with-dioxus"))]
 impl Default for ItemsViewFn {
     fn default() -> Self {
         Self(Arc::new(|_| ().into_any()))
     }
 }
 
+#[cfg(not(feature = "with-dioxus"))]
 impl<F, C> From<F> for ItemsViewFn
 where
     F: Fn(Orientation) -> C + Send + Sync + 'static,
@@ -28,6 +41,21 @@ where
     }
 }
 
+#[cfg(feature = "with-dioxus")]
+#[component]
+pub fn TopBar(class: Option<String>) -> Element {
+    rsx! {
+        div {
+            class: format!("navbar shadow-md py-0 gap-2 {}", class.unwrap_or("bg-base-300".to_owned())),
+            div {
+                class: "dropdown md:hidden",
+                button { class: "btn btn-ghost btn-lg" }
+            }
+        }
+    }
+}
+
+#[cfg(not(feature = "with-dioxus"))]
 #[component]
 pub fn TopBar(
     #[prop(into)] brand: ViewFnOnce,

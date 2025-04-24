@@ -1,5 +1,10 @@
+#[cfg(feature = "with-dioxus")]
+use dioxus::prelude::{server, server_fn, ServerFnError};
 #[cfg(not(feature = "with-dioxus"))]
 use leptos::prelude::*;
+
+#[cfg(feature = "with-dioxus")]
+use crate::presenters::{AppConfigPresenter, BasicConfigPresenter};
 
 #[cfg(all(not(feature = "with-dioxus"), feature = "image-upload"))]
 mod image_upload;
@@ -9,11 +14,19 @@ pub use image_upload::attempt_to_upload_image;
 
 #[cfg(feature = "with-dioxus")]
 #[server]
-pub async fn get_basic_config() -> Result<crate::presenters::BasicConfigPresenter, ServerFnError> {
-    (mango3_core::config::BASIC_CONFIG.into())
+pub async fn get_app_config() -> Result<AppConfigPresenter, ServerFnError> {
+    let language = crate::ssr::extract_language().await?;
+
+    Ok(AppConfigPresenter { language })
 }
 
-#[cfg(all(not(feature = "with-dioxus"), feature = "current-user"))]
+#[cfg(feature = "with-dioxus")]
+#[server]
+pub async fn get_basic_config() -> Result<BasicConfigPresenter, ServerFnError> {
+    Ok(mango3_core::config::BASIC_CONFIG.clone().into())
+}
+
+#[cfg(all(not(feature = "with-dioxus"), feature = "current-user"))]
 #[server]
 pub async fn get_current_user() -> Result<Option<crate::presenters::UserPresenter>, ServerFnError> {
     let Some(user) = crate::ssr::extract_user().await? else {

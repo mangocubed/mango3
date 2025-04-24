@@ -9,10 +9,12 @@ axum = { workspace = true, optional = true }
 axum-client-ip = { version = "0.6.1", optional = true }
 chrono = { workspace = true }
 codee = "0.3.0"
-cookie = { version = "0.18.1", optional = true, features = ["private"] }
+cookie = { version = "0.18.1", optional = true }
 default-struct-builder = "0.5"
 dioxus = { version = "0.6.3", features = ["fullstack", "router"], optional = true }
 dioxus-fullstack = { version = "0.6.3", features = ["axum"], optional = true }
+dioxus-i18n = { version = "0.4.3", optional = true }
+dioxus-sdk = { version = "0.6.0", optional = true }
 dioxus-web = { version = "0.6.3", features = ["hydrate"], optional = true }
 fred = { version = "10.1.0", optional = true }
 futures = { workspace = true, optional = true }
@@ -36,6 +38,7 @@ time = { version = "0.3.41", optional = true }
 tower-sessions = { version = "0.13.0", optional = true, features = ["private"] }
 tower-sessions-redis-store = { version = "0.15.0", optional = true }
 tokio = { workspace = true, optional = true }
+unic-langid = { version = "0.9.5", features = ["serde"], optional = true }
 url = { workspace = true }
 uuid = { workspace = true, features = ["js"] }
 wasm-bindgen = { workspace = true }
@@ -129,6 +132,7 @@ ssr = [
     "dep:tower-sessions",
     "dep:tower-sessions-redis-store",
     "dep:mango3-core",
+    "cookie/private",
     "leptos/ssr",
     "leptos_i18n/ssr",
     "leptos_meta/ssr",
@@ -136,20 +140,31 @@ ssr = [
     "leptos-use/ssr",
 ]
 server = [
+    "dep:accept-language",
     "dep:axum",
     "dep:axum-client-ip",
     "dep:cookie",
     "dep:dioxus",
     "dep:dioxus-fullstack",
+    "dep:dioxus-i18n",
+    "dep:dioxus-sdk",
     "dep:fred",
+    "dep:http",
     "dep:tokio",
     "dep:time",
     "dep:tower-sessions",
     "dep:tower-sessions-redis-store",
+    "dep:unic-langid",
     "dep:mango3-core",
 ]
-web = ["dep:dioxus", "dep:dioxus-web"]
-with-dioxus = ["dep:dioxus"]
+web = [
+    "dep:dioxus",
+    "dep:cookie",
+    "dep:dioxus-i18n",
+    "dep:dioxus-sdk",
+    "dep:dioxus-web",
+    "dep:unic-langid"]
+with-dioxus = ["dep:cookie", "dep:dioxus", "dep:dioxus-i18n", "dep:dioxus-sdk", "dep:unic-langid"]
 
 [package.metadata.leptos-i18n]
 default = "en"

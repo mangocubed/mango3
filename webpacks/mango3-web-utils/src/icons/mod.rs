@@ -1,7 +1,8 @@
 use leptos::prelude::*;
 
-mod arrow;
 mod bars;
+
+mod arrow;
 mod chevron;
 mod document;
 mod exclamation;

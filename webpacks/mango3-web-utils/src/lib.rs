@@ -8,19 +8,18 @@ use leptos_meta::HashedStylesheet;
 pub mod macros;
 
 pub mod components;
+pub mod constants;
 pub mod context;
 pub mod presenters;
 pub mod server_functions;
 
-#[cfg(not(feature = "with-dioxus"))]
-pub mod constants;
 #[cfg(not(feature = "with-dioxus"))]
 pub mod enums;
 #[cfg(not(feature = "with-dioxus"))]
 pub mod icons;
 #[cfg(not(feature = "with-dioxus"))]
 pub mod pages;
-#[cfg(feature = "ssr")]
+#[cfg(any(feature = "server", feature = "ssr"))]
 pub mod ssr;
 #[cfg(not(feature = "with-dioxus"))]
 pub mod utils;
@@ -31,21 +30,14 @@ leptos_i18n::load_locales!();
 #[cfg(feature = "with-dioxus")]
 pub mod prelude {
     pub use dioxus::prelude::{
-        component, dioxus_core, dioxus_elements, document, fc_to_builder, rsx, server,
-        use_server_future, Element, Global, GlobalSignal, IntoDynNode, Properties, Props, Readable,
-        RenderError, Resource, ServerFnError,
+        component, dioxus_core, dioxus_elements, dioxus_router, document, fc_to_builder, rsx, server, server_fn,
+        Element, GlobalSignal, IntoDynNode, Outlet, Properties, Props, Readable, RenderError, Routable, Router,
+        ServerFnError, VNode,
     };
-    
-    pub use context::use_basic_config;
+    pub use dioxus_i18n::{self, t};
+
+    pub use crate::context::use_basic_config;
 }
-
-#[cfg(feature = "with-dioxus")]
-pub static BASIC_CONFIG: prelude::Global<presenters::BasicConfigPresenter> = prelude::Global::new(|| {
-    #[cfg(feature = "server")]
-    return mango3_core::config::BASIC_CONFIG.clone().into();
-
-    presenters::BasicConfigPresenter::default()
-});
 
 #[cfg(feature = "ssr")]
 pub fn shell<F, IV>(options: LeptosOptions, app_fn: F, body_class: Option<&'static str>) -> impl IntoView
