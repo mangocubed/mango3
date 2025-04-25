@@ -6,6 +6,8 @@ use dioxus_i18n::prelude::{use_init_i18n, I18n, I18nConfig};
 use leptos::prelude::*;
 #[cfg(not(feature = "with-dioxus"))]
 use leptos_router::params::ParamsMap;
+#[cfg(feature = "with-dioxus")]
+use unic_langid::{LanguageIdentifier, langid};
 
 use crate::presenters::{BasicConfigPresenter, InfoPresenter};
 use crate::server_functions::get_basic_config;
@@ -65,14 +67,18 @@ pub fn provide_basic_config() {
 }
 
 #[cfg(feature = "with-dioxus")]
-pub fn provide_i18n() -> I18n {
-    use dioxus_i18n::unic_langid::langid;
-
+pub fn provide_i18n(extra_locales: Vec<(LanguageIdentifier, &str)>) -> I18n {
     use_init_i18n(|| {
-        I18nConfig::new(langid!("en"))
-            .with_locale((langid!("en"), include_str!("../../../locales/en.ftl")))
-            .with_locale((langid!("es"), include_str!("../../../locales/es.ftl")))
-            .with_locale((langid!("pt"), include_str!("../../../locales/pt.ftl")))
+        let mut i18n_config = I18nConfig::new(langid!("en"))
+            .with_locale((langid!("en"), include_str!("../../../locales/en/shared.ftl")))
+            .with_locale((langid!("es"), include_str!("../../../locales/es/shared.ftl")))
+            .with_locale((langid!("pt"), include_str!("../../../locales/pt/shared.ftl")));
+            
+        for locale in extra_locales {
+            i18n_config = i18n_config.with_locale(locale);
+        }
+            
+        i18n_config
     })
 }
 

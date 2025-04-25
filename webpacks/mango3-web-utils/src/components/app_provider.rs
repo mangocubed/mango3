@@ -4,6 +4,8 @@ use codee::string::FromToStringCodec;
 use dioxus::prelude::*;
 #[cfg(not(feature = "with-dioxus"))]
 use leptos::prelude::*;
+#[cfg(feature = "with-dioxus")]
+use unic_langid::LanguageIdentifier;
 
 use crate::context::provide_basic_config;
 
@@ -18,9 +20,10 @@ use crate::i18n::I18nContextProvider;
 
 #[cfg(feature = "with-dioxus")]
 #[component]
-pub fn AppProvider(class: Option<String>, children: Element) -> Element {
+pub fn AppProvider(class: Option<String>, children: Element, extra_locales: Option<Vec<(LanguageIdentifier, &str)>>) -> Element {
     let basic_config = provide_basic_config()?;
-    let i18n = provide_i18n();
+    
+    provide_i18n(extra_locales.unwrap_or_default());
 
     rsx! {
         document::Link { rel: "stylesheet", href: basic_config.asset_url("style.css").to_string() }

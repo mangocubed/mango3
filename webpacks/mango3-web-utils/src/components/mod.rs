@@ -11,14 +11,13 @@ use crate::context::use_basic_config;
 use crate::i18n::{t, use_i18n};
 
 mod app_provider;
+mod bottom_bar;
 mod top_bar;
 
 #[cfg(not(feature = "with-dioxus"))]
 mod alert_modal;
 #[cfg(not(feature = "with-dioxus"))]
 mod authentication;
-#[cfg(not(feature = "with-dioxus"))]
-mod bottom_bar;
 #[cfg(not(feature = "with-dioxus"))]
 mod brand;
 #[cfg(not(feature = "with-dioxus"))]
@@ -61,14 +60,13 @@ mod website_card;
 pub mod forms;
 
 pub use app_provider::AppProvider;
+pub use bottom_bar::BottomBar;
 pub use top_bar::TopBar;
 
 #[cfg(not(feature = "with-dioxus"))]
 pub use alert_modal::AlertModal;
 #[cfg(not(feature = "with-dioxus"))]
 pub use authentication::{RequireAuthentication, RequireNoAuthentication};
-#[cfg(not(feature = "with-dioxus"))]
-pub use bottom_bar::BottomBar;
 #[cfg(not(feature = "with-dioxus"))]
 pub use brand::Brand;
 #[cfg(not(feature = "with-dioxus"))]
@@ -139,12 +137,21 @@ pub fn AppTitle(#[prop(optional, into)] suffix: Signal<Option<String>>) -> impl 
 
 #[cfg(feature = "with-dioxus")]
 #[component]
-pub fn Brand(href: Option<String>, suffix: Option<String>) -> Element {
+pub fn Brand(href: Option<String>, children: Option<Element>) -> Element {
+    let basic_config = use_basic_config();
+
     rsx! {
         Link {
             class: "btn btn-ghost btn-lg text-xl px-2",
             to: href.unwrap_or("/".to_owned()),
+            
+            picture {
+                source { media: "(min-width: 768px)", srcset: basic_config.asset_url("logo.svg").to_string() }
+                
+                img { alt: basic_config.title, class: "h-[36px]", src: basic_config.asset_url("icon.svg").to_string() }
+            }
 
+            { children }
         }
     }
 }
@@ -175,6 +182,24 @@ pub fn FaviconLink(#[prop(into, optional)] href: Option<String>) -> impl IntoVie
     };
 
     view! { <Link rel="icon" href=href /> }
+}
+
+#[cfg(feature = "with-dioxus")]
+#[component]
+pub fn GoToMango3() -> Element {
+    let basic_config = use_basic_config();
+    
+    rsx!{ 
+        Link {
+            class: "btn btn-ghost btn-block px-2 font-normal",
+            to: basic_config.home_url.to_string(),
+            { t!("go-to") }
+            
+            img { alt: basic_config.title, class: "h-[16px]", src: basic_config.asset_url("icon.svg") }
+            
+            span { class: "font-bold", { basic_config.title } }
+        }
+    }
 }
 
 #[cfg(not(feature = "with-dioxus"))]
