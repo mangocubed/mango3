@@ -1,5 +1,19 @@
+#[cfg(feature = "with-dioxus")]
+use dioxus::prelude::*;
+#[cfg(not(feature = "with-dioxus"))]
 use leptos::prelude::*;
 
+#[cfg(feature = "with-dioxus")]
+#[component]
+pub fn Bars3Outlined() -> Element {
+    rsx! {
+        svg { fill: "none", "viewBox": "0 0 24 24", "stroke-width": "1.5", stroke: "currentColor", class: "size-6",
+          path { "stroke-linecap": "round", "stroke-linejoin": "round", d: "M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" }
+        }
+    }
+}
+
+#[cfg(not(feature = "with-dioxus"))]
 #[component]
 pub fn Bars3Outlined() -> impl IntoView {
     view! {

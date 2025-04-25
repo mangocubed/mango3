@@ -10,13 +10,11 @@ pub mod macros;
 pub mod components;
 pub mod constants;
 pub mod context;
+pub mod enums;
+pub mod icons;
 pub mod presenters;
 pub mod server_functions;
 
-#[cfg(not(feature = "with-dioxus"))]
-pub mod enums;
-#[cfg(not(feature = "with-dioxus"))]
-pub mod icons;
 #[cfg(not(feature = "with-dioxus"))]
 pub mod pages;
 #[cfg(any(feature = "server", feature = "ssr"))]

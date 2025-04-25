@@ -8,16 +8,17 @@ use leptos::either::Either;
 #[cfg(not(feature = "with-dioxus"))]
 use leptos::prelude::*;
 
+use crate::enums::Orientation;
+use crate::icons::Bars3Outlined;
+
 #[cfg(not(feature = "with-dioxus"))]
 use crate::components::{CurrentUserOpt, UserTag};
 #[cfg(not(feature = "with-dioxus"))]
 use crate::context::use_basic_config;
 #[cfg(not(feature = "with-dioxus"))]
-use crate::enums::Orientation;
-#[cfg(not(feature = "with-dioxus"))]
 use crate::i18n::{t, use_i18n};
 #[cfg(not(feature = "with-dioxus"))]
-use crate::icons::{Bars3Outlined, ChevronDownMini};
+use crate::icons::ChevronDownMini;
 
 #[cfg(not(feature = "with-dioxus"))]
 #[derive(Clone)]
@@ -43,13 +44,43 @@ where
 
 #[cfg(feature = "with-dioxus")]
 #[component]
-pub fn TopBar(class: Option<String>) -> Element {
+pub fn TopBar(
+    brand: Option<Element>,
+    class: Option<String>,
+    left_items: Option<fn(Orientation) -> Element>,
+    right_items: Option<fn(Orientation) -> Element>,
+) -> Element {
     rsx! {
         div {
             class: format!("navbar shadow-md py-0 gap-2 {}", class.unwrap_or("bg-base-300".to_owned())),
             div {
                 class: "dropdown md:hidden",
-                button { class: "btn btn-ghost btn-lg" }
+                button { class: "btn btn-ghost btn-lg", Bars3Outlined {} }
+
+                div {
+                    class: "dropdown-content menu bg-base-100 rounded-box z-[1] p-2 shadow w-65",
+                    div {
+                        class: "max-w-full",
+                        { left_items.map(|items| items(Orientation::Vertical)) }
+                    }
+
+                    div { { right_items.map(|items| items(Orientation::Vertical)) } }
+                }
+            }
+
+            div { class: "flex-none", { brand } }
+
+            div {
+                class: "flex-1",
+                div {
+                    class: "hidden md:flex items-center w-full",
+                    div {
+                        class: "flex-1 max-w-full",
+                        { left_items.map(|items| items(Orientation::Horizontal)) }
+                    }
+
+                    div { class: "flex-none",{ right_items.map(|items| items(Orientation::Horizontal)) } }
+                }
             }
         }
     }

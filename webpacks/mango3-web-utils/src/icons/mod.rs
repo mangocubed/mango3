@@ -1,42 +1,77 @@
+#[cfg(not(feature = "with-dioxus"))]
 use leptos::prelude::*;
 
 mod bars;
 
+#[cfg(not(feature = "with-dioxus"))]
 mod arrow;
+#[cfg(not(feature = "with-dioxus"))]
 mod chevron;
+#[cfg(not(feature = "with-dioxus"))]
 mod document;
+#[cfg(not(feature = "with-dioxus"))]
 mod exclamation;
+#[cfg(not(feature = "with-dioxus"))]
 mod eye;
+#[cfg(not(feature = "with-dioxus"))]
 mod home;
+#[cfg(not(feature = "with-dioxus"))]
 mod image;
+#[cfg(not(feature = "with-dioxus"))]
 mod information_circle;
+#[cfg(not(feature = "with-dioxus"))]
 mod link;
+#[cfg(not(feature = "with-dioxus"))]
 mod magnifying_glass;
+#[cfg(not(feature = "with-dioxus"))]
 mod paper_clip;
+#[cfg(not(feature = "with-dioxus"))]
 mod pencil;
+#[cfg(not(feature = "with-dioxus"))]
 mod plus;
+#[cfg(not(feature = "with-dioxus"))]
 mod text_editor;
+#[cfg(not(feature = "with-dioxus"))]
 mod trash;
+#[cfg(not(feature = "with-dioxus"))]
 mod users;
 
-pub use arrow::{ArrowUturnLeftMini, ArrowUturnRightMini};
 pub use bars::Bars3Outlined;
+
+#[cfg(not(feature = "with-dioxus"))]
+pub use arrow::{ArrowUturnLeftMini, ArrowUturnRightMini};
+#[cfg(not(feature = "with-dioxus"))]
 pub use chevron::{ChevronDownMini, ChevronUpMini};
+#[cfg(not(feature = "with-dioxus"))]
 pub use document::{DocumentOutlined, DocumentTextOutlined};
+#[cfg(not(feature = "with-dioxus"))]
 pub use exclamation::ExclamationOutlined;
+#[cfg(not(feature = "with-dioxus"))]
 pub use eye::{EyeMini, EyeSlashMini};
+#[cfg(not(feature = "with-dioxus"))]
 pub use home::HomeOutlined;
+#[cfg(not(feature = "with-dioxus"))]
 pub use image::ImageMini;
+#[cfg(not(feature = "with-dioxus"))]
 pub use information_circle::InformationCircleOutlined;
+#[cfg(not(feature = "with-dioxus"))]
 pub use link::{LinkMini, LinkOutlined};
+#[cfg(not(feature = "with-dioxus"))]
 pub use magnifying_glass::MagnifyingGlassMini;
+#[cfg(not(feature = "with-dioxus"))]
 pub use paper_clip::PaperClipOutlined;
+#[cfg(not(feature = "with-dioxus"))]
 pub use pencil::PencilSquareOutlined;
+#[cfg(not(feature = "with-dioxus"))]
 pub use plus::PlusOutlined;
+#[cfg(not(feature = "with-dioxus"))]
 pub use text_editor::{BoldMini, ItalicMini, StrikethroughMini};
+#[cfg(not(feature = "with-dioxus"))]
 pub use trash::TrashOutlined;
+#[cfg(not(feature = "with-dioxus"))]
 pub use users::UsersOutlined;
 
+#[cfg(not(feature = "with-dioxus"))]
 #[component]
 pub fn CheckMini() -> impl IntoView {
     view! {
@@ -50,6 +85,7 @@ pub fn CheckMini() -> impl IntoView {
     }
 }
 
+#[cfg(not(feature = "with-dioxus"))]
 #[component]
 pub fn ComputerOutlined() -> impl IntoView {
     view! {
@@ -70,6 +106,7 @@ pub fn ComputerOutlined() -> impl IntoView {
     }
 }
 
+#[cfg(not(feature = "with-dioxus"))]
 #[component]
 pub fn MoonOutlined() -> impl IntoView {
     view! {
@@ -90,6 +127,7 @@ pub fn MoonOutlined() -> impl IntoView {
     }
 }
 
+#[cfg(not(feature = "with-dioxus"))]
 #[component]
 pub fn SunOutlined() -> impl IntoView {
     view! {

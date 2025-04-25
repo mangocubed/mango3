@@ -139,6 +139,18 @@ pub fn AppTitle(#[prop(optional, into)] suffix: Signal<Option<String>>) -> impl 
 
 #[cfg(feature = "with-dioxus")]
 #[component]
+pub fn Brand(href: Option<String>, suffix: Option<String>) -> Element {
+    rsx! {
+        Link {
+            class: "btn btn-ghost btn-lg text-xl px-2",
+            to: href.unwrap_or("/".to_owned()),
+
+        }
+    }
+}
+
+#[cfg(feature = "with-dioxus")]
+#[component]
 pub fn FaviconLink(href: Option<String>) -> Element {
     let basic_config = use_basic_config();
 
