@@ -1,12 +1,16 @@
 #[cfg(feature = "with-dioxus")]
 use dioxus::prelude::*;
+#[cfg(feature = "with-dioxus")]
+use dioxus_i18n::t;
 #[cfg(not(feature = "with-dioxus"))]
 use leptos::prelude::*;
 #[cfg(not(feature = "with-dioxus"))]
 use leptos_meta::{Link, Title};
 
+#[cfg(not(feature = "with-dioxus"))]
 use crate::context::use_basic_config;
-
+#[cfg(feature = "with-dioxus")]
+use crate::hooks::use_basic_config;
 #[cfg(not(feature = "with-dioxus"))]
 use crate::i18n::{t, use_i18n};
 
@@ -137,18 +141,19 @@ pub fn AppTitle(#[prop(optional, into)] suffix: Signal<Option<String>>) -> impl 
 
 #[cfg(feature = "with-dioxus")]
 #[component]
-pub fn Brand(href: Option<String>, children: Option<Element>) -> Element {
+pub fn Brand(href: Option<String>, #[props(optional)] children: Element) -> Element {
     let basic_config = use_basic_config();
+    let asset_url = basic_config.asset_url("logo.svg").to_string();
 
     rsx! {
         Link {
             class: "btn btn-ghost btn-lg text-xl px-2",
             to: href.unwrap_or("/".to_owned()),
-            
+
             picture {
-                source { media: "(min-width: 768px)", srcset: basic_config.asset_url("logo.svg").to_string() }
-                
-                img { alt: basic_config.title, class: "h-[36px]", src: basic_config.asset_url("icon.svg").to_string() }
+                source { "media": "(min-width: 768px)", "srcset": asset_url.clone() }
+
+                img { alt: basic_config.title.clone(), class: "h-[36px]", src: asset_url }
             }
 
             { children }
@@ -188,16 +193,16 @@ pub fn FaviconLink(#[prop(into, optional)] href: Option<String>) -> impl IntoVie
 #[component]
 pub fn GoToMango3() -> Element {
     let basic_config = use_basic_config();
-    
-    rsx!{ 
-        Link {
+
+    rsx! {
+        a {
             class: "btn btn-ghost btn-block px-2 font-normal",
-            to: basic_config.home_url.to_string(),
+            href: basic_config.home_url.to_string(),
             { t!("go-to") }
-            
-            img { alt: basic_config.title, class: "h-[16px]", src: basic_config.asset_url("icon.svg") }
-            
-            span { class: "font-bold", { basic_config.title } }
+
+            img { alt: basic_config.title.clone(), class: "h-[16px]", src: basic_config.asset_url("icon.svg").to_string() }
+
+            span { class: "font-bold", { basic_config.title.clone() } }
         }
     }
 }
@@ -223,6 +228,35 @@ pub fn GoToMango3() -> impl IntoView {
                 }
             )}
         </a>
+    }
+}
+
+#[cfg(feature = "with-dioxus")]
+#[component]
+pub fn LoadingOverlay(
+    #[props(optional)] icon_class: String,
+    icon_url: Option<String>,
+    #[props(default = "rounded-full".to_owned())] pulse_class: String,
+) -> Element {
+    let basic_config = use_basic_config();
+    let mut is_done = use_signal(|| false);
+
+    let loading_icon_src = icon_url
+        .clone()
+        .unwrap_or_else(|| basic_config.asset_url("icon.svg").to_string());
+
+    use_effect(move || {
+        *is_done.write() = true;
+    });
+
+    rsx! {
+        div {
+            class: if is_done() { "loading-overlay is-done" } else { "loading-overlay" },
+            figure {
+                div { class: format!("loading-pulse {pulse_class}") }
+                img { class: icon_class, src: loading_icon_src }
+            }
+        }
     }
 }
 

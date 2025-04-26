@@ -65,7 +65,7 @@ pub async fn extract_i18n() -> Result<I18n, ServerFnError> {
 }
 
 #[cfg(feature = "with-dioxus")]
-pub async fn extract_language() -> Result<LanguageIdentifier, ServerFnError> {
+pub async fn extract_locale() -> Result<LanguageIdentifier, ServerFnError> {
     let session = extract_session().await?;
 
     if let Some(language) = session.get("language").await? {

@@ -11,8 +11,11 @@ chrono = { workspace = true }
 codee = "0.3.0"
 cookie = { version = "0.18.1", optional = true }
 default-struct-builder = "0.5"
-dioxus = { version = "0.6.3", features = ["fullstack", "router"], optional = true }
-dioxus-fullstack = { version = "0.6.3", features = ["axum"], optional = true }
+dioxus = { version = "0.6.3", features = [
+    "fullstack",
+    "router",
+], optional = true }
+dioxus-fullstack = { version = "0.6.3", optional = true }
 dioxus-i18n = { version = "0.4.3", optional = true }
 dioxus-sdk = { version = "0.6.0", optional = true }
 dioxus-web = { version = "0.6.3", features = ["hydrate"], optional = true }
@@ -156,15 +159,27 @@ server = [
     "dep:tower-sessions-redis-store",
     "dep:unic-langid",
     "dep:mango3-core",
+    "dioxus/server",
+    "dioxus-fullstack/axum",
 ]
 web = [
     "dep:dioxus",
     "dep:cookie",
+    "dep:dioxus-fullstack",
     "dep:dioxus-i18n",
     "dep:dioxus-sdk",
     "dep:dioxus-web",
-    "dep:unic-langid"]
-with-dioxus = ["dep:cookie", "dep:dioxus", "dep:dioxus-i18n", "dep:dioxus-sdk", "dep:unic-langid"]
+    "dep:unic-langid",
+    "dioxus/web"
+]
+with-dioxus = [
+    "dep:cookie",
+    "dep:dioxus",
+    "dep:dioxus-fullstack",
+    "dep:dioxus-i18n",
+    "dep:dioxus-sdk",
+    "dep:unic-langid",
+]
 
 [package.metadata.leptos-i18n]
 default = "en"

@@ -1,10 +1,12 @@
+#[cfg(feature = "with-dioxus")]
+use dioxus::prelude::*;
 #[cfg(not(feature = "with-dioxus"))]
 use leptos::prelude::*;
 
-mod bars;
-
 #[cfg(not(feature = "with-dioxus"))]
 mod arrow;
+#[cfg(not(feature = "with-dioxus"))]
+mod bars;
 #[cfg(not(feature = "with-dioxus"))]
 mod chevron;
 #[cfg(not(feature = "with-dioxus"))]
@@ -36,10 +38,10 @@ mod trash;
 #[cfg(not(feature = "with-dioxus"))]
 mod users;
 
-pub use bars::Bars3Outlined;
-
 #[cfg(not(feature = "with-dioxus"))]
 pub use arrow::{ArrowUturnLeftMini, ArrowUturnRightMini};
+#[cfg(not(feature = "with-dioxus"))]
+pub use bars::Bars3Outlined;
 #[cfg(not(feature = "with-dioxus"))]
 pub use chevron::{ChevronDownMini, ChevronUpMini};
 #[cfg(not(feature = "with-dioxus"))]
@@ -70,6 +72,33 @@ pub use text_editor::{BoldMini, ItalicMini, StrikethroughMini};
 pub use trash::TrashOutlined;
 #[cfg(not(feature = "with-dioxus"))]
 pub use users::UsersOutlined;
+
+#[cfg(feature = "with-dioxus")]
+#[component]
+pub fn Bars3Outlined() -> Element {
+    rsx! {
+        svg { fill: "none", view_box: "0 0 24 24", "stroke-width": "1.5", stroke: "currentColor", class: "size-6",
+          path { "stroke-linecap": "round", "stroke-linejoin": "round", d: "M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" }
+        }
+    }
+}
+
+#[cfg(feature = "with-dioxus")]
+#[component]
+pub fn ChevronUpMini() -> Element {
+    rsx! {
+        svg {
+            class: "size-5",
+            fill: "currentColor",
+            view_box: "0 0 20 20",
+            path {
+                clip_rule: "evenodd",
+                d: "M9.47 6.47a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 1 1-1.06 1.06L10 8.06l-3.72 3.72a.75.75 0 0 1-1.06-1.06l4.25-4.25Z",
+                fill_rule: "evenodd",
+            }
+        }
+    }
+}
 
 #[cfg(not(feature = "with-dioxus"))]
 #[component]

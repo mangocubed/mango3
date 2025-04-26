@@ -1,4 +1,3 @@
-#[cfg(not(feature = "with-dioxus"))]
 use std::sync::Arc;
 
 #[cfg(feature = "with-dioxus")]
@@ -19,6 +18,34 @@ use crate::context::use_basic_config;
 use crate::i18n::{t, use_i18n};
 #[cfg(not(feature = "with-dioxus"))]
 use crate::icons::ChevronDownMini;
+
+#[cfg(feature = "with-dioxus")]
+#[derive(Clone)]
+pub struct ItemsElementFn(Arc<dyn Fn(Orientation) -> Element + 'static>);
+
+#[cfg(feature = "with-dioxus")]
+impl Default for ItemsElementFn {
+    fn default() -> Self {
+        Self(Arc::new(|_| rsx! {}))
+    }
+}
+
+#[cfg(feature = "with-dioxus")]
+impl PartialEq for ItemsElementFn {
+    fn eq(&self, other: &Self) -> bool {
+        Arc::ptr_eq(&self.0, &other.0)
+    }
+}
+
+#[cfg(feature = "with-dioxus")]
+impl<F> From<F> for ItemsElementFn
+where
+    F: Fn(Orientation) -> Element + 'static,
+{
+    fn from(value: F) -> Self {
+        Self(Arc::new(move |orientation| value(orientation)))
+    }
+}
 
 #[cfg(not(feature = "with-dioxus"))]
 #[derive(Clone)]
@@ -47,8 +74,8 @@ where
 pub fn TopBar(
     brand: Option<Element>,
     class: Option<String>,
-    left_items: Option<fn(Orientation) -> Element>,
-    right_items: Option<fn(Orientation) -> Element>,
+    #[props(into, optional)] left_items: ItemsElementFn,
+    #[props(into, optional)] right_items: ItemsElementFn,
 ) -> Element {
     rsx! {
         div {
@@ -61,10 +88,10 @@ pub fn TopBar(
                     class: "dropdown-content menu bg-base-100 rounded-box z-[1] p-2 shadow w-65",
                     div {
                         class: "max-w-full",
-                        { left_items.map(|items| items(Orientation::Vertical)) }
+                        { left_items.0(Orientation::Vertical) }
                     }
 
-                    div { { right_items.map(|items| items(Orientation::Vertical)) } }
+                    div { { right_items.0(Orientation::Vertical) } }
                 }
             }
 
@@ -76,10 +103,10 @@ pub fn TopBar(
                     class: "hidden md:flex items-center w-full",
                     div {
                         class: "flex-1 max-w-full",
-                        { left_items.map(|items| items(Orientation::Horizontal)) }
+                        { left_items.0(Orientation::Horizontal) }
                     }
 
-                    div { class: "flex-none",{ right_items.map(|items| items(Orientation::Horizontal)) } }
+                    div { class: "flex-none", { right_items.0(Orientation::Horizontal) } }
                 }
             }
         }

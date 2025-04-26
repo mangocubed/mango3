@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[cfg(feature = "ssr")]
+#[cfg(any(feature = "ssr", feature = "server"))]
 use mango3_core::utils::Info;
 
 #[derive(Clone, Default, Deserialize, Serialize)]
@@ -11,7 +11,7 @@ pub struct InfoPresenter {
     pub version: String,
 }
 
-#[cfg(feature = "ssr")]
+#[cfg(any(feature = "ssr", feature = "server"))]
 impl From<Info> for InfoPresenter {
     fn from(info: Info) -> Self {
         Self {

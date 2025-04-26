@@ -4,7 +4,7 @@ use dioxus::prelude::{server, server_fn, ServerFnError};
 use leptos::prelude::*;
 
 #[cfg(feature = "with-dioxus")]
-use crate::presenters::{AppConfigPresenter, BasicConfigPresenter};
+use crate::presenters::{AppConfigPresenter, BasicConfigPresenter, InfoPresenter};
 
 #[cfg(all(not(feature = "with-dioxus"), feature = "image-upload"))]
 mod image_upload;
@@ -15,15 +15,21 @@ pub use image_upload::attempt_to_upload_image;
 #[cfg(feature = "with-dioxus")]
 #[server]
 pub async fn get_app_config() -> Result<AppConfigPresenter, ServerFnError> {
-    let language = crate::ssr::extract_language().await?;
+    let locale = crate::ssr::extract_locale().await?;
 
-    Ok(AppConfigPresenter { language })
+    Ok(AppConfigPresenter { locale })
 }
 
 #[cfg(feature = "with-dioxus")]
 #[server]
 pub async fn get_basic_config() -> Result<BasicConfigPresenter, ServerFnError> {
     Ok(mango3_core::config::BASIC_CONFIG.clone().into())
+}
+
+#[cfg(feature = "with-dioxus")]
+#[server]
+pub async fn get_info() -> Result<InfoPresenter, ServerFnError> {
+    Ok(mango3_core::utils::INFO.clone().into())
 }
 
 #[cfg(all(not(feature = "with-dioxus"), feature = "current-user"))]
@@ -42,4 +48,14 @@ pub async fn get_current_user() -> Result<Option<crate::presenters::UserPresente
 #[server]
 pub async fn is_authenticated() -> Result<bool, ServerFnError> {
     crate::ssr::is_authenticated().await
+}
+
+#[cfg(feature = "with-dioxus")]
+#[server]
+pub async fn set_language(language: unic_langid::LanguageIdentifier) -> Result<(), ServerFnError> {
+    let session = crate::ssr::extract_session().await?;
+
+    session.insert("language", &language.to_string()).await?;
+
+    Ok(())
 }

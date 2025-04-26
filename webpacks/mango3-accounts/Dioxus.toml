@@ -2,6 +2,5 @@
 name = "mango3-accounts"
 asset_dir = "../assets"
 
-
 [web.app]
 title = "Mango³ Accounts"

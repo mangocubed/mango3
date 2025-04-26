@@ -9,14 +9,19 @@ pub mod macros;
 
 pub mod components;
 pub mod constants;
-pub mod context;
 pub mod enums;
 pub mod icons;
 pub mod presenters;
 pub mod server_functions;
 
 #[cfg(not(feature = "with-dioxus"))]
+pub mod context;
+#[cfg(feature = "with-dioxus")]
+pub mod hooks;
+#[cfg(not(feature = "with-dioxus"))]
 pub mod pages;
+#[cfg(feature = "with-dioxus")]
+pub mod providers;
 #[cfg(any(feature = "server", feature = "ssr"))]
 pub mod ssr;
 #[cfg(not(feature = "with-dioxus"))]
@@ -29,12 +34,12 @@ leptos_i18n::load_locales!();
 pub mod prelude {
     pub use dioxus::prelude::{
         component, dioxus_core, dioxus_elements, dioxus_router, document, fc_to_builder, rsx, server, server_fn,
-        Element, GlobalSignal, IntoDynNode, Outlet, Properties, Props, Readable, RenderError, Routable, Router,
-        ServerFnError, VNode,
+        use_signal, Element, GlobalSignal, IntoDynNode, Outlet, Properties, Props, Readable, RenderError, Routable,
+        Router, ServerFnError, VNode,
     };
     pub use dioxus_i18n::{self, t};
 
-    pub use crate::context::use_basic_config;
+    pub use crate::hooks::use_basic_config;
 }
 
 #[cfg(feature = "ssr")]
@@ -167,6 +172,8 @@ pub async fn dioxus_server(app_fn: fn() -> prelude::Element) {
 
     use mango3_core::config::{load_config, BASIC_CONFIG, MISC_CONFIG, SESSIONS_CONFIG};
 
+    dioxus::logger::initialize_default();
+
     load_config();
 
     let redis_pool = Pool::new(
@@ -179,6 +186,7 @@ pub async fn dioxus_server(app_fn: fn() -> prelude::Element) {
     .expect("Could not get Redis pool for session.");
 
     let redis_conn = redis_pool.connect();
+
     redis_pool
         .wait_for_connect()
         .await

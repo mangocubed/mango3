@@ -3,5 +3,5 @@ use unic_langid::LanguageIdentifier;
 
 #[derive(Clone, Deserialize, Serialize)]
 pub struct AppConfigPresenter {
-    pub language: LanguageIdentifier,
+    pub locale: LanguageIdentifier,
 }
