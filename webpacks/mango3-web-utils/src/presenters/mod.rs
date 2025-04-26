@@ -17,6 +17,8 @@ mod navigation_item_presenter;
 mod post_comment_presenter;
 #[cfg(any(feature = "post-min-presenter", feature = "post-presenter"))]
 mod post_presenter;
+#[cfg(feature = "with-dioxus")]
+mod routes_presenter;
 #[cfg(feature = "user-presenter")]
 mod user_presenter;
 #[cfg(any(feature = "website-min-presenter", feature = "website-presenter"))]
@@ -43,6 +45,8 @@ pub use post_comment_presenter::PostCommentPresenter;
 pub use post_presenter::PostMinPresenter;
 #[cfg(feature = "post-presenter")]
 pub use post_presenter::PostPresenter;
+#[cfg(feature = "with-dioxus")]
+pub use routes_presenter::RoutesPresenter;
 #[cfg(feature = "user-presenter")]
 pub use user_presenter::{UserMinPresenter, UserPresenter};
 #[cfg(feature = "website-min-presenter")]

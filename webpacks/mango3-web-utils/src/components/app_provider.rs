@@ -25,6 +25,8 @@ pub fn AppProvider(
     children: Element,
     extra_locales: Option<Vec<(LanguageIdentifier, &'static str)>>,
 ) -> Element {
+    use crate::hooks::use_routes;
+
     let basic_config = provide_basic_config_resource()?;
 
     provide_info_resource()?;
@@ -33,8 +35,10 @@ pub fn AppProvider(
 
     provide_i18n(app_config.locale, extra_locales.unwrap_or_default());
 
+    let routes = use_routes();
+
     rsx! {
-        document::Link { rel: "stylesheet", href: basic_config.asset_url("style.css").to_string() }
+        document::Link { rel: "stylesheet", href: routes.asset_url("style.css").to_string() }
 
         div {
            class: format!("flex flex-col min-h-screen {class}"),

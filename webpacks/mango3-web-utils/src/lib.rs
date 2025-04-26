@@ -159,12 +159,14 @@ pub async fn leptos_http_server<F, IV1, IV2>(
 pub async fn dioxus_server(app_fn: fn() -> prelude::Element) {
     use std::net::SocketAddr;
     use std::str::FromStr;
+    use std::sync::Arc;
 
     use axum::Router;
     use axum_client_ip::SecureClientIpSource;
     use cookie::{Key, SameSite};
     use dioxus_fullstack::prelude::{DioxusRouterExt, ServeConfig};
     use fred::prelude::{ClientLike, Config, Pool};
+    use presenters::RoutesPresenter;
     use time::Duration;
     use tokio::net::TcpListener;
     use tower_sessions::{Expiry, SessionManagerLayer};
@@ -206,7 +208,16 @@ pub async fn dioxus_server(app_fn: fn() -> prelude::Element) {
         .into_extension();
 
     let app = Router::new()
-        .serve_dioxus_application(ServeConfig::new().unwrap(), app_fn)
+        .serve_dioxus_application(
+            ServeConfig::builder()
+                .enable_out_of_order_streaming()
+                .context_providers(Arc::new(vec![Box::new(|| {
+                    Box::new(RoutesPresenter::from(BASIC_CONFIG.clone()))
+                })]))
+                .build()
+                .unwrap(),
+            app_fn,
+        )
         .layer(session_layer)
         .layer(client_ip_source_layer);
 
