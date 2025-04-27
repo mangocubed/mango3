@@ -159,7 +159,6 @@ pub async fn leptos_http_server<F, IV1, IV2>(
 pub async fn dioxus_server(app_fn: fn() -> prelude::Element) {
     use std::net::SocketAddr;
     use std::str::FromStr;
-    use std::sync::Arc;
 
     use axum::Router;
     use axum_client_ip::SecureClientIpSource;
@@ -211,9 +210,6 @@ pub async fn dioxus_server(app_fn: fn() -> prelude::Element) {
         .serve_dioxus_application(
             ServeConfig::builder()
                 .enable_out_of_order_streaming()
-                .context_providers(Arc::new(vec![Box::new(|| {
-                    Box::new(RoutesPresenter::from(BASIC_CONFIG.clone()))
-                })]))
                 .build()
                 .unwrap(),
             app_fn,

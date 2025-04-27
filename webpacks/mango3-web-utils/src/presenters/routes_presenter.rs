@@ -18,6 +18,25 @@ pub struct RoutesPresenter {
     pub terms_of_service_url: Option<Url>,
 }
 
+impl Default for RoutesPresenter {
+    fn default() -> Self {
+        let url = Url::parse("a://a").unwrap();
+
+        Self {
+            about_url: None,
+            assets_url: url.clone(),
+            home_url: url.clone(),
+            login_url: url.clone(),
+            my_account_url: url.clone(),
+            new_website_url: url.clone(),
+            privacy_policy_url: None,
+            register_url: url.clone(),
+            studio_url: url,
+            terms_of_service_url: None,
+        }
+    }
+}
+
 #[cfg(feature = "server")]
 impl From<BasicConfig> for RoutesPresenter {
     fn from(basic_config: BasicConfig) -> Self {

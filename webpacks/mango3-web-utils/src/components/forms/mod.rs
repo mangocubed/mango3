@@ -44,11 +44,25 @@ where
     }
 }
 
+#[cfg(feature = "with-dioxus")]
+#[component]
+pub fn FieldError(message: Signal<Option<String>>) -> Element {
+    rsx! { div { class: "fieldset-label text-error", { message } } }
+}
+
+#[cfg(not(feature = "with-dioxus"))]
 #[component]
 fn FieldError(error: RwSignal<Option<String>>) -> impl IntoView {
     view! { <div class="fieldset-label text-error">{move || error.get()}</div> }
 }
 
+#[cfg(feature = "with-dioxus")]
+#[component]
+pub fn FieldLabel(id: String, children: Element) -> Element {
+    rsx! { label { class: "fieldset-label empty:hidden" for: id, { children } } }
+}
+
+#[cfg(not(feature = "with-dioxus"))]
 #[component]
 fn FieldLabel(id: String, children: Children) -> impl IntoView {
     view! {
@@ -58,6 +72,7 @@ fn FieldLabel(id: String, children: Children) -> impl IntoView {
     }
 }
 
+#[cfg(not(feature = "with-dioxus"))]
 #[component]
 pub fn FormErrorAlert<D>(
     #[prop(optional)] action_value: MutPresenterActionValue<D>,
@@ -96,6 +111,7 @@ where
     }
 }
 
+#[cfg(not(feature = "with-dioxus"))]
 #[component]
 pub fn FormField<D>(
     #[prop(optional)] action_value: MutPresenterActionValue<D>,
@@ -128,6 +144,7 @@ where
     }
 }
 
+#[cfg(not(feature = "with-dioxus"))]
 #[component]
 pub fn FormSuccessModal(
     #[prop(optional)] action_value: MutPresenterActionValue,

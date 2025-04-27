@@ -10,7 +10,7 @@ use leptos_meta::{Link, Title};
 #[cfg(not(feature = "with-dioxus"))]
 use crate::context::use_basic_config;
 #[cfg(feature = "with-dioxus")]
-use crate::hooks::use_basic_config;
+use crate::hooks::{use_info, use_routes};
 #[cfg(not(feature = "with-dioxus"))]
 use crate::i18n::{t, use_i18n};
 
@@ -142,8 +142,9 @@ pub fn AppTitle(#[prop(optional, into)] suffix: Signal<Option<String>>) -> impl 
 #[cfg(feature = "with-dioxus")]
 #[component]
 pub fn Brand(href: Option<String>, #[props(optional)] children: Element) -> Element {
-    let basic_config = use_basic_config();
-    let asset_url = basic_config.asset_url("logo.svg").to_string();
+    let info = use_info();
+    let routes =  use_routes();
+    let asset_url = routes.asset_url("logo.svg").to_string();
 
     rsx! {
         Link {
@@ -153,7 +154,7 @@ pub fn Brand(href: Option<String>, #[props(optional)] children: Element) -> Elem
             picture {
                 source { "media": "(min-width: 768px)", "srcset": asset_url.clone() }
 
-                img { alt: basic_config.title.clone(), class: "h-[36px]", src: asset_url }
+                img { alt: info.title.clone(), class: "h-[36px]", src: asset_url }
             }
 
             { children }
@@ -164,12 +165,12 @@ pub fn Brand(href: Option<String>, #[props(optional)] children: Element) -> Elem
 #[cfg(feature = "with-dioxus")]
 #[component]
 pub fn FaviconLink(href: Option<String>) -> Element {
-    let basic_config = use_basic_config();
+    let routes = use_routes();
 
     let href = if let Some(href) = href {
         href
     } else {
-        basic_config.asset_url("favicon.ico").to_string()
+        routes.asset_url("favicon.ico").to_string()
     };
 
     rsx! { document::Link { rel: "icon",  href: href } }

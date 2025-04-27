@@ -14,7 +14,7 @@ use crate::icons::ChevronUpMini;
 #[cfg(not(feature = "with-dioxus"))]
 use crate::context::{use_basic_config, use_color_mode_with_options, use_info, UseColorModeOptions};
 #[cfg(feature = "with-dioxus")]
-use crate::hooks::{use_app_config_resource, use_basic_config, use_info};
+use crate::hooks::{use_app_config_resource, use_routesS, use_info};
 #[cfg(not(feature = "with-dioxus"))]
 use crate::i18n::{t, use_i18n, Locale};
 #[cfg(not(feature = "with-dioxus"))]
@@ -44,21 +44,14 @@ pub fn BottomBar(
     #[props(default = "dark".to_owned())] dark_theme: String,
 ) -> Element {
     let mut app_config_resource = use_app_config_resource();
-    let app_config_read = app_config_resource.read();
-    let app_config = app_config_read.as_ref().unwrap();
-
-    let basic_config = use_basic_config();
+    let current_locale = use_memo(|| app_config_resource.read().as_ref().unwrap_or(LOCALES[0]));
+    
+    let routes = use_routes();
     let info = use_info();
-
-    let current_locale = LOCALES
-        .iter()
-        .find(|(_, locale)| locale.language == app_config.locale.language)
-        .unwrap_or(&LOCALES[0])
-        .clone();
 
     let available_locales = LOCALES
         .iter()
-        .filter(move |(_, language)| language.language != app_config.locale.language)
+        .filter(move |(_, locale)| locale.language != current_locale.language)
         .cloned()
         .collect::<Vec<(&str, LanguageIdentifier)>>();
 
@@ -69,23 +62,23 @@ pub fn BottomBar(
                 div { { aside_items } }
 
                 Link {
-                    to: basic_config.home_url.to_string(),
+                    to: routes.home_url.to_string(),
                     img {
                         class: "h-[48px]",
-                        alt: basic_config.title.clone(),
-                        src: basic_config.asset_url("logo.svg").to_string()
+                        alt: routes.title.clone(),
+                        src: routes.asset_url("logo.svg").to_string()
                     }
                 }
 
-                p { { basic_config.copyright.clone() } }
+                p { { info.copyright.clone() } }
             }
 
             nav {
-                { basic_config.about_url.clone().map(|url| rsx! { a { href: url.to_string(), target: "_blank", { t!("about-us") } } }) }
+                { routes.about_url.clone().map(|url| rsx! { a { href: url.to_string(), target: "_blank", { t!("about-us") } } }) }
 
-                { basic_config.privacy_policy_url.clone().map(|url| rsx! { a { href: url.to_string(), target: "_blank", { t!("privacy-policy") } } }) }
+                { routes.privacy_policy_url.clone().map(|url| rsx! { a { href: url.to_string(), target: "_blank", { t!("privacy-policy") } } }) }
 
-                { basic_config.terms_of_service_url.clone().map(|url| rsx! { a { href: url.to_string(), target: "_blank", { t!("terms-of-service") } } }) }
+                { routes.terms_of_service_url.clone().map(|url| rsx! { a { href: url.to_string(), target: "_blank", { t!("terms-of-service") } } }) }
 
                 a {
                     href: format!("https://github.com/mangocubed/mango3/tree/{}", info.git_commit_hash),
@@ -124,6 +117,24 @@ pub fn BottomBar(
                                 }
                             }
                         }
+                    }
+                }
+                
+                div {
+                    class: "join",
+                    button {
+                        class="join-item btn btn-outline btn-accent",
+                        type: "button",
+                    }
+                    
+                    button {
+                        class="join-item btn btn-outline btn-accent",
+                        type: "button",
+                    }
+                    
+                    button {
+                        class="join-item btn btn-outline btn-accent",
+                        type: "button",
                     }
                 }
             }

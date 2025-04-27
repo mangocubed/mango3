@@ -14,9 +14,7 @@ use crate::context::{provide_basic_config, provide_current_user_resource, provid
 #[cfg(not(feature = "with-dioxus"))]
 use crate::i18n::I18nContextProvider;
 #[cfg(feature = "with-dioxus")]
-use crate::providers::{
-    provide_app_config_resource, provide_basic_config_resource, provide_i18n, provide_info_resource,
-};
+use crate::providers::{provide_app_config_resource, provide_i18n, provide_info, provide_routes};
 
 #[cfg(feature = "with-dioxus")]
 #[component]
@@ -25,17 +23,13 @@ pub fn AppProvider(
     children: Element,
     extra_locales: Option<Vec<(LanguageIdentifier, &'static str)>>,
 ) -> Element {
-    use crate::hooks::use_routes;
-
-    let basic_config = provide_basic_config_resource()?;
-
-    provide_info_resource()?;
+    provide_info();
 
     let app_config = provide_app_config_resource()?;
 
     provide_i18n(app_config.locale, extra_locales.unwrap_or_default());
 
-    let routes = use_routes();
+    let routes = provide_routes();
 
     rsx! {
         document::Link { rel: "stylesheet", href: routes.asset_url("style.css").to_string() }

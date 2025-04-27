@@ -5,7 +5,11 @@ pub fn LoginPage() -> Element {
     rsx! {
         h1 { class: "h1", { t!("login") } }
 
-        form { autocomplete: "off", novalidate: "true", class: "form" }
+        form { 
+            autocomplete: "off", novalidate: "true", class: "form",
+            
+            
+        }
     }
 }
 
