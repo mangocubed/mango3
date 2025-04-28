@@ -11,7 +11,16 @@ use super::{EventFn, FormField};
 #[component]
 pub fn TextFeld() -> Element {
     rsx! {
-        
+        FormField {
+            input {
+                class: "input w-full",
+                id: id,
+                name: name,
+                oninput: |event| {}
+                r#type: input_type
+                value: value
+            }
+        }
     }
 }
 
