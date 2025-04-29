@@ -21,7 +21,7 @@ mango3-core = { workspace = true, features = [
     "send-user-login-confirmation-code",
     "send-user-password-reset-code",
 ], optional = true }
-mango3-web-utils = { workspace = true, features = ["with-dioxus"] }
+mango3-web-utils = { workspace = true, features = ["forms", "with-dioxus"] }
 
 [features]
 server = ["dep:tokio", "dep:mango3-core", "mango3-web-utils/server"]

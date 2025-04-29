@@ -1,23 +1,47 @@
+#[cfg(feature = "with-dioxus")]
+use dioxus::prelude::*;
+#[cfg(not(feature = "with-dioxus"))]
 use leptos::ev::keydown;
+#[cfg(not(feature = "with-dioxus"))]
 use leptos::prelude::*;
+#[cfg(not(feature = "with-dioxus"))]
 use leptos_use::use_event_listener;
 
+#[cfg(feature = "with-dioxus")]
+use crate::presenters::MutPresenter;
+
+#[cfg(not(feature = "with-dioxus"))]
 use crate::constants::KEY_CODE_ENTER;
+#[cfg(not(feature = "with-dioxus"))]
 use crate::presenters::MutPresenterActionValue;
 
-use super::{EventFn, FormField};
+use super::FormField;
+
+#[cfg(not(feature = "with-dioxus"))]
+use super::EventFn;
 
 #[cfg(feature = "with-dioxus")]
 #[component]
-pub fn TextFeld() -> Element {
+pub fn TextField<T: Clone + PartialEq + 'static>(
+    #[props(optional)] error: Signal<Option<String>>,
+    id: String,
+    #[props(default = "text".to_owned())] input_type: String,
+    #[props(optional)] mutation: Resource<MutPresenter<T>>,
+    name: String,
+    value: Signal<String>,
+) -> Element {
     rsx! {
         FormField {
+            error: error,
+            for_id: &id,
+            name: &name,
+            mutation: mutation,
             input {
-                class: "input w-full",
+                class: if error().is_some() { "input w-full input-error" } else { "input w-full" },
                 id: id,
                 name: name,
-                oninput: |event| {}
-                r#type: input_type
+                oninput: |event| {},
+                r#type: input_type,
                 value: value
             }
         }

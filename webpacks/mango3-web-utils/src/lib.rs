@@ -39,7 +39,7 @@ pub mod prelude {
     };
     pub use dioxus_i18n::{self, t};
 
-    pub use crate::hooks::use_basic_config;
+    pub use crate::hooks::use_app_routes;
 }
 
 #[cfg(feature = "ssr")]
@@ -165,7 +165,6 @@ pub async fn dioxus_server(app_fn: fn() -> prelude::Element) {
     use cookie::{Key, SameSite};
     use dioxus_fullstack::prelude::{DioxusRouterExt, ServeConfig};
     use fred::prelude::{ClientLike, Config, Pool};
-    use presenters::RoutesPresenter;
     use time::Duration;
     use tokio::net::TcpListener;
     use tower_sessions::{Expiry, SessionManagerLayer};
@@ -208,10 +207,7 @@ pub async fn dioxus_server(app_fn: fn() -> prelude::Element) {
 
     let app = Router::new()
         .serve_dioxus_application(
-            ServeConfig::builder()
-                .enable_out_of_order_streaming()
-                .build()
-                .unwrap(),
+            ServeConfig::builder().enable_out_of_order_streaming().build().unwrap(),
             app_fn,
         )
         .layer(session_layer)

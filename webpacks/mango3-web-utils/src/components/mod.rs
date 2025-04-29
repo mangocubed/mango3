@@ -10,7 +10,7 @@ use leptos_meta::{Link, Title};
 #[cfg(not(feature = "with-dioxus"))]
 use crate::context::use_basic_config;
 #[cfg(feature = "with-dioxus")]
-use crate::hooks::{use_info, use_routes};
+use crate::hooks::{use_app_info, use_app_routes};
 #[cfg(not(feature = "with-dioxus"))]
 use crate::i18n::{t, use_i18n};
 
@@ -60,7 +60,7 @@ mod user_tag;
 #[cfg(all(not(feature = "with-dioxus"), feature = "website-card"))]
 mod website_card;
 
-#[cfg(all(not(feature = "with-dioxus"), feature = "forms"))]
+#[cfg(feature = "forms")]
 pub mod forms;
 
 pub use app_provider::AppProvider;
@@ -142,9 +142,9 @@ pub fn AppTitle(#[prop(optional, into)] suffix: Signal<Option<String>>) -> impl 
 #[cfg(feature = "with-dioxus")]
 #[component]
 pub fn Brand(href: Option<String>, #[props(optional)] children: Element) -> Element {
-    let info = use_info();
-    let routes =  use_routes();
-    let asset_url = routes.asset_url("logo.svg").to_string();
+    let app_info = use_app_info();
+    let app_routes = use_app_routes();
+    let asset_url = app_routes.asset_url("logo.svg").to_string();
 
     rsx! {
         Link {
@@ -154,26 +154,12 @@ pub fn Brand(href: Option<String>, #[props(optional)] children: Element) -> Elem
             picture {
                 source { "media": "(min-width: 768px)", "srcset": asset_url.clone() }
 
-                img { alt: info.title.clone(), class: "h-[36px]", src: asset_url }
+                img { alt: app_info.title.clone(), class: "h-[36px]", src: asset_url }
             }
 
             { children }
         }
     }
-}
-
-#[cfg(feature = "with-dioxus")]
-#[component]
-pub fn FaviconLink(href: Option<String>) -> Element {
-    let routes = use_routes();
-
-    let href = if let Some(href) = href {
-        href
-    } else {
-        routes.asset_url("favicon.ico").to_string()
-    };
-
-    rsx! { document::Link { rel: "icon",  href: href } }
 }
 
 #[cfg(not(feature = "with-dioxus"))]
@@ -193,17 +179,18 @@ pub fn FaviconLink(#[prop(into, optional)] href: Option<String>) -> impl IntoVie
 #[cfg(feature = "with-dioxus")]
 #[component]
 pub fn GoToMango3() -> Element {
-    let basic_config = use_basic_config();
+    let app_info = use_app_info();
+    let app_routes = use_app_routes();
 
     rsx! {
         a {
             class: "btn btn-ghost btn-block px-2 font-normal",
-            href: basic_config.home_url.to_string(),
+            href: app_routes.home_url.to_string(),
             { t!("go-to") }
 
-            img { alt: basic_config.title.clone(), class: "h-[16px]", src: basic_config.asset_url("icon.svg").to_string() }
+            img { alt: app_info.title.clone(), class: "h-[16px]", src: app_routes.asset_url("icon.svg").to_string() }
 
-            span { class: "font-bold", { basic_config.title.clone() } }
+            span { class: "font-bold", { app_info.title.clone() } }
         }
     }
 }
@@ -229,35 +216,6 @@ pub fn GoToMango3() -> impl IntoView {
                 }
             )}
         </a>
-    }
-}
-
-#[cfg(feature = "with-dioxus")]
-#[component]
-pub fn LoadingOverlay(
-    #[props(optional)] icon_class: String,
-    icon_url: Option<String>,
-    #[props(default = "rounded-full".to_owned())] pulse_class: String,
-) -> Element {
-    let basic_config = use_basic_config();
-    let mut is_done = use_signal(|| false);
-
-    let loading_icon_src = icon_url
-        .clone()
-        .unwrap_or_else(|| basic_config.asset_url("icon.svg").to_string());
-
-    use_effect(move || {
-        *is_done.write() = true;
-    });
-
-    rsx! {
-        div {
-            class: if is_done() { "loading-overlay is-done" } else { "loading-overlay" },
-            figure {
-                div { class: format!("loading-pulse {pulse_class}") }
-                img { class: icon_class, src: loading_icon_src }
-            }
-        }
     }
 }
 

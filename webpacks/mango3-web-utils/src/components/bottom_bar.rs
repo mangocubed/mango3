@@ -14,7 +14,7 @@ use crate::icons::ChevronUpMini;
 #[cfg(not(feature = "with-dioxus"))]
 use crate::context::{use_basic_config, use_color_mode_with_options, use_info, UseColorModeOptions};
 #[cfg(feature = "with-dioxus")]
-use crate::hooks::{use_app_config_resource, use_routesS, use_info};
+use crate::hooks::{use_app_config_resource, use_app_info, use_app_routes};
 #[cfg(not(feature = "with-dioxus"))]
 use crate::i18n::{t, use_i18n, Locale};
 #[cfg(not(feature = "with-dioxus"))]
@@ -23,7 +23,7 @@ use crate::icons::{ComputerOutlined, MoonOutlined, SunOutlined};
 use crate::server_functions::set_language;
 
 #[cfg(feature = "with-dioxus")]
-const LOCALES: [(&str, LanguageIdentifier); 3] = [
+const LANGUAGES: [(&str, LanguageIdentifier); 3] = [
     ("English", langid!("en")),
     ("Español", langid!("es")),
     ("Português", langid!("pt")),
@@ -44,14 +44,25 @@ pub fn BottomBar(
     #[props(default = "dark".to_owned())] dark_theme: String,
 ) -> Element {
     let mut app_config_resource = use_app_config_resource();
-    let current_locale = use_memo(|| app_config_resource.read().as_ref().unwrap_or(LOCALES[0]));
-    
-    let routes = use_routes();
-    let info = use_info();
+    let app_info = use_app_info();
+    let app_routes = use_app_routes();
+    let current_language = use_memo(move || {
+        app_config_resource.with(|app_config_opt| {
+            app_config_opt
+                .clone()
+                .and_then(|app_config| {
+                    LANGUAGES
+                        .iter()
+                        .cloned()
+                        .find(|(_, locale)| locale.language == app_config.locale.language)
+                })
+                .unwrap_or(LANGUAGES[0].clone())
+        })
+    });
 
-    let available_locales = LOCALES
+    let available_languages = LANGUAGES
         .iter()
-        .filter(move |(_, locale)| locale.language != current_locale.language)
+        .filter(move |(_, locale)| locale.language != current_language.with(|(_, locale)| locale.language))
         .cloned()
         .collect::<Vec<(&str, LanguageIdentifier)>>();
 
@@ -62,32 +73,32 @@ pub fn BottomBar(
                 div { { aside_items } }
 
                 Link {
-                    to: routes.home_url.to_string(),
+                    to: app_routes.home_url.to_string(),
                     img {
                         class: "h-[48px]",
-                        alt: routes.title.clone(),
-                        src: routes.asset_url("logo.svg").to_string()
+                        alt: app_info.title.clone(),
+                        src: app_routes.asset_url("logo.svg").to_string()
                     }
                 }
 
-                p { { info.copyright.clone() } }
+                p { { app_info.copyright.clone() } }
             }
 
             nav {
-                { routes.about_url.clone().map(|url| rsx! { a { href: url.to_string(), target: "_blank", { t!("about-us") } } }) }
+                { app_routes.about_url.clone().map(|url| rsx! { a { href: url.to_string(), target: "_blank", { t!("about-us") } } }) }
 
-                { routes.privacy_policy_url.clone().map(|url| rsx! { a { href: url.to_string(), target: "_blank", { t!("privacy-policy") } } }) }
+                { app_routes.privacy_policy_url.clone().map(|url| rsx! { a { href: url.to_string(), target: "_blank", { t!("privacy-policy") } } }) }
 
-                { routes.terms_of_service_url.clone().map(|url| rsx! { a { href: url.to_string(), target: "_blank", { t!("terms-of-service") } } }) }
+                { app_routes.terms_of_service_url.clone().map(|url| rsx! { a { href: url.to_string(), target: "_blank", { t!("terms-of-service") } } }) }
 
                 a {
-                    href: format!("https://github.com/mangocubed/mango3/tree/{}", info.git_commit_hash),
+                    href: format!("https://github.com/mangocubed/mango3/tree/{}", app_info.git_commit_hash),
                     target: "_blank",
                     title: t!("view-source-code"),
                     "v"
-                    {info.version}
+                    {app_info.version}
                     " ("
-                    {info.git_commit_short_hash}
+                    {app_info.git_commit_short_hash}
                     ")"
                 }
             }
@@ -98,14 +109,14 @@ pub fn BottomBar(
                     button {
                         class: "btn btn-outline btn-accent",
                         type: "button",
-                        { current_locale.0 }
+                        { current_language.with(|(label, _)| *label) }
                         ChevronUpMini {}
                     }
 
 
                     ul {
                         class: "dropdown-content menu bg-base-100 rounded-box z-[1] w-28 p-2 shadow",
-                        for (label, locale) in available_locales {
+                        for (label, locale) in available_languages {
                             li {
                                 key: locale.to_string(),
                                 a {
@@ -119,21 +130,21 @@ pub fn BottomBar(
                         }
                     }
                 }
-                
+
                 div {
                     class: "join",
                     button {
-                        class="join-item btn btn-outline btn-accent",
+                        class: "join-item btn btn-outline btn-accent",
                         type: "button",
                     }
-                    
+
                     button {
-                        class="join-item btn btn-outline btn-accent",
+                        class: "join-item btn btn-outline btn-accent",
                         type: "button",
                     }
-                    
+
                     button {
-                        class="join-item btn btn-outline btn-accent",
+                        class: "join-item btn btn-outline btn-accent",
                         type: "button",
                     }
                 }
@@ -159,13 +170,13 @@ pub fn BottomBar(
     let i18n = use_i18n();
 
     let current_lang_name = move || {
-        LOCALES
+        LANGUAGES
             .iter()
             .find(|(_, locale)| *locale == i18n.get_locale())
             .unwrap()
             .0
     };
-    let available_langs = move || LOCALES.iter().filter(move |(_, locale)| *locale != i18n.get_locale());
+    let available_langs = move || LANGUAGES.iter().filter(move |(_, locale)| *locale != i18n.get_locale());
 
     view! {
         <footer class="footer md:footer-horizontal bg-base-200 text-base-content p-10">

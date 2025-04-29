@@ -1,15 +1,33 @@
+#[cfg(feature = "with-dioxus")]
+use dioxus::prelude::*;
+#[cfg(feature = "with-dioxus")]
+use dioxus_i18n::t;
+#[cfg(not(feature = "with-dioxus"))]
 use leptos::either::Either;
+#[cfg(not(feature = "with-dioxus"))]
 use leptos::ev::Event;
+#[cfg(not(feature = "with-dioxus"))]
 use leptos::prelude::*;
 
-use crate::components::Modal;
-use crate::presenters::{MutPresenter, MutPresenterActionValue};
+use crate::presenters::MutPresenter;
 
-mod country_field;
-mod password_field;
-mod submit_button;
-mod switch_field;
+#[cfg(not(feature = "with-dioxus"))]
+use crate::presenters::MutPresenterActionValue;
+
+#[cfg(not(feature = "with-dioxus"))]
+use crate::components::Modal;
+
 mod text_field;
+
+#[cfg(not(feature = "with-dioxus"))]
+mod country_field;
+#[cfg(not(feature = "with-dioxus"))]
+mod password_field;
+#[cfg(not(feature = "with-dioxus"))]
+mod submit_button;
+#[cfg(not(feature = "with-dioxus"))]
+mod switch_field;
+#[cfg(not(feature = "with-dioxus"))]
 mod textarea_field;
 
 #[cfg(feature = "image-upload")]
@@ -19,11 +37,17 @@ mod markdown_editor_field;
 #[cfg(feature = "multiple-image-upload")]
 mod multiple_image_upload_field;
 
-pub use country_field::CountryField;
-pub use password_field::PasswordField;
-pub use submit_button::SubmitButton;
-pub use switch_field::SwitchField;
 pub use text_field::TextField;
+
+#[cfg(not(feature = "with-dioxus"))]
+pub use country_field::CountryField;
+#[cfg(not(feature = "with-dioxus"))]
+pub use password_field::PasswordField;
+#[cfg(not(feature = "with-dioxus"))]
+pub use submit_button::SubmitButton;
+#[cfg(not(feature = "with-dioxus"))]
+pub use switch_field::SwitchField;
+#[cfg(not(feature = "with-dioxus"))]
 pub use textarea_field::TextareaField;
 
 #[cfg(feature = "image-upload")]
@@ -33,8 +57,10 @@ pub use markdown_editor_field::MarkdownEditorField;
 #[cfg(feature = "multiple-image-upload")]
 pub use multiple_image_upload_field::MultipleImageUploadField;
 
+#[cfg(not(feature = "with-dioxus"))]
 pub struct EventFn(Box<dyn Fn(Event) + Send + Sync + 'static>);
 
+#[cfg(not(feature = "with-dioxus"))]
 impl<T> From<T> for EventFn
 where
     T: Fn(Event) + Send + Sync + 'static,
@@ -46,8 +72,8 @@ where
 
 #[cfg(feature = "with-dioxus")]
 #[component]
-pub fn FieldError(message: Signal<Option<String>>) -> Element {
-    rsx! { div { class: "fieldset-label text-error", { message } } }
+pub fn FieldError(children: Element) -> Element {
+    rsx! { div { class: "fieldset-label text-error", { children } } }
 }
 
 #[cfg(not(feature = "with-dioxus"))]
@@ -58,8 +84,8 @@ fn FieldError(error: RwSignal<Option<String>>) -> impl IntoView {
 
 #[cfg(feature = "with-dioxus")]
 #[component]
-pub fn FieldLabel(id: String, children: Element) -> Element {
-    rsx! { label { class: "fieldset-label empty:hidden" for: id, { children } } }
+pub fn FieldLabel(for_id: String, children: Element) -> Element {
+    rsx! { label { class: "fieldset-label empty:hidden", for: for_id, { children } } }
 }
 
 #[cfg(not(feature = "with-dioxus"))]
@@ -108,6 +134,36 @@ where
                 </div>
             </div>
         </Show>
+    }
+}
+
+#[cfg(feature = "with-dioxus")]
+#[component]
+pub fn FormField<T: Clone + PartialEq + 'static>(
+    mutation: Resource<MutPresenter<T>>,
+    children: Element,
+    error: Signal<Option<String>>,
+    for_id: String,
+    name: String,
+) -> Element {
+    use_effect({
+        let name = name.clone();
+        move || {
+            if let Some(ref response) = *mutation.read() {
+                *error.write() = response.error(name.clone());
+            }
+        }
+    });
+
+    rsx! {
+        fieldset {
+            class: "fieldset w-full",
+            label { class: "fieldset-label empty:hidden", for: for_id, { t!(&name) } }
+
+            { children }
+
+            FieldError { { error() } }
+        }
     }
 }
 

@@ -1,7 +1,9 @@
 use std::collections::HashMap;
 
-use leptos::prelude::*;
 use serde::{Deserialize, Serialize};
+
+#[cfg(not(feature = "with-dioxus"))]
+use leptos::prelude::*;
 
 #[cfg(feature = "ssr")]
 use mango3_core::utils::*;
@@ -53,6 +55,7 @@ pub struct MutPresenter<T = ()> {
     pub message: Option<String>,
 }
 
+#[cfg(not(feature = "with-dioxus"))]
 pub type MutPresenterActionValue<T = ()> = RwSignal<Option<Result<MutPresenter<T>, ServerFnError>>>;
 
 impl<T> MutPresenter<T> {
@@ -120,6 +123,7 @@ impl<T> MutPresenter<T> {
     }
 }
 
+#[cfg(not(feature = "with-dioxus"))]
 impl<T> From<MutPresenterActionValue<T>> for MutPresenter<T>
 where
     T: Default + Send + Sync + Clone + 'static,

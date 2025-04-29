@@ -4,7 +4,7 @@ use dioxus::prelude::{server, server_fn, ServerFnError};
 use leptos::prelude::*;
 
 #[cfg(feature = "with-dioxus")]
-use crate::presenters::{AppConfigPresenter, BasicConfigPresenter, InfoPresenter};
+use crate::presenters::AppConfigPresenter;
 
 #[cfg(all(not(feature = "with-dioxus"), feature = "image-upload"))]
 mod image_upload;
@@ -18,18 +18,6 @@ pub async fn get_app_config() -> Result<AppConfigPresenter, ServerFnError> {
     let locale = crate::ssr::extract_locale().await?;
 
     Ok(AppConfigPresenter { locale })
-}
-
-#[cfg(feature = "with-dioxus")]
-#[server]
-pub async fn get_basic_config() -> Result<BasicConfigPresenter, ServerFnError> {
-    Ok(mango3_core::config::BASIC_CONFIG.clone().into())
-}
-
-#[cfg(feature = "with-dioxus")]
-#[server]
-pub async fn get_info() -> Result<InfoPresenter, ServerFnError> {
-    Ok(mango3_core::utils::INFO.clone().into())
 }
 
 #[cfg(all(not(feature = "with-dioxus"), feature = "current-user"))]

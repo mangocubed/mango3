@@ -5,7 +5,7 @@ use url::Url;
 use mango3_core::config::BasicConfig;
 
 #[derive(Clone, Deserialize, Serialize)]
-pub struct RoutesPresenter {
+pub struct AppRoutesPresenter {
     pub about_url: Option<Url>,
     assets_url: Url,
     pub home_url: Url,
@@ -18,7 +18,7 @@ pub struct RoutesPresenter {
     pub terms_of_service_url: Option<Url>,
 }
 
-impl Default for RoutesPresenter {
+impl Default for AppRoutesPresenter {
     fn default() -> Self {
         let url = Url::parse("a://a").unwrap();
 
@@ -38,7 +38,7 @@ impl Default for RoutesPresenter {
 }
 
 #[cfg(feature = "server")]
-impl From<BasicConfig> for RoutesPresenter {
+impl From<BasicConfig> for AppRoutesPresenter {
     fn from(basic_config: BasicConfig) -> Self {
         Self {
             about_url: basic_config.about_url.clone(),
@@ -55,7 +55,7 @@ impl From<BasicConfig> for RoutesPresenter {
     }
 }
 
-impl RoutesPresenter {
+impl AppRoutesPresenter {
     pub fn asset_url(&self, file_name: &str) -> Url {
         self.assets_url.join(file_name).unwrap()
     }

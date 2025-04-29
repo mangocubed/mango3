@@ -1,4 +1,4 @@
-use mango3_web_utils::components::{AppProvider, FaviconLink, LoadingOverlay};
+use mango3_web_utils::components::AppProvider;
 use mango3_web_utils::prelude::*;
 
 use crate::routes::Routes;
@@ -9,11 +9,7 @@ pub fn app() -> Element {
 
         AppProvider {
             class: "dark:bg-neutral-950 bg-slate-50",
-            FaviconLink {}
-
             Router::<Routes> {}
-
-            LoadingOverlay {}
         }
     }
 }
