@@ -1,5 +1,9 @@
-use leptos::prelude::*;
 use uuid::Uuid;
+
+#[cfg(feature = "with-dioxus")]
+use dioxus::prelude::*;
+#[cfg(not(feature = "with-dioxus"))]
+use leptos::prelude::ServerFnError;
 
 use mango3_core::commands::get_user_session_by_id;
 use mango3_core::config::BASIC_CONFIG;
@@ -64,6 +68,7 @@ pub async fn require_authentication() -> Result<bool, ServerFnError> {
     Ok(true)
 }
 
+#[cfg(not(feature = "with-dioxus"))]
 pub async fn require_no_authentication() -> Result<bool, ServerFnError> {
     if is_authenticated().await? {
         leptos_axum::redirect(BASIC_CONFIG.home_url().as_str());

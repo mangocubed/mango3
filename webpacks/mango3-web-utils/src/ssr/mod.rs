@@ -22,16 +22,14 @@ use mango3_core::CoreContext;
 #[cfg(not(feature = "with-dioxus"))]
 use crate::context::use_language_cookie;
 
-#[cfg(not(feature = "with-dioxus"))]
 mod user_sessions;
 
-#[cfg(all(not(feature = "with-dioxus"), feature = "confirmation-codes"))]
+#[cfg(feature = "confirmation-codes")]
 mod confirmation_codes;
 
-#[cfg(not(feature = "with-dioxus"))]
 pub use user_sessions::*;
 
-#[cfg(all(not(feature = "with-dioxus"), feature = "confirmation-codes"))]
+#[cfg(feature = "confirmation-codes")]
 pub use confirmation_codes::*;
 
 #[cfg(not(feature = "with-dioxus"))]

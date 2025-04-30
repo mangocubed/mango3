@@ -2,6 +2,7 @@ mod app;
 mod components;
 mod pages;
 mod routes;
+mod server_functions;
 
 use crate::app::app;
 

@@ -82,12 +82,6 @@ fn FieldError(error: RwSignal<Option<String>>) -> impl IntoView {
     view! { <div class="fieldset-label text-error">{move || error.get()}</div> }
 }
 
-#[cfg(feature = "with-dioxus")]
-#[component]
-pub fn FieldLabel(for_id: String, children: Element) -> Element {
-    rsx! { label { class: "fieldset-label empty:hidden", for: for_id, { children } } }
-}
-
 #[cfg(not(feature = "with-dioxus"))]
 #[component]
 fn FieldLabel(id: String, children: Children) -> impl IntoView {
@@ -95,6 +89,34 @@ fn FieldLabel(id: String, children: Children) -> impl IntoView {
         <label class="fieldset-label empty:hidden" for=id>
             {children()}
         </label>
+    }
+}
+
+#[cfg(feature = "with-dioxus")]
+#[component]
+pub fn Form<T: Clone + PartialEq + 'static>(
+    children: Element,
+    action: Callback<(), Result<MutPresenter<T>, ServerFnError>>,
+) -> Element {
+    let mut mutation: Signal<Option<MutPresenter<T>>> = use_signal(|| None);
+
+    use_context_provider(|| mutation);
+
+    rsx! {
+        form {
+            autocomplete: "off",
+            novalidate: "true",
+            class: "form",
+            onsubmit: move |event| {
+                event.prevent_default();
+
+                let action = action.clone();
+
+                async move {  *mutation.write() = action(()).ok(); }
+            },
+
+            { children }
+        }
     }
 }
 
@@ -139,13 +161,14 @@ where
 
 #[cfg(feature = "with-dioxus")]
 #[component]
-pub fn FormField<T: Clone + PartialEq + 'static>(
-    mutation: Resource<MutPresenter<T>>,
+pub fn FormField(
     children: Element,
-    error: Signal<Option<String>>,
+    #[props(optional)] error: Signal<Option<String>>,
     for_id: String,
     name: String,
 ) -> Element {
+    let mutation = use_context::<Signal<Option<MutPresenter>>>();
+
     use_effect({
         let name = name.clone();
         move || {

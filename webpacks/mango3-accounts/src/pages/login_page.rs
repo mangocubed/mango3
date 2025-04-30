@@ -1,15 +1,20 @@
-use mango3_web_utils::components::forms::TextField;
+use mango3_web_utils::components::forms::{Form, TextField};
 use mango3_web_utils::prelude::*;
+
+use crate::server_functions::attempt_to_login;
 
 #[component]
 pub fn LoginPage() -> Element {
+    let username_value = use_signal(|| String::new());
+    let password_value = use_signal(|| String::new());
+    let action = use_callback(move |_: ()| async move { attempt_to_login(username_value(), password_value()).await });
+
     rsx! {
         h1 { class: "h1", { t!("login") } }
 
-        form {
-            autocomplete: "off", novalidate: "true", class: "form",
-
-
+        Form {
+            action: action,
+            TextField { id: "username", name: "username", value: username_value }
         }
     }
 }

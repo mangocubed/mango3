@@ -7,9 +7,6 @@ use leptos::prelude::*;
 #[cfg(not(feature = "with-dioxus"))]
 use leptos_use::use_event_listener;
 
-#[cfg(feature = "with-dioxus")]
-use crate::presenters::MutPresenter;
-
 #[cfg(not(feature = "with-dioxus"))]
 use crate::constants::KEY_CODE_ENTER;
 #[cfg(not(feature = "with-dioxus"))]
@@ -22,25 +19,23 @@ use super::EventFn;
 
 #[cfg(feature = "with-dioxus")]
 #[component]
-pub fn TextField<T: Clone + PartialEq + 'static>(
+pub fn TextField(
     #[props(optional)] error: Signal<Option<String>>,
     id: String,
     #[props(default = "text".to_owned())] input_type: String,
-    #[props(optional)] mutation: Resource<MutPresenter<T>>,
     name: String,
-    value: Signal<String>,
+    #[props(optional)] value: Signal<String>,
 ) -> Element {
     rsx! {
         FormField {
             error: error,
             for_id: &id,
             name: &name,
-            mutation: mutation,
             input {
                 class: if error().is_some() { "input w-full input-error" } else { "input w-full" },
                 id: id,
                 name: name,
-                oninput: |event| {},
+                onkeydown: |event| { if event.key() == Key::Enter { event.prevent_default(); }},
                 r#type: input_type,
                 value: value
             }

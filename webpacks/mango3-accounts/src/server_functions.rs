@@ -1,15 +1,15 @@
-use leptos::prelude::*;
 use uuid::Uuid;
 
+use mango3_web_utils::prelude::*;
 use mango3_web_utils::presenters::MutPresenter;
 
-#[cfg(feature = "ssr")]
+#[cfg(feature = "server")]
 use mango3_core::config::BASIC_CONFIG;
-#[cfg(feature = "ssr")]
+#[cfg(feature = "server")]
 use mango3_core::enums::ConfirmationCodeAction;
-#[cfg(feature = "ssr")]
+#[cfg(feature = "server")]
 use mango3_web_utils::ssr::{
-    expect_core_context, extract_confirmation_code, extract_i18n, finish_confirmation_code, require_no_authentication,
+    extract_confirmation_code, extract_locale, finish_confirmation_code, require_no_authentication,
     start_confirmation_code, start_user_session,
 };
 
@@ -23,21 +23,19 @@ pub async fn attempt_to_confirm_login(code: String) -> Result<MutPresenter, Serv
         return mango3_web_utils::mut_presenter_error!();
     };
 
-    let core_context = expect_core_context();
-    let user = confirmation_code.user(&core_context).await?;
+    let user = confirmation_code.user().await?;
 
     let result = mango3_core::commands::confirm_confirmation_code(
         &confirmation_code,
         ConfirmationCodeAction::LoginConfirmation,
         &code,
         || {
-            let core_context = core_context.clone();
             let user = user.clone();
             async move {
-                let result = mango3_core::commands::insert_user_session(&core_context, &user).await;
+                let result = mango3_core::commands::insert_user_session(&user).await;
 
                 if let Ok(ref success) = result {
-                    let _ = start_user_session(&core_context, &success.data).await;
+                    let _ = start_user_session(&success.data).await;
                     let _ = finish_confirmation_code().await;
                 }
 
@@ -59,9 +57,7 @@ pub async fn attempt_to_login(
         return mango3_web_utils::mut_presenter_error!();
     }
 
-    let core_context = expect_core_context();
-
-    let Ok(user) = mango3_core::commands::authenticate_user(&core_context, &username_or_email, &password).await else {
+    let Ok(user) = mango3_core::commands::authenticate_user(&username_or_email, &password).await else {
         return mango3_web_utils::mut_presenter_error!();
     };
 
@@ -74,10 +70,10 @@ pub async fn attempt_to_login(
             return mango3_web_utils::mut_presenter!(mango3_core::mut_success!(false));
         }
     } else {
-        let result = mango3_core::commands::insert_user_session(&core_context, &user.data).await;
+        let result = mango3_core::commands::insert_user_session(&user.data).await;
 
         if let Ok(ref user_session) = result {
-            let _ = start_user_session(&core_context, &user_session.data).await;
+            let _ = start_user_session(&user_session.data).await;
 
             return mango3_web_utils::mut_presenter!(mango3_core::mut_success!(false));
         }
@@ -100,38 +96,36 @@ pub async fn attempt_to_register(
         return mango3_web_utils::mut_presenter_error!();
     }
 
-    let i18n = extract_i18n().await?;
-    let core_context = expect_core_context();
+    let locale = extract_locale().await?;
 
     let invitation_code = if !BASIC_CONFIG.enable_register {
         let Some(id) = invitation_code_id else {
             return mango3_web_utils::mut_presenter_error!();
         };
 
-        Some(mango3_core::commands::get_invitation_code_by_id(&core_context, id).await?)
+        Some(mango3_core::commands::get_invitation_code_by_id(id).await?)
     } else {
         None
     };
 
     let result = mango3_core::commands::insert_user(
-        &core_context,
         &username,
         &email,
         &password,
         &full_name,
         &birthdate,
-        i18n.0.language.as_str(),
+        locale.language,
         &country_alpha2,
     )
     .await;
 
     if let Ok(ref success_insert) = result {
-        if let Ok(success) = mango3_core::commands::insert_user_session(&core_context, &success_insert.data).await {
-            let _ = start_user_session(&core_context, &success.data).await?;
+        if let Ok(success) = mango3_core::commands::insert_user_session(&success_insert.data).await {
+            let _ = start_user_session(&success.data).await?;
         }
 
         if let Some(invitation_code) = invitation_code {
-            let _ = mango3_core::commands::delete_invitation_code(&core_context, &invitation_code).await;
+            let _ = mango3_core::commands::delete_invitation_code(&invitation_code).await;
         }
     }
 
@@ -144,8 +138,7 @@ pub async fn attempt_to_send_password_reset_code(username_or_email: String) -> R
         return mango3_web_utils::mut_presenter_error!();
     }
 
-    let core_context = expect_core_context();
-    let result = mango3_core::commands::get_user_by_username_or_email(&core_context, &username_or_email).await;
+    let result = mango3_core::commands::get_user_by_username_or_email(&username_or_email).await;
 
     let Ok(user) = result else {
         return mango3_web_utils::mut_presenter_error!();
@@ -170,19 +163,17 @@ pub async fn attempt_to_reset_password(code: String, new_password: String) -> Re
         return mango3_web_utils::mut_presenter_error!();
     };
 
-    let core_context = expect_core_context();
-    let user = confirmation_code.user(&core_context).await?;
+    let user = confirmation_code.user().await?;
 
     let result = mango3_core::commands::confirm_confirmation_code(
         &confirmation_code,
         ConfirmationCodeAction::PasswordReset,
         &code,
         || {
-            let core_context = core_context.clone();
             let user = user.clone();
             let new_password = new_password.clone();
             async move {
-                let result = mango3_core::commands::reset_user_password(&core_context, &user, &new_password).await;
+                let result = mango3_core::commands::reset_user_password(&user, &new_password).await;
 
                 if let Ok(_) = result {
                     let _ = finish_confirmation_code().await;
@@ -203,9 +194,7 @@ pub async fn attempt_to_get_invitation_code_id(code: String) -> Result<MutPresen
         return mango3_web_utils::mut_presenter_error!();
     };
 
-    let core_context = expect_core_context();
-
-    let result = mango3_core::commands::get_invitation_code(&core_context, &code).await;
+    let result = mango3_core::commands::get_invitation_code(&code).await;
 
     match result {
         Ok(invitation_code) => mango3_web_utils::mut_presenter!(mango3_core::mut_success!(invitation_code.id)),

@@ -11,7 +11,7 @@ use mango3_core::utils::*;
 #[cfg(feature = "ssr")]
 use super::FromModel;
 
-#[cfg(feature = "ssr")]
+#[cfg(any(feature = "ssr", feature = "server"))]
 #[macro_export]
 macro_rules! mut_presenter {
     ($result:expr) => {
@@ -25,7 +25,7 @@ macro_rules! mut_presenter {
     };
 }
 
-#[cfg(feature = "ssr")]
+#[cfg(any(feature = "ssr", feature = "server"))]
 #[macro_export]
 macro_rules! mut_presenter_error {
     () => {
@@ -36,7 +36,7 @@ macro_rules! mut_presenter_error {
     };
 }
 
-#[cfg(feature = "ssr")]
+#[cfg(any(feature = "ssr", feature = "server"))]
 #[macro_export]
 macro_rules! mut_presenter_success {
     () => {
@@ -47,7 +47,7 @@ macro_rules! mut_presenter_success {
     };
 }
 
-#[derive(Clone, Default, Deserialize, Serialize)]
+#[derive(Clone, Default, Deserialize, PartialEq, Serialize)]
 pub struct MutPresenter<T = ()> {
     pub success: Option<bool>,
     pub errors: Option<HashMap<String, String>>,
