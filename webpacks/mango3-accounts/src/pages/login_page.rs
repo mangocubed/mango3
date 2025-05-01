@@ -7,7 +7,7 @@ use crate::server_functions::attempt_to_login;
 pub fn LoginPage() -> Element {
     let username_value = use_signal(|| String::new());
     let password_value = use_signal(|| String::new());
-    let action = use_callback(move |_: ()| async move { attempt_to_login(username_value(), password_value()).await });
+    let action = use_callback(|_: ()| Box::pin(attempt_to_login(username_value(), password_value())));
 
     rsx! {
         h1 { class: "h1", { t!("login") } }

@@ -34,8 +34,8 @@ leptos_i18n::load_locales!();
 pub mod prelude {
     pub use dioxus::prelude::{
         component, dioxus_core, dioxus_elements, dioxus_router, document, fc_to_builder, rsx, server, server_fn,
-        use_callback, use_signal, Element, GlobalSignal, IntoDynNode, Outlet, Properties, Props, Readable, RenderError,
-        Routable, Router, ServerFnError, VNode,
+        use_callback, use_signal, Callback, Element, GlobalSignal, IntoDynNode, Outlet, Properties, Props, Readable,
+        RenderError, Routable, Router, ServerFnError, VNode,
     };
     pub use dioxus_i18n::{self, t};
 

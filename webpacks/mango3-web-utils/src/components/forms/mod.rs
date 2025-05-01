@@ -94,9 +94,12 @@ fn FieldLabel(id: String, children: Children) -> impl IntoView {
 
 #[cfg(feature = "with-dioxus")]
 #[component]
-pub fn Form<T: Clone + PartialEq + 'static>(
+pub fn Form<
+    T: Clone + PartialEq + 'static,
+    F: std::future::Future<Output = Result<MutPresenter<T>, ServerFnError>> + Clone + PartialEq + Unpin + 'static,
+>(
     children: Element,
-    action: Callback<(), Result<MutPresenter<T>, ServerFnError>>,
+    action: Callback<(), F>,
 ) -> Element {
     let mut mutation: Signal<Option<MutPresenter<T>>> = use_signal(|| None);
 
@@ -112,7 +115,7 @@ pub fn Form<T: Clone + PartialEq + 'static>(
 
                 let action = action.clone();
 
-                async move {  *mutation.write() = action(()).ok(); }
+                async move {  *mutation.write() = action(()).await.ok(); }
             },
 
             { children }

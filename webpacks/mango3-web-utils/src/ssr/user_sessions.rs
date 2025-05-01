@@ -13,9 +13,7 @@ use crate::constants::KEY_USER_SESSION_ID;
 
 pub async fn extract_user() -> Result<Option<User>, ServerFnError> {
     if let Some(user_session) = extract_user_session().await? {
-        let core_context = super::try_core_context()?;
-
-        Ok(user_session.user(&core_context).await.ok())
+        Ok(user_session.user().await.ok())
     } else {
         Ok(None)
     }
@@ -28,13 +26,11 @@ pub async fn extract_user_session() -> Result<Option<UserSession>, ServerFnError
         return Ok(None);
     };
 
-    let core_context = super::try_core_context()?;
-
-    Ok(get_user_session_by_id(&core_context, id).await.ok())
+    Ok(get_user_session_by_id(id).await.ok())
 }
 
 #[cfg(feature = "finish-and-delete-user-session")]
-pub async fn finish_and_delete_user_session(core_context: &mango3_core::CoreContext) -> Result<(), ServerFnError> {
+pub async fn finish_and_delete_user_session() -> Result<(), ServerFnError> {
     let Some(user_session) = extract_user_session().await? else {
         return Ok(());
     };
@@ -43,7 +39,7 @@ pub async fn finish_and_delete_user_session(core_context: &mango3_core::CoreCont
 
     set_cookie_lang.set(None);
 
-    mango3_core::commands::delete_user_session(&core_context, &user_session)
+    mango3_core::commands::delete_user_session(&user_session)
         .await
         .map_err(|_| ServerFnError::new("Could not delete user session.".to_owned()))?;
 
@@ -58,11 +54,23 @@ pub(crate) async fn is_authenticated() -> Result<bool, ServerFnError> {
     Ok(extract_user_session().await?.is_some())
 }
 
+#[cfg(not(feature = "with-dioxus"))]
 pub async fn require_authentication() -> Result<bool, ServerFnError> {
     if !is_authenticated().await? {
         leptos_axum::redirect(BASIC_CONFIG.login_url().as_str());
 
         return Ok(false);
+    }
+
+    Ok(true)
+}
+
+#[cfg(feature = "with-dioxus")]
+pub async fn require_no_authentication() -> Result<bool, ServerFnError> {
+    use axum::response::{IntoResponse, Redirect};
+
+    if is_authenticated().await? {
+        return axum::response::Redirect::permanent(BASIC_CONFIG.home_url().as_str()).into_response();
     }
 
     Ok(true)
@@ -80,13 +88,10 @@ pub async fn require_no_authentication() -> Result<bool, ServerFnError> {
 }
 
 #[cfg(feature = "start-user-session")]
-pub async fn start_user_session(
-    core_context: &mango3_core::CoreContext,
-    user_session: &UserSession,
-) -> Result<(), ServerFnError> {
+pub async fn start_user_session(user_session: &UserSession) -> Result<(), ServerFnError> {
     use std::str::FromStr;
 
-    let user = user_session.user(core_context).await?;
+    let user = user_session.user().await?;
     let session = super::extract_session().await?;
     let (_, set_cookie_lang) = crate::context::use_language_cookie::<codee::string::FromToStringCodec>();
 
